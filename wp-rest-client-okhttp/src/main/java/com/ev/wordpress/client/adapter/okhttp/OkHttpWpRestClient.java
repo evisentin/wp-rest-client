@@ -31,13 +31,7 @@ import lombok.val;
 import okhttp3.*;
 import org.apache.commons.text.StringSubstitutor;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import java.io.IOException;
-import java.security.SecureRandom;
-import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +49,7 @@ import static com.ev.wordpress.client.domain.dto.parameters.WpQueryParameters.PA
 import static com.ev.wordpress.client.domain.dto.parameters.WpQueryParameters.PER_PAGE;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.ObjectUtils.anyNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
@@ -63,40 +58,81 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     private final OkHttpClient client;
     private final ObjectMapper mapper;
 
+    /**
+     * Creates a new {@code OkHttpWpRestClient} instance.
+     *
+     * <p>
+     * The client is configured with the provided base URL and authentication strategy, and uses
+     * {@link okhttp3.OkHttpClient} as the underlying HTTP transport.
+     *
+     * <p>
+     * If a {@link SslConfiguration} is provided, its settings will be applied to the HTTP client, allowing
+     * customization of SSL/TLS behavior (e.g. custom trust store, mutual TLS, or hostname verification). If
+     * {@code null}, the default JVM SSL configuration is used.
+     *
+     * <p>
+     * The client automatically registers internal interceptors for:
+     * <ul>
+     *     <li>Authentication handling</li>
+     *     <li>WordPress-specific error handling</li>
+     * </ul>
+     *
+     * <h3>Usage examples</h3>
+     *
+     * <p><b>Default (secure) configuration:</b></p>
+     * <pre>{@code
+     * OkHttpWpRestClient client = new OkHttpWpRestClient(
+     *     "https://example.com",
+     *     authenticationStrategy,
+     *     null
+     * );
+     * }</pre>
+     *
+     * <p><b>Custom SSL configuration:</b></p>
+     * <pre>{@code
+     * SSLContext sslContext = SSLContext.getInstance("TLS");
+     * sslContext.init(null, new TrustManager[]{trustManager}, null);
+     *
+     * SslConfiguration sslConfig = SslConfiguration.builder()
+     *     .sslSocketFactory(sslContext.getSocketFactory())
+     *     .trustManager(trustManager)
+     *     .hostnameVerifier((hostname, session) -> true) // optional, ⚠ disables hostname verification, DO NOT USE IN PRODUCTION
+     *     .build();
+     *
+     * OkHttpWpRestClient client = new OkHttpWpRestClient(
+     *     "https://example.com",
+     *     authenticationStrategy,
+     *     sslConfig
+     * );
+     * }</pre>
+     *
+     * @param baseUrl
+     *         the base URL of the WordPress instance (must not be {@code null})
+     * @param authenticationStrategy
+     *         the authentication strategy to use for requests (must not be {@code null})
+     * @param sslConfiguration
+     *         optional SSL configuration; if {@code null}, the default SSL behavior is used
+     *
+     * @throws NullPointerException
+     *         if {@code baseUrl} or {@code authenticationStrategy} is {@code null}
+     * @throws IllegalStateException
+     *         if the provided {@link SslConfiguration} is incomplete (e.g. missing required SSL components)
+     */
     @SneakyThrows
     public OkHttpWpRestClient(final @NonNull String baseUrl,
-                              final @NonNull WpAuthenticationStrategy authenticationStrategy) {
+                              final @NonNull WpAuthenticationStrategy authenticationStrategy,
+                              final SslConfiguration sslConfiguration) {
         super(baseUrl, authenticationStrategy);
         this.mapper = new ObjectMapper();
         mapper.findAndRegisterModules();
 
-        X509TrustManager trustAll = new X509TrustManager() {
-            @Override
-            public void checkClientTrusted(X509Certificate[] chain, String authType) {
-            }
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
+                .addInterceptor(new AuthenticationInterceptor(authenticationStrategy))
+                .addInterceptor(new WpErrorInterceptor());
 
-            @Override
-            public void checkServerTrusted(X509Certificate[] chain, String authType) {
-            }
+        applySslConfigurationIfPresent(clientBuilder, sslConfiguration);
 
-            @Override
-            public X509Certificate[] getAcceptedIssuers() {
-                return new X509Certificate[0];
-            }
-        };
-
-        SSLContext sslContext = SSLContext.getInstance("TLS");
-        sslContext.init(null, new TrustManager[]{trustAll}, new SecureRandom());
-
-        SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-
-        this.client =
-                new OkHttpClient.Builder()
-                        .addInterceptor(new AuthenticationInterceptor(authenticationStrategy))
-                        .addInterceptor(new WpErrorInterceptor())
-                        .sslSocketFactory(sslSocketFactory, trustAll)
-                        .hostnameVerifier((hostname, session) -> true)
-                        .build();
+        this.client = clientBuilder.build();
     }
 
     /**
@@ -429,7 +465,25 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         return Objects.requireNonNull(HttpUrl.parse(substituted)).newBuilder();
     }
 
+    private static void applySslConfigurationIfPresent(final OkHttpClient.Builder clientBuilder,
+                                                       final SslConfiguration sslConfiguration) {
+        if (sslConfiguration != null) {
+            failOnInvalidConfiguration(sslConfiguration);
+            clientBuilder.sslSocketFactory(sslConfiguration.getSslSocketFactory(), sslConfiguration.getTrustManager());
+
+            if (sslConfiguration.getHostnameVerifier() != null) {
+                clientBuilder.hostnameVerifier(sslConfiguration.getHostnameVerifier());
+            }
+        }
+    }
+
     private static Map<String, Object> emptyIfNull(final Map<String, Object> map) {
         return ofNullable(map).orElseGet(Collections::emptyMap);
+    }
+
+    private static void failOnInvalidConfiguration(final SslConfiguration sslConfiguration) {
+        if (anyNull(sslConfiguration.getSslSocketFactory(), sslConfiguration.getTrustManager())) {
+            throw new IllegalStateException("SSL configuration requires both sslSocketFactory and trustManager");
+        }
     }
 }
