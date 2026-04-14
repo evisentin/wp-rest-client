@@ -39,12 +39,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
     @Nested
     class CategoryTests {
 
-        // TODO: 'UPDATE' fails on HTTP BAD REQUEST
-        // TODO: 'UPDATE' fails on HTTP FORBIDDEN
-        // TODO: 'UPDATE' fails on HTTP NOT FOUND
-        // TODO: 'UPDATE' fails on HTTP UNAUTHORIZED
-        // TODO: 'UPDATE' works
-
         @DisplayName("'CREATE' fails on HTTP BAD REQUEST")
         @Test
         void createFailsOnBadRequest() {
@@ -557,6 +551,96 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                     });
         }
 
+        @DisplayName("'UPDATE' fails on HTTP BAD REQUEST")
+        @Test
+        void updateFailsOnBadRequest() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/category/update.failure.bad-request.json");
+
+            final String NAME = "cat1_updated";
+            final String DESCRIPTION = "Category #1_updated";
+            final String SLUG = "cat-1updated";
+
+            final WpCategoryCreateUpdateRequest updateRequest =
+                    WpCategoryCreateUpdateRequest.builder()
+                                                 .withName(NAME)
+                                                 .withDescription(DESCRIPTION)
+                                                 .withSlug(SLUG)
+                                                 .build();
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.updateCategory(2L, updateRequest))
+                    .hasMessage("Missing parameter(s): param1")
+                    .extracting(ex -> (WpBadRequestException) ex)
+                    .extracting(WpBadRequestException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_missing_callback_param");
+                        assertThat(error.getMessage()).isEqualTo("Missing parameter(s): param1");
+                        assertThat(error.getData()).contains(entry("status", 400));
+                    });
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP FORBIDDEN")
+        @Test
+        void updateFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/category/update.failure.forbidden.json");
+
+            final String NAME = "cat1_updated";
+            final String DESCRIPTION = "Category #1_updated";
+            final String SLUG = "cat-1updated";
+
+            final WpCategoryCreateUpdateRequest updateRequest =
+                    WpCategoryCreateUpdateRequest.builder()
+                                                 .withName(NAME)
+                                                 .withDescription(DESCRIPTION)
+                                                 .withSlug(SLUG)
+                                                 .build();
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.updateCategory(2L, updateRequest))
+                    .hasMessage("Sorry, you are not allowed to do that.")
+                    .extracting(ex -> (WpForbiddenException) ex)
+                    .extracting(WpForbiddenException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
+                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
+                        assertThat(error.getData()).containsExactly(entry("status", 403));
+                    });
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
+        @Test
+        void updateFailsOnNotFound() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/category/update.failure.not-found.json");
+
+            final String NAME = "cat1_updated";
+            final String DESCRIPTION = "Category #1_updated";
+            final String SLUG = "cat-1updated";
+
+            final WpCategoryCreateUpdateRequest updateRequest =
+                    WpCategoryCreateUpdateRequest.builder()
+                                                 .withName(NAME)
+                                                 .withDescription(DESCRIPTION)
+                                                 .withSlug(SLUG)
+                                                 .build();
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.updateCategory(2L, updateRequest))
+                    .hasMessage("Term does not exist.")
+                    .extracting(ex -> (WpNotFoundException) ex)
+                    .extracting(WpNotFoundException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_term_invalid");
+                        assertThat(error.getMessage()).isEqualTo("Term does not exist.");
+                        assertThat(error.getData()).containsExactly(entry("status", 404));
+                    });
+        }
+
         @DisplayName("'UPDATE' fails on null ID")
         @Test
         void updateFailsOnNullId() {
@@ -575,6 +659,68 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThatThrownBy(() -> client.updateCategory(1000L, null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("updateRequest is marked non-null but is null");
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP UNAUTHORIZED")
+        @Test
+        void updateFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/category/update.failure.unauthorized.json");
+
+            final String NAME = "cat1_updated";
+            final String DESCRIPTION = "Category #1_updated";
+            final String SLUG = "cat-1updated";
+
+            final WpCategoryCreateUpdateRequest updateRequest =
+                    WpCategoryCreateUpdateRequest.builder()
+                                                 .withName(NAME)
+                                                 .withDescription(DESCRIPTION)
+                                                 .withSlug(SLUG)
+                                                 .build();
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.updateCategory(2L, updateRequest))
+                    .hasMessage("You are not currently logged in.")
+                    .extracting(ex -> (WpUnauthorizedException) ex)
+                    .extracting(WpUnauthorizedException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
+                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
+                        assertThat(error.getData()).containsExactly(entry("status", 401));
+                    });
+        }
+
+        @DisplayName("UPDATE' works")
+        @Test
+        void updateWorks() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/category/update.success.json");
+
+            final String CAT_1_UPDATED_NAME = "Category #1 UPDATED";
+            final String CAT_1_UPDATED_DESCRIPTION = "Category 1 UPDATED";
+            final String CAT_1_UPDATED_SLUG = "cat-1-updated";
+
+            WpCategoryCreateUpdateRequest updateRequest =
+                    WpCategoryCreateUpdateRequest.builder()
+                                                 .withName(CAT_1_UPDATED_NAME)
+                                                 .withDescription(CAT_1_UPDATED_DESCRIPTION)
+                                                 .withSlug(CAT_1_UPDATED_SLUG)
+                                                 .build();
+
+            // WHEN
+            final WpCategory category = client.updateCategory(2L, updateRequest);
+
+            assertThat(category).isNotNull();
+            assertThat(category.getId()).isEqualTo(2L);
+            assertThat(category.getCount()).isEqualTo(0);
+            assertThat(category.getDescription()).isEqualTo(CAT_1_UPDATED_DESCRIPTION);
+            assertThat(category.getLink()).isNotBlank().contains(CAT_1_UPDATED_SLUG);
+            assertThat(category.getName()).isEqualTo(CAT_1_UPDATED_NAME);
+            assertThat(category.getSlug()).isEqualTo(CAT_1_UPDATED_SLUG);
+            assertThat(category.getParentId()).isZero();
+            assertThat(category.getTaxonomy()).isNotNull().isEqualTo(WpTaxonomy.CATEGORY);
         }
     }
 
