@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static com.ev.wordpress.client.adapter.okhttp.TypeReferences.*;
 import static com.ev.wordpress.client.adapter.okhttp.constants.HttpHeaders.ACCEPT;
 import static com.ev.wordpress.client.adapter.okhttp.constants.HttpHeaders.X_WP_TOTAL;
 import static com.ev.wordpress.client.adapter.okhttp.constants.HttpHeaders.X_WP_TOTAL_PAGES;
@@ -58,18 +59,6 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class OkHttpWpRestClient extends WpBaseRestClient {
-
-    private static final TypeReference<WpCategory> WP_CATEGORY_TYPE = new TypeReference<>() {};
-    private static final TypeReference<WpPost> WP_POST_TYPE = new TypeReference<>() {};
-    private static final TypeReference<WpTag> WP_TAG_TYPE = new TypeReference<>() {};
-
-    private static final TypeReference<WpCategoryDeletionResponse> WP_CATEGORY_DELETION_RESPONSE_TYPE = new TypeReference<>() {};
-    private static final TypeReference<WpPostDeletionResponse> WP_POST_DELETION_RESPONSE_TYPE = new TypeReference<>() {};
-    private static final TypeReference<WpTagDeletionResponse> WP_TAG_DELETION_RESPONSE_TYPE = new TypeReference<>() {};
-
-    private static final TypeReference<List<WpCategory>> WP_CATEGORY_LIST_TYPE = new TypeReference<>() {};
-    private static final TypeReference<List<WpPost>> WP_POST_LIST_TYPE = new TypeReference<>() {};
-    private static final TypeReference<List<WpTag>> WP_TAG_LIST_TYPE = new TypeReference<>() {};
 
     private final OkHttpClient client;
     private final ObjectMapper mapper;
