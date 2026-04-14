@@ -38,9 +38,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
     @Nested
     class CategoryTests {
 
-        // TODO: 'GET' fails on HTTP NOT FOUND
-        // TODO: 'GET' fails on HTTP FORBIDDEN
-        // TODO: 'GET' fails on HTTP UNAUTHORIZED
         // TODO: 'GET' works
 
         // TODO: 'LIST' fails on HTTP FORBIDDEN
@@ -305,6 +302,44 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                     });
         }
 
+        @DisplayName("'GET' fails on HTTP FORBIDDEN")
+        @Test
+        void getFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/category/get.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.getCategory(1005L, null))
+                    .hasMessage("Sorry, you are not allowed to do that.")
+                    .extracting(ex -> (WpForbiddenException) ex)
+                    .extracting(WpForbiddenException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
+                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
+                        assertThat(error.getData()).containsExactly(entry("status", 403));
+                    });
+        }
+
+        @DisplayName("'GET' fails on HTTP NOT FOUND")
+        @Test
+        void getFailsOnNotFound() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/category/get.failure.not-found.json");
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.getCategory(1005L, null))
+                    .hasMessage("Term does not exist.")
+                    .extracting(ex -> (WpNotFoundException) ex)
+                    .extracting(WpNotFoundException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_term_invalid");
+                        assertThat(error.getMessage()).isEqualTo("Term does not exist.");
+                        assertThat(error.getData()).containsExactly(entry("status", 404));
+                    });
+        }
+
         @DisplayName("'GET' fails on null ID")
         @Test
         void getFailsOnNullId() {
@@ -313,6 +348,25 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThatThrownBy(() -> client.getCategory(null, null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("id is marked non-null but is null");
+        }
+
+        @DisplayName("'GET' fails on HTTP UNAUTHORIZED")
+        @Test
+        void getFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/category/get.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.getCategory(1005L, null))
+                    .hasMessage("You are not currently logged in.")
+                    .extracting(ex -> (WpUnauthorizedException) ex)
+                    .extracting(WpUnauthorizedException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
+                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
+                        assertThat(error.getData()).containsExactly(entry("status", 401));
+                    });
         }
 
         @DisplayName("'LIST' fails on null pageQuery")
