@@ -7,6 +7,7 @@ import com.ev.wordpress.client.domain.dto.WpPagedResponse;
 import com.ev.wordpress.client.domain.dto.WpTag;
 import com.ev.wordpress.client.domain.dto.enums.WpContext;
 import com.ev.wordpress.client.domain.dto.enums.WpTaxonomy;
+import com.ev.wordpress.client.domain.dto.query.WpCategoryQuery;
 import com.ev.wordpress.client.domain.dto.query.WpPagingQuery;
 import com.ev.wordpress.client.domain.dto.query.WpTagQuery;
 import com.ev.wordpress.client.domain.dto.requests.WpCategoryCreateUpdateRequest;
@@ -37,10 +38,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
     @DisplayName("'CATEGORY' Operations")
     @Nested
     class CategoryTests {
-
-        // TODO: 'LIST' fails on HTTP FORBIDDEN
-        // TODO: 'LIST' fails on HTTP UNAUTHORIZED
-        // TODO: 'LIST' works
 
         // TODO: 'UPDATE' fails on HTTP BAD REQUEST
         // TODO: 'UPDATE' fails on HTTP FORBIDDEN
@@ -416,6 +413,25 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThat(category.getTaxonomy()).isNotNull().isEqualTo(WpTaxonomy.CATEGORY);
         }
 
+        @DisplayName("'LIST' fails on HTTP FORBIDDEN")
+        @Test
+        void listFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/category/list.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.listCategories(WpPagingQuery.of(1, 10), null))
+                    .hasMessage("Sorry, you are not allowed to do that.")
+                    .extracting(ex -> (WpForbiddenException) ex)
+                    .extracting(WpForbiddenException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
+                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
+                        assertThat(error.getData()).containsExactly(entry("status", 403));
+                    });
+        }
+
         @DisplayName("'LIST' fails on null pageQuery")
         @Test
         void listFailsOnNullPaging() {
@@ -423,6 +439,122 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThatThrownBy(() -> client.listCategories(null, null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("pageQuery is marked non-null but is null");
+        }
+
+        @DisplayName("'LIST' fails on HTTP UNAUTHORIZED")
+        @Test
+        void listFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/category/list.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.listCategories(WpPagingQuery.of(1, 10), null))
+                    .hasMessage("You are not currently logged in.")
+                    .extracting(ex -> (WpUnauthorizedException) ex)
+                    .extracting(WpUnauthorizedException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
+                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
+                        assertThat(error.getData()).containsExactly(entry("status", 401));
+                    });
+        }
+
+        @DisplayName("'LIST' works with paging")
+        @Test
+        void listWorksWithJustPaging() {
+
+            // GIVEN
+            final String NAME_1 = "category1";
+            final String DESCRIPTION_1 = "Category #1";
+            final String SLUG_1 = "category-1";
+
+            final String NAME_2 = "category2";
+            final String DESCRIPTION_2 = "Category #2";
+            final String SLUG_2 = "category-2";
+
+            givenExpectationFromFile("basic-auth/category/list.success.just-paging.json");
+
+            // WHEN
+            final WpPagedResponse<WpCategory> response = client.listCategories(WpPagingQuery.of(1, 10), null);
+
+            // THEN
+            assertThat(response)
+                    .isNotNull()
+                    .satisfies(r -> {
+                        assertThat(r.getPageNumber()).isEqualTo(1);
+                        assertThat(r.getItemsPerPage()).isEqualTo(10);
+                        assertThat(r.getTotalPages()).isEqualTo(1);
+                        assertThat(r.getTotalItems()).isEqualTo(3); // 2 items created here, plus the default category (id=1) which cannot be deleted
+                        assertThat(r.hasNextPage()).isFalse();
+                        assertThat(r.getItems())
+                                .hasSize(3)
+                                .satisfiesExactly(
+                                        cat -> {
+                                            assertThat(cat.getId()).isEqualTo(2L);
+                                            assertThat(cat.getName()).isEqualTo(NAME_1);
+                                            assertThat(cat.getSlug()).isEqualTo(SLUG_1);
+                                            assertThat(cat.getDescription()).isEqualTo(DESCRIPTION_1);
+                                            assertThat(cat.getTaxonomy()).isEqualTo(WpTaxonomy.CATEGORY);
+                                        },
+                                        cat -> {
+                                            assertThat(cat.getId()).isEqualTo(3L);
+                                            assertThat(cat.getName()).isEqualTo(NAME_2);
+                                            assertThat(cat.getSlug()).isEqualTo(SLUG_2);
+                                            assertThat(cat.getDescription()).isEqualTo(DESCRIPTION_2);
+                                            assertThat(cat.getTaxonomy()).isEqualTo(WpTaxonomy.CATEGORY);
+                                        },
+                                        cat -> {
+                                            assertThat(cat.getId()).isEqualTo(1L);
+                                            assertThat(cat.getName()).isEqualTo("Uncategorized");
+                                            assertThat(cat.getSlug()).isEqualTo("uncategorized");
+                                            assertThat(cat.getDescription()).isEmpty();
+                                            assertThat(cat.getTaxonomy()).isEqualTo(WpTaxonomy.CATEGORY);
+                                        }
+                                );
+                    });
+        }
+
+        @DisplayName("'LIST' works with paging and query")
+        @Test
+        void listWorksWithPagingAndQuery() {
+
+            // GIVEN
+            final String NAME_2 = "category2";
+            final String DESCRIPTION_2 = "Category #2";
+            final String SLUG_2 = "category-2";
+
+            givenExpectationFromFile("basic-auth/category/list.success.paging-and-query.json");
+
+            // Filter just for category #2
+            final WpCategoryQuery categoryQuery = WpCategoryQuery.builder()
+                                                                 .withSlug(SLUG_2)
+                                                                 .build();
+
+            // WHEN
+            final WpPagedResponse<WpCategory> response = client.listCategories(WpPagingQuery.of(1, 10), categoryQuery);
+
+            // THEN
+            assertThat(response)
+                    .isNotNull()
+                    .satisfies(r -> {
+                        assertThat(r.getPageNumber()).isEqualTo(1);
+                        assertThat(r.getItemsPerPage()).isEqualTo(10);
+                        assertThat(r.getTotalPages()).isEqualTo(1);
+                        assertThat(r.getTotalItems()).isEqualTo(1);
+                        assertThat(r.hasNextPage()).isFalse();
+                        assertThat(r.getItems())
+                                .hasSize(1)
+                                .satisfiesExactly(
+                                        cat -> {
+                                            assertThat(cat.getId()).isEqualTo(3L);
+                                            assertThat(cat.getName()).isEqualTo(NAME_2);
+                                            assertThat(cat.getSlug()).isEqualTo(SLUG_2);
+                                            assertThat(cat.getDescription()).isEqualTo(DESCRIPTION_2);
+                                            assertThat(cat.getTaxonomy()).isEqualTo(WpTaxonomy.CATEGORY);
+                                        }
+                                );
+                    });
         }
 
         @DisplayName("'UPDATE' fails on null ID")
