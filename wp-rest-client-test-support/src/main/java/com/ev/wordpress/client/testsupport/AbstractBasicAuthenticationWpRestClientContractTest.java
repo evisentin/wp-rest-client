@@ -365,7 +365,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         }
 
         @Test
-        void get__works_with_context() {
+        void getWorksWithCcontext() {
 
             // GIVEN
             givenExpectationFromFile("basic-auth/category/get.success.with-context.json");
@@ -390,7 +390,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         }
 
         @Test
-        void get__works_with_no_context() {
+        void getWorksWithoutContext() {
 
             // GIVEN
             givenExpectationFromFile("basic-auth/category/get.success.without-context.json");
@@ -997,7 +997,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' works (with context)")
         @Test
-        void getWorksWiThContext() {
+        void getWorksWithContext() {
 
             // GIVEN
             givenExpectationFromFile("basic-auth/tag/get.success.with-context.json");
@@ -1020,7 +1020,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' works (with no context - default)")
         @Test
-        void getWorksWiThNoContext() {
+        void getWorksWithNoContext() {
 
             // GIVEN
             givenExpectationFromFile("basic-auth/tag/get.success.without-context.json");
