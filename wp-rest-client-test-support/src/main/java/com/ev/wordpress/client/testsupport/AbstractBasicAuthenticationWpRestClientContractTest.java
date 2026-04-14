@@ -38,8 +38,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
     @Nested
     class CategoryTests {
 
-        // TODO: 'GET' works
-
         // TODO: 'LIST' fails on HTTP FORBIDDEN
         // TODO: 'LIST' fails on HTTP UNAUTHORIZED
         // TODO: 'LIST' works
@@ -367,6 +365,55 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                         assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
                         assertThat(error.getData()).containsExactly(entry("status", 401));
                     });
+        }
+
+        @Test
+        void get__works_with_context() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/category/get.success.with-context.json");
+            final String NAME = "category1";
+            final String DESCRIPTION = "Category #1";
+            final String SLUG = "category-1";
+
+            final Long catId = 2L;
+
+            // WHEN
+            final WpCategory category = client.getCategory(catId, WpContext.VIEW);
+
+            // THEN
+            assertThat(category).isNotNull();
+            assertThat(category.getId()).isEqualTo(catId);
+            assertThat(category.getCount()).isEqualTo(0);
+            assertThat(category.getDescription()).isEqualTo(DESCRIPTION);
+            assertThat(category.getLink()).isNotBlank().contains(SLUG);
+            assertThat(category.getName()).isEqualTo(NAME);
+            assertThat(category.getSlug()).isEqualTo(SLUG);
+            assertThat(category.getTaxonomy()).isNotNull().isEqualTo(WpTaxonomy.CATEGORY);
+        }
+
+        @Test
+        void get__works_with_no_context() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/category/get.success.without-context.json");
+            final String NAME = "category1";
+            final String DESCRIPTION = "Category #1";
+            final String SLUG = "category-1";
+            final Long catId = 2L;
+
+            // WHEN
+            final WpCategory category = client.getCategory(catId, null);
+
+            // THEN
+            assertThat(category).isNotNull();
+            assertThat(category.getId()).isEqualTo(catId);
+            assertThat(category.getCount()).isEqualTo(0);
+            assertThat(category.getDescription()).isEqualTo(DESCRIPTION);
+            assertThat(category.getLink()).isNotBlank().contains(SLUG);
+            assertThat(category.getName()).isEqualTo(NAME);
+            assertThat(category.getSlug()).isEqualTo(SLUG);
+            assertThat(category.getTaxonomy()).isNotNull().isEqualTo(WpTaxonomy.CATEGORY);
         }
 
         @DisplayName("'LIST' fails on null pageQuery")
