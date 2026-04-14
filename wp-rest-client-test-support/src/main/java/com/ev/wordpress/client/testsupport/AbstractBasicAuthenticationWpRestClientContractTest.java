@@ -11,6 +11,7 @@ import com.ev.wordpress.client.domain.dto.query.WpCategoryQuery;
 import com.ev.wordpress.client.domain.dto.query.WpPagingQuery;
 import com.ev.wordpress.client.domain.dto.query.WpTagQuery;
 import com.ev.wordpress.client.domain.dto.requests.WpCategoryCreateUpdateRequest;
+import com.ev.wordpress.client.domain.dto.requests.WpPostCreateUpdateRequest;
 import com.ev.wordpress.client.domain.dto.requests.WpTagCreateUpdateRequest;
 import com.ev.wordpress.client.domain.dto.responses.WpCategoryDeletionResponse;
 import com.ev.wordpress.client.domain.dto.responses.WpTagDeletionResponse;
@@ -728,11 +729,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
     @Nested
     class PostTests {
 
-        // TODO: 'CREATE' fails on HTTP BAD REQUEST
-        // TODO: 'CREATE' fails on HTTP FORBIDDEN
-        // TODO: 'CREATE' fails on HTTP UNAUTHORIZED
         // TODO: 'CREATE' works
-
         // TODO: 'DELETE' works
 
         // TODO: 'TRASH' fails on null ID
@@ -751,6 +748,68 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         // TODO: 'UPDATE' fails on HTTP UNAUTHORIZED
         // TODO: 'UPDATE' works
 
+        @DisplayName("'CREATE' fails on HTTP BAD REQUEST")
+        @Test
+        void createFailsOnBadRequest() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/create.failure.bad-request.json");
+
+            final String TITLE = "My post";
+            final String CONTENT = "My Content";
+
+            final WpPostCreateUpdateRequest createRequest =
+                    WpPostCreateUpdateRequest.builder()
+                                             .withTitle(TITLE)
+                                             .withContent(CONTENT)
+                                             .withSticky(false)
+                                             .withCategories(Set.of(3L))
+                                             .withTags(Set.of(2L))
+                                             .build();
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.createPost(createRequest))
+                    .hasMessage("Missing parameter(s): param1")
+                    .extracting(ex -> (WpBadRequestException) ex)
+                    .extracting(WpBadRequestException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_missing_callback_param");
+                        assertThat(error.getMessage()).isEqualTo("Missing parameter(s): param1");
+                        assertThat(error.getData()).contains(entry("status", 400));
+                    });
+        }
+
+        @DisplayName("'CREATE' fails on HTTP FORBIDDEN")
+        @Test
+        void createFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/create.failure.forbidden.json");
+
+            final String TITLE = "My post";
+            final String CONTENT = "My Content";
+
+            final WpPostCreateUpdateRequest createRequest =
+                    WpPostCreateUpdateRequest.builder()
+                                             .withTitle(TITLE)
+                                             .withContent(CONTENT)
+                                             .withSticky(false)
+                                             .withCategories(Set.of(3L))
+                                             .withTags(Set.of(2L))
+                                             .build();
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.createPost(createRequest))
+                    .hasMessage("Sorry, you are not allowed to do that.")
+                    .extracting(ex -> (WpForbiddenException) ex)
+                    .extracting(WpForbiddenException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
+                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
+                        assertThat(error.getData()).containsExactly(entry("status", 403));
+                    });
+        }
+
         @DisplayName("'CREATE' fails on null request")
         @Test
         void createFailsOnNullRequest() {
@@ -759,6 +818,37 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThatThrownBy(() -> client.createPost(null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("creationRequest is marked non-null but is null");
+        }
+
+        @DisplayName("'CREATE' fails on HTTP UNAUTHORIZED")
+        @Test
+        void createFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/create.failure.unauthorized.json");
+
+            final String TITLE = "My post";
+            final String CONTENT = "My Content";
+
+            final WpPostCreateUpdateRequest createRequest =
+                    WpPostCreateUpdateRequest.builder()
+                                             .withTitle(TITLE)
+                                             .withContent(CONTENT)
+                                             .withSticky(false)
+                                             .withCategories(Set.of(3L))
+                                             .withTags(Set.of(2L))
+                                             .build();
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.createPost(createRequest))
+                    .hasMessage("You are not currently logged in.")
+                    .extracting(ex -> (WpUnauthorizedException) ex)
+                    .extracting(WpUnauthorizedException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
+                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
+                        assertThat(error.getData()).containsExactly(entry("status", 401));
+                    });
         }
 
         @DisplayName("'DELETE' fails on HTTP FORBIDDEN")
