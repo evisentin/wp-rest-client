@@ -223,11 +223,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
     @Nested
     class TagTests {
 
-        // TODO: 'UPDATE' fails on HTTP BAD REQUEST
-        // TODO: 'UPDATE' fails on HTTP FORBIDDEN
-        // TODO: 'UPDATE' fails on HTTP NOT FOUND
-        // TODO: 'UPDATE' fails on HTTP UNAUTHORIZED
-
         @DisplayName("'CREATE' fails on HTTP BAD REQUEST")
         @Test
         void createFailsOnBadRequest() {
@@ -685,6 +680,96 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                     });
         }
 
+        @DisplayName("'UPDATE' fails on HTTP BAD REQUEST")
+        @Test
+        void updateFailsOnBadRequest() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/tag/update.failure.bad-request.json");
+
+            final String NAME = "tag1_updated";
+            final String DESCRIPTION = "Tag #1_updated";
+            final String SLUG = "tag-1updated";
+
+            final WpTagCreateUpdateRequest updateRequest =
+                    WpTagCreateUpdateRequest.builder()
+                                            .withName(NAME)
+                                            .withDescription(DESCRIPTION)
+                                            .withSlug(SLUG)
+                                            .build();
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.updateTag(2L, updateRequest))
+                    .hasMessage("Missing parameter(s): param1")
+                    .extracting(ex -> (WpBadRequestException) ex)
+                    .extracting(WpBadRequestException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_missing_callback_param");
+                        assertThat(error.getMessage()).isEqualTo("Missing parameter(s): param1");
+                        assertThat(error.getData()).contains(entry("status", 400));
+                    });
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP FORBIDDEN")
+        @Test
+        void updateFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/tag/update.failure.forbidden.json");
+
+            final String NAME = "tag1_updated";
+            final String DESCRIPTION = "Tag #1_updated";
+            final String SLUG = "tag-1updated";
+
+            final WpTagCreateUpdateRequest updateRequest =
+                    WpTagCreateUpdateRequest.builder()
+                                            .withName(NAME)
+                                            .withDescription(DESCRIPTION)
+                                            .withSlug(SLUG)
+                                            .build();
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.updateTag(2L, updateRequest))
+                    .hasMessage("Sorry, you are not allowed to do that.")
+                    .extracting(ex -> (WpForbiddenException) ex)
+                    .extracting(WpForbiddenException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
+                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
+                        assertThat(error.getData()).containsExactly(entry("status", 403));
+                    });
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
+        @Test
+        void updateFailsOnNotFound() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/tag/update.failure.not-found.json");
+
+            final String NAME = "tag1_updated";
+            final String DESCRIPTION = "Tag #1_updated";
+            final String SLUG = "tag-1updated";
+
+            final WpTagCreateUpdateRequest updateRequest =
+                    WpTagCreateUpdateRequest.builder()
+                                            .withName(NAME)
+                                            .withDescription(DESCRIPTION)
+                                            .withSlug(SLUG)
+                                            .build();
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.updateTag(2L, updateRequest))
+                    .hasMessage("Term does not exist.")
+                    .extracting(ex -> (WpNotFoundException) ex)
+                    .extracting(WpNotFoundException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_term_invalid");
+                        assertThat(error.getMessage()).isEqualTo("Term does not exist.");
+                        assertThat(error.getData()).containsExactly(entry("status", 404));
+                    });
+        }
+
         @DisplayName("'UPDATE' fails on null ID")
         @Test
         void updateFailsOnNullId() {
@@ -703,6 +788,36 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThatThrownBy(() -> client.updateTag(1000L, null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("updateRequest is marked non-null but is null");
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP UNAUTHORIZED")
+        @Test
+        void updateFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/tag/update.failure.unauthorized.json");
+
+            final String NAME = "tag1_updated";
+            final String DESCRIPTION = "Tag #1_updated";
+            final String SLUG = "tag-1updated";
+
+            final WpTagCreateUpdateRequest updateRequest =
+                    WpTagCreateUpdateRequest.builder()
+                                            .withName(NAME)
+                                            .withDescription(DESCRIPTION)
+                                            .withSlug(SLUG)
+                                            .build();
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.updateTag(2L, updateRequest))
+                    .hasMessage("You are not currently logged in.")
+                    .extracting(ex -> (WpUnauthorizedException) ex)
+                    .extracting(WpUnauthorizedException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
+                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
+                        assertThat(error.getData()).containsExactly(entry("status", 401));
+                    });
         }
 
         @DisplayName("'UPDATE' works")
