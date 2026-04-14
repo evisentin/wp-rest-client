@@ -1,0 +1,59 @@
+[
+    {
+        "httpRequest": {
+            "method": "POST",
+            "path": "/wp-json/wp/v2/tags",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "description": "my description",
+                    "name": "my tag",
+                    "slug": "my-tag",
+                    "meta": {}
+                }
+            }
+        },
+        "httpResponse": {
+            "statusCode": 201,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json; charset=UTF-8"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "id": 2,
+                    "count": 0,
+                    "description": "my description",
+                    "link": "https:\/\/localhost:63896\/tag\/my-tag\/",
+                    "name": "my tag",
+                    "slug": "my-tag",
+                    "taxonomy": "post_tag",
+                    "meta": [],
+                    "_links": {
+                    }
+                }
+            }
+        }
+    }
+]

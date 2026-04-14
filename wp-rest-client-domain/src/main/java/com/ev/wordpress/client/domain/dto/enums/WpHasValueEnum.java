@@ -1,0 +1,14 @@
+package com.ev.wordpress.client.domain.dto.enums;
+
+/**
+ * Common contract for enums exposing a WordPress REST API value.
+ */
+public interface WpHasValueEnum {
+
+    /**
+     * Returns the API value associated with the enum constant.
+     *
+     * @return the serialized API value
+     */
+    String getValue();
+}
