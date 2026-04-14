@@ -733,9 +733,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         // TODO: 'CREATE' fails on HTTP UNAUTHORIZED
         // TODO: 'CREATE' works
 
-        // TODO: 'DELETE' fails on HTTP NOT FOUND
-        // TODO: 'DELETE' fails on HTTP FORBIDDEN
-        // TODO: 'DELETE' fails on HTTP UNAUTHORIZED
         // TODO: 'DELETE' works
 
         // TODO: 'TRASH' fails on null ID
@@ -744,13 +741,8 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         // TODO: 'TRASH' fails on HTTP UNAUTHORIZED
         // TODO: 'TRASH' works
 
-        // TODO: 'GET' fails on HTTP NOT FOUND
-        // TODO: 'GET' fails on HTTP FORBIDDEN
-        // TODO: 'GET' fails on HTTP UNAUTHORIZED
         // TODO: 'GET' works
 
-        // TODO: 'LIST' fails on HTTP FORBIDDEN
-        // TODO: 'LIST' fails on HTTP UNAUTHORIZED
         // TODO: 'LIST' works
 
         // TODO: 'UPDATE' fails on HTTP BAD REQUEST
@@ -769,6 +761,44 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                     .hasMessage("creationRequest is marked non-null but is null");
         }
 
+        @DisplayName("'DELETE' fails on HTTP FORBIDDEN")
+        @Test
+        void deleteFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/delete.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.deletePost(1005L))
+                    .hasMessage("Sorry, you are not allowed to do that.")
+                    .extracting(ex -> (WpForbiddenException) ex)
+                    .extracting(WpForbiddenException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
+                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
+                        assertThat(error.getData()).containsExactly(entry("status", 403));
+                    });
+        }
+
+        @DisplayName("'DELETE' fails on HTTP NOT FOUND")
+        @Test
+        void deleteFailsOnNotFound() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/delete.failure.not-found.json");
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.deletePost(1005L))
+                    .hasMessage("Term does not exist.")
+                    .extracting(ex -> (WpNotFoundException) ex)
+                    .extracting(WpNotFoundException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_term_invalid");
+                        assertThat(error.getMessage()).isEqualTo("Term does not exist.");
+                        assertThat(error.getData()).containsExactly(entry("status", 404));
+                    });
+        }
+
         @DisplayName("'DELETE' fails on null ID")
         @Test
         void deleteFailsOnNullId() {
@@ -777,6 +807,63 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThatThrownBy(() -> client.deletePost(null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("id is marked non-null but is null");
+        }
+
+        @DisplayName("'DELETE' fails on HTTP UNAUTHORIZED")
+        @Test
+        void deleteFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/delete.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.deletePost(1005L))
+                    .hasMessage("You are not currently logged in.")
+                    .extracting(ex -> (WpUnauthorizedException) ex)
+                    .extracting(WpUnauthorizedException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
+                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
+                        assertThat(error.getData()).containsExactly(entry("status", 401));
+                    });
+        }
+
+        @DisplayName("'GET' fails on HTTP FORBIDDEN")
+        @Test
+        void getFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/get.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.getPost(1005L, null))
+                    .hasMessage("Sorry, you are not allowed to do that.")
+                    .extracting(ex -> (WpForbiddenException) ex)
+                    .extracting(WpForbiddenException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
+                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
+                        assertThat(error.getData()).containsExactly(entry("status", 403));
+                    });
+        }
+
+        @DisplayName("'GET' fails on HTTP NOT FOUND")
+        @Test
+        void getFailsOnNotFound() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/get.failure.not-found.json");
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.getPost(1005L, null))
+                    .hasMessage("Term does not exist.")
+                    .extracting(ex -> (WpNotFoundException) ex)
+                    .extracting(WpNotFoundException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_term_invalid");
+                        assertThat(error.getMessage()).isEqualTo("Term does not exist.");
+                        assertThat(error.getData()).containsExactly(entry("status", 404));
+                    });
         }
 
         @DisplayName("'GET' fails on null ID")
@@ -793,6 +880,44 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                     .hasMessage("id is marked non-null but is null");
         }
 
+        @DisplayName("'GET' fails on HTTP UNAUTHORIZED")
+        @Test
+        void getFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/get.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.getPost(1005L, null))
+                    .hasMessage("You are not currently logged in.")
+                    .extracting(ex -> (WpUnauthorizedException) ex)
+                    .extracting(WpUnauthorizedException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
+                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
+                        assertThat(error.getData()).containsExactly(entry("status", 401));
+                    });
+        }
+
+        @DisplayName("'LIST' fails on HTTP FORBIDDEN")
+        @Test
+        void listFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/list.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.listPosts(WpPagingQuery.of(1, 10), null))
+                    .hasMessage("Sorry, you are not allowed to do that.")
+                    .extracting(ex -> (WpForbiddenException) ex)
+                    .extracting(WpForbiddenException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
+                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
+                        assertThat(error.getData()).containsExactly(entry("status", 403));
+                    });
+        }
+
         @DisplayName("'LIST' fails on null pageQuery")
         @Test
         void listFailsOnNullPaging() {
@@ -800,6 +925,25 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThatThrownBy(() -> client.listPosts(null, null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("pageQuery is marked non-null but is null");
+        }
+
+        @DisplayName("'LIST' fails on HTTP UNAUTHORIZED")
+        @Test
+        void listFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/list.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.listPosts(WpPagingQuery.of(1, 10), null))
+                    .hasMessage("You are not currently logged in.")
+                    .extracting(ex -> (WpUnauthorizedException) ex)
+                    .extracting(WpUnauthorizedException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
+                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
+                        assertThat(error.getData()).containsExactly(entry("status", 401));
+                    });
         }
 
         @DisplayName("'UPDATE' fails on null ID")
