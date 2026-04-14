@@ -2,12 +2,14 @@ package com.ev.wordpress.client.testsupport;
 
 import com.ev.wordpress.client.domain.api.WpBaseRestClient;
 import com.ev.wordpress.client.domain.api.WpRestClient;
+import com.ev.wordpress.client.domain.dto.WpCategory;
 import com.ev.wordpress.client.domain.dto.WpPagedResponse;
 import com.ev.wordpress.client.domain.dto.WpTag;
 import com.ev.wordpress.client.domain.dto.enums.WpContext;
 import com.ev.wordpress.client.domain.dto.enums.WpTaxonomy;
 import com.ev.wordpress.client.domain.dto.query.WpPagingQuery;
 import com.ev.wordpress.client.domain.dto.query.WpTagQuery;
+import com.ev.wordpress.client.domain.dto.requests.WpCategoryCreateUpdateRequest;
 import com.ev.wordpress.client.domain.dto.requests.WpTagCreateUpdateRequest;
 import com.ev.wordpress.client.domain.dto.responses.WpTagDeletionResponse;
 import com.ev.wordpress.client.domain.exception.WpBadRequestException;
@@ -35,11 +37,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
     @Nested
     class CategoryTests {
 
-        // TODO: 'CREATE' fails on HTTP BAD REQUEST
-        // TODO: 'CREATE' fails on HTTP FORBIDDEN
-        // TODO: 'CREATE' fails on HTTP UNAUTHORIZED
-        // TODO: 'CREATE' works
-
         // TODO: 'DELETE' fails on HTTP NOT FOUND
         // TODO: 'DELETE' fails on HTTP FORBIDDEN
         // TODO: 'DELETE' fails on HTTP UNAUTHORIZED
@@ -60,6 +57,88 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         // TODO: 'UPDATE' fails on HTTP UNAUTHORIZED
         // TODO: 'UPDATE' works
 
+        @DisplayName("'CREATE' fails on HTTP BAD REQUEST")
+        @Test
+        void createFailsOnBadRequest() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/category/create.failure.bad-request.json");
+
+            final String NAME = "my tag";
+            final String DESCRIPTION = "my description";
+            final String SLUG = "my-tag";
+
+            final WpCategoryCreateUpdateRequest createRequest =
+                    WpCategoryCreateUpdateRequest.builder()
+                                                 .withName(NAME)
+                                                 .withDescription(DESCRIPTION)
+                                                 .withSlug(SLUG)
+                                                 .build();
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.createCategory(createRequest))
+                    .hasMessage("Missing parameter(s): param1")
+                    .extracting(ex -> (WpBadRequestException) ex)
+                    .extracting(WpBadRequestException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_missing_callback_param");
+                        assertThat(error.getMessage()).isEqualTo("Missing parameter(s): param1");
+                        assertThat(error.getData()).contains(entry("status", 400));
+                    });
+        }
+
+        @DisplayName("'CREATE' fails on blank name")
+        @Test
+        void createFailsOnBlankName() {
+
+            // GIVEN
+            final String NAME = "  ";
+            final String DESCRIPTION = "my description";
+            final String SLUG = "my-tag";
+
+            final WpCategoryCreateUpdateRequest createRequest =
+                    WpCategoryCreateUpdateRequest.builder()
+                                                 .withName(NAME)
+                                                 .withDescription(DESCRIPTION)
+                                                 .withSlug(SLUG)
+                                                 .build();
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.createCategory(createRequest))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("name cannot be blank");
+        }
+
+        @DisplayName("'CREATE' fails on HTTP FORBIDDEN")
+        @Test
+        void createFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/category/create.failure.forbidden.json");
+
+            final String NAME = "my tag";
+            final String DESCRIPTION = "my description";
+            final String SLUG = "my-tag";
+
+            final WpCategoryCreateUpdateRequest createRequest =
+                    WpCategoryCreateUpdateRequest.builder()
+                                                 .withName(NAME)
+                                                 .withDescription(DESCRIPTION)
+                                                 .withSlug(SLUG)
+                                                 .build();
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.createCategory(createRequest))
+                    .hasMessage("Sorry, you are not allowed to do that.")
+                    .extracting(ex -> (WpForbiddenException) ex)
+                    .extracting(WpForbiddenException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
+                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
+                        assertThat(error.getData()).containsExactly(entry("status", 403));
+                    });
+        }
+
         @DisplayName("'CREATE' fails on null request")
         @Test
         void createFailsOnNullRequest() {
@@ -68,6 +147,73 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThatThrownBy(() -> client.createCategory(null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("creationRequest is marked non-null but is null");
+        }
+
+        @DisplayName("'CREATE' fails on HTTP UNAUTHORIZED")
+        @Test
+        void createFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/category/create.failure.unauthorized.json");
+
+            final String NAME = "my tag";
+            final String DESCRIPTION = "my description";
+            final String SLUG = "my-tag";
+
+            final WpCategoryCreateUpdateRequest createRequest =
+                    WpCategoryCreateUpdateRequest.builder()
+                                                 .withName(NAME)
+                                                 .withDescription(DESCRIPTION)
+                                                 .withSlug(SLUG)
+                                                 .build();
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.createCategory(createRequest))
+                    .hasMessage("You are not currently logged in.")
+                    .extracting(ex -> (WpUnauthorizedException) ex)
+                    .extracting(WpUnauthorizedException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
+                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
+                        assertThat(error.getData()).containsExactly(entry("status", 401));
+                    });
+        }
+
+        @DisplayName("'CREATE' works")
+        @Test
+        void createWorks() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/category/create.success.json");
+
+            final String PARENT_SLUG = "top-category";
+            final Long parent_id = 2L;
+
+            // WHEN
+            final String NAME = "my category";
+            final String DESCRIPTION = "my description";
+            final String SLUG = "slug-1";
+
+            final WpCategoryCreateUpdateRequest creationRequest =
+                    WpCategoryCreateUpdateRequest.builder()
+                                                 .withName(NAME)
+                                                 .withDescription(DESCRIPTION)
+                                                 .withSlug(SLUG)
+                                                 .withParentId(parent_id)
+                                                 .build();
+
+            final WpCategory category = client.createCategory(creationRequest);
+
+            // THEN
+            assertThat(category).isNotNull();
+            assertThat(category.getId()).isNotNull();
+            assertThat(category.getParentId()).isEqualTo(parent_id);
+            assertThat(category.getCount()).isEqualTo(0);
+            assertThat(category.getDescription()).isEqualTo(DESCRIPTION);
+            assertThat(category.getLink()).isNotBlank().contains(PARENT_SLUG, SLUG);
+            assertThat(category.getName()).isEqualTo(NAME);
+            assertThat(category.getSlug()).isEqualTo(SLUG);
+            assertThat(category.getTaxonomy()).isNotNull().isEqualTo(WpTaxonomy.CATEGORY);
         }
 
         @DisplayName("'DELETE' fails on null ID")
@@ -251,6 +397,28 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                         assertThat(error.getMessage()).isEqualTo("Missing parameter(s): param1");
                         assertThat(error.getData()).contains(entry("status", 400));
                     });
+        }
+
+        @DisplayName("'CREATE' fails on blank name")
+        @Test
+        void createFailsOnBlankName() {
+
+            // GIVEN
+            final String NAME = "  ";
+            final String DESCRIPTION = "my description";
+            final String SLUG = "my-tag";
+
+            final WpTagCreateUpdateRequest createRequest =
+                    WpTagCreateUpdateRequest.builder()
+                                            .withName(NAME)
+                                            .withDescription(DESCRIPTION)
+                                            .withSlug(SLUG)
+                                            .build();
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.createTag(createRequest))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("name cannot be blank");
         }
 
         @DisplayName("'CREATE' fails on HTTP FORBIDDEN")
