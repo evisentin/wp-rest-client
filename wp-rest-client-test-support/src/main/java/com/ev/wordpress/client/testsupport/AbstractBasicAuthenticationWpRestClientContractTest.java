@@ -11,6 +11,7 @@ import com.ev.wordpress.client.domain.dto.query.WpPagingQuery;
 import com.ev.wordpress.client.domain.dto.query.WpTagQuery;
 import com.ev.wordpress.client.domain.dto.requests.WpCategoryCreateUpdateRequest;
 import com.ev.wordpress.client.domain.dto.requests.WpTagCreateUpdateRequest;
+import com.ev.wordpress.client.domain.dto.responses.WpCategoryDeletionResponse;
 import com.ev.wordpress.client.domain.dto.responses.WpTagDeletionResponse;
 import com.ev.wordpress.client.domain.exception.WpBadRequestException;
 import com.ev.wordpress.client.domain.exception.WpForbiddenException;
@@ -36,11 +37,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
     @DisplayName("'CATEGORY' Operations")
     @Nested
     class CategoryTests {
-
-        // TODO: 'DELETE' fails on HTTP NOT FOUND
-        // TODO: 'DELETE' fails on HTTP FORBIDDEN
-        // TODO: 'DELETE' fails on HTTP UNAUTHORIZED
-        // TODO: 'DELETE' works
 
         // TODO: 'GET' fails on HTTP NOT FOUND
         // TODO: 'GET' fails on HTTP FORBIDDEN
@@ -216,6 +212,44 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThat(category.getTaxonomy()).isNotNull().isEqualTo(WpTaxonomy.CATEGORY);
         }
 
+        @DisplayName("'DELETE' fails on HTTP FORBIDDEN")
+        @Test
+        void deleteFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/category/delete.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.deleteCategory(1005L))
+                    .hasMessage("Sorry, you are not allowed to do that.")
+                    .extracting(ex -> (WpForbiddenException) ex)
+                    .extracting(WpForbiddenException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
+                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
+                        assertThat(error.getData()).containsExactly(entry("status", 403));
+                    });
+        }
+
+        @DisplayName("'DELETE' fails on HTTP NOT FOUND")
+        @Test
+        void deleteFailsOnNotFound() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/category/delete.failure.not-found.json");
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.deleteCategory(1005L))
+                    .hasMessage("Term does not exist.")
+                    .extracting(ex -> (WpNotFoundException) ex)
+                    .extracting(WpNotFoundException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_term_invalid");
+                        assertThat(error.getMessage()).isEqualTo("Term does not exist.");
+                        assertThat(error.getData()).containsExactly(entry("status", 404));
+                    });
+        }
+
         @DisplayName("'DELETE' fails on null ID")
         @Test
         void deleteFailsOnNullId() {
@@ -224,6 +258,51 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThatThrownBy(() -> client.deleteCategory(null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("id is marked non-null but is null");
+        }
+
+        @DisplayName("'DELETE' fails on HTTP UNAUTHORIZED")
+        @Test
+        void deleteFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/category/delete.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.deleteCategory(1005L))
+                    .hasMessage("You are not currently logged in.")
+                    .extracting(ex -> (WpUnauthorizedException) ex)
+                    .extracting(WpUnauthorizedException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
+                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
+                        assertThat(error.getData()).containsExactly(entry("status", 401));
+                    });
+        }
+
+        @DisplayName("'DELETE' works")
+        @Test
+        void deleteWorks() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/category/delete.success.json");
+
+            // WHEN
+            final WpCategoryDeletionResponse response = client.deleteCategory(1005L);
+
+            // THEN
+            assertThat(response).isNotNull();
+            assertThat(response.isDeleted()).isTrue();
+            assertThat(response.getPrevious())
+                    .satisfies(summary -> {
+                        assertThat(summary).isNotNull();
+                        assertThat(summary.getId()).isEqualTo(1005L);
+                        assertThat(summary.getCount()).isZero();
+                        assertThat(summary.getDescription()).isEqualTo("Category #1");
+                        assertThat(summary.getLink()).isNotBlank();
+                        assertThat(summary.getName()).isEqualTo("my category");
+                        assertThat(summary.getSlug()).isEqualTo("slug-1");
+                        assertThat(summary.getTaxonomy()).isEqualTo(WpTaxonomy.CATEGORY);
+                    });
         }
 
         @DisplayName("'GET' fails on null ID")
