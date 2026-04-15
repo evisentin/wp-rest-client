@@ -22,6 +22,7 @@ import com.ev.wordpress.client.domain.exception.WpBadRequestException;
 import com.ev.wordpress.client.domain.exception.WpForbiddenException;
 import com.ev.wordpress.client.domain.exception.WpNotFoundException;
 import com.ev.wordpress.client.domain.exception.WpUnauthorizedException;
+import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -740,12 +741,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         // TODO: 'LIST' works
 
-        // TODO: 'UPDATE' fails on HTTP BAD REQUEST
-        // TODO: 'UPDATE' fails on HTTP FORBIDDEN
-        // TODO: 'UPDATE' fails on HTTP NOT FOUND
-        // TODO: 'UPDATE' fails on HTTP UNAUTHORIZED
-        // TODO: 'UPDATE' works
-
         @DisplayName("'CREATE' fails on HTTP BAD REQUEST")
         @Test
         void createFailsOnBadRequest() {
@@ -1333,6 +1328,96 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                     });
         }
 
+        @DisplayName("'UPDATE' fails on HTTP BAD REQUEST")
+        @Test
+        void updateFailsOnBadRequest() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/update.failure.bad-request.json");
+
+            final String TITLE = "My post";
+            final String CONTENT = "My Content";
+
+            WpPostCreateUpdateRequest updateRequest =
+                    WpPostCreateUpdateRequest.builder()
+                                             .withTitle(TITLE + " UPDATED")
+                                             .withContent(CONTENT + " UPDATED")
+                                             .withExcerpt(CONTENT + " UPDATED")
+                                             .withStatus(DRAFT)
+                                             .build();
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.updatePost(4L, updateRequest))
+                    .hasMessage("Missing parameter(s): param1")
+                    .extracting(ex -> (WpBadRequestException) ex)
+                    .extracting(WpBadRequestException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_missing_callback_param");
+                        assertThat(error.getMessage()).isEqualTo("Missing parameter(s): param1");
+                        assertThat(error.getData()).contains(entry("status", 400));
+                    });
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP FORBIDDEN")
+        @Test
+        void updateFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/update.failure.forbidden.json");
+
+            final String TITLE = "My post";
+            final String CONTENT = "My Content";
+
+            WpPostCreateUpdateRequest updateRequest =
+                    WpPostCreateUpdateRequest.builder()
+                                             .withTitle(TITLE + " UPDATED")
+                                             .withContent(CONTENT + " UPDATED")
+                                             .withExcerpt(CONTENT + " UPDATED")
+                                             .withStatus(DRAFT)
+                                             .build();
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.updatePost(4L, updateRequest))
+                    .hasMessage("Sorry, you are not allowed to do that.")
+                    .extracting(ex -> (WpForbiddenException) ex)
+                    .extracting(WpForbiddenException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
+                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
+                        assertThat(error.getData()).containsExactly(entry("status", 403));
+                    });
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
+        @Test
+        void updateFailsOnNotFound() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/update.failure.not-found.json");
+
+            final String TITLE = "My post";
+            final String CONTENT = "My Content";
+
+            WpPostCreateUpdateRequest updateRequest =
+                    WpPostCreateUpdateRequest.builder()
+                                             .withTitle(TITLE + " UPDATED")
+                                             .withContent(CONTENT + " UPDATED")
+                                             .withExcerpt(CONTENT + " UPDATED")
+                                             .withStatus(DRAFT)
+                                             .build();
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.updatePost(4L, updateRequest))
+                    .hasMessage("Term does not exist.")
+                    .extracting(ex -> (WpNotFoundException) ex)
+                    .extracting(WpNotFoundException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_term_invalid");
+                        assertThat(error.getMessage()).isEqualTo("Term does not exist.");
+                        assertThat(error.getData()).containsExactly(entry("status", 404));
+                    });
+        }
+
         @DisplayName("'UPDATE' fails on null ID")
         @Test
         void updateFailsOnNullId() {
@@ -1351,6 +1436,68 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThatThrownBy(() -> client.updatePost(1000L, null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("updateRequest is marked non-null but is null");
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP UNAUTHORIZED")
+        @Test
+        void updateFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/update.failure.unauthorized.json");
+
+            final String TITLE = "My post";
+            final String CONTENT = "My Content";
+
+            WpPostCreateUpdateRequest updateRequest =
+                    WpPostCreateUpdateRequest.builder()
+                                             .withTitle(TITLE + " UPDATED")
+                                             .withContent(CONTENT + " UPDATED")
+                                             .withExcerpt(CONTENT + " UPDATED")
+                                             .withStatus(DRAFT)
+                                             .build();
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.updatePost(4L, updateRequest))
+                    .hasMessage("You are not currently logged in.")
+                    .extracting(ex -> (WpUnauthorizedException) ex)
+                    .extracting(WpUnauthorizedException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
+                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
+                        assertThat(error.getData()).containsExactly(entry("status", 401));
+                    });
+        }
+
+        @DisplayName("'UPDATE' works")
+        @Test
+        void updateWorks() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/update.success.json");
+
+            final String TITLE = "My post";
+            final String CONTENT = "My Content";
+
+            WpPostCreateUpdateRequest updateRequest =
+                    WpPostCreateUpdateRequest.builder()
+                                             .withTitle(TITLE + " UPDATED")
+                                             .withContent(CONTENT + " UPDATED")
+                                             .withExcerpt(CONTENT + " UPDATED")
+                                             .withStatus(DRAFT)
+                                             .build();
+
+            // WHEN
+            val post = client.updatePost(4L, updateRequest);
+
+            assertThat(post)
+                    .isNotNull()
+                    .satisfies(p -> {
+                        assertThat(p.getId()).isEqualTo(4L);
+                        assertThat(p.getStatus()).isEqualTo(DRAFT);
+                        assertThat(p.getTitle().getRaw()).isNotNull().isEqualTo(TITLE + " UPDATED");
+                        assertThat(p.getContent().getRaw()).isNotNull().isEqualTo(CONTENT + " UPDATED");
+                        assertThat(p.getExcerpt().getRaw()).isNotNull().isEqualTo(CONTENT + " UPDATED");
+                    });
         }
     }
 
