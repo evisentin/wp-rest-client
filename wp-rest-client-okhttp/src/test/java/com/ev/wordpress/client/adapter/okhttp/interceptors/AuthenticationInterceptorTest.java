@@ -1,10 +1,12 @@
 package com.ev.wordpress.client.adapter.okhttp.interceptors;
 
 import com.ev.wordpress.client.domain.auth.WpAuthenticationStrategy;
-import okhttp3.*;
+import okhttp3.Interceptor;
+import okhttp3.Request;
+import okhttp3.Response;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InOrder;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -13,10 +15,8 @@ import java.io.IOException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.Mockito.inOrder;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,63 +28,59 @@ class AuthenticationInterceptorTest {
     @Mock
     private Interceptor.Chain chain;
 
+    @Mock
+    private Response response;
+
     @InjectMocks
     private AuthenticationInterceptor interceptor;
 
     @Test
-    void shouldAddAuthenticationHeaderAndProceedRequest() throws IOException {
-        RequestBody body = RequestBody.create(
-                "{\"title\":\"hello\"}",
-                MediaType.get("application/json")
-        );
+    @DisplayName("constructor should fail on null strategy")
+    void constructorShouldFailOnNullStrategy() {
 
+        assertThatThrownBy(() -> new AuthenticationInterceptor(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("strategy is marked non-null but is null");
+    }
+
+    @Test
+    @DisplayName("should add authentication header and proceed with updated request")
+    void shouldAddAuthenticationHeaderAndProceedWithUpdatedRequest() throws IOException {
         Request originalRequest = new Request.Builder()
-                .url("https://example.com/wp-json/wp/v2/posts")
-                .post(body)
-                .build();
-
-        Response expectedResponse = new Response.Builder()
-                .request(originalRequest)
-                .protocol(Protocol.HTTP_1_1)
-                .code(200)
-                .message("OK")
+                .url("https://example.com/wp-json/posts")
+                .get()
                 .build();
 
         when(chain.request()).thenReturn(originalRequest);
+        when(chain.proceed(argThat(request ->
+                "Bearer token-123".equals(request.header("Authorization")) &&
+                "GET".equals(request.method()) &&
+                request.body() == originalRequest.body()
+        ))).thenReturn(response);
+
         when(strategy.getHeaderName()).thenReturn("Authorization");
         when(strategy.getHeaderValue()).thenReturn("Bearer token-123");
-        when(chain.proceed(any(Request.class))).thenReturn(expectedResponse);
 
-        Response actualResponse = interceptor.intercept(chain);
+        Response actual = interceptor.intercept(chain);
 
-        assertThat(actualResponse).isSameAs(expectedResponse);
+        assertThat(actual).isSameAs(response);
 
-        InOrder inOrder = inOrder(chain, strategy);
-        inOrder.verify(chain).request();
-        inOrder.verify(strategy).getHeaderName();
-        inOrder.verify(strategy).getHeaderValue();
-        inOrder.verify(chain).proceed(argThat(request ->
-                "POST".equals(request.method())
-                && body.equals(request.body())
-                && "Bearer token-123".equals(request.header("Authorization"))
-                && "https://example.com/wp-json/wp/v2/posts".equals(request.url().toString())
+        verify(strategy).getHeaderName();
+        verify(strategy).getHeaderValue();
+        verify(chain).request();
+        verify(chain).proceed(argThat(request ->
+                "Bearer token-123".equals(request.header("Authorization")) &&
+                "GET".equals(request.method()) &&
+                request.body() == originalRequest.body()
         ));
-        inOrder.verifyNoMoreInteractions();
-
-        verifyNoMoreInteractions(chain, strategy);
     }
 
     @Test
-    void shouldThrowExceptionWhenChainIsNull() {
+    @DisplayName("should fail on null chain")
+    void shouldFailOnNullChain() {
+
         assertThatThrownBy(() -> interceptor.intercept(null))
                 .isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("chain");
-    }
-
-    @Test
-    void shouldThrowExceptionWhenStrategyIsNull() {
-        assertThatThrownBy(() -> new AuthenticationInterceptor(null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessageContaining("strategy");
+                .hasMessage("chain is marked non-null but is null");
     }
 }

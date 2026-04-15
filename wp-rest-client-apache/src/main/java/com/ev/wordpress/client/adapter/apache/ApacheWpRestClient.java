@@ -32,6 +32,7 @@ import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
@@ -39,6 +40,7 @@ import org.apache.hc.core5.net.URIBuilder;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
@@ -58,7 +60,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     private final CloseableHttpClient httpClient;
     private final ObjectMapper mapper;
 
-    public ApacheWpRestClient(String baseUrl, WpAuthenticationStrategy authenticationStrategy) {
+    public ApacheWpRestClient(final @NonNull String baseUrl, final @NonNull WpAuthenticationStrategy authenticationStrategy) {
         super(baseUrl, authenticationStrategy);
         this.mapper = new ObjectMapper();
         mapper.findAndRegisterModules();
@@ -75,7 +77,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
      */
     @SneakyThrows
     @Override
-    public WpCategory createCategory(@NonNull WpCategoryCreateUpdateRequest creationRequest) {
+    public WpCategory createCategory(final @NonNull WpCategoryCreateUpdateRequest creationRequest) {
         if (isBlank(creationRequest.getName()))
             throw new IllegalArgumentException("name cannot be blank");
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/categories",
@@ -89,7 +91,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
      */
     @SneakyThrows
     @Override
-    public WpPost createPost(@NonNull WpPostCreateUpdateRequest creationRequest) {
+    public WpPost createPost(final @NonNull WpPostCreateUpdateRequest creationRequest) {
 
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts",
                 Map.of("baseUrl", baseUrl));
@@ -102,7 +104,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
      */
     @SneakyThrows
     @Override
-    public WpTag createTag(@NonNull WpTagCreateUpdateRequest creationRequest) {
+    public WpTag createTag(final @NonNull WpTagCreateUpdateRequest creationRequest) {
         if (isBlank(creationRequest.getName()))
             throw new IllegalArgumentException("name cannot be blank");
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/tags",
@@ -116,7 +118,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
      */
     @SneakyThrows
     @Override
-    public WpCategoryDeletionResponse deleteCategory(@NonNull Long id) {
+    public WpCategoryDeletionResponse deleteCategory(final @NonNull Long id) {
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/categories/${id}",
                 Map.of("baseUrl", baseUrl, "id", id));
 
@@ -132,7 +134,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
      */
     @SneakyThrows
     @Override
-    public WpPostDeletionResponse deletePost(@NonNull Long id) {
+    public WpPostDeletionResponse deletePost(final @NonNull Long id) {
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts/${id}",
                 Map.of("baseUrl", baseUrl, "id", id));
 
@@ -146,7 +148,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
      */
     @SneakyThrows
     @Override
-    public WpTagDeletionResponse deleteTag(@NonNull Long id) {
+    public WpTagDeletionResponse deleteTag(final @NonNull Long id) {
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/tags/${id}",
                 Map.of("baseUrl", baseUrl, "id", id));
 
@@ -162,7 +164,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
      */
     @SneakyThrows
     @Override
-    public WpCategory getCategory(@NonNull Long id, WpContext context) {
+    public WpCategory getCategory(final @NonNull Long id, final WpContext context) {
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/categories/${id}",
                 Map.of("baseUrl", baseUrl, "id", id));
         builder.addParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
@@ -175,7 +177,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
      */
     @SneakyThrows
     @Override
-    public WpPost getPost(@NonNull Long id, WpContext context) {
+    public WpPost getPost(final @NonNull Long id, final WpContext context) {
         return getPost(id, context, null);
     }
 
@@ -212,7 +214,8 @@ public class ApacheWpRestClient extends WpBaseRestClient {
      */
     @SneakyThrows
     @Override
-    public WpPagedResponse<WpCategory> listCategories(@NonNull WpPagingQuery pageQuery, WpCategoryQuery categoryQuery) {
+    public WpPagedResponse<WpCategory> listCategories(final @NonNull WpPagingQuery pageQuery,
+                                                      final WpCategoryQuery categoryQuery) {
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/categories",
                 Map.of("baseUrl", baseUrl));
 
@@ -229,7 +232,8 @@ public class ApacheWpRestClient extends WpBaseRestClient {
      */
     @SneakyThrows
     @Override
-    public WpPagedResponse<WpPost> listPosts(@NonNull WpPagingQuery pageQuery, WpPostQuery postQuery) {
+    public WpPagedResponse<WpPost> listPosts(final @NonNull WpPagingQuery pageQuery,
+                                             final WpPostQuery postQuery) {
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts",
                 Map.of("baseUrl", baseUrl));
 
@@ -246,7 +250,8 @@ public class ApacheWpRestClient extends WpBaseRestClient {
      */
     @SneakyThrows
     @Override
-    public WpPagedResponse<WpTag> listTags(@NonNull WpPagingQuery pageQuery, WpTagQuery tagQuery) {
+    public WpPagedResponse<WpTag> listTags(final @NonNull WpPagingQuery pageQuery,
+                                           final WpTagQuery tagQuery) {
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/tags",
                 Map.of("baseUrl", baseUrl));
 
@@ -263,7 +268,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
      */
     @SneakyThrows
     @Override
-    public WpPost trashPost(@NonNull Long id) {
+    public WpPost trashPost(final @NonNull Long id) {
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts/${id}",
                 Map.of("baseUrl", baseUrl, "id", id));
 
@@ -277,7 +282,8 @@ public class ApacheWpRestClient extends WpBaseRestClient {
      */
     @SneakyThrows
     @Override
-    public WpCategory updateCategory(@NonNull Long id, @NonNull WpCategoryCreateUpdateRequest updateRequest) {
+    public WpCategory updateCategory(final @NonNull Long id,
+                                     final @NonNull WpCategoryCreateUpdateRequest updateRequest) {
 
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/categories/${id}",
                 Map.of("baseUrl", baseUrl, "id", id));
@@ -290,7 +296,8 @@ public class ApacheWpRestClient extends WpBaseRestClient {
      */
     @SneakyThrows
     @Override
-    public WpPost updatePost(@NonNull Long id, @NonNull WpPostCreateUpdateRequest updateRequest) {
+    public WpPost updatePost(final @NonNull Long id,
+                             final @NonNull WpPostCreateUpdateRequest updateRequest) {
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts/${id}",
                 Map.of("baseUrl", baseUrl, "id", id));
 
@@ -302,7 +309,8 @@ public class ApacheWpRestClient extends WpBaseRestClient {
      */
     @SneakyThrows
     @Override
-    public WpTag updateTag(@NonNull Long id, @NonNull WpTagCreateUpdateRequest updateRequest) {
+    public WpTag updateTag(final @NonNull Long id,
+                           final @NonNull WpTagCreateUpdateRequest updateRequest) {
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/tags/${id}",
                 Map.of("baseUrl", baseUrl, "id", id));
 
@@ -357,9 +365,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
                     .map(header -> Integer.parseInt(header.getValue()))
                     .orElse(0);
 
-            if (response.getEntity() == null) {
-                throw new IOException("Empty response body");
-            }
+            failOnEmptyResponseBody(response);
 
             String json = EntityUtils.toString(response.getEntity());
             List<T> items = mapper.readValue(json, responseType);
@@ -389,22 +395,25 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         request.setEntity(new StringEntity(jsonBody, StandardCharsets.UTF_8));
 
         return httpClient.execute(request, response -> {
-            if (response.getEntity() == null) {
-                throw new IOException("Empty response body");
-            }
+            failOnEmptyResponseBody(response);
 
             String json = EntityUtils.toString(response.getEntity());
             return mapper.readValue(json, responseType);
         });
     }
 
-    @SneakyThrows
-    private URIBuilder urlBuilder(final String path, final Map<String, Object> pathParams) {
+    private URIBuilder urlBuilder(final String path, final Map<String, Object> pathParams) throws URISyntaxException {
         final String substituted = new StringSubstitutor(emptyIfNull(pathParams)).replace(path);
         return new URIBuilder(substituted);
     }
 
     private static Map<String, Object> emptyIfNull(final Map<String, Object> map) {
         return ofNullable(map).orElseGet(Collections::emptyMap);
+    }
+
+    private static void failOnEmptyResponseBody(final ClassicHttpResponse response) throws IOException {
+        if (response.getEntity() == null) {
+            throw new IOException("Empty response body");
+        }
     }
 }
