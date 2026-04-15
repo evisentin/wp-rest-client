@@ -114,7 +114,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'CREATE' fails on null request")
         @Test
-            // TODO: check and refactor
         void createFailsOnNullRequest() {
 
             // WHEN/THEN
@@ -143,7 +142,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'CREATE' works")
         @Test
-            // TODO: check and refactor
         void createWorks() {
 
             // GIVEN
@@ -199,7 +197,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'DELETE' fails on null ID")
         @Test
-            // TODO: check and refactor
         void deleteFailsOnNullId() {
 
             // WHEN/THEN
@@ -221,7 +218,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'DELETE' works")
         @Test
-            // TODO: check and refactor
         void deleteWorks() {
 
             // GIVEN
@@ -270,7 +266,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' fails on null ID")
         @Test
-            // TODO: check and refactor
         void getFailsOnNullId() {
 
             // WHEN/THEN
@@ -292,7 +287,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' works with context")
         @Test
-            // TODO: check and refactor
         void getWorksWithContext() {
 
             // GIVEN
@@ -316,7 +310,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' works without context")
         @Test
-            // TODO: check and refactor
         void getWorksWithoutContext() {
 
             // GIVEN
@@ -351,7 +344,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'LIST' fails on null pageQuery")
         @Test
-            // TODO: check and refactor
         void listFailsOnNullPaging() {
             // WHEN/THEN
             assertThatThrownBy(() -> client.listCategories(null, null))
@@ -372,7 +364,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'LIST' works with paging")
         @Test
-            // TODO: check and refactor
         void listWorksWithJustPaging() {
 
             // GIVEN
@@ -428,7 +419,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'LIST' works with paging and query")
         @Test
-            // TODO: check and refactor
         void listWorksWithPagingAndQuery() {
 
             // GIVEN
@@ -537,7 +527,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' fails on null ID")
         @Test
-            // TODO: check and refactor
         void updateFailsOnNullId() {
 
             // WHEN/THEN
@@ -548,7 +537,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' fails on null request")
         @Test
-            // TODO: check and refactor
         void updateFailsOnNullRequest() {
 
             // WHEN/THEN
@@ -581,7 +569,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("UPDATE' works")
         @Test
-            // TODO: check and refactor
         void updateWorks() {
 
             // GIVEN
@@ -665,7 +652,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'CREATE' fails on null request")
         @Test
-            // TODO: check and refactor
         void createFailsOnNullRequest() {
 
             // WHEN/THEN
@@ -699,7 +685,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'CREATE' works")
         @Test
-            // TODO: check and refactor
         void createWorks() {
 
             // GIVEN
@@ -754,7 +739,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'CREATE' works with password")
         @Test
-            // TODO: check and refactor
         void createWorksWithPassword() {
 
             // GIVEN
@@ -831,7 +815,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'DELETE' fails on null ID")
         @Test
-            // TODO: check and refactor
         void deleteFailsOnNullId() {
 
             // WHEN/THEN
@@ -853,7 +836,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'DELETE' works")
         @Test
-            // TODO: check and refactor
         void deleteWorks() {
 
             // GIVEN
@@ -919,7 +901,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' fails on null ID")
         @Test
-            // TODO: check and refactor
         void getFailsOnNullId() {
 
             // WHEN/THEN
@@ -945,7 +926,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' works (with context)")
         @Test
-            // TODO: check and refactor
         void getWorksWithContext() {
 
             // GIVEN
@@ -967,7 +947,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' works (with context and password)")
         @Test
-            // TODO: check and refactor
         void getWorksWithContextAndPassword() {
 
             // GIVEN
@@ -989,7 +968,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' works (with no context - default)")
         @Test
-            // TODO: check and refactor
         void getWorksWithNoContext() {
 
             // GIVEN
@@ -1022,7 +1000,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'LIST' fails on null pageQuery")
         @Test
-            // TODO: check and refactor
         void listFailsOnNullPaging() {
             // WHEN/THEN
             assertThatThrownBy(() -> client.listPosts(null, null))
@@ -1043,7 +1020,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'LIST' works with paging")
         @Test
-            // TODO: check and refactor
         void listWorksWithJustPaging() {
 
             // GIVEN
@@ -1089,7 +1065,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'LIST' works with paging and query")
         @Test
-            // TODO: check and refactor
         void listWorksWithPagingAndQuery() {
 
             // GIVEN
@@ -1140,7 +1115,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'TRASH' fails on HTTP NOT FOUND")
         @Test
-            // TODO: check and refactor
         void trashFailsOnNotFound() {
 
             // GIVEN
@@ -1152,7 +1126,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'TRASH' fails on null ID")
         @Test
-            // TODO: check and refactor
         void trashFailsOnNullId() {
 
             // WHEN/THEN
@@ -1174,7 +1147,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'TRASH' works")
         @Test
-            // TODO: check and refactor
         void trashWorks() {
 
             // GIVEN
@@ -1259,7 +1231,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' fails on null ID")
         @Test
-            // TODO: check and refactor
         void updateFailsOnNullId() {
 
             // WHEN/THEN
@@ -1270,7 +1241,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' fails on null request")
         @Test
-            // TODO: check and refactor
         void updateFailsOnNullRequest() {
 
             // WHEN/THEN
@@ -1303,7 +1273,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' works")
         @Test
-            // TODO: check and refactor
         void updateWorks() {
 
             // GIVEN
@@ -1363,7 +1332,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'CREATE' fails on blank name")
         @Test
-            // TODO: check and refactor
         void createFailsOnBlankName() {
 
             // GIVEN
@@ -1408,7 +1376,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'CREATE' fails on null request")
         @Test
-            // TODO: check and refactor
         void createFailsOnNullRequest() {
 
             // WHEN/THEN
@@ -1441,7 +1408,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'CREATE' works")
         @Test
-            // TODO: check and refactor
         void createWorks() {
 
             // GIVEN
@@ -1496,7 +1462,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'DELETE' fails on null ID")
         @Test
-            // TODO: check and refactor
         void deleteFailsOnNullId() {
 
             // WHEN/THEN
@@ -1518,7 +1483,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'DELETE' works")
         @Test
-            // TODO: check and refactor
         void deleteWorks() {
 
             // GIVEN
@@ -1567,7 +1531,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' fails on null ID")
         @Test
-            // TODO: check and refactor
         void getFailsOnNullId() {
 
             // WHEN/THEN
@@ -1589,7 +1552,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' works (with context)")
         @Test
-            // TODO: check and refactor
         void getWorksWithContext() {
 
             // GIVEN
@@ -1613,7 +1575,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' works (with no context - default)")
         @Test
-            // TODO: check and refactor
         void getWorksWithNoContext() {
 
             // GIVEN
@@ -1648,7 +1609,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'LIST' fails on null pageQuery")
         @Test
-            // TODO: check and refactor
         void listFailsOnNullPaging() {
             // WHEN/THEN
             assertThatThrownBy(() -> client.listTags(null, null))
@@ -1669,7 +1629,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'LIST' works with paging")
         @Test
-            // TODO: check and refactor
         void listWorksWithJustPaging() {
 
             // GIVEN
@@ -1706,7 +1665,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'LIST' works with paging and query")
         @Test
-            // TODO: check and refactor
         void listWorksWithPagingAndQuery() {
 
             // GIVEN
@@ -1809,7 +1767,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' fails on null ID")
         @Test
-            // TODO: check and refactor
         void updateFailsOnNullId() {
 
             // WHEN/THEN
@@ -1820,7 +1777,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' fails on null request")
         @Test
-            // TODO: check and refactor
         void updateFailsOnNullRequest() {
 
             // WHEN/THEN
@@ -1853,7 +1809,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' works")
         @Test
-            // TODO: check and refactor
         void updateWorks() {
 
             // GIVEN
