@@ -20,8 +20,6 @@ import com.ev.wordpress.client.domain.dto.requests.WpTagCreateUpdateRequest;
 import com.ev.wordpress.client.domain.dto.responses.WpCategoryDeletionResponse;
 import com.ev.wordpress.client.domain.dto.responses.WpPostDeletionResponse;
 import com.ev.wordpress.client.domain.dto.responses.WpTagDeletionResponse;
-import com.ev.wordpress.client.domain.exception.WpBadRequestException;
-import com.ev.wordpress.client.domain.exception.WpForbiddenException;
 import com.ev.wordpress.client.domain.exception.WpNotFoundException;
 import com.ev.wordpress.client.domain.exception.WpUnauthorizedException;
 import lombok.val;
@@ -39,6 +37,8 @@ import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.PUBLISH;
 import static com.ev.wordpress.client.domain.dto.enums.WpSortDirection.ASC;
 import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.CATEGORY;
 import static com.ev.wordpress.client.testsupport.SlugUtils.toWordPressSlug;
+import static com.ev.wordpress.client.testsupport.WpAssertions.assertThrowsWpBadRequest;
+import static com.ev.wordpress.client.testsupport.WpAssertions.assertThrowsWpForbidden;
 
 public abstract class AbstractBasicAuthenticationWpRestClientContractTest extends AbstractMockServerTest {
     private WpRestClient client;
@@ -73,15 +73,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                  .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.createCategory(createRequest))
-                    .hasMessage("Missing parameter(s): param1")
-                    .extracting(ex -> (WpBadRequestException) ex)
-                    .extracting(WpBadRequestException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_missing_callback_param");
-                        assertThat(error.getMessage()).isEqualTo("Missing parameter(s): param1");
-                        assertThat(error.getData()).contains(entry("status", 400));
-                    });
+            assertThrowsWpBadRequest(() -> client.createCategory(createRequest));
         }
 
         @DisplayName("'CREATE' fails on blank name")
@@ -117,19 +109,12 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                  .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.createCategory(createRequest))
-                    .hasMessage("Sorry, you are not allowed to do that.")
-                    .extracting(ex -> (WpForbiddenException) ex)
-                    .extracting(WpForbiddenException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
-                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
-                        assertThat(error.getData()).containsExactly(entry("status", 403));
-                    });
+            assertThrowsWpForbidden(() -> client.createCategory(createRequest));
         }
 
         @DisplayName("'CREATE' fails on null request")
         @Test
+            // TODO: check and refactor
         void createFailsOnNullRequest() {
 
             // WHEN/THEN
@@ -140,6 +125,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'CREATE' fails on HTTP UNAUTHORIZED")
         @Test
+            // TODO: check and refactor
         void createFailsOnUnauthorized() {
 
             // GIVEN
@@ -166,6 +152,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'CREATE' works")
         @Test
+            // TODO: check and refactor
         void createWorks() {
 
             // GIVEN
@@ -205,19 +192,12 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/category/delete.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.deleteCategory(1005L))
-                    .hasMessage("Sorry, you are not allowed to do that.")
-                    .extracting(ex -> (WpForbiddenException) ex)
-                    .extracting(WpForbiddenException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
-                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
-                        assertThat(error.getData()).containsExactly(entry("status", 403));
-                    });
+            assertThrowsWpForbidden(() -> client.deleteCategory(1005L));
         }
 
         @DisplayName("'DELETE' fails on HTTP NOT FOUND")
         @Test
+            // TODO: check and refactor
         void deleteFailsOnNotFound() {
 
             // GIVEN
@@ -237,6 +217,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'DELETE' fails on null ID")
         @Test
+            // TODO: check and refactor
         void deleteFailsOnNullId() {
 
             // WHEN/THEN
@@ -247,6 +228,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'DELETE' fails on HTTP UNAUTHORIZED")
         @Test
+            // TODO: check and refactor
         void deleteFailsOnUnauthorized() {
 
             // GIVEN
@@ -266,6 +248,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'DELETE' works")
         @Test
+            // TODO: check and refactor
         void deleteWorks() {
 
             // GIVEN
@@ -298,19 +281,12 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/category/get.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.getCategory(1005L, null))
-                    .hasMessage("Sorry, you are not allowed to do that.")
-                    .extracting(ex -> (WpForbiddenException) ex)
-                    .extracting(WpForbiddenException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
-                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
-                        assertThat(error.getData()).containsExactly(entry("status", 403));
-                    });
+            assertThrowsWpForbidden(() -> client.getCategory(1005L, null));
         }
 
         @DisplayName("'GET' fails on HTTP NOT FOUND")
         @Test
+            // TODO: check and refactor
         void getFailsOnNotFound() {
 
             // GIVEN
@@ -330,6 +306,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' fails on null ID")
         @Test
+            // TODO: check and refactor
         void getFailsOnNullId() {
 
             // WHEN/THEN
@@ -340,6 +317,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' fails on HTTP UNAUTHORIZED")
         @Test
+            // TODO: check and refactor
         void getFailsOnUnauthorized() {
 
             // GIVEN
@@ -359,6 +337,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' works with context")
         @Test
+            // TODO: check and refactor
         void getWorksWithContext() {
 
             // GIVEN
@@ -382,6 +361,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' works without context")
         @Test
+            // TODO: check and refactor
         void getWorksWithoutContext() {
 
             // GIVEN
@@ -411,19 +391,12 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/category/list.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.listCategories(WpPagingQuery.of(1, 10), null))
-                    .hasMessage("Sorry, you are not allowed to do that.")
-                    .extracting(ex -> (WpForbiddenException) ex)
-                    .extracting(WpForbiddenException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
-                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
-                        assertThat(error.getData()).containsExactly(entry("status", 403));
-                    });
+            assertThrowsWpForbidden(() -> client.listCategories(WpPagingQuery.of(1, 10), null));
         }
 
         @DisplayName("'LIST' fails on null pageQuery")
         @Test
+            // TODO: check and refactor
         void listFailsOnNullPaging() {
             // WHEN/THEN
             assertThatThrownBy(() -> client.listCategories(null, null))
@@ -433,6 +406,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'LIST' fails on HTTP UNAUTHORIZED")
         @Test
+            // TODO: check and refactor
         void listFailsOnUnauthorized() {
 
             // GIVEN
@@ -452,6 +426,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'LIST' works with paging")
         @Test
+            // TODO: check and refactor
         void listWorksWithJustPaging() {
 
             // GIVEN
@@ -507,6 +482,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'LIST' works with paging and query")
         @Test
+            // TODO: check and refactor
         void listWorksWithPagingAndQuery() {
 
             // GIVEN
@@ -566,15 +542,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                  .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.updateCategory(2L, updateRequest))
-                    .hasMessage("Missing parameter(s): param1")
-                    .extracting(ex -> (WpBadRequestException) ex)
-                    .extracting(WpBadRequestException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_missing_callback_param");
-                        assertThat(error.getMessage()).isEqualTo("Missing parameter(s): param1");
-                        assertThat(error.getData()).contains(entry("status", 400));
-                    });
+            assertThrowsWpBadRequest(() -> client.updateCategory(2L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on HTTP FORBIDDEN")
@@ -596,19 +564,12 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                  .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.updateCategory(2L, updateRequest))
-                    .hasMessage("Sorry, you are not allowed to do that.")
-                    .extracting(ex -> (WpForbiddenException) ex)
-                    .extracting(WpForbiddenException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
-                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
-                        assertThat(error.getData()).containsExactly(entry("status", 403));
-                    });
+            assertThrowsWpForbidden(() -> client.updateCategory(2L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
         @Test
+            // TODO: check and refactor
         void updateFailsOnNotFound() {
 
             // GIVEN
@@ -639,6 +600,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' fails on null ID")
         @Test
+            // TODO: check and refactor
         void updateFailsOnNullId() {
 
             // WHEN/THEN
@@ -649,6 +611,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' fails on null request")
         @Test
+            // TODO: check and refactor
         void updateFailsOnNullRequest() {
 
             // WHEN/THEN
@@ -659,6 +622,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' fails on HTTP UNAUTHORIZED")
         @Test
+            // TODO: check and refactor
         void updateFailsOnUnauthorized() {
 
             // GIVEN
@@ -689,6 +653,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("UPDATE' works")
         @Test
+            // TODO: check and refactor
         void updateWorks() {
 
             // GIVEN
@@ -744,15 +709,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                              .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.createPost(createRequest))
-                    .hasMessage("Missing parameter(s): param1")
-                    .extracting(ex -> (WpBadRequestException) ex)
-                    .extracting(WpBadRequestException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_missing_callback_param");
-                        assertThat(error.getMessage()).isEqualTo("Missing parameter(s): param1");
-                        assertThat(error.getData()).contains(entry("status", 400));
-                    });
+            assertThrowsWpBadRequest(() -> client.createPost(createRequest));
         }
 
         @DisplayName("'CREATE' fails on HTTP FORBIDDEN")
@@ -775,19 +732,12 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                              .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.createPost(createRequest))
-                    .hasMessage("Sorry, you are not allowed to do that.")
-                    .extracting(ex -> (WpForbiddenException) ex)
-                    .extracting(WpForbiddenException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
-                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
-                        assertThat(error.getData()).containsExactly(entry("status", 403));
-                    });
+            assertThrowsWpForbidden(() -> client.createPost(createRequest));
         }
 
         @DisplayName("'CREATE' fails on null request")
         @Test
+            // TODO: check and refactor
         void createFailsOnNullRequest() {
 
             // WHEN/THEN
@@ -798,6 +748,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'CREATE' fails on HTTP UNAUTHORIZED")
         @Test
+            // TODO: check and refactor
         void createFailsOnUnauthorized() {
 
             // GIVEN
@@ -829,6 +780,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'CREATE' works")
         @Test
+            // TODO: check and refactor
         void createWorks() {
 
             // GIVEN
@@ -883,6 +835,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'CREATE' works with password")
         @Test
+            // TODO: check and refactor
         void createWorksWithPassword() {
 
             // GIVEN
@@ -943,19 +896,12 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/post/delete.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.deletePost(1005L))
-                    .hasMessage("Sorry, you are not allowed to do that.")
-                    .extracting(ex -> (WpForbiddenException) ex)
-                    .extracting(WpForbiddenException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
-                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
-                        assertThat(error.getData()).containsExactly(entry("status", 403));
-                    });
+            assertThrowsWpForbidden(() -> client.deletePost(1005L));
         }
 
         @DisplayName("'DELETE' fails on HTTP NOT FOUND")
         @Test
+            // TODO: check and refactor
         void deleteFailsOnNotFound() {
 
             // GIVEN
@@ -975,6 +921,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'DELETE' fails on null ID")
         @Test
+            // TODO: check and refactor
         void deleteFailsOnNullId() {
 
             // WHEN/THEN
@@ -985,6 +932,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'DELETE' fails on HTTP UNAUTHORIZED")
         @Test
+            // TODO: check and refactor
         void deleteFailsOnUnauthorized() {
 
             // GIVEN
@@ -1004,6 +952,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'DELETE' works")
         @Test
+            // TODO: check and refactor
         void deleteWorks() {
 
             // GIVEN
@@ -1053,19 +1002,12 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/post/get.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.getPost(1005L, null))
-                    .hasMessage("Sorry, you are not allowed to do that.")
-                    .extracting(ex -> (WpForbiddenException) ex)
-                    .extracting(WpForbiddenException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
-                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
-                        assertThat(error.getData()).containsExactly(entry("status", 403));
-                    });
+            assertThrowsWpForbidden(() -> client.getPost(1005L, null));
         }
 
         @DisplayName("'GET' fails on HTTP NOT FOUND")
         @Test
+            // TODO: check and refactor
         void getFailsOnNotFound() {
 
             // GIVEN
@@ -1085,6 +1027,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' fails on null ID")
         @Test
+            // TODO: check and refactor
         void getFailsOnNullId() {
 
             // WHEN/THEN
@@ -1099,6 +1042,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' fails on HTTP UNAUTHORIZED")
         @Test
+            // TODO: check and refactor
         void getFailsOnUnauthorized() {
 
             // GIVEN
@@ -1118,6 +1062,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' works (with context)")
         @Test
+            // TODO: check and refactor
         void getWorksWithContext() {
 
             // GIVEN
@@ -1139,6 +1084,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' works (with context and password)")
         @Test
+            // TODO: check and refactor
         void getWorksWithContextAndPassword() {
 
             // GIVEN
@@ -1160,6 +1106,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' works (with no context - default)")
         @Test
+            // TODO: check and refactor
         void getWorksWithNoContext() {
 
             // GIVEN
@@ -1187,19 +1134,12 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/post/list.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.listPosts(WpPagingQuery.of(1, 10), null))
-                    .hasMessage("Sorry, you are not allowed to do that.")
-                    .extracting(ex -> (WpForbiddenException) ex)
-                    .extracting(WpForbiddenException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
-                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
-                        assertThat(error.getData()).containsExactly(entry("status", 403));
-                    });
+            assertThrowsWpForbidden(() -> client.listPosts(WpPagingQuery.of(1, 10), null));
         }
 
         @DisplayName("'LIST' fails on null pageQuery")
         @Test
+            // TODO: check and refactor
         void listFailsOnNullPaging() {
             // WHEN/THEN
             assertThatThrownBy(() -> client.listPosts(null, null))
@@ -1209,6 +1149,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'LIST' fails on HTTP UNAUTHORIZED")
         @Test
+            // TODO: check and refactor
         void listFailsOnUnauthorized() {
 
             // GIVEN
@@ -1228,6 +1169,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'LIST' works with paging")
         @Test
+            // TODO: check and refactor
         void listWorksWithJustPaging() {
 
             // GIVEN
@@ -1273,6 +1215,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'LIST' works with paging and query")
         @Test
+            // TODO: check and refactor
         void listWorksWithPagingAndQuery() {
 
             // GIVEN
@@ -1318,19 +1261,12 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/post/trash.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.trashPost(1005L))
-                    .hasMessage("Sorry, you are not allowed to do that.")
-                    .extracting(ex -> (WpForbiddenException) ex)
-                    .extracting(WpForbiddenException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
-                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
-                        assertThat(error.getData()).containsExactly(entry("status", 403));
-                    });
+            assertThrowsWpForbidden(() -> client.trashPost(1005L));
         }
 
         @DisplayName("'TRASH' fails on HTTP NOT FOUND")
         @Test
+            // TODO: check and refactor
         void trashFailsOnNotFound() {
 
             // GIVEN
@@ -1350,6 +1286,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'TRASH' fails on null ID")
         @Test
+            // TODO: check and refactor
         void trashFailsOnNullId() {
 
             // WHEN/THEN
@@ -1360,6 +1297,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'TRASH' fails on HTTP UNAUTHORIZED")
         @Test
+            // TODO: check and refactor
         void trashFailsOnUnauthorized() {
 
             // GIVEN
@@ -1379,6 +1317,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'TRASH' works")
         @Test
+            // TODO: check and refactor
         void trashWorks() {
 
             // GIVEN
@@ -1414,15 +1353,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                              .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.updatePost(4L, updateRequest))
-                    .hasMessage("Missing parameter(s): param1")
-                    .extracting(ex -> (WpBadRequestException) ex)
-                    .extracting(WpBadRequestException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_missing_callback_param");
-                        assertThat(error.getMessage()).isEqualTo("Missing parameter(s): param1");
-                        assertThat(error.getData()).contains(entry("status", 400));
-                    });
+            assertThrowsWpBadRequest(() -> client.updatePost(4L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on HTTP FORBIDDEN")
@@ -1444,19 +1375,12 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                              .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.updatePost(4L, updateRequest))
-                    .hasMessage("Sorry, you are not allowed to do that.")
-                    .extracting(ex -> (WpForbiddenException) ex)
-                    .extracting(WpForbiddenException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
-                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
-                        assertThat(error.getData()).containsExactly(entry("status", 403));
-                    });
+            assertThrowsWpForbidden(() -> client.updatePost(4L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
         @Test
+            // TODO: check and refactor
         void updateFailsOnNotFound() {
 
             // GIVEN
@@ -1487,6 +1411,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' fails on null ID")
         @Test
+            // TODO: check and refactor
         void updateFailsOnNullId() {
 
             // WHEN/THEN
@@ -1497,6 +1422,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' fails on null request")
         @Test
+            // TODO: check and refactor
         void updateFailsOnNullRequest() {
 
             // WHEN/THEN
@@ -1507,6 +1433,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' fails on HTTP UNAUTHORIZED")
         @Test
+            // TODO: check and refactor
         void updateFailsOnUnauthorized() {
 
             // GIVEN
@@ -1537,6 +1464,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' works")
         @Test
+            // TODO: check and refactor
         void updateWorks() {
 
             // GIVEN
@@ -1591,19 +1519,12 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                             .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.createTag(createRequest))
-                    .hasMessage("Missing parameter(s): param1")
-                    .extracting(ex -> (WpBadRequestException) ex)
-                    .extracting(WpBadRequestException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_missing_callback_param");
-                        assertThat(error.getMessage()).isEqualTo("Missing parameter(s): param1");
-                        assertThat(error.getData()).contains(entry("status", 400));
-                    });
+            assertThrowsWpBadRequest(() -> client.createTag(createRequest));
         }
 
         @DisplayName("'CREATE' fails on blank name")
         @Test
+            // TODO: check and refactor
         void createFailsOnBlankName() {
 
             // GIVEN
@@ -1643,19 +1564,12 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                             .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.createTag(createRequest))
-                    .hasMessage("Sorry, you are not allowed to do that.")
-                    .extracting(ex -> (WpForbiddenException) ex)
-                    .extracting(WpForbiddenException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
-                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
-                        assertThat(error.getData()).containsExactly(entry("status", 403));
-                    });
+            assertThrowsWpForbidden(() -> client.createTag(createRequest));
         }
 
         @DisplayName("'CREATE' fails on null request")
         @Test
+            // TODO: check and refactor
         void createFailsOnNullRequest() {
 
             // WHEN/THEN
@@ -1666,6 +1580,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'CREATE' fails on HTTP UNAUTHORIZED")
         @Test
+            // TODO: check and refactor
         void createFailsOnUnauthorized() {
 
             // GIVEN
@@ -1696,6 +1611,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'CREATE' works")
         @Test
+            // TODO: check and refactor
         void createWorks() {
 
             // GIVEN
@@ -1734,19 +1650,12 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/tag/delete.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.deleteTag(1005L))
-                    .hasMessage("Sorry, you are not allowed to do that.")
-                    .extracting(ex -> (WpForbiddenException) ex)
-                    .extracting(WpForbiddenException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
-                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
-                        assertThat(error.getData()).containsExactly(entry("status", 403));
-                    });
+            assertThrowsWpForbidden(() -> client.deleteTag(1005L));
         }
 
         @DisplayName("'DELETE' fails on HTTP NOT FOUND")
         @Test
+            // TODO: check and refactor
         void deleteFailsOnNotFound() {
 
             // GIVEN
@@ -1766,6 +1675,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'DELETE' fails on null ID")
         @Test
+            // TODO: check and refactor
         void deleteFailsOnNullId() {
 
             // WHEN/THEN
@@ -1776,6 +1686,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'DELETE' fails on HTTP UNAUTHORIZED")
         @Test
+            // TODO: check and refactor
         void deleteFailsOnUnauthorized() {
 
             // GIVEN
@@ -1795,6 +1706,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'DELETE' works")
         @Test
+            // TODO: check and refactor
         void deleteWorks() {
 
             // GIVEN
@@ -1827,19 +1739,12 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/tag/get.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.getTag(1005L, null))
-                    .hasMessage("Sorry, you are not allowed to do that.")
-                    .extracting(ex -> (WpForbiddenException) ex)
-                    .extracting(WpForbiddenException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
-                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
-                        assertThat(error.getData()).containsExactly(entry("status", 403));
-                    });
+            assertThrowsWpForbidden(() -> client.getTag(1005L, null));
         }
 
         @DisplayName("'GET' fails on HTTP NOT FOUND")
         @Test
+            // TODO: check and refactor
         void getFailsOnNotFound() {
 
             // GIVEN
@@ -1859,6 +1764,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' fails on null ID")
         @Test
+            // TODO: check and refactor
         void getFailsOnNullId() {
 
             // WHEN/THEN
@@ -1869,6 +1775,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' fails on HTTP UNAUTHORIZED")
         @Test
+            // TODO: check and refactor
         void getFailsOnUnauthorized() {
 
             // GIVEN
@@ -1888,6 +1795,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' works (with context)")
         @Test
+            // TODO: check and refactor
         void getWorksWithContext() {
 
             // GIVEN
@@ -1911,6 +1819,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' works (with no context - default)")
         @Test
+            // TODO: check and refactor
         void getWorksWithNoContext() {
 
             // GIVEN
@@ -1940,19 +1849,12 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/tag/list.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.listTags(WpPagingQuery.of(1, 10), null))
-                    .hasMessage("Sorry, you are not allowed to do that.")
-                    .extracting(ex -> (WpForbiddenException) ex)
-                    .extracting(WpForbiddenException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
-                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
-                        assertThat(error.getData()).containsExactly(entry("status", 403));
-                    });
+            assertThrowsWpForbidden(() -> client.listTags(WpPagingQuery.of(1, 10), null));
         }
 
         @DisplayName("'LIST' fails on null pageQuery")
         @Test
+            // TODO: check and refactor
         void listFailsOnNullPaging() {
             // WHEN/THEN
             assertThatThrownBy(() -> client.listTags(null, null))
@@ -1962,6 +1864,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'LIST' fails on HTTP UNAUTHORIZED")
         @Test
+            // TODO: check and refactor
         void listFailsOnUnauthorized() {
 
             // GIVEN
@@ -1981,6 +1884,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'LIST' works with paging")
         @Test
+            // TODO: check and refactor
         void listWorksWithJustPaging() {
 
             // GIVEN
@@ -2017,6 +1921,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'LIST' works with paging and query")
         @Test
+            // TODO: check and refactor
         void listWorksWithPagingAndQuery() {
 
             // GIVEN
@@ -2070,15 +1975,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                             .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.updateTag(2L, updateRequest))
-                    .hasMessage("Missing parameter(s): param1")
-                    .extracting(ex -> (WpBadRequestException) ex)
-                    .extracting(WpBadRequestException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_missing_callback_param");
-                        assertThat(error.getMessage()).isEqualTo("Missing parameter(s): param1");
-                        assertThat(error.getData()).contains(entry("status", 400));
-                    });
+            assertThrowsWpBadRequest(() -> client.updateTag(2L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on HTTP FORBIDDEN")
@@ -2100,19 +1997,12 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                             .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.updateTag(2L, updateRequest))
-                    .hasMessage("Sorry, you are not allowed to do that.")
-                    .extracting(ex -> (WpForbiddenException) ex)
-                    .extracting(WpForbiddenException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
-                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
-                        assertThat(error.getData()).containsExactly(entry("status", 403));
-                    });
+            assertThrowsWpForbidden(() -> client.updateTag(2L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
         @Test
+            // TODO: check and refactor
         void updateFailsOnNotFound() {
 
             // GIVEN
@@ -2143,6 +2033,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' fails on null ID")
         @Test
+            // TODO: check and refactor
         void updateFailsOnNullId() {
 
             // WHEN/THEN
@@ -2153,6 +2044,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' fails on null request")
         @Test
+            // TODO: check and refactor
         void updateFailsOnNullRequest() {
 
             // WHEN/THEN
@@ -2163,6 +2055,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' fails on HTTP UNAUTHORIZED")
         @Test
+            // TODO: check and refactor
         void updateFailsOnUnauthorized() {
 
             // GIVEN
@@ -2193,6 +2086,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' works")
         @Test
+            // TODO: check and refactor
         void updateWorks() {
 
             // GIVEN
