@@ -4,6 +4,7 @@ import com.ev.wordpress.client.domain.api.WpRestClient;
 import com.ev.wordpress.client.domain.dto.requests.WpCategoryCreateUpdateRequest;
 import com.ev.wordpress.client.domain.exception.WpBadRequestException;
 import com.ev.wordpress.test.local.testcontainers.BaseWordPressIntegrationTest;
+import com.ev.wordpress.test.local.testcontainers.base.factory.WpRestClientFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -32,13 +33,20 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
         log.info("installWordpress: END");
 
-        adminClient = initAdminClient();
-        standardUserClient = initStandardUserClient();
+        adminClient = clientFactory().create(
+                getHttpsBaseUrl(),
+                WP_ADMIN_USER_NAME,
+                adminApplicationPassword
+        );
+
+        standardUserClient = clientFactory().create(
+                getHttpsBaseUrl(),
+                WP_STANDARD_USER_NAME,
+                WP_STANDARD_USER_PASSWORD
+        );
     }
 
-    protected abstract WpRestClient initAdminClient();
-
-    protected abstract WpRestClient initStandardUserClient();
+    protected abstract WpRestClientFactory clientFactory();
 
     @DisplayName("Category APIs - Integration Tests")
     @Nested

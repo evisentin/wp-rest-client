@@ -61,6 +61,8 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
     protected String adminApplicationPassword = "";
     protected String standardUserApplicationPassword = "";
 
+    public abstract String getWordPressVersion();
+
     @AfterAll
     void cleanUp() {
         deleteIfExists(WP_FILES_DIR);
@@ -69,8 +71,6 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
     protected String getHttpsBaseUrl() {
         return String.format("https://%s:%d", wordpress.getHost(), wordpress.getMappedPort(443));
     }
-
-    public abstract String getWordPressVersion();
 
     /**
      * Activates "pretty permalinks" in the WordPress instance.

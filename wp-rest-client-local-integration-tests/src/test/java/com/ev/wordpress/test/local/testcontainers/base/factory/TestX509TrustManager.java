@@ -1,9 +1,9 @@
-package com.ev.wordpress.test.utils;
+package com.ev.wordpress.test.local.testcontainers.base.factory;
 
 import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;
 
-public class TestX509TrustManager implements X509TrustManager {
+class TestX509TrustManager implements X509TrustManager {
     @Override
     public void checkClientTrusted(X509Certificate[] chain, String authType) {
 
