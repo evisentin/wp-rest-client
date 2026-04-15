@@ -8,9 +8,11 @@ import com.ev.wordpress.client.domain.dto.WpPost;
 import com.ev.wordpress.client.domain.dto.WpTag;
 import com.ev.wordpress.client.domain.dto.enums.WpContext;
 import com.ev.wordpress.client.domain.dto.enums.WpPostStatus;
+import com.ev.wordpress.client.domain.dto.enums.WpTagOrderFields;
 import com.ev.wordpress.client.domain.dto.enums.WpTaxonomy;
 import com.ev.wordpress.client.domain.dto.query.WpCategoryQuery;
 import com.ev.wordpress.client.domain.dto.query.WpPagingQuery;
+import com.ev.wordpress.client.domain.dto.query.WpPostQuery;
 import com.ev.wordpress.client.domain.dto.query.WpTagQuery;
 import com.ev.wordpress.client.domain.dto.requests.WpCategoryCreateUpdateRequest;
 import com.ev.wordpress.client.domain.dto.requests.WpPostCreateUpdateRequest;
@@ -32,7 +34,9 @@ import java.util.Set;
 
 import static com.ev.wordpress.client.domain.dto.enums.WpContext.EDIT;
 import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.DRAFT;
+import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.PRIVATE;
 import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.PUBLISH;
+import static com.ev.wordpress.client.domain.dto.enums.WpSortDirection.ASC;
 import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.CATEGORY;
 import static com.ev.wordpress.client.testsupport.SlugUtils.toWordPressSlug;
 
@@ -739,8 +743,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
     @Nested
     class PostTests {
 
-        // TODO: 'LIST' works
-
         @DisplayName("'CREATE' fails on HTTP BAD REQUEST")
         @Test
         void createFailsOnBadRequest() {
@@ -1240,6 +1242,90 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                         assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
                         assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
                         assertThat(error.getData()).containsExactly(entry("status", 401));
+                    });
+        }
+
+        @DisplayName("'LIST' works with paging")
+        @Test
+        void listWorksWithJustPaging() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/list.success.just-paging.json");
+
+            // WHEN
+            final WpPagedResponse<WpPost> response = client.listPosts(WpPagingQuery.of(1, 10), null);
+
+            // THEN
+            assertThat(response)
+                    .isNotNull()
+                    .satisfies(r -> {
+                        assertThat(r.getPageNumber()).isEqualTo(1);
+                        assertThat(r.getItemsPerPage()).isEqualTo(10);
+                        assertThat(r.getTotalPages()).isEqualTo(1);
+                        assertThat(r.getTotalItems()).isEqualTo(1);
+                        assertThat(r.hasNextPage()).isFalse();
+                        assertThat(r.getItems()).hasSize(1);
+                        assertThat(r.getItems()).element(0).satisfies(p -> {
+                            assertThat(p).isNotNull();
+                            assertThat(p.getId()).isNotNull().isEqualTo(4L);
+                            assertThat(p.getLink()).isEqualTo("https://localhost:61975/my-first-post/");
+                            assertThat(p.getSlug()).isEqualTo("my-first-post");
+                            assertThat(p.getStatus()).isEqualTo(PUBLISH);
+                            assertThat(p.getType()).isEqualTo("post");
+                            assertThat(p.getCategories()).containsExactly(1L);
+                            assertThat(p.getTags()).isEmpty();
+
+                            // during listing we have just "rendered", not "raw"
+                            assertThat(p.getTitle().getRaw()).isNull();
+                            assertThat(p.getTitle().getRendered()).isEqualTo("My first post");
+
+                            // during listing we have just "rendered", not "raw"
+                            assertThat(p.getContent().getRaw()).isNull();
+                            assertThat(p.getContent().getRendered()).isEqualTo("");
+
+                            // during listing we have just "rendered", not "raw"
+                            assertThat(p.getExcerpt().getRaw()).isNull();
+                            assertThat(p.getExcerpt().getRendered()).isEqualTo("");
+                        });
+                    });
+        }
+
+        @DisplayName("'LIST' works with paging and query")
+        @Test
+        void listWorksWithPagingAndQuery() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/list.success.paging-and-query.json");
+
+            // WHEN
+            final WpPostQuery postQuery = WpPostQuery.builder()
+                                                     .withStatuses(Set.of(DRAFT, PRIVATE))
+                                                     .withOrder(ASC)
+                                                     .withOrderBy(WpTagOrderFields.ID)
+                                                     .build();
+
+            final WpPagedResponse<WpPost> response = client.listPosts(WpPagingQuery.of(1, 10), postQuery);
+
+            // THEN
+            assertThat(response)
+                    .isNotNull()
+                    .satisfies(r -> {
+                        assertThat(r.getPageNumber()).isEqualTo(1);
+                        assertThat(r.getItemsPerPage()).isEqualTo(10);
+                        assertThat(r.getTotalPages()).isEqualTo(1);
+                        assertThat(r.getTotalItems()).isEqualTo(2);
+                        assertThat(r.hasNextPage()).isFalse();
+                        assertThat(r.getItems()).hasSize(2); // TWO POSTS (FILTER)
+                        assertThat(r.getItems()).element(0).satisfies(p -> {
+                            assertThat(p).isNotNull();
+                            assertThat(p.getStatus()).isEqualTo(DRAFT);
+                            assertThat(p.getId()).isNotNull().isEqualTo(4L);
+                        });
+                        assertThat(r.getItems()).element(1).satisfies(p -> {
+                            assertThat(p).isNotNull();
+                            assertThat(p.getStatus()).isEqualTo(PRIVATE);
+                            assertThat(p.getId()).isNotNull().isEqualTo(5L);
+                        });
                     });
         }
 
