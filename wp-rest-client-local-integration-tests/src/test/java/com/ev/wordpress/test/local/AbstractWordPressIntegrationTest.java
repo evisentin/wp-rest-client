@@ -56,8 +56,19 @@ abstract class AbstractWordPressIntegrationTest {
     protected static String adminApplicationPassword = "";
     protected static String standardUserApplicationPassword = "";
 
+    /**
+     * Activates "pretty permalinks" in the WordPress instance.
+     *
+     * <p>This method configures WordPress to use the {@code /%postname%/} permalink
+     * structure and flushes the rewrite rules to ensure the changes take effect immediately.</p>
+     *
+     * <p>It relies on WP-CLI commands executed داخل the container environment.</p>
+     *
+     * <p>This is typically required in tests that depend on human-readable URLs
+     * instead of the default query-based format.</p>
+     */
     @SneakyThrows
-    protected void activatePermalinks() {
+    protected void wpActivatePermalinks() {
         wpcli.execInContainer("wp", "--allow-root", "rewrite", "structure", "/%postname%/");
         wpcli.execInContainer("wp", "--allow-root", "rewrite", "flush");
     }
@@ -67,8 +78,33 @@ abstract class AbstractWordPressIntegrationTest {
         deleteIfExists(WP_FILES_DIR);
     }
 
+    protected static String getHttpsBaseUrl() {
+        return String.format("https://%s:%d", wordpress.getHost(), wordpress.getMappedPort(443));
+    }
+
+    /**
+     * Removes all default WordPress content from the test instance.
+     *
+     * <p>This method deletes all posts, pages, and custom post types,
+     * as well as all taxonomy terms (categories and tags), effectively resetting the content state of the WordPress
+     * installation.</p>
+     *
+     * <p>The default "Uncategorized" category (term ID = 1) is preserved
+     * to avoid breaking WordPress constraints.</p>
+     *
+     * <p>This is typically used to ensure a clean and predictable starting
+     * point for tests.</p>
+     *
+     * <h3>Operations performed</h3>
+     * <ul>
+     *   <li>Deletes all posts using WP-CLI</li>
+     *   <li>Deletes all categories except the default one</li>
+     *   <li>Deletes all tags</li>
+     * </ul>
+     *
+     */
     @SneakyThrows
-    protected static void cleanDefaultData() {
+    protected static void wpCleanDefaultData() {
         wpcli.execInContainer("sh", "-c",
                 "wp --allow-root --path=/var/www/html post delete $(wp post list --format=ids) --force");
 
@@ -79,10 +115,53 @@ abstract class AbstractWordPressIntegrationTest {
                 "wp --allow-root --path=/var/www/html term delete post_tag $(wp term list post_tag --field=term_id)");
     }
 
+    /**
+     * Configures default users for the WordPress test instance.
+     *
+     * <p>This method performs additional setup after installation:
+     * <ul>
+     *   <li>Creates an application password for the admin user</li>
+     *   <li>Creates a standard (non-admin) user</li>
+     * </ul>
+     * </p>
+     *
+     * <p>This should typically be called after {@link #wpInitWordPress(String)}
+     * to prepare the instance for authenticated test scenarios.</p>
+     */
+    protected static void wpConfigureDefaultUsers() {
+        createAdminApplicationPassword();
+        createStandardUser();
+    }
+
+    /**
+     * Creates a new WordPress category.
+     *
+     * <p>This method uses WP-CLI to create a category with the specified
+     * name, slug, and description. It returns the ID of the created term.</p>
+     *
+     * <p>If the creation fails, the test is immediately failed via
+     * {@code failOnError(...)}.</p>
+     *
+     * <h3>Parameters</h3>
+     * <ul>
+     *   <li>{@code name} – the display name of the category</li>
+     *   <li>{@code description} – the category description</li>
+     *   <li>{@code slug} – the URL-friendly identifier</li>
+     * </ul>
+     *
+     * @param name
+     *         the name of the category (must not be {@code null})
+     * @param description
+     *         the description of the category (must not be {@code null})
+     * @param slug
+     *         the slug of the category (must not be {@code null})
+     *
+     * @return the ID of the created category as a {@link Long}
+     */
     @SneakyThrows
-    protected static Long createCategory(final @NonNull String name,
-                                         final @NonNull String description,
-                                         final @NonNull String slug) {
+    protected static Long wpCreateCategory(final @NonNull String name,
+                                           final @NonNull String description,
+                                           final @NonNull String slug) {
         val execResult = wpcli.execInContainer(
                 "wp", "--allow-root", "--path=/var/www/html",
                 "term", "create", "category", name,
@@ -94,9 +173,35 @@ abstract class AbstractWordPressIntegrationTest {
         return Long.valueOf(trimToEmpty(execResult.getStdout()));
     }
 
+    /**
+     * Creates a new WordPress tag.
+     *
+     * <p>This method uses WP-CLI to create a tag with the specified
+     * name, slug, and description. It returns the ID of the created term.</p>
+     *
+     * <p>If the creation fails, the test is immediately failed via
+     * {@code failOnError(...)}.</p>
+     *
+     * <h3>Parameters</h3>
+     * <ul>
+     *   <li>{@code name} – the display name of the tag</li>
+     *   <li>{@code description} – the tag description</li>
+     *   <li>{@code slug} – the URL-friendly identifier</li>
+     * </ul>
+     *
+     * @param name
+     *         the name of the tag (must not be {@code null})
+     * @param description
+     *         the description of the tag (must not be {@code null})
+     * @param slug
+     *         the slug of the tag (must not be {@code null})
+     *
+     * @return the ID of the created tag as a {@link Long}
+     */
     @SneakyThrows
-    protected static Long createTag(final @NonNull String name,
-                                    final @NonNull String description, final @NonNull String slug) {
+    protected static Long wpCreateTag(final @NonNull String name,
+                                      final @NonNull String description,
+                                      final @NonNull String slug) {
         val execResult = wpcli.execInContainer(
                 "wp", "--allow-root", "--path=/var/www/html",
                 "term", "create", "post_tag", name,
@@ -108,12 +213,23 @@ abstract class AbstractWordPressIntegrationTest {
         return Long.valueOf(trimToEmpty(execResult.getStdout()));
     }
 
-    protected static String getHttpsBaseUrl() {
-        return String.format("https://%s:%d", wordpress.getHost(), wordpress.getMappedPort(443));
-    }
-
+    /**
+     * Initializes a fresh WordPress installation for testing.
+     *
+     * <p>This method performs a {@code wp core install} using the provided base URL
+     * and predefined administrative credentials. It sets up a minimal WordPress instance ready for use in tests.</p>
+     *
+     * <p>This method does <strong>not</strong> perform additional configuration
+     * such as user setup. Call {@link #wpConfigureDefaultUsers()} separately if needed.</p>
+     *
+     * <p>If the installation fails, the test is immediately failed via
+     * {@code failOnError(...)}.</p>
+     *
+     * @param baseUrl
+     *         the base URL of the WordPress instance (must not be {@code null})
+     */
     @SneakyThrows
-    protected static void initWordpress(final @NonNull String baseUrl) {
+    protected static void wpInitWordPress(final @NonNull String baseUrl) {
         val installResult = wpcli.execInContainer(
                 "wp", "--allow-root", "--path=/var/www/html",
                 "core", "install",
@@ -126,13 +242,28 @@ abstract class AbstractWordPressIntegrationTest {
         );
 
         failOnError(installResult, "wp core install failed");
-
-        createAdminApplicationPassword();
-        createStandardUser();
     }
 
+    /**
+     * Installs and configures the WP REST API Authentication plugin.
+     *
+     * <p>This method installs and activates the {@code wp-rest-api-authentication}
+     * plugin via WP-CLI, then configures it to enable authentication mechanisms required for testing.</p>
+     *
+     * <p>The following configuration is applied:
+     * <ul>
+     *   <li>Sets authentication method to {@code basic_auth}</li>
+     *   <li>Enables JWT authentication</li>
+     *   <li>Configures the JWT client secret</li>
+     * </ul>
+     * </p>
+     *
+     * <p>If the plugin installation fails, the test is immediately failed via
+     * {@code failOnError(...)}.</p>
+     *
+     */
     @SneakyThrows
-    protected static void installAndActivateWpRestApiAuthenticationPlugin() {
+    protected static void wpInstallAndActivateWpRestApiAuthenticationPlugin() {
         // install + activate plugin
         val pluginInstallResult = wpcli.execInContainer(
                 "wp", "--allow-root", "--path=/var/www/html",
