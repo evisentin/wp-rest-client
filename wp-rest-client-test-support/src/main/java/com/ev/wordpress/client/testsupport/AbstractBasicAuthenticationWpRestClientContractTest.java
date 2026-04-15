@@ -732,10 +732,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         // TODO: 'CREATE' works
         // TODO: 'DELETE' works
 
-        // TODO: 'TRASH' fails on null ID
-        // TODO: 'TRASH' fails on HTTP NOT FOUND
-        // TODO: 'TRASH' fails on HTTP FORBIDDEN
-        // TODO: 'TRASH' fails on HTTP UNAUTHORIZED
         // TODO: 'TRASH' works
 
         // TODO: 'GET' works
@@ -1026,6 +1022,73 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
             // WHEN/THEN
             assertThatThrownBy(() -> client.listPosts(WpPagingQuery.of(1, 10), null))
+                    .hasMessage("You are not currently logged in.")
+                    .extracting(ex -> (WpUnauthorizedException) ex)
+                    .extracting(WpUnauthorizedException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
+                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
+                        assertThat(error.getData()).containsExactly(entry("status", 401));
+                    });
+        }
+
+        @DisplayName("'TRASH' fails on HTTP FORBIDDEN")
+        @Test
+        void trashFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/trash.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.trashPost(1005L))
+                    .hasMessage("Sorry, you are not allowed to do that.")
+                    .extracting(ex -> (WpForbiddenException) ex)
+                    .extracting(WpForbiddenException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_forbidden");
+                        assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
+                        assertThat(error.getData()).containsExactly(entry("status", 403));
+                    });
+        }
+
+        @DisplayName("'TRASH' fails on HTTP NOT FOUND")
+        @Test
+        void trashFailsOnNotFound() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/trash.failure.not-found.json");
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.trashPost(1005L))
+                    .hasMessage("Term does not exist.")
+                    .extracting(ex -> (WpNotFoundException) ex)
+                    .extracting(WpNotFoundException::getError)
+                    .satisfies(error -> {
+                        assertThat(error.getCode()).isEqualTo("rest_term_invalid");
+                        assertThat(error.getMessage()).isEqualTo("Term does not exist.");
+                        assertThat(error.getData()).containsExactly(entry("status", 404));
+                    });
+        }
+
+        @DisplayName("'TRASH' fails on null ID")
+        @Test
+        void trashFailsOnNullId() {
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.trashPost(null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("id is marked non-null but is null");
+        }
+
+        @DisplayName("'TRASH' fails on HTTP UNAUTHORIZED")
+        @Test
+        void trashFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/trash.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.trashPost(1005L))
                     .hasMessage("You are not currently logged in.")
                     .extracting(ex -> (WpUnauthorizedException) ex)
                     .extracting(WpUnauthorizedException::getError)
