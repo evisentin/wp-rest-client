@@ -1,4 +1,4 @@
-package com.ev.wordpress.test.local;
+package com.ev.wordpress.test.local.testcontainers.base;
 
 import com.ev.wordpress.client.domain.api.WpRestClient;
 import com.ev.wordpress.client.domain.dto.requests.WpCategoryCreateUpdateRequest;

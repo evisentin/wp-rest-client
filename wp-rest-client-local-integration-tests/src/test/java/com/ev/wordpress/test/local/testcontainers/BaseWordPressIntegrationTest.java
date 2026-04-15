@@ -1,4 +1,4 @@
-package com.ev.wordpress.test.local;
+package com.ev.wordpress.test.local.testcontainers;
 
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -19,7 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 
-import static com.ev.wordpress.test.local.TestFileUtils.deleteIfExists;
+import static com.ev.wordpress.test.utils.TestFileUtils.deleteIfExists;
 import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 import static org.testcontainers.containers.BindMode.READ_WRITE;
 import static org.testcontainers.containers.wait.strategy.Wait.forHttp;
@@ -70,7 +70,7 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
         return String.format("https://%s:%d", wordpress.getHost(), wordpress.getMappedPort(443));
     }
 
-    protected abstract String getWordPressVersion();
+    public abstract String getWordPressVersion();
 
     /**
      * Activates "pretty permalinks" in the WordPress instance.

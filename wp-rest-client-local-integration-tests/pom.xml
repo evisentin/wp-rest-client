@@ -11,15 +11,20 @@
   </parent>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <artifactId>wp-rest-client-local-integration-tests</artifactId>
+  <name>WP REST Client - WordPress integration tests</name>
   <packaging>jar</packaging>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <properties>
     <mysql-connector-j.version>9.6.0</mysql-connector-j.version>
     <testcontainers-bom.version>2.0.4</testcontainers-bom.version>
+
+    <!-- tests are being run just on `integration-tests` profile -->
+    <skip.module.tests>true</skip.module.tests>
   </properties>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <build>
     <plugins>
+      <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-deploy-plugin</artifactId>
@@ -28,6 +33,15 @@
           <skip>true</skip>
         </configuration>
       </plugin>
+      <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skipTests>${skip.module.tests}</skipTests>
+        </configuration>
+      </plugin>
+      <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     </plugins>
   </build>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -111,5 +125,14 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <profiles>
+    <profile>
+      <id>integration-tests</id>
+      <properties>
+        <skip.module.tests>false</skip.module.tests>
+      </properties>
+    </profile>
+  </profiles>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
 </project>

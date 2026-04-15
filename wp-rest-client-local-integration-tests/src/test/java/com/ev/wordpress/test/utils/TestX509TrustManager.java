@@ -1,4 +1,4 @@
-package com.ev.wordpress.test.local;
+package com.ev.wordpress.test.utils;
 
 import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;

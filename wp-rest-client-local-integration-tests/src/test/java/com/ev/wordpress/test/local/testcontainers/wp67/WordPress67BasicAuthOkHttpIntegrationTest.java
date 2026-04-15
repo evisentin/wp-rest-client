@@ -1,9 +1,11 @@
-package com.ev.wordpress.test.local;
+package com.ev.wordpress.test.local.testcontainers.wp67;
 
 import com.ev.wordpress.client.adapter.okhttp.OkHttpWpRestClient;
 import com.ev.wordpress.client.domain.api.WpRestClient;
 import com.ev.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
 import com.ev.wordpress.client.domain.configuration.SslConfiguration;
+import com.ev.wordpress.test.local.testcontainers.base.BasicAuthWordPressIntegrationTest;
+import com.ev.wordpress.test.utils.TestX509TrustManager;
 import lombok.SneakyThrows;
 
 import javax.net.ssl.SSLContext;
@@ -14,7 +16,7 @@ import java.security.SecureRandom;
 
 public class WordPress67BasicAuthOkHttpIntegrationTest extends BasicAuthWordPressIntegrationTest {
     @Override
-    protected String getWordPressVersion() {
+    public String getWordPressVersion() {
         return "6.7";
     }
 

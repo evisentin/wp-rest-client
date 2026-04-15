@@ -1,4 +1,4 @@
-package com.ev.wordpress.test.local;
+package com.ev.wordpress.test.utils;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -14,7 +14,7 @@ import java.util.Comparator;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class TestFileUtils {
     @SneakyThrows
-    static void deleteIfExists(final Path path) {
+    public static void deleteIfExists(final Path path) {
         if (path == null) return;
 
         if (!Files.exists(path)) {

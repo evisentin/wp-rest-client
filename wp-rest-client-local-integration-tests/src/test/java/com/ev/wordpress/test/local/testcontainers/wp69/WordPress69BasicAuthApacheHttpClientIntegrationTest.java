@@ -1,18 +1,20 @@
-package com.ev.wordpress.test.local;
+package com.ev.wordpress.test.local.testcontainers.wp69;
 
 import com.ev.wordpress.client.adapter.apache.ApacheWpRestClient;
 import com.ev.wordpress.client.domain.api.WpRestClient;
 import com.ev.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
 import com.ev.wordpress.client.domain.configuration.SslConfiguration;
+import com.ev.wordpress.test.local.testcontainers.base.BasicAuthWordPressIntegrationTest;
+import com.ev.wordpress.test.utils.TestX509TrustManager;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.X509TrustManager;
 
-public class WordPress67BasicAuthApacheHttpClientIntegrationTest extends BasicAuthWordPressIntegrationTest {
+public class WordPress69BasicAuthApacheHttpClientIntegrationTest extends BasicAuthWordPressIntegrationTest {
 
     @Override
-    protected String getWordPressVersion() {
-        return "6.7";
+    public String getWordPressVersion() {
+        return "6.9";
     }
 
     @Override
