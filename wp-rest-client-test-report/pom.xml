@@ -15,6 +15,7 @@
   <name>WP REST Client - Test Aggregation</name>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <dependencies>
+    <!-- [PROJECT MODULES] -->
     <dependency>
       <groupId>com.ev.wordpress</groupId>
       <artifactId>wp-rest-client-domain</artifactId>

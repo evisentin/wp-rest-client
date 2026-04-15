@@ -79,7 +79,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
      *     <li>WordPress-specific error handling</li>
      * </ul>
      *
-     * <h3>Usage examples</h3>
+     * <h4>Usage examples</h4>
      *
      * <p><b>Default (secure) configuration:</b></p>
      * <pre>{@code
