@@ -4,11 +4,14 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.TestInstance;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.mysql.MySQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -22,7 +25,9 @@ import static org.testcontainers.containers.BindMode.READ_WRITE;
 import static org.testcontainers.containers.wait.strategy.Wait.forHttp;
 
 @Slf4j
-abstract class AbstractWordPressIntegrationTest {
+@Testcontainers
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+abstract class BaseWordPressIntegrationTest implements WithAssertions {
 
     public static final String WORDPRESS_DB_HOST = "WORDPRESS_DB_HOST";
     public static final String WORDPRESS_DB_NAME = "WORDPRESS_DB_NAME";
@@ -41,20 +46,31 @@ abstract class AbstractWordPressIntegrationTest {
     public static final String WP_STANDARD_USER_NAME = "myuser@email.com";
     public static final String WP_STANDARD_USER_PASSWORD = "user123!";
 
-    private static final Path WP_FILES_DIR = createTempFilesDir();
-    private static final Network NETWORK = Network.newNetwork();
+    private final Path WP_FILES_DIR = createTempFilesDir();
+    private final Network NETWORK = Network.newNetwork();
 
     @Container
-    private static final MySQLContainer database = createDatabaseContainer();
+    private final MySQLContainer database = createDatabaseContainer();
 
     @Container
-    private static final GenericContainer<?> wordpress = createWordPressContainer();
+    private final GenericContainer<?> wordpress = createWordPressContainer();
 
     @Container
-    protected static final GenericContainer<?> wpcli = createWordPressCli();
+    protected final GenericContainer<?> wpcli = createWordPressCli();
 
-    protected static String adminApplicationPassword = "";
-    protected static String standardUserApplicationPassword = "";
+    protected String adminApplicationPassword = "";
+    protected String standardUserApplicationPassword = "";
+
+    @AfterAll
+    void cleanUp() {
+        deleteIfExists(WP_FILES_DIR);
+    }
+
+    protected String getHttpsBaseUrl() {
+        return String.format("https://%s:%d", wordpress.getHost(), wordpress.getMappedPort(443));
+    }
+
+    protected abstract String getWordPressVersion();
 
     /**
      * Activates "pretty permalinks" in the WordPress instance.
@@ -71,15 +87,6 @@ abstract class AbstractWordPressIntegrationTest {
     protected void wpActivatePermalinks() {
         wpcli.execInContainer("wp", "--allow-root", "rewrite", "structure", "/%postname%/");
         wpcli.execInContainer("wp", "--allow-root", "rewrite", "flush");
-    }
-
-    @AfterAll
-    static void cleanUp() {
-        deleteIfExists(WP_FILES_DIR);
-    }
-
-    protected static String getHttpsBaseUrl() {
-        return String.format("https://%s:%d", wordpress.getHost(), wordpress.getMappedPort(443));
     }
 
     /**
@@ -104,7 +111,7 @@ abstract class AbstractWordPressIntegrationTest {
      *
      */
     @SneakyThrows
-    protected static void wpCleanDefaultData() {
+    protected void wpCleanDefaultData() {
         wpcli.execInContainer("sh", "-c",
                 "wp --allow-root --path=/var/www/html post delete $(wp post list --format=ids) --force");
 
@@ -128,7 +135,7 @@ abstract class AbstractWordPressIntegrationTest {
      * <p>This should typically be called after {@link #wpInitWordPress(String)}
      * to prepare the instance for authenticated test scenarios.</p>
      */
-    protected static void wpConfigureDefaultUsers() {
+    protected void wpConfigureDefaultUsers() {
         createAdminApplicationPassword();
         createStandardUser();
     }
@@ -159,9 +166,9 @@ abstract class AbstractWordPressIntegrationTest {
      * @return the ID of the created category as a {@link Long}
      */
     @SneakyThrows
-    protected static Long wpCreateCategory(final @NonNull String name,
-                                           final @NonNull String description,
-                                           final @NonNull String slug) {
+    protected Long wpCreateCategory(final @NonNull String name,
+                                    final @NonNull String description,
+                                    final @NonNull String slug) {
         val execResult = wpcli.execInContainer(
                 "wp", "--allow-root", "--path=/var/www/html",
                 "term", "create", "category", name,
@@ -199,9 +206,9 @@ abstract class AbstractWordPressIntegrationTest {
      * @return the ID of the created tag as a {@link Long}
      */
     @SneakyThrows
-    protected static Long wpCreateTag(final @NonNull String name,
-                                      final @NonNull String description,
-                                      final @NonNull String slug) {
+    protected Long wpCreateTag(final @NonNull String name,
+                               final @NonNull String description,
+                               final @NonNull String slug) {
         val execResult = wpcli.execInContainer(
                 "wp", "--allow-root", "--path=/var/www/html",
                 "term", "create", "post_tag", name,
@@ -229,7 +236,7 @@ abstract class AbstractWordPressIntegrationTest {
      *         the base URL of the WordPress instance (must not be {@code null})
      */
     @SneakyThrows
-    protected static void wpInitWordPress(final @NonNull String baseUrl) {
+    protected void wpInitWordPress(final @NonNull String baseUrl) {
         val installResult = wpcli.execInContainer(
                 "wp", "--allow-root", "--path=/var/www/html",
                 "core", "install",
@@ -263,7 +270,7 @@ abstract class AbstractWordPressIntegrationTest {
      *
      */
     @SneakyThrows
-    protected static void wpInstallAndActivateWpRestApiAuthenticationPlugin() {
+    protected void wpInstallAndActivateWpRestApiAuthenticationPlugin() {
         // install + activate plugin
         val pluginInstallResult = wpcli.execInContainer(
                 "wp", "--allow-root", "--path=/var/www/html",
@@ -290,8 +297,31 @@ abstract class AbstractWordPressIntegrationTest {
         );
     }
 
+    /**
+     * Checks whether WordPress is installed in the current test instance.
+     *
+     * <p>This method executes the {@code wp core is-installed} command via WP-CLI
+     * and determines the installation status based on the command exit code.</p>
+     *
+     * <p>The command does not produce meaningful output; instead:
+     * <ul>
+     *   <li>Exit code {@code 0} indicates that WordPress is installed</li>
+     *   <li>A non-zero exit code indicates that WordPress is not installed</li>
+     * </ul>
+     * </p>
+     *
+     * @return {@code true} if WordPress is installed, {@code false} otherwise
+     */
     @SneakyThrows
-    private static void createAdminApplicationPassword() {
+    protected boolean wpIsWordPressInstalled() {
+        val execResult = wpcli.execInContainer(
+                "wp", "--allow-root", "--path=/var/www/html", "core", "is-installed"
+        );
+        return execResult.getExitCode() == 0;
+    }
+
+    @SneakyThrows
+    private void createAdminApplicationPassword() {
         val applicationPasswordCreationResult = wpcli.execInContainer(
                 "wp", "user", "application-password", "create", "admin", "my-app", "--porcelain"
         );
@@ -302,7 +332,7 @@ abstract class AbstractWordPressIntegrationTest {
     }
 
     @SuppressWarnings("resource")
-    private static MySQLContainer createDatabaseContainer() {
+    private MySQLContainer createDatabaseContainer() {
         return new MySQLContainer(DockerImageName.parse("mysql:8.0"))
                 .withDatabaseName(VAL_DB_NAME)
                 .withUsername(VAL_DB_USER_NAME)
@@ -313,7 +343,7 @@ abstract class AbstractWordPressIntegrationTest {
     }
 
     @SneakyThrows
-    private static void createStandardUser() {
+    private void createStandardUser() {
 
         val standardUserCreationResult = wpcli.execInContainer(
                 "wp", "user", "create", "username", WP_STANDARD_USER_NAME, "--role=subscriber", "--user_pass=" + WP_STANDARD_USER_PASSWORD
@@ -331,13 +361,14 @@ abstract class AbstractWordPressIntegrationTest {
     }
 
     @SneakyThrows
-    private static Path createTempFilesDir() {
+    private Path createTempFilesDir() {
         return Files.createTempDirectory("wordpress-files");
     }
 
     @SuppressWarnings("resource")
-    private static GenericContainer<?> createWordPressCli() {
-        return new GenericContainer<>(DockerImageName.parse("wordpress:cli"))
+    @SneakyThrows
+    private GenericContainer<?> createWordPressCli() {
+        val container = new GenericContainer<>(DockerImageName.parse("wordpress:cli"))
                 .withNetwork(NETWORK)
                 .dependsOn(wordpress)
                 .withEnv(WORDPRESS_DB_HOST, VAL_DB_HOST)
@@ -348,11 +379,16 @@ abstract class AbstractWordPressIntegrationTest {
                 // official docs note cli image often needs UID alignment
                 .withCreateContainerCmdModifier(cmd -> cmd.withUser("33:33"))
                 .withCommand("tail", "-f", "/dev/null");
+
+        container.start();
+
+        return container;
     }
 
     @SuppressWarnings("resource")
-    private static GenericContainer<?> createWordPressContainer() {
-        return new GenericContainer<>(wordpressHttpsImage("latest"))
+    private GenericContainer<?> createWordPressContainer() {
+
+        return new GenericContainer<>(wordpressHttpsImage(getWordPressVersion()))
                 .withNetwork(NETWORK)
                 .dependsOn(database)
                 .withEnv(WORDPRESS_DB_HOST, VAL_DB_HOST)
@@ -379,6 +415,8 @@ abstract class AbstractWordPressIntegrationTest {
     }
 
     private static ImageFromDockerfile wordpressHttpsImage(final String version) {
+        log.info(">>>> Building WordPress test image from base image wordpress:{}", version);
+
         return new ImageFromDockerfile("wordpress-https-test", false)
                 .withFileFromClasspath("Dockerfile", "docker/wordpress-https/Dockerfile")
                 .withFileFromClasspath("wordpress-ssl.conf", "docker/wordpress-https/wordpress-ssl.conf")

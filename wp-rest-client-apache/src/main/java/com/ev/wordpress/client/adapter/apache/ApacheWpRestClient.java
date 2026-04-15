@@ -7,6 +7,7 @@ import com.ev.wordpress.client.adapter.apache.query.mappers.PostQueryParamMapper
 import com.ev.wordpress.client.adapter.apache.query.mappers.TagQueryParamMapper;
 import com.ev.wordpress.client.domain.api.WpBaseRestClient;
 import com.ev.wordpress.client.domain.auth.WpAuthenticationStrategy;
+import com.ev.wordpress.client.domain.configuration.SslConfiguration;
 import com.ev.wordpress.client.domain.configuration.TimeoutConfiguration;
 import com.ev.wordpress.client.domain.dto.WpCategory;
 import com.ev.wordpress.client.domain.dto.WpPagedResponse;
@@ -38,6 +39,7 @@ import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.ClientTlsStrategyBuilder;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
@@ -45,6 +47,7 @@ import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.net.URIBuilder;
 import org.apache.hc.core5.util.Timeout;
 
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -70,6 +73,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
 
     public ApacheWpRestClient(final @NonNull String baseUrl,
                               final @NonNull WpAuthenticationStrategy authenticationStrategy,
+                              final SslConfiguration sslConfiguration,
                               final TimeoutConfiguration timeoutConfiguration) {
         super(baseUrl, authenticationStrategy);
         this.mapper = new ObjectMapper();
@@ -80,6 +84,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         httpClientBuilder.addRequestInterceptorFirst(new AuthenticationInterceptor(authenticationStrategy))
                          .addResponseInterceptorFirst(new WpErrorInterceptor());
 
+        applySslConfigurationIfPresent(httpClientBuilder, sslConfiguration);
         applyTimeoutConfigurationIfPresent(httpClientBuilder, timeoutConfiguration);
 
         this.httpClient = httpClientBuilder.build();
@@ -420,6 +425,28 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return new URIBuilder(substituted);
     }
 
+    private static void applySslConfigurationIfPresent(final HttpClientBuilder httpClientBuilder,
+                                                       final SslConfiguration sslConfiguration) {
+        if (sslConfiguration != null) {
+            failOnInvalidConfiguration(sslConfiguration);
+
+            final SSLContext sslContext = createSslContext(sslConfiguration);
+
+            final var tlsStrategyBuilder = ClientTlsStrategyBuilder.create()
+                                                                   .setSslContext(sslContext);
+
+            if (sslConfiguration.getHostnameVerifier() != null) {
+                tlsStrategyBuilder.setHostnameVerifier(sslConfiguration.getHostnameVerifier());
+            }
+
+            final var connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
+                                                                                   .setTlsSocketStrategy(tlsStrategyBuilder.buildClassic())
+                                                                                   .build();
+
+            httpClientBuilder.setConnectionManager(connectionManager);
+        }
+    }
+
     private static void applyTimeoutConfigurationIfPresent(final HttpClientBuilder httpClientBuilder,
                                                            final TimeoutConfiguration config) {
         if (config == null) {
@@ -435,6 +462,17 @@ public class ApacheWpRestClient extends WpBaseRestClient {
                 .setDefaultRequestConfig(requestConfig);
     }
 
+    @SneakyThrows
+    private static SSLContext createSslContext(final SslConfiguration sslConfiguration) {
+        final SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(
+                null,
+                new javax.net.ssl.TrustManager[]{sslConfiguration.getTrustManager()},
+                new java.security.SecureRandom()
+        );
+        return sslContext;
+    }
+
     private static Map<String, Object> emptyIfNull(final Map<String, Object> map) {
         return ofNullable(map).orElseGet(Collections::emptyMap);
     }
@@ -442,6 +480,12 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     private static void failOnEmptyResponseBody(final ClassicHttpResponse response) throws IOException {
         if (response.getEntity() == null) {
             throw new IOException("Empty response body");
+        }
+    }
+
+    private static void failOnInvalidConfiguration(final SslConfiguration sslConfiguration) {
+        if (sslConfiguration.getTrustManager() == null) {
+            throw new IllegalStateException("SSL configuration requires a trustManager");
         }
     }
 

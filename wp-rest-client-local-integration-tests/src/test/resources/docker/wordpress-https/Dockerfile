@@ -5,6 +5,8 @@ ARG WORDPRESS_VERSION=latest
 # Use the selected WordPress base image.
 FROM wordpress:${WORDPRESS_VERSION}
 
+RUN echo "Using base image: wordpress:${WORDPRESS_VERSION}"
+
 # Install OpenSSL so we can generate a self-signed certificate.
 RUN apt-get update && \
     apt-get install -y --no-install-recommends openssl
