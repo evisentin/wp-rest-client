@@ -4,6 +4,7 @@ import com.ev.wordpress.client.domain.api.WpBaseRestClient;
 import com.ev.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
 import com.ev.wordpress.client.testsupport.AbstractBasicAuthenticationWpRestClientContractTest;
 import lombok.SneakyThrows;
+import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import javax.net.ssl.SSLContext;
@@ -28,6 +29,59 @@ class OkHttpWpRestClientBasicAuthTest extends AbstractBasicAuthenticationWpRestC
         assertThatThrownBy(() -> new OkHttpWpRestClient(baseUrl, authenticationStrategy, sslConfiguration))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("SSL configuration requires both sslSocketFactory and trustManager");
+    }
+
+    @Test@SneakyThrows
+    void constructorWorksWithSSLConfigurationHavingHostNameVerifier() {
+
+        final String baseUrl = "http://localhost:8080";
+        final WpBasicAuthenticationStrategy authenticationStrategy = new WpBasicAuthenticationStrategy("user", "password");
+
+        X509TrustManager trustManager = new TestX509TrustManager();
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(null, new TrustManager[]{trustManager}, new SecureRandom());
+
+        SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+
+        SslConfiguration sslConfiguration = SslConfiguration.builder()
+                                                            .sslSocketFactory(sslSocketFactory)
+                                                            .trustManager(trustManager)
+                                                            .hostnameVerifier((h, s) -> true)
+                                                            .build();
+
+        val client = new OkHttpWpRestClient(baseUrl, authenticationStrategy, sslConfiguration);
+        assertThat(client).isNotNull();
+    }@Test@SneakyThrows
+    void constructorWorksWithSSLConfigurationAndNoHostNameVerifier() {
+
+        final String baseUrl = "http://localhost:8080";
+        final WpBasicAuthenticationStrategy authenticationStrategy = new WpBasicAuthenticationStrategy("user", "password");
+
+        X509TrustManager trustManager = new TestX509TrustManager();
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(null, new TrustManager[]{trustManager}, new SecureRandom());
+
+        SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+
+        SslConfiguration sslConfiguration = SslConfiguration.builder()
+                                                            .sslSocketFactory(sslSocketFactory)
+                                                            .trustManager(trustManager)
+                                                            //.hostnameVerifier((h, s) -> true)
+                                                            .build();
+
+        val client = new OkHttpWpRestClient(baseUrl, authenticationStrategy, sslConfiguration);
+        assertThat(client).isNotNull();
+    }
+
+    @Test
+    void constructorWorksOnNoSSL() {
+
+        final String baseUrl = "http://localhost:8080";
+        final WpBasicAuthenticationStrategy authenticationStrategy = new WpBasicAuthenticationStrategy("user", "password");
+
+        val client = new OkHttpWpRestClient(baseUrl, authenticationStrategy, null);
+
+        assertThat(client).isNotNull();
     }
 
     @Test

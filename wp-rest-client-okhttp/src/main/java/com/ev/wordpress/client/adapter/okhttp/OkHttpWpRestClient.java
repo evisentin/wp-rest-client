@@ -31,6 +31,7 @@ import lombok.val;
 import okhttp3.*;
 import org.apache.commons.text.StringSubstitutor;
 
+import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -134,6 +135,8 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
         this.client = clientBuilder.build();
     }
+
+
 
     /**
      * {@inheritDoc}
