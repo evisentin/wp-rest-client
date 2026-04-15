@@ -12,7 +12,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  * Utility class for generating WordPress-compatible slugs from arbitrary strings.
  * <p>
  * This class is intended for use in unit tests where predictable and normalized slug values are required. It mimics
- * common WordPress slug generation behavior by applying the following transformations:
+ * common WordPress slug generation behaviour by applying the following transformations:
  * <ul>
  *     <li>Trims leading and trailing whitespace</li>
  *     <li>Converts all characters to lowercase using {@link java.util.Locale#ROOT}</li>

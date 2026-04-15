@@ -357,8 +357,9 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                     });
         }
 
+        @DisplayName("'GET' works with context")
         @Test
-        void getWorksWithCcontext() {
+        void getWorksWithContext() {
 
             // GIVEN
             givenExpectationFromFile("basic-auth/category/get.success.with-context.json");
@@ -379,6 +380,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThat(category.getTaxonomy()).isNotNull().isEqualTo(CATEGORY);
         }
 
+        @DisplayName("'GET' works without context")
         @Test
         void getWorksWithoutContext() {
 
