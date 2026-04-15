@@ -29,6 +29,10 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
+import static com.ev.wordpress.client.domain.dto.enums.WpContext.EDIT;
+import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.DRAFT;
+import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.CATEGORY;
+
 public abstract class AbstractBasicAuthenticationWpRestClientContractTest extends AbstractMockServerTest {
     private WpRestClient client;
 
@@ -199,7 +203,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThat(category.getLink()).isNotBlank().contains(PARENT_SLUG, SLUG);
             assertThat(category.getName()).isEqualTo(NAME);
             assertThat(category.getSlug()).isEqualTo(SLUG);
-            assertThat(category.getTaxonomy()).isNotNull().isEqualTo(WpTaxonomy.CATEGORY);
+            assertThat(category.getTaxonomy()).isNotNull().isEqualTo(CATEGORY);
         }
 
         @DisplayName("'DELETE' fails on HTTP FORBIDDEN")
@@ -291,7 +295,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                         assertThat(summary.getLink()).isNotBlank();
                         assertThat(summary.getName()).isEqualTo("my category");
                         assertThat(summary.getSlug()).isEqualTo("slug-1");
-                        assertThat(summary.getTaxonomy()).isEqualTo(WpTaxonomy.CATEGORY);
+                        assertThat(summary.getTaxonomy()).isEqualTo(CATEGORY);
                     });
         }
 
@@ -384,7 +388,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThat(category.getLink()).isNotBlank().contains(SLUG);
             assertThat(category.getName()).isEqualTo(NAME);
             assertThat(category.getSlug()).isEqualTo(SLUG);
-            assertThat(category.getTaxonomy()).isNotNull().isEqualTo(WpTaxonomy.CATEGORY);
+            assertThat(category.getTaxonomy()).isNotNull().isEqualTo(CATEGORY);
         }
 
         @Test
@@ -408,7 +412,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThat(category.getLink()).isNotBlank().contains(SLUG);
             assertThat(category.getName()).isEqualTo(NAME);
             assertThat(category.getSlug()).isEqualTo(SLUG);
-            assertThat(category.getTaxonomy()).isNotNull().isEqualTo(WpTaxonomy.CATEGORY);
+            assertThat(category.getTaxonomy()).isNotNull().isEqualTo(CATEGORY);
         }
 
         @DisplayName("'LIST' fails on HTTP FORBIDDEN")
@@ -493,21 +497,21 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                             assertThat(cat.getName()).isEqualTo(NAME_1);
                                             assertThat(cat.getSlug()).isEqualTo(SLUG_1);
                                             assertThat(cat.getDescription()).isEqualTo(DESCRIPTION_1);
-                                            assertThat(cat.getTaxonomy()).isEqualTo(WpTaxonomy.CATEGORY);
+                                            assertThat(cat.getTaxonomy()).isEqualTo(CATEGORY);
                                         },
                                         cat -> {
                                             assertThat(cat.getId()).isEqualTo(3L);
                                             assertThat(cat.getName()).isEqualTo(NAME_2);
                                             assertThat(cat.getSlug()).isEqualTo(SLUG_2);
                                             assertThat(cat.getDescription()).isEqualTo(DESCRIPTION_2);
-                                            assertThat(cat.getTaxonomy()).isEqualTo(WpTaxonomy.CATEGORY);
+                                            assertThat(cat.getTaxonomy()).isEqualTo(CATEGORY);
                                         },
                                         cat -> {
                                             assertThat(cat.getId()).isEqualTo(1L);
                                             assertThat(cat.getName()).isEqualTo("Uncategorized");
                                             assertThat(cat.getSlug()).isEqualTo("uncategorized");
                                             assertThat(cat.getDescription()).isEmpty();
-                                            assertThat(cat.getTaxonomy()).isEqualTo(WpTaxonomy.CATEGORY);
+                                            assertThat(cat.getTaxonomy()).isEqualTo(CATEGORY);
                                         }
                                 );
                     });
@@ -549,7 +553,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                             assertThat(cat.getName()).isEqualTo(NAME_2);
                                             assertThat(cat.getSlug()).isEqualTo(SLUG_2);
                                             assertThat(cat.getDescription()).isEqualTo(DESCRIPTION_2);
-                                            assertThat(cat.getTaxonomy()).isEqualTo(WpTaxonomy.CATEGORY);
+                                            assertThat(cat.getTaxonomy()).isEqualTo(CATEGORY);
                                         }
                                 );
                     });
@@ -724,7 +728,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThat(category.getName()).isEqualTo(CAT_1_UPDATED_NAME);
             assertThat(category.getSlug()).isEqualTo(CAT_1_UPDATED_SLUG);
             assertThat(category.getParentId()).isZero();
-            assertThat(category.getTaxonomy()).isNotNull().isEqualTo(WpTaxonomy.CATEGORY);
+            assertThat(category.getTaxonomy()).isNotNull().isEqualTo(CATEGORY);
         }
     }
 
@@ -733,8 +737,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
     class PostTests {
 
         // TODO: 'CREATE' works
-
-        // TODO: 'GET' works
 
         // TODO: 'LIST' works
 
@@ -1025,6 +1027,69 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                         assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
                         assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
                         assertThat(error.getData()).containsExactly(entry("status", 401));
+                    });
+        }
+
+        @DisplayName("'GET' works (with context)")
+        @Test
+        void getWorksWithContext() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/get.success.with-context.json");
+
+            final Long id = 2L;
+
+            // WHEN
+            final WpPost post = client.getPost(id, EDIT);
+
+            // THEN
+            assertThat(post)
+                    .isNotNull()
+                    .satisfies(p -> {
+                        assertThat(p.getId()).isEqualTo(id);
+                        assertThat(p.getStatus()).isEqualTo(DRAFT);
+                    });
+        }
+
+        @DisplayName("'GET' works (with context and password)")
+        @Test
+        void getWorksWithContextAndPassword() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/get.success.with-context-and-password.json");
+
+            final Long id = 2L;
+
+            // WHEN
+            final WpPost post = client.getPost(id, EDIT, "my-password");
+
+            // THEN
+            assertThat(post)
+                    .isNotNull()
+                    .satisfies(p -> {
+                        assertThat(p.getId()).isEqualTo(id);
+                        assertThat(p.getStatus()).isEqualTo(DRAFT);
+                    });
+        }
+
+        @DisplayName("'GET' works (with no context - default)")
+        @Test
+        void getWorksWithNoContext() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/get.success.without-context.json");
+
+            final Long id = 2L;
+
+            // WHEN
+            final WpPost post = client.getPost(id, null);
+
+            // THEN
+            assertThat(post)
+                    .isNotNull()
+                    .satisfies(p -> {
+                        assertThat(p.getId()).isEqualTo(id);
+                        assertThat(p.getStatus()).isEqualTo(DRAFT);
                     });
         }
 
@@ -1509,7 +1574,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final Long tagId = 4L;
 
             // WHEN
-            final WpTag tag = client.getTag(tagId, WpContext.EDIT);
+            final WpTag tag = client.getTag(tagId, EDIT);
 
             // THEN
             assertThat(tag).isNotNull();
