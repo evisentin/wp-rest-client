@@ -31,16 +31,16 @@
     <!-- [MAVEN PLUGIN VERSIONS] -->
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
-    <maven.compiler.plugin.version>3.14.0</maven.compiler.plugin.version>
+    <maven.compiler.plugin.version>3.15.0</maven.compiler.plugin.version>
+    <maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
+    <maven.failsafe.plugin.version>3.5.5</maven.failsafe.plugin.version>
     <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
-    <maven.surefire.plugin.version>3.5.4</maven.surefire.plugin.version>
-    <maven.failsafe.plugin.version>3.5.4</maven.failsafe.plugin.version>
     <maven.jar.plugin.version>3.4.2</maven.jar.plugin.version>
+    <maven.source.plugin.version>3.4.0</maven.source.plugin.version>
+    <maven.surefire.plugin.version>3.5.5</maven.surefire.plugin.version>
 
     <!-- [MAVEN PLUGIN VERSIONS USED WHEN PUBLISHING TO MAVEN CENTRAL] -->
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    <maven.source.plugin.version>3.3.1</maven.source.plugin.version>
-    <maven.javadoc.plugin.version>3.11.2</maven.javadoc.plugin.version>
     <maven.gpg.plugin.version>3.2.8</maven.gpg.plugin.version>
 
     <!-- [LIBRARY VERSIONS] -->
@@ -63,7 +63,6 @@
     <assertj.version>3.27.3</assertj.version>
     <mockito.version>5.23.0</mockito.version>
     <mockserver-junit-jupiter.version>5.15.0</mockserver-junit-jupiter.version>
-
   </properties>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <licenses>
@@ -182,6 +181,7 @@
   <build>
     <pluginManagement>
       <plugins>
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
@@ -197,25 +197,25 @@
             </annotationProcessorPaths>
           </configuration>
         </plugin>
-
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
           <version>${maven.surefire.plugin.version}</version>
         </plugin>
-
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
           <version>${maven.failsafe.plugin.version}</version>
         </plugin>
-
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <version>${maven.jar.plugin.version}</version>
         </plugin>
-
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
@@ -229,13 +229,11 @@
             </execution>
           </executions>
         </plugin>
-
-        <!-- Javadoc -->
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
           <version>${maven-javadoc-plugin.version}</version>
-
           <configuration>
             <source>21</source>
             <encoding>UTF-8</encoding>
@@ -252,7 +250,6 @@
               <link>https://docs.oracle.com/en/java/javase/21/docs/api/</link>
             </links>
           </configuration>
-
           <executions>
             <execution>
               <id>generate-javadoc-html</id>
@@ -264,7 +261,6 @@
                 <outputDirectory>${project.build.directory}/site/apidocs</outputDirectory>
               </configuration>
             </execution>
-
             <execution>
               <id>attach-javadoc-jar</id>
               <phase>package</phase>
@@ -274,11 +270,33 @@
             </execution>
           </executions>
         </plugin>
+        <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
       </plugins>
     </pluginManagement>
 
     <plugins>
-
+      <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>${maven-enforcer-plugin.version}</version>
+        <executions>
+          <execution>
+            <id>enforce-maven</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireMavenVersion>
+                  <version>3.9.14</version>
+                </requireMavenVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
@@ -301,7 +319,7 @@
 
         </executions>
       </plugin>
-
+      <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
       <!--
         =========================================================================
         Maven Central publication section
