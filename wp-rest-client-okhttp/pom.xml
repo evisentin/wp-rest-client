@@ -98,6 +98,13 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <includeDependencySources>true</includeDependencySources>
+          <dependencySourceIncludes>
+            <dependencySourceInclude>com.ev.wordpress:*</dependencySourceInclude>
+          </dependencySourceIncludes>
+          <subpackages>com.ev.wordpress.client.adapter.okhttp</subpackages>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

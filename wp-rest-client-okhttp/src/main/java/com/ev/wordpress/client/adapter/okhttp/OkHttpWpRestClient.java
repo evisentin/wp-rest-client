@@ -55,70 +55,69 @@ import static org.apache.commons.lang3.ObjectUtils.anyNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
+/**
+ * OkHttp-based implementation of {@link WpBaseRestClient}.
+ *
+ * <p>
+ * This client provides a synchronous wrapper around the WordPress REST API using {@link okhttp3.OkHttpClient} as the
+ * underlying HTTP transport.
+ *
+ * <p>
+ * It supports CRUD operations and paginated queries for core WordPress resources such as posts, categories, and tags.
+ *
+ * <p>
+ * The client is configured with an authentication strategy and automatically registers internal interceptors for:
+ * <ul>
+ *     <li>Authentication ({@link AuthenticationInterceptor})</li>
+ *     <li>WordPress-specific error handling ({@link WpErrorInterceptor})</li>
+ * </ul>
+ *
+ * <p>
+ * Optional {@link SslConfiguration} and {@link TimeoutConfiguration} can be provided
+ * to customize TLS behaviour and request timeouts.
+ *
+ * <b>Thread Safety</b>
+ *
+ * <p>
+ * Instances of this class are thread-safe and intended to be reused.
+ *
+ * @see WpBaseRestClient
+ * @see AuthenticationInterceptor
+ * @see WpErrorInterceptor
+ */
 public class OkHttpWpRestClient extends WpBaseRestClient {
 
     private final OkHttpClient httpClient;
     private final ObjectMapper mapper;
 
     /**
-     * Creates a new {@code OkHttpWpRestClient} instance.
+     * Creates a new {@code OkHttpWpRestClient}.
      *
      * <p>
-     * The client is configured with the provided base URL and authentication strategy, and uses
-     * {@link okhttp3.OkHttpClient} as the underlying HTTP transport.
+     * The client is initialized with the given base URL and authentication strategy, and backed by an
+     * {@link okhttp3.OkHttpClient} configured with internal authentication and error-handling interceptors.
      *
      * <p>
-     * If a {@link SslConfiguration} is provided, its settings will be applied to the HTTP client, allowing
-     * customization of SSL/TLS behaviour (e.g. custom trust store, mutual TLS, or hostname verification). If
-     * {@code null}, the default JVM SSL configuration is used.
+     * If a {@link SslConfiguration} is provided, it is applied to the underlying HTTP client. If {@code null}, the
+     * default JVM SSL configuration is used.
      *
      * <p>
-     * The client automatically registers internal interceptors for:
-     * <ul>
-     *     <li>Authentication handling</li>
-     *     <li>WordPress-specific error handling</li>
-     * </ul>
-     *
-     * <h4>Usage examples</h4>
-     *
-     * <p><b>Default (secure) configuration:</b></p>
-     * <pre>{@code
-     * OkHttpWpRestClient client = new OkHttpWpRestClient(
-     *     "https://example.com",
-     *     authenticationStrategy,
-     *     null
-     * );
-     * }</pre>
-     *
-     * <p><b>Custom SSL configuration:</b></p>
-     * <pre>{@code
-     * SSLContext sslContext = SSLContext.getInstance("TLS");
-     * sslContext.init(null, new TrustManager[]{trustManager}, null);
-     *
-     * SslConfiguration sslConfig = SslConfiguration.builder()
-     *     .sslSocketFactory(sslContext.getSocketFactory())
-     *     .trustManager(trustManager)
-     *     .hostnameVerifier((hostname, session) -> true) // optional, ⚠ disables hostname verification, DO NOT USE IN PRODUCTION
-     *     .build();
-     *
-     * OkHttpWpRestClient client = new OkHttpWpRestClient(
-     *     "https://example.com",
-     *     authenticationStrategy,
-     *     sslConfig
-     * );
-     * }</pre>
+     * If a {@link TimeoutConfiguration} is provided, it is applied to the HTTP client. If {@code null}, OkHttp defaults
+     * are used.
      *
      * @param baseUrl
      *         the base URL of the WordPress instance (must not be {@code null})
      * @param authenticationStrategy
-     *         the authentication strategy to use for requests (must not be {@code null})
+     *         the authentication strategy used to sign requests (must not be {@code null})
      * @param sslConfiguration
-     *         optional SSL configuration; if {@code null}, the default SSL behaviour is used
+     *         optional SSL configuration; may be {@code null}
+     * @param timeoutConfiguration
+     *         optional timeout configuration; may be {@code null}
      *
      * @throws NullPointerException
      *         if {@code baseUrl} or {@code authenticationStrategy} is {@code null}
      * @throws IllegalStateException
-     *         if the provided {@link SslConfiguration} is incomplete (e.g. missing required SSL components)
+     *         if the provided {@link SslConfiguration} is invalid
      */
     @SneakyThrows
     public OkHttpWpRestClient(final @NonNull String baseUrl,
@@ -139,9 +138,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         this.httpClient = clientBuilder.build();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+
     @Override
     @SneakyThrows
     public WpCategory createCategory(final @NonNull WpCategoryCreateUpdateRequest creationRequest) {
@@ -154,9 +151,6 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         return performPostWithBody(builder, creationRequest, WP_CATEGORY_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SneakyThrows
     public WpPost createPost(final @NonNull WpPostCreateUpdateRequest creationRequest) {
@@ -166,9 +160,6 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         return performPostWithBody(builder, creationRequest, WP_POST_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SneakyThrows
     public WpTag createTag(final @NonNull WpTagCreateUpdateRequest creationRequest) {
@@ -182,9 +173,6 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         return performPostWithBody(builder, creationRequest, WP_TAG_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SneakyThrows
     public WpCategoryDeletionResponse deleteCategory(final @NonNull Long id) {
@@ -198,9 +186,6 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         return performDeleteRequest(builder, WP_CATEGORY_DELETION_RESPONSE_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SneakyThrows
     public WpPostDeletionResponse deletePost(@NonNull Long id) {
@@ -212,9 +197,6 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         return performDeleteRequest(builder, WP_POST_DELETION_RESPONSE_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SneakyThrows
     public WpTagDeletionResponse deleteTag(final @NonNull Long id) {
@@ -228,9 +210,6 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         return performDeleteRequest(builder, WP_TAG_DELETION_RESPONSE_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SneakyThrows
     @Override
     public WpCategory getCategory(final @NonNull Long id, final WpContext context) {
@@ -242,17 +221,11 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         return performGetRequest(builder, WP_CATEGORY_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     public WpPost getPost(final @NonNull Long id, final WpContext context) {
         return getPost(id, context, null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SneakyThrows
     @Override
     public WpPost getPost(final @NonNull Long id, final WpContext context, final String password) {
@@ -267,9 +240,6 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         return performGetRequest(builder, WP_POST_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SneakyThrows
     @Override
     public WpTag getTag(@NonNull final Long id, final WpContext context) {
@@ -282,9 +252,6 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         return performGetRequest(builder, WP_TAG_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SneakyThrows
     public WpPagedResponse<WpCategory> listCategories(final @NonNull WpPagingQuery pageQuery,
@@ -299,9 +266,6 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         return performPagingRequest(builder, pageQuery, WP_CATEGORY_LIST_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SneakyThrows
     public WpPagedResponse<WpPost> listPosts(final @NonNull WpPagingQuery pageQuery, final WpPostQuery postQuery) {
@@ -315,9 +279,6 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         return performPagingRequest(builder, pageQuery, WP_POST_LIST_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SneakyThrows
     public WpPagedResponse<WpTag> listTags(final @NonNull WpPagingQuery pageQuery, final WpTagQuery tagQuery) {
@@ -332,9 +293,6 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         return performPagingRequest(builder, pageQuery, WP_TAG_LIST_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SneakyThrows
     public WpPost trashPost(@NonNull Long id) {
@@ -346,9 +304,6 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         return performDeleteRequest(builder, WP_POST_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SneakyThrows
     public WpCategory updateCategory(final @NonNull Long id,
@@ -360,9 +315,6 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         return performPostWithBody(builder, updateRequest, WP_CATEGORY_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SneakyThrows
     public WpPost updatePost(final @NonNull Long id,
@@ -374,9 +326,6 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         return performPostWithBody(builder, updateRequest, WP_POST_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
     @SneakyThrows
     public WpTag updateTag(final @NonNull Long id,

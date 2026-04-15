@@ -1,9 +1,10 @@
 /**
- * Query models for retrieving resources from the WordPress REST API.
+ * Query objects for filtering and paging WordPress resources.
  *
- * <p>
- * This package contains immutable data transfer objects (DTOs) used to define filtering, sorting, and pagination
- * parameters for GET requests against WordPress endpoints such as posts, categories, and tags.
- * </p>
+ * <p>This package provides domain-level query models used to define filtering,
+ * sorting, and pagination when retrieving resources such as posts, categories, and tags.
+ *
+ * <p>These objects are translated into HTTP query parameters by adapter-specific
+ * mappers.
  */
 package com.ev.wordpress.client.domain.dto.query;

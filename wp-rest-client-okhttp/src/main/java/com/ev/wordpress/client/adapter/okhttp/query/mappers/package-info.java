@@ -1,6 +1,10 @@
 /**
- * Internal mappers for converting query objects into HTTP request parameters.
+ * Query parameter mappers for the OkHttp WordPress client adapter.
  *
- * <p>Types in this package are not intended for public use.
+ * <p>This package contains mapper classes that translate domain query objects into
+ * OkHttp-compatible query parameters for specific WordPress resources, such as categories, posts, and tags.
+ *
+ * <p>The mappers encapsulate request parameter construction so that resource-specific
+ * filtering and pagination logic remains separate from the main HTTP client implementation.
  */
 package com.ev.wordpress.client.adapter.okhttp.query.mappers;

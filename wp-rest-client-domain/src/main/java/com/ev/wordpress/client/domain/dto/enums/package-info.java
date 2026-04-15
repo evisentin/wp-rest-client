@@ -1,10 +1,8 @@
 /**
- * Enumeration types representing fixed value sets used by the WordPress REST API.
+ * Enumerations used by WordPress DTOs and query objects.
  *
- * <p>
- * This package contains enums that map Java constants to their corresponding string representations expected by the
- * WordPress API.
- * </p>
+ * <p>This package defines enum types representing constrained values used
+ * in the WordPress REST API, such as post status, sorting direction, taxonomy types, and context values.
  *
  * <h2>Design</h2>
  * <ul>
