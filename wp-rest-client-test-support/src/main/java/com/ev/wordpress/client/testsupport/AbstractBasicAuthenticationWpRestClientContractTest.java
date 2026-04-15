@@ -282,10 +282,10 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                         assertThat(summary).isNotNull();
                         assertThat(summary.getId()).isEqualTo(1005L);
                         assertThat(summary.getCount()).isZero();
-                        assertThat(summary.getDescription()).isEqualTo("Category #1");
+                        assertThat(summary.getDescription()).isEqualTo(TEST_CATEGORY_DESCRIPTION);
                         assertThat(summary.getLink()).isNotBlank();
-                        assertThat(summary.getName()).isEqualTo("my category");
-                        assertThat(summary.getSlug()).isEqualTo("slug-1");
+                        assertThat(summary.getName()).isEqualTo(TEST_CATEGORY_NAME);
+                        assertThat(summary.getSlug()).isEqualTo(TEST_CATEGORY_SLUG);
                         assertThat(summary.getTaxonomy()).isEqualTo(CATEGORY);
                     });
         }
@@ -362,9 +362,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
             // GIVEN
             givenExpectationFromFile("basic-auth/category/get.success.with-context.json");
-            final String NAME = "category1";
-            final String DESCRIPTION = "Category #1";
-            final String SLUG = "category-1";
 
             final Long catId = 2L;
 
@@ -375,10 +372,10 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThat(category).isNotNull();
             assertThat(category.getId()).isEqualTo(catId);
             assertThat(category.getCount()).isEqualTo(0);
-            assertThat(category.getDescription()).isEqualTo(DESCRIPTION);
-            assertThat(category.getLink()).isNotBlank().contains(SLUG);
-            assertThat(category.getName()).isEqualTo(NAME);
-            assertThat(category.getSlug()).isEqualTo(SLUG);
+            assertThat(category.getDescription()).isEqualTo(TEST_CATEGORY_DESCRIPTION);
+            assertThat(category.getLink()).isNotBlank().contains(TEST_CATEGORY_SLUG);
+            assertThat(category.getName()).isEqualTo(TEST_CATEGORY_NAME);
+            assertThat(category.getSlug()).isEqualTo(TEST_CATEGORY_SLUG);
             assertThat(category.getTaxonomy()).isNotNull().isEqualTo(CATEGORY);
         }
 
@@ -387,9 +384,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
             // GIVEN
             givenExpectationFromFile("basic-auth/category/get.success.without-context.json");
-            final String NAME = "category1";
-            final String DESCRIPTION = "Category #1";
-            final String SLUG = "category-1";
+
             final Long catId = 2L;
 
             // WHEN
@@ -399,10 +394,10 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThat(category).isNotNull();
             assertThat(category.getId()).isEqualTo(catId);
             assertThat(category.getCount()).isEqualTo(0);
-            assertThat(category.getDescription()).isEqualTo(DESCRIPTION);
-            assertThat(category.getLink()).isNotBlank().contains(SLUG);
-            assertThat(category.getName()).isEqualTo(NAME);
-            assertThat(category.getSlug()).isEqualTo(SLUG);
+            assertThat(category.getDescription()).isEqualTo(TEST_CATEGORY_DESCRIPTION);
+            assertThat(category.getLink()).isNotBlank().contains(TEST_CATEGORY_SLUG);
+            assertThat(category.getName()).isEqualTo(TEST_CATEGORY_NAME);
+            assertThat(category.getSlug()).isEqualTo(TEST_CATEGORY_SLUG);
             assertThat(category.getTaxonomy()).isNotNull().isEqualTo(CATEGORY);
         }
 

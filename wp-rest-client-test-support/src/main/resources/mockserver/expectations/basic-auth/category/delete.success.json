@@ -41,10 +41,10 @@
                     "previous": {
                         "id": 1005,
                         "count": 0,
-                        "description": "Category #1",
-                        "link": "https:\/\/localhost:50855\/category\/slug-1\/",
+                        "description": "my category description",
                         "name": "my category",
-                        "slug": "slug-1",
+                        "slug": "my-category",
+                        "link": "https:\/\/localhost:50855\/category\/slug-1\/",
                         "taxonomy": "category",
                         "meta": []
                     }

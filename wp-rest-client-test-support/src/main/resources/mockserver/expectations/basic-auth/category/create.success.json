@@ -46,6 +46,7 @@
                     "count": 0,
                     "description": "my category description",
                     "link": "https:\/\/localhost:50855\/category\/top-category\/my-category\/",
+                    "description": "my category description",
                     "name": "my category",
                     "slug": "my-category",
                     "taxonomy": "category",
