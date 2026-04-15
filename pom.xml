@@ -273,7 +273,7 @@
                 <goal>javadoc</goal>
               </goals>
               <configuration>
-                <outputDirectory>${project.build.directory}/site/apidocs</outputDirectory>
+                <outputDirectory>${project.build.directory}/site</outputDirectory>
               </configuration>
             </execution>
             <execution>
@@ -330,6 +330,70 @@
             <goals>
               <goal>report</goal>
             </goals>
+          </execution>
+
+        </executions>
+      </plugin>
+      <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <executions>
+
+          <!-- Build the aggregated HTML docs during normal builds -->
+          <execution>
+            <id>aggregate-javadoc-html</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>aggregate</goal>
+            </goals>
+            <configuration>
+              <source>${java.version}</source>
+              <encoding>UTF-8</encoding>
+              <docencoding>UTF-8</docencoding>
+              <charset>UTF-8</charset>
+              <failOnError>true</failOnError>
+              <show>public</show>
+
+              <additionalOptions>
+                <additionalOption>-noqualifier</additionalOption>
+                <additionalOption>lombok</additionalOption>
+                <additionalOption>-Xdoclint:all,-missing</additionalOption>
+              </additionalOptions>
+
+              <links>
+                <link>https://docs.oracle.com/en/java/javase/${java.version}/docs/api/</link>
+              </links>
+              <outputDirectory>${project.build.directory}/site</outputDirectory>
+            </configuration>
+
+          </execution>
+
+          <!-- Optional: attach an aggregated javadoc jar from the parent -->
+          <execution>
+            <id>aggregate-javadoc-jar</id>
+            <phase>package</phase>
+            <goals>
+              <goal>aggregate-jar</goal>
+            </goals>
+            <configuration>
+              <source>${java.version}</source>
+              <encoding>UTF-8</encoding>
+              <docencoding>UTF-8</docencoding>
+              <charset>UTF-8</charset>
+              <failOnError>true</failOnError>
+              <show>public</show>
+
+              <additionalOptions>
+                <additionalOption>-noqualifier</additionalOption>
+                <additionalOption>lombok</additionalOption>
+                <additionalOption>-Xdoclint:all,-missing</additionalOption>
+              </additionalOptions>
+
+              <links>
+                <link>https://docs.oracle.com/en/java/javase/${java.version}/docs/api/</link>
+              </links>
+            </configuration>
           </execution>
 
         </executions>
