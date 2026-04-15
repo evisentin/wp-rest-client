@@ -1,0 +1,49 @@
+[
+    {
+        "httpRequest": {
+            "method": "DELETE",
+            "path": "/wp-json/wp/v2/categories/1005",
+            "queryStringParameters": {
+                "force": [
+                    "true"
+                ]
+            },
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ]
+        },
+        "httpResponse": {
+            "statusCode": 404,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "code": "rest_term_invalid",
+                    "message": "Term does not exist.",
+                    "data": {
+                        "status": 404
+                    }
+                }
+            }
+        }
+    }
+]

@@ -1,0 +1,60 @@
+[
+    {
+        "httpRequest": {
+            "method": "POST",
+            "path": "/wp-json/wp/v2/categories/2",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "description": "Category 1 UPDATED",
+                    "name": "Category #1 UPDATED",
+                    "slug": "cat-1-updated",
+                    "meta": {}
+                }
+            }
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json; charset=UTF-8"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "id": 2,
+                    "count": 0,
+                    "description": "Category 1 UPDATED",
+                    "link": "https:\/\/localhost:58507\/category\/parent\/cat-1-updated\/",
+                    "name": "Category #1 UPDATED",
+                    "slug": "cat-1-updated",
+                    "taxonomy": "category",
+                    "parent": 0,
+                    "meta": [],
+                    "_links": {
+                    }
+                }
+            }
+        }
+    }
+]
