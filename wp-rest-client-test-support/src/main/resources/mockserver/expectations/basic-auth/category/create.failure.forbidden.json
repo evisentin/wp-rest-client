@@ -21,10 +21,9 @@
                 "type": "JSON",
                 "matchType": "ONLY_MATCHING_FIELDS",
                 "json": {
-                    "description": "my description",
-                    "name": "my tag",
-                    "slug": "my-tag",
-                    "meta": {}
+                    "description": "my category description",
+                    "name": "my category",
+                    "slug": "my-category"
                 }
             }
         },

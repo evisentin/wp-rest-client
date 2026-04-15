@@ -21,10 +21,9 @@
                 "type": "JSON",
                 "matchType": "ONLY_MATCHING_FIELDS",
                 "json": {
-                    "description": "my description",
+                    "description": "my category description",
                     "name": "my category",
-                    "slug": "slug-1",
-                    "meta": {},
+                    "slug": "my-category",
                     "parent": 2
                 }
             }
@@ -45,10 +44,10 @@
                 "json": {
                     "id": 3,
                     "count": 0,
-                    "description": "my description",
-                    "link": "https:\/\/localhost:50855\/category\/top-category\/slug-1\/",
+                    "description": "my category description",
+                    "link": "https:\/\/localhost:50855\/category\/top-category\/my-category\/",
                     "name": "my category",
-                    "slug": "slug-1",
+                    "slug": "my-category",
                     "taxonomy": "category",
                     "parent": 2,
                     "meta": [],

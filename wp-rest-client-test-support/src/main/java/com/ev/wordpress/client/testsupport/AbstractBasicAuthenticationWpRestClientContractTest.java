@@ -54,6 +54,10 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
     @Nested
     class CategoryTests {
 
+        private static final String TEST_CATEGORY_NAME = "my category";
+        private static final String TEST_CATEGORY_DESCRIPTION = "my category description";
+        private static final String TEST_CATEGORY_SLUG = "my-category";
+
         @DisplayName("'CREATE' fails on HTTP BAD REQUEST")
         @Test
         void createFailsOnBadRequest() {
@@ -61,15 +65,11 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             // GIVEN
             givenExpectationFromFile("basic-auth/category/create.failure.bad-request.json");
 
-            final String NAME = "my tag";
-            final String DESCRIPTION = "my description";
-            final String SLUG = "my-tag";
-
             final WpCategoryCreateUpdateRequest createRequest =
                     WpCategoryCreateUpdateRequest.builder()
-                                                 .withName(NAME)
-                                                 .withDescription(DESCRIPTION)
-                                                 .withSlug(SLUG)
+                                                 .withName(TEST_CATEGORY_NAME)
+                                                 .withDescription(TEST_CATEGORY_DESCRIPTION)
+                                                 .withSlug(TEST_CATEGORY_SLUG)
                                                  .build();
 
             // WHEN/THEN
@@ -89,15 +89,11 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         void createFailsOnBlankName() {
 
             // GIVEN
-            final String NAME = "  ";
-            final String DESCRIPTION = "my description";
-            final String SLUG = "my-tag";
-
             final WpCategoryCreateUpdateRequest createRequest =
                     WpCategoryCreateUpdateRequest.builder()
-                                                 .withName(NAME)
-                                                 .withDescription(DESCRIPTION)
-                                                 .withSlug(SLUG)
+                                                 .withName("   ")
+                                                 .withDescription(TEST_CATEGORY_DESCRIPTION)
+                                                 .withSlug(TEST_CATEGORY_SLUG)
                                                  .build();
 
             // WHEN/THEN
@@ -113,15 +109,11 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             // GIVEN
             givenExpectationFromFile("basic-auth/category/create.failure.forbidden.json");
 
-            final String NAME = "my tag";
-            final String DESCRIPTION = "my description";
-            final String SLUG = "my-tag";
-
             final WpCategoryCreateUpdateRequest createRequest =
                     WpCategoryCreateUpdateRequest.builder()
-                                                 .withName(NAME)
-                                                 .withDescription(DESCRIPTION)
-                                                 .withSlug(SLUG)
+                                                 .withName(TEST_CATEGORY_NAME)
+                                                 .withDescription(TEST_CATEGORY_DESCRIPTION)
+                                                 .withSlug(TEST_CATEGORY_SLUG)
                                                  .build();
 
             // WHEN/THEN
@@ -153,15 +145,11 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             // GIVEN
             givenExpectationFromFile("basic-auth/category/create.failure.unauthorized.json");
 
-            final String NAME = "my tag";
-            final String DESCRIPTION = "my description";
-            final String SLUG = "my-tag";
-
             final WpCategoryCreateUpdateRequest createRequest =
                     WpCategoryCreateUpdateRequest.builder()
-                                                 .withName(NAME)
-                                                 .withDescription(DESCRIPTION)
-                                                 .withSlug(SLUG)
+                                                 .withName(TEST_CATEGORY_NAME)
+                                                 .withDescription(TEST_CATEGORY_DESCRIPTION)
+                                                 .withSlug(TEST_CATEGORY_SLUG)
                                                  .build();
 
             // WHEN/THEN
@@ -187,29 +175,25 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final Long parent_id = 2L;
 
             // WHEN
-            final String NAME = "my category";
-            final String DESCRIPTION = "my description";
-            final String SLUG = "slug-1";
-
-            final WpCategoryCreateUpdateRequest creationRequest =
+            final WpCategoryCreateUpdateRequest createRequest =
                     WpCategoryCreateUpdateRequest.builder()
-                                                 .withName(NAME)
-                                                 .withDescription(DESCRIPTION)
-                                                 .withSlug(SLUG)
+                                                 .withName(TEST_CATEGORY_NAME)
+                                                 .withDescription(TEST_CATEGORY_DESCRIPTION)
+                                                 .withSlug(TEST_CATEGORY_SLUG)
                                                  .withParentId(parent_id)
                                                  .build();
 
-            final WpCategory category = client.createCategory(creationRequest);
+            final WpCategory category = client.createCategory(createRequest);
 
             // THEN
             assertThat(category).isNotNull();
             assertThat(category.getId()).isNotNull();
             assertThat(category.getParentId()).isEqualTo(parent_id);
             assertThat(category.getCount()).isEqualTo(0);
-            assertThat(category.getDescription()).isEqualTo(DESCRIPTION);
-            assertThat(category.getLink()).isNotBlank().contains(PARENT_SLUG, SLUG);
-            assertThat(category.getName()).isEqualTo(NAME);
-            assertThat(category.getSlug()).isEqualTo(SLUG);
+            assertThat(category.getDescription()).isEqualTo(TEST_CATEGORY_DESCRIPTION);
+            assertThat(category.getLink()).isNotBlank().contains(PARENT_SLUG, TEST_CATEGORY_SLUG);
+            assertThat(category.getName()).isEqualTo(TEST_CATEGORY_NAME);
+            assertThat(category.getSlug()).isEqualTo(TEST_CATEGORY_SLUG);
             assertThat(category.getTaxonomy()).isNotNull().isEqualTo(CATEGORY);
         }
 
