@@ -20,8 +20,6 @@ import com.ev.wordpress.client.domain.dto.requests.WpTagCreateUpdateRequest;
 import com.ev.wordpress.client.domain.dto.responses.WpCategoryDeletionResponse;
 import com.ev.wordpress.client.domain.dto.responses.WpPostDeletionResponse;
 import com.ev.wordpress.client.domain.dto.responses.WpTagDeletionResponse;
-import com.ev.wordpress.client.domain.exception.WpNotFoundException;
-import com.ev.wordpress.client.domain.exception.WpUnauthorizedException;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,6 +37,8 @@ import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.CATEGORY;
 import static com.ev.wordpress.client.testsupport.SlugUtils.toWordPressSlug;
 import static com.ev.wordpress.client.testsupport.WpAssertions.assertThrowsWpBadRequest;
 import static com.ev.wordpress.client.testsupport.WpAssertions.assertThrowsWpForbidden;
+import static com.ev.wordpress.client.testsupport.WpAssertions.assertThrowsWpNotFound;
+import static com.ev.wordpress.client.testsupport.WpAssertions.assertThrowsWpUnauthorized;
 
 public abstract class AbstractBasicAuthenticationWpRestClientContractTest extends AbstractMockServerTest {
     private WpRestClient client;
@@ -125,7 +125,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'CREATE' fails on HTTP UNAUTHORIZED")
         @Test
-            // TODO: check and refactor
         void createFailsOnUnauthorized() {
 
             // GIVEN
@@ -139,15 +138,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                  .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.createCategory(createRequest))
-                    .hasMessage("You are not currently logged in.")
-                    .extracting(ex -> (WpUnauthorizedException) ex)
-                    .extracting(WpUnauthorizedException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
-                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
-                        assertThat(error.getData()).containsExactly(entry("status", 401));
-                    });
+            assertThrowsWpUnauthorized(() -> client.createCategory(createRequest));
         }
 
         @DisplayName("'CREATE' works")
@@ -197,22 +188,13 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'DELETE' fails on HTTP NOT FOUND")
         @Test
-            // TODO: check and refactor
         void deleteFailsOnNotFound() {
 
             // GIVEN
             givenExpectationFromFile("basic-auth/category/delete.failure.not-found.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.deleteCategory(1005L))
-                    .hasMessage("Term does not exist.")
-                    .extracting(ex -> (WpNotFoundException) ex)
-                    .extracting(WpNotFoundException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_term_invalid");
-                        assertThat(error.getMessage()).isEqualTo("Term does not exist.");
-                        assertThat(error.getData()).containsExactly(entry("status", 404));
-                    });
+            assertThrowsWpNotFound(() -> client.deleteCategory(1005L));
         }
 
         @DisplayName("'DELETE' fails on null ID")
@@ -228,22 +210,13 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'DELETE' fails on HTTP UNAUTHORIZED")
         @Test
-            // TODO: check and refactor
         void deleteFailsOnUnauthorized() {
 
             // GIVEN
             givenExpectationFromFile("basic-auth/category/delete.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.deleteCategory(1005L))
-                    .hasMessage("You are not currently logged in.")
-                    .extracting(ex -> (WpUnauthorizedException) ex)
-                    .extracting(WpUnauthorizedException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
-                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
-                        assertThat(error.getData()).containsExactly(entry("status", 401));
-                    });
+            assertThrowsWpUnauthorized(() -> client.deleteCategory(1005L));
         }
 
         @DisplayName("'DELETE' works")
@@ -286,22 +259,13 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' fails on HTTP NOT FOUND")
         @Test
-            // TODO: check and refactor
         void getFailsOnNotFound() {
 
             // GIVEN
             givenExpectationFromFile("basic-auth/category/get.failure.not-found.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.getCategory(1005L, null))
-                    .hasMessage("Term does not exist.")
-                    .extracting(ex -> (WpNotFoundException) ex)
-                    .extracting(WpNotFoundException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_term_invalid");
-                        assertThat(error.getMessage()).isEqualTo("Term does not exist.");
-                        assertThat(error.getData()).containsExactly(entry("status", 404));
-                    });
+            assertThrowsWpNotFound(() -> client.getCategory(1005L, null));
         }
 
         @DisplayName("'GET' fails on null ID")
@@ -317,22 +281,13 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' fails on HTTP UNAUTHORIZED")
         @Test
-            // TODO: check and refactor
         void getFailsOnUnauthorized() {
 
             // GIVEN
             givenExpectationFromFile("basic-auth/category/get.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.getCategory(1005L, null))
-                    .hasMessage("You are not currently logged in.")
-                    .extracting(ex -> (WpUnauthorizedException) ex)
-                    .extracting(WpUnauthorizedException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
-                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
-                        assertThat(error.getData()).containsExactly(entry("status", 401));
-                    });
+            assertThrowsWpUnauthorized(() -> client.getCategory(1005L, null));
         }
 
         @DisplayName("'GET' works with context")
@@ -406,22 +361,13 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'LIST' fails on HTTP UNAUTHORIZED")
         @Test
-            // TODO: check and refactor
         void listFailsOnUnauthorized() {
 
             // GIVEN
             givenExpectationFromFile("basic-auth/category/list.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.listCategories(WpPagingQuery.of(1, 10), null))
-                    .hasMessage("You are not currently logged in.")
-                    .extracting(ex -> (WpUnauthorizedException) ex)
-                    .extracting(WpUnauthorizedException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
-                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
-                        assertThat(error.getData()).containsExactly(entry("status", 401));
-                    });
+            assertThrowsWpUnauthorized(() -> client.listCategories(WpPagingQuery.of(1, 10), null));
         }
 
         @DisplayName("'LIST' works with paging")
@@ -569,7 +515,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
         @Test
-            // TODO: check and refactor
         void updateFailsOnNotFound() {
 
             // GIVEN
@@ -587,15 +532,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                  .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.updateCategory(2L, updateRequest))
-                    .hasMessage("Term does not exist.")
-                    .extracting(ex -> (WpNotFoundException) ex)
-                    .extracting(WpNotFoundException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_term_invalid");
-                        assertThat(error.getMessage()).isEqualTo("Term does not exist.");
-                        assertThat(error.getData()).containsExactly(entry("status", 404));
-                    });
+            assertThrowsWpNotFound(() -> client.updateCategory(2L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on null ID")
@@ -622,7 +559,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' fails on HTTP UNAUTHORIZED")
         @Test
-            // TODO: check and refactor
         void updateFailsOnUnauthorized() {
 
             // GIVEN
@@ -640,15 +576,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                  .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.updateCategory(2L, updateRequest))
-                    .hasMessage("You are not currently logged in.")
-                    .extracting(ex -> (WpUnauthorizedException) ex)
-                    .extracting(WpUnauthorizedException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
-                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
-                        assertThat(error.getData()).containsExactly(entry("status", 401));
-                    });
+            assertThrowsWpUnauthorized(() -> client.updateCategory(2L, updateRequest));
         }
 
         @DisplayName("UPDATE' works")
@@ -748,7 +676,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'CREATE' fails on HTTP UNAUTHORIZED")
         @Test
-            // TODO: check and refactor
         void createFailsOnUnauthorized() {
 
             // GIVEN
@@ -767,15 +694,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                              .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.createPost(createRequest))
-                    .hasMessage("You are not currently logged in.")
-                    .extracting(ex -> (WpUnauthorizedException) ex)
-                    .extracting(WpUnauthorizedException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
-                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
-                        assertThat(error.getData()).containsExactly(entry("status", 401));
-                    });
+            assertThrowsWpUnauthorized(() -> client.createPost(createRequest));
         }
 
         @DisplayName("'CREATE' works")
@@ -901,22 +820,13 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'DELETE' fails on HTTP NOT FOUND")
         @Test
-            // TODO: check and refactor
         void deleteFailsOnNotFound() {
 
             // GIVEN
             givenExpectationFromFile("basic-auth/post/delete.failure.not-found.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.deletePost(1005L))
-                    .hasMessage("Term does not exist.")
-                    .extracting(ex -> (WpNotFoundException) ex)
-                    .extracting(WpNotFoundException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_term_invalid");
-                        assertThat(error.getMessage()).isEqualTo("Term does not exist.");
-                        assertThat(error.getData()).containsExactly(entry("status", 404));
-                    });
+            assertThrowsWpNotFound(() -> client.deletePost(1005L));
         }
 
         @DisplayName("'DELETE' fails on null ID")
@@ -932,22 +842,13 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'DELETE' fails on HTTP UNAUTHORIZED")
         @Test
-            // TODO: check and refactor
         void deleteFailsOnUnauthorized() {
 
             // GIVEN
             givenExpectationFromFile("basic-auth/post/delete.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.deletePost(1005L))
-                    .hasMessage("You are not currently logged in.")
-                    .extracting(ex -> (WpUnauthorizedException) ex)
-                    .extracting(WpUnauthorizedException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
-                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
-                        assertThat(error.getData()).containsExactly(entry("status", 401));
-                    });
+            assertThrowsWpUnauthorized(() -> client.deletePost(1005L));
         }
 
         @DisplayName("'DELETE' works")
@@ -1007,22 +908,13 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' fails on HTTP NOT FOUND")
         @Test
-            // TODO: check and refactor
         void getFailsOnNotFound() {
 
             // GIVEN
             givenExpectationFromFile("basic-auth/post/get.failure.not-found.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.getPost(1005L, null))
-                    .hasMessage("Term does not exist.")
-                    .extracting(ex -> (WpNotFoundException) ex)
-                    .extracting(WpNotFoundException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_term_invalid");
-                        assertThat(error.getMessage()).isEqualTo("Term does not exist.");
-                        assertThat(error.getData()).containsExactly(entry("status", 404));
-                    });
+            assertThrowsWpNotFound(() -> client.getPost(1005L, null));
         }
 
         @DisplayName("'GET' fails on null ID")
@@ -1042,22 +934,13 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' fails on HTTP UNAUTHORIZED")
         @Test
-            // TODO: check and refactor
         void getFailsOnUnauthorized() {
 
             // GIVEN
             givenExpectationFromFile("basic-auth/post/get.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.getPost(1005L, null))
-                    .hasMessage("You are not currently logged in.")
-                    .extracting(ex -> (WpUnauthorizedException) ex)
-                    .extracting(WpUnauthorizedException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
-                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
-                        assertThat(error.getData()).containsExactly(entry("status", 401));
-                    });
+            assertThrowsWpUnauthorized(() -> client.getPost(1005L, null));
         }
 
         @DisplayName("'GET' works (with context)")
@@ -1149,22 +1032,13 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'LIST' fails on HTTP UNAUTHORIZED")
         @Test
-            // TODO: check and refactor
         void listFailsOnUnauthorized() {
 
             // GIVEN
             givenExpectationFromFile("basic-auth/post/list.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.listPosts(WpPagingQuery.of(1, 10), null))
-                    .hasMessage("You are not currently logged in.")
-                    .extracting(ex -> (WpUnauthorizedException) ex)
-                    .extracting(WpUnauthorizedException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
-                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
-                        assertThat(error.getData()).containsExactly(entry("status", 401));
-                    });
+            assertThrowsWpUnauthorized(() -> client.listPosts(WpPagingQuery.of(1, 10), null));
         }
 
         @DisplayName("'LIST' works with paging")
@@ -1273,15 +1147,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/post/trash.failure.not-found.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.trashPost(1005L))
-                    .hasMessage("Term does not exist.")
-                    .extracting(ex -> (WpNotFoundException) ex)
-                    .extracting(WpNotFoundException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_term_invalid");
-                        assertThat(error.getMessage()).isEqualTo("Term does not exist.");
-                        assertThat(error.getData()).containsExactly(entry("status", 404));
-                    });
+            assertThrowsWpNotFound(() -> client.trashPost(1005L));
         }
 
         @DisplayName("'TRASH' fails on null ID")
@@ -1297,22 +1163,13 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'TRASH' fails on HTTP UNAUTHORIZED")
         @Test
-            // TODO: check and refactor
         void trashFailsOnUnauthorized() {
 
             // GIVEN
             givenExpectationFromFile("basic-auth/post/trash.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.trashPost(1005L))
-                    .hasMessage("You are not currently logged in.")
-                    .extracting(ex -> (WpUnauthorizedException) ex)
-                    .extracting(WpUnauthorizedException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
-                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
-                        assertThat(error.getData()).containsExactly(entry("status", 401));
-                    });
+            assertThrowsWpUnauthorized(() -> client.trashPost(1005L));
         }
 
         @DisplayName("'TRASH' works")
@@ -1380,7 +1237,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
         @Test
-            // TODO: check and refactor
         void updateFailsOnNotFound() {
 
             // GIVEN
@@ -1398,15 +1254,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                              .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.updatePost(4L, updateRequest))
-                    .hasMessage("Term does not exist.")
-                    .extracting(ex -> (WpNotFoundException) ex)
-                    .extracting(WpNotFoundException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_term_invalid");
-                        assertThat(error.getMessage()).isEqualTo("Term does not exist.");
-                        assertThat(error.getData()).containsExactly(entry("status", 404));
-                    });
+            assertThrowsWpNotFound(() -> client.updatePost(4L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on null ID")
@@ -1433,7 +1281,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' fails on HTTP UNAUTHORIZED")
         @Test
-            // TODO: check and refactor
         void updateFailsOnUnauthorized() {
 
             // GIVEN
@@ -1451,15 +1298,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                              .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.updatePost(4L, updateRequest))
-                    .hasMessage("You are not currently logged in.")
-                    .extracting(ex -> (WpUnauthorizedException) ex)
-                    .extracting(WpUnauthorizedException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
-                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
-                        assertThat(error.getData()).containsExactly(entry("status", 401));
-                    });
+            assertThrowsWpUnauthorized(() -> client.updatePost(4L, updateRequest));
         }
 
         @DisplayName("'UPDATE' works")
@@ -1580,7 +1419,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'CREATE' fails on HTTP UNAUTHORIZED")
         @Test
-            // TODO: check and refactor
         void createFailsOnUnauthorized() {
 
             // GIVEN
@@ -1598,15 +1436,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                             .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.createTag(createRequest))
-                    .hasMessage("You are not currently logged in.")
-                    .extracting(ex -> (WpUnauthorizedException) ex)
-                    .extracting(WpUnauthorizedException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
-                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
-                        assertThat(error.getData()).containsExactly(entry("status", 401));
-                    });
+            assertThrowsWpUnauthorized(() -> client.createTag(createRequest));
         }
 
         @DisplayName("'CREATE' works")
@@ -1655,22 +1485,13 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'DELETE' fails on HTTP NOT FOUND")
         @Test
-            // TODO: check and refactor
         void deleteFailsOnNotFound() {
 
             // GIVEN
             givenExpectationFromFile("basic-auth/tag/delete.failure.not-found.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.deleteTag(1005L))
-                    .hasMessage("Term does not exist.")
-                    .extracting(ex -> (WpNotFoundException) ex)
-                    .extracting(WpNotFoundException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_term_invalid");
-                        assertThat(error.getMessage()).isEqualTo("Term does not exist.");
-                        assertThat(error.getData()).containsExactly(entry("status", 404));
-                    });
+            assertThrowsWpNotFound(() -> client.deleteTag(1005L));
         }
 
         @DisplayName("'DELETE' fails on null ID")
@@ -1686,22 +1507,13 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'DELETE' fails on HTTP UNAUTHORIZED")
         @Test
-            // TODO: check and refactor
         void deleteFailsOnUnauthorized() {
 
             // GIVEN
             givenExpectationFromFile("basic-auth/tag/delete.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.deleteTag(1005L))
-                    .hasMessage("You are not currently logged in.")
-                    .extracting(ex -> (WpUnauthorizedException) ex)
-                    .extracting(WpUnauthorizedException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
-                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
-                        assertThat(error.getData()).containsExactly(entry("status", 401));
-                    });
+            assertThrowsWpUnauthorized(() -> client.deleteTag(1005L));
         }
 
         @DisplayName("'DELETE' works")
@@ -1744,22 +1556,13 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' fails on HTTP NOT FOUND")
         @Test
-            // TODO: check and refactor
         void getFailsOnNotFound() {
 
             // GIVEN
             givenExpectationFromFile("basic-auth/tag/get.failure.not-found.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.getTag(1005L, null))
-                    .hasMessage("Term does not exist.")
-                    .extracting(ex -> (WpNotFoundException) ex)
-                    .extracting(WpNotFoundException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_term_invalid");
-                        assertThat(error.getMessage()).isEqualTo("Term does not exist.");
-                        assertThat(error.getData()).containsExactly(entry("status", 404));
-                    });
+            assertThrowsWpNotFound(() -> client.getTag(1005L, null));
         }
 
         @DisplayName("'GET' fails on null ID")
@@ -1775,22 +1578,13 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' fails on HTTP UNAUTHORIZED")
         @Test
-            // TODO: check and refactor
         void getFailsOnUnauthorized() {
 
             // GIVEN
             givenExpectationFromFile("basic-auth/tag/get.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.getTag(1005L, null))
-                    .hasMessage("You are not currently logged in.")
-                    .extracting(ex -> (WpUnauthorizedException) ex)
-                    .extracting(WpUnauthorizedException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
-                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
-                        assertThat(error.getData()).containsExactly(entry("status", 401));
-                    });
+            assertThrowsWpUnauthorized(() -> client.getTag(1005L, null));
         }
 
         @DisplayName("'GET' works (with context)")
@@ -1864,22 +1658,13 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'LIST' fails on HTTP UNAUTHORIZED")
         @Test
-            // TODO: check and refactor
         void listFailsOnUnauthorized() {
 
             // GIVEN
             givenExpectationFromFile("basic-auth/tag/list.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.listTags(WpPagingQuery.of(1, 10), null))
-                    .hasMessage("You are not currently logged in.")
-                    .extracting(ex -> (WpUnauthorizedException) ex)
-                    .extracting(WpUnauthorizedException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
-                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
-                        assertThat(error.getData()).containsExactly(entry("status", 401));
-                    });
+            assertThrowsWpUnauthorized(() -> client.listTags(WpPagingQuery.of(1, 10), null));
         }
 
         @DisplayName("'LIST' works with paging")
@@ -2002,7 +1787,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
         @Test
-            // TODO: check and refactor
         void updateFailsOnNotFound() {
 
             // GIVEN
@@ -2020,15 +1804,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                             .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.updateTag(2L, updateRequest))
-                    .hasMessage("Term does not exist.")
-                    .extracting(ex -> (WpNotFoundException) ex)
-                    .extracting(WpNotFoundException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_term_invalid");
-                        assertThat(error.getMessage()).isEqualTo("Term does not exist.");
-                        assertThat(error.getData()).containsExactly(entry("status", 404));
-                    });
+            assertThrowsWpNotFound(() -> client.updateTag(2L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on null ID")
@@ -2055,7 +1831,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'UPDATE' fails on HTTP UNAUTHORIZED")
         @Test
-            // TODO: check and refactor
         void updateFailsOnUnauthorized() {
 
             // GIVEN
@@ -2073,15 +1848,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                             .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.updateTag(2L, updateRequest))
-                    .hasMessage("You are not currently logged in.")
-                    .extracting(ex -> (WpUnauthorizedException) ex)
-                    .extracting(WpUnauthorizedException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
-                        assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
-                        assertThat(error.getData()).containsExactly(entry("status", 401));
-                    });
+            assertThrowsWpUnauthorized(() -> client.updateTag(2L, updateRequest));
         }
 
         @DisplayName("'UPDATE' works")

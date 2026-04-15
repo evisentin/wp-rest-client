@@ -2,6 +2,8 @@ package com.ev.wordpress.client.testsupport;
 
 import com.ev.wordpress.client.domain.exception.WpBadRequestException;
 import com.ev.wordpress.client.domain.exception.WpForbiddenException;
+import com.ev.wordpress.client.domain.exception.WpNotFoundException;
+import com.ev.wordpress.client.domain.exception.WpUnauthorizedException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -35,6 +37,30 @@ public class WpAssertions {
                     assertThat(error.getCode()).isEqualTo("rest_forbidden");
                     assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
                     assertThat(error.getData()).containsExactly(entry("status", 403));
+                });
+    }
+
+    public static void assertThrowsWpNotFound(final @NonNull ThrowableAssert.ThrowingCallable shouldRaiseThrowable) {
+        assertThatThrownBy(shouldRaiseThrowable)
+                .hasMessage("Term does not exist.")
+                .extracting(ex -> (WpNotFoundException) ex)
+                .extracting(WpNotFoundException::getError)
+                .satisfies(error -> {
+                    assertThat(error.getCode()).isEqualTo("rest_term_invalid");
+                    assertThat(error.getMessage()).isEqualTo("Term does not exist.");
+                    assertThat(error.getData()).containsExactly(entry("status", 404));
+                });
+    }
+
+    public static void assertThrowsWpUnauthorized(final @NonNull ThrowableAssert.ThrowingCallable shouldRaiseThrowable) {
+        assertThatThrownBy(shouldRaiseThrowable)
+                .hasMessage("You are not currently logged in.")
+                .extracting(ex -> (WpUnauthorizedException) ex)
+                .extracting(WpUnauthorizedException::getError)
+                .satisfies(error -> {
+                    assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
+                    assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
+                    assertThat(error.getData()).containsExactly(entry("status", 401));
                 });
     }
 }
