@@ -31,7 +31,6 @@ import lombok.val;
 import okhttp3.*;
 import org.apache.commons.text.StringSubstitutor;
 
-import javax.net.ssl.SSLSocketFactory;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -56,7 +55,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class OkHttpWpRestClient extends WpBaseRestClient {
 
-    private final OkHttpClient client;
+    private final OkHttpClient httpClient;
     private final ObjectMapper mapper;
 
     /**
@@ -68,7 +67,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
      *
      * <p>
      * If a {@link SslConfiguration} is provided, its settings will be applied to the HTTP client, allowing
-     * customization of SSL/TLS behavior (e.g. custom trust store, mutual TLS, or hostname verification). If
+     * customization of SSL/TLS behaviour (e.g. custom trust store, mutual TLS, or hostname verification). If
      * {@code null}, the default JVM SSL configuration is used.
      *
      * <p>
@@ -112,7 +111,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
      * @param authenticationStrategy
      *         the authentication strategy to use for requests (must not be {@code null})
      * @param sslConfiguration
-     *         optional SSL configuration; if {@code null}, the default SSL behavior is used
+     *         optional SSL configuration; if {@code null}, the default SSL behaviour is used
      *
      * @throws NullPointerException
      *         if {@code baseUrl} or {@code authenticationStrategy} is {@code null}
@@ -133,10 +132,8 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
         applySslConfigurationIfPresent(clientBuilder, sslConfiguration);
 
-        this.client = clientBuilder.build();
+        this.httpClient = clientBuilder.build();
     }
-
-
 
     /**
      * {@inheritDoc}
@@ -396,7 +393,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
                 .delete()
                 .build();
 
-        try (Response response = client.newCall(request).execute()) {
+        try (Response response = httpClient.newCall(request).execute()) {
             final ResponseBody body = response.body();
 
             return mapper.readValue(body.string(), responseType);
@@ -411,7 +408,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
                 .get()
                 .build();
 
-        try (Response response = client.newCall(request).execute()) {
+        try (Response response = httpClient.newCall(request).execute()) {
             final ResponseBody body = response.body();
 
             return mapper.readValue(body.string(), responseType);
@@ -427,7 +424,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
                 .get()
                 .build();
 
-        try (Response response = client.newCall(request).execute()) {
+        try (Response response = httpClient.newCall(request).execute()) {
             final int totalItems = Integer.parseInt(requireNonNull(response.header(X_WP_TOTAL, "0")));
             final int totalPages = Integer.parseInt(requireNonNull(response.header(X_WP_TOTAL_PAGES, "0")));
             final String json = response.body().string();
@@ -453,7 +450,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
                 .post(RequestBody.create(toJson(requestBody), MEDIA_TYPE_APPLICATION_JSON))
                 .build();
 
-        try (Response response = client.newCall(request).execute()) {
+        try (Response response = httpClient.newCall(request).execute()) {
             val json = response.body().string();
             return mapper.readValue(json, responseType);
         }

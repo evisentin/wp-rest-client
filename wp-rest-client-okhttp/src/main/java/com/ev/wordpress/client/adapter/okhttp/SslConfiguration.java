@@ -10,7 +10,7 @@ import javax.net.ssl.X509TrustManager;
 /**
  * Encapsulates SSL/TLS configuration to be applied to the underlying HTTP client.
  * <p>
- * This class allows advanced users to customize the SSL behavior of the client, such as:
+ * This class allows advanced users to customize the SSL behaviour of the client, such as:
  * <ul>
  *     <li>Providing a custom {@link SSLSocketFactory} (e.g. for mutual TLS or custom trust stores)</li>
  *     <li>Defining a specific {@link X509TrustManager}</li>
