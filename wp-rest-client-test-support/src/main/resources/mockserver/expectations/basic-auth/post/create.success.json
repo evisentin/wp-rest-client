@@ -1,0 +1,219 @@
+[
+    {
+        "httpRequest": {
+            "method": "POST",
+            "path": "/wp-json/wp/v2/posts",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "title": "My post",
+                    "content": "My Content",
+                    "sticky": false,
+                    "categories": [
+                        3
+                    ],
+                    "tags": [
+                        2
+                    ]
+                }
+            }
+        },
+        "httpResponse": {
+            "statusCode": 201,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json; charset=UTF-8"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "id": 4,
+                    "date": "2026-04-15T10:15:21",
+                    "date_gmt": "2026-04-15T10:15:21",
+                    "guid": {
+                        "rendered": "https:\/\/localhost:59048\/?p=4",
+                        "raw": "https:\/\/localhost:59048\/?p=4"
+                    },
+                    "modified": "2026-04-15T10:15:21",
+                    "modified_gmt": "2026-04-15T10:15:21",
+                    "password": "",
+                    "slug": "",
+                    "status": "draft",
+                    "type": "post",
+                    "link": "https:\/\/localhost:59048\/?p=4",
+                    "title": {
+                        "raw": "My post",
+                        "rendered": "My post"
+                    },
+                    "content": {
+                        "raw": "My Content",
+                        "rendered": "<p>My Content<\/p>\n",
+                        "protected": false,
+                        "block_version": 0
+                    },
+                    "excerpt": {
+                        "raw": "",
+                        "rendered": "<p>My Content<\/p>\n",
+                        "protected": false
+                    },
+                    "author": 1,
+                    "featured_media": 0,
+                    "comment_status": "open",
+                    "ping_status": "open",
+                    "sticky": false,
+                    "template": "",
+                    "format": "standard",
+                    "meta": {
+                        "footnotes": ""
+                    },
+                    "categories": [
+                        3
+                    ],
+                    "tags": [
+                        2
+                    ],
+                    "permalink_template": "https:\/\/localhost:59048\/%postname%\/",
+                    "generated_slug": "my-post",
+                    "class_list": [
+                        "post-4",
+                        "post",
+                        "type-post",
+                        "status-draft",
+                        "format-standard",
+                        "hentry",
+                        "category-news",
+                        "tag-switzerland"
+                    ],
+                    "_links": {
+                        "self": [
+                            {
+                                "href": "https:\/\/localhost:59048\/wp-json\/wp\/v2\/posts\/4",
+                                "targetHints": {
+                                    "allow": [
+                                        "GET",
+                                        "POST",
+                                        "PUT",
+                                        "PATCH",
+                                        "DELETE"
+                                    ]
+                                }
+                            }
+                        ],
+                        "collection": [
+                            {
+                                "href": "https:\/\/localhost:59048\/wp-json\/wp\/v2\/posts"
+                            }
+                        ],
+                        "about": [
+                            {
+                                "href": "https:\/\/localhost:59048\/wp-json\/wp\/v2\/types\/post"
+                            }
+                        ],
+                        "author": [
+                            {
+                                "embeddable": true,
+                                "href": "https:\/\/localhost:59048\/wp-json\/wp\/v2\/users\/1"
+                            }
+                        ],
+                        "replies": [
+                            {
+                                "embeddable": true,
+                                "href": "https:\/\/localhost:59048\/wp-json\/wp\/v2\/comments?post=4"
+                            }
+                        ],
+                        "version-history": [
+                            {
+                                "count": 0,
+                                "href": "https:\/\/localhost:59048\/wp-json\/wp\/v2\/posts\/4\/revisions"
+                            }
+                        ],
+                        "wp:attachment": [
+                            {
+                                "href": "https:\/\/localhost:59048\/wp-json\/wp\/v2\/media?parent=4"
+                            }
+                        ],
+                        "wp:term": [
+                            {
+                                "taxonomy": "category",
+                                "embeddable": true,
+                                "href": "https:\/\/localhost:59048\/wp-json\/wp\/v2\/categories?post=4"
+                            },
+                            {
+                                "taxonomy": "post_tag",
+                                "embeddable": true,
+                                "href": "https:\/\/localhost:59048\/wp-json\/wp\/v2\/tags?post=4"
+                            }
+                        ],
+                        "wp:action-publish": [
+                            {
+                                "href": "https:\/\/localhost:59048\/wp-json\/wp\/v2\/posts\/4"
+                            }
+                        ],
+                        "wp:action-unfiltered-html": [
+                            {
+                                "href": "https:\/\/localhost:59048\/wp-json\/wp\/v2\/posts\/4"
+                            }
+                        ],
+                        "wp:action-sticky": [
+                            {
+                                "href": "https:\/\/localhost:59048\/wp-json\/wp\/v2\/posts\/4"
+                            }
+                        ],
+                        "wp:action-assign-author": [
+                            {
+                                "href": "https:\/\/localhost:59048\/wp-json\/wp\/v2\/posts\/4"
+                            }
+                        ],
+                        "wp:action-create-categories": [
+                            {
+                                "href": "https:\/\/localhost:59048\/wp-json\/wp\/v2\/posts\/4"
+                            }
+                        ],
+                        "wp:action-assign-categories": [
+                            {
+                                "href": "https:\/\/localhost:59048\/wp-json\/wp\/v2\/posts\/4"
+                            }
+                        ],
+                        "wp:action-create-tags": [
+                            {
+                                "href": "https:\/\/localhost:59048\/wp-json\/wp\/v2\/posts\/4"
+                            }
+                        ],
+                        "wp:action-assign-tags": [
+                            {
+                                "href": "https:\/\/localhost:59048\/wp-json\/wp\/v2\/posts\/4"
+                            }
+                        ],
+                        "curies": [
+                            {
+                                "name": "wp",
+                                "href": "https:\/\/api.w.org\/{rel}",
+                                "templated": true
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+]

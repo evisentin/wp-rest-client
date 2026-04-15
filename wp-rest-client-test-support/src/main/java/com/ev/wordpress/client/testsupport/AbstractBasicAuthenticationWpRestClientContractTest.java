@@ -31,7 +31,9 @@ import java.util.Set;
 
 import static com.ev.wordpress.client.domain.dto.enums.WpContext.EDIT;
 import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.DRAFT;
+import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.PUBLISH;
 import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.CATEGORY;
+import static com.ev.wordpress.client.testsupport.SlugUtils.toWordPressSlug;
 
 public abstract class AbstractBasicAuthenticationWpRestClientContractTest extends AbstractMockServerTest {
     private WpRestClient client;
@@ -736,8 +738,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
     @Nested
     class PostTests {
 
-        // TODO: 'CREATE' works
-
         // TODO: 'LIST' works
 
         // TODO: 'UPDATE' fails on HTTP BAD REQUEST
@@ -846,6 +846,114 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                         assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
                         assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
                         assertThat(error.getData()).containsExactly(entry("status", 401));
+                    });
+        }
+
+        @DisplayName("'CREATE' works")
+        @Test
+        void createWorks() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/create.success.json");
+
+            // WHEN
+            final String TITLE = "My post";
+            final String CONTENT = "My Content";
+
+            WpPostCreateUpdateRequest createUpdateRequest =
+                    WpPostCreateUpdateRequest.builder()
+                                             .withTitle(TITLE)
+                                             .withContent(CONTENT)
+                                             .withCategories(Set.of(3L))
+                                             .withTags(Set.of(2L))
+                                             .build();
+
+            final WpPost post = client.createPost(createUpdateRequest);
+
+            // THEN
+            assertThat(post).isNotNull();
+            assertThat(post.getId()).isNotNull();
+            assertThat(post.getLink()).isNotBlank();
+            assertThat(post.getSlug()).isEmpty();
+            assertThat(post.getGeneratedSlug()).isEqualTo(toWordPressSlug(TITLE));
+            assertThat(post.getStatus()).isEqualTo(DRAFT);
+            assertThat(post.getType()).isEqualTo("post");
+            assertThat(post.getTitle())
+                    .satisfies(f -> {
+                        assertThat(f.getRaw()).isEqualTo(TITLE);
+                        assertThat(f.getRendered()).isEqualTo(TITLE);
+                    });
+            assertThat(post.getContent())
+                    .satisfies(f -> {
+                        assertThat(f.getRaw()).isEqualTo(CONTENT);
+                        assertThat(f.getRendered()).isEqualTo("<p>" + CONTENT + "</p>\n");
+                        assertThat(f.getIsProtected()).isNotNull().isFalse();
+                        assertThat(f.getBlockVersion()).isNotNull().isZero();
+                    });
+
+            assertThat(post.getExcerpt())
+                    .satisfies(f -> {
+                        assertThat(f.getRaw()).isEmpty();
+                        assertThat(f.getRendered()).isEqualTo("<p>" + CONTENT + "</p>\n");
+                        assertThat(f.getIsProtected()).isNotNull().isFalse();
+                        assertThat(f.getBlockVersion()).isNull();
+                    });
+
+            assertThat(post.getCategories()).containsExactly(3L);
+            assertThat(post.getTags()).containsExactly(2L);
+        }
+
+        @DisplayName("'CREATE' works with password")
+        @Test
+        void createWorksWithPassword() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/create.success.with-password.json");
+
+            // WHEN
+            final String TITLE = "My post";
+            final String CONTENT = "My Content";
+
+            WpPostCreateUpdateRequest createUpdateRequest =
+                    WpPostCreateUpdateRequest.builder()
+                                             .withTitle(TITLE)
+                                             .withContent(CONTENT)
+                                             .withExcerpt(CONTENT)
+                                             .withPassword("my password")
+                                             .withStatus(PUBLISH)
+                                             .build();
+
+            final WpPost post = client.createPost(createUpdateRequest);
+
+            // THEN
+            assertThat(post).isNotNull();
+            assertThat(post.getId()).isNotNull();
+            assertThat(post.getSlug()).isEqualTo(toWordPressSlug(TITLE));
+            assertThat(post.getGeneratedSlug()).isEqualTo(toWordPressSlug(TITLE));
+            assertThat(post.getStatus()).isEqualTo(PUBLISH);
+            assertThat(post.getPassword()).isNotNull().isEqualTo("my password");
+            assertThat(post.getType()).isEqualTo("post");
+            assertThat(post.getTitle())
+                    .satisfies(f -> {
+                        assertThat(f.getRaw()).isEqualTo(TITLE);
+                        assertThat(f.getRendered()).isEqualTo(TITLE);
+                        assertThat(f.getIsProtected()).isNull();
+                        assertThat(f.getBlockVersion()).isNull();
+                    });
+            assertThat(post.getContent())
+                    .satisfies(f -> {
+                        assertThat(f.getRaw()).isEqualTo(CONTENT);
+                        assertThat(f.getRendered()).isEqualTo("<p>" + CONTENT + "</p>\n");
+                        assertThat(f.getIsProtected()).isNotNull().isTrue();
+                        assertThat(f.getBlockVersion()).isNotNull().isZero();
+                    });
+
+            assertThat(post.getExcerpt())
+                    .satisfies(f -> {
+                        assertThat(f.getRaw()).isEqualTo(CONTENT);
+                        assertThat(f.getRendered()).isEqualTo("<p>" + CONTENT + "</p>\n");
+                        assertThat(f.getIsProtected()).isNotNull().isTrue();
+                        assertThat(f.getBlockVersion()).isNull();
                     });
         }
 
