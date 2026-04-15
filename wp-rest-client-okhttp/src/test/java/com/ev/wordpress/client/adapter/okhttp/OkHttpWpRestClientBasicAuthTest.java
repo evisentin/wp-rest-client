@@ -31,27 +31,29 @@ class OkHttpWpRestClientBasicAuthTest extends AbstractBasicAuthenticationWpRestC
                 .hasMessage("SSL configuration requires both sslSocketFactory and trustManager");
     }
 
-    @Test@SneakyThrows
-    void constructorWorksWithSSLConfigurationHavingHostNameVerifier() {
+    @Test
+    void constructorFailsOnNullParameters() {
+        assertThatThrownBy(() -> new OkHttpWpRestClient(null, null, null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("baseUrl is marked non-null but is null");
+        assertThatThrownBy(() -> new OkHttpWpRestClient("http://localhost:8080", null, null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("authenticationStrategy is marked non-null but is null");
+    }
+
+    @Test
+    void constructorWorksOnNoSSL() {
 
         final String baseUrl = "http://localhost:8080";
         final WpBasicAuthenticationStrategy authenticationStrategy = new WpBasicAuthenticationStrategy("user", "password");
 
-        X509TrustManager trustManager = new TestX509TrustManager();
-        SSLContext sslContext = SSLContext.getInstance("TLS");
-        sslContext.init(null, new TrustManager[]{trustManager}, new SecureRandom());
+        val client = new OkHttpWpRestClient(baseUrl, authenticationStrategy, null);
 
-        SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-
-        SslConfiguration sslConfiguration = SslConfiguration.builder()
-                                                            .sslSocketFactory(sslSocketFactory)
-                                                            .trustManager(trustManager)
-                                                            .hostnameVerifier((h, s) -> true)
-                                                            .build();
-
-        val client = new OkHttpWpRestClient(baseUrl, authenticationStrategy, sslConfiguration);
         assertThat(client).isNotNull();
-    }@Test@SneakyThrows
+    }
+
+    @Test
+    @SneakyThrows
     void constructorWorksWithSSLConfigurationAndNoHostNameVerifier() {
 
         final String baseUrl = "http://localhost:8080";
@@ -74,24 +76,26 @@ class OkHttpWpRestClientBasicAuthTest extends AbstractBasicAuthenticationWpRestC
     }
 
     @Test
-    void constructorWorksOnNoSSL() {
+    @SneakyThrows
+    void constructorWorksWithSSLConfigurationHavingHostNameVerifier() {
 
         final String baseUrl = "http://localhost:8080";
         final WpBasicAuthenticationStrategy authenticationStrategy = new WpBasicAuthenticationStrategy("user", "password");
 
-        val client = new OkHttpWpRestClient(baseUrl, authenticationStrategy, null);
+        X509TrustManager trustManager = new TestX509TrustManager();
+        SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(null, new TrustManager[]{trustManager}, new SecureRandom());
 
+        SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
+
+        SslConfiguration sslConfiguration = SslConfiguration.builder()
+                                                            .sslSocketFactory(sslSocketFactory)
+                                                            .trustManager(trustManager)
+                                                            .hostnameVerifier((h, s) -> true)
+                                                            .build();
+
+        val client = new OkHttpWpRestClient(baseUrl, authenticationStrategy, sslConfiguration);
         assertThat(client).isNotNull();
-    }
-
-    @Test
-    void constructorFailsOnNullParameters() {
-        assertThatThrownBy(() -> new OkHttpWpRestClient(null, null, null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("baseUrl is marked non-null but is null");
-        assertThatThrownBy(() -> new OkHttpWpRestClient("http://localhost:8080", null, null))
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("authenticationStrategy is marked non-null but is null");
     }
 
     @Override
