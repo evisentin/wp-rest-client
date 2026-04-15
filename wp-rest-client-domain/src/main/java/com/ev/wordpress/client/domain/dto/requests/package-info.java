@@ -1,9 +1,7 @@
 /**
- * Request models for creating and updating WordPress resources via the WordPress REST API.
+ * Request DTOs for creating and updating WordPress resources.
  *
- * <p>
- * This package contains data transfer objects (DTOs) used to construct payloads for POST and PUT/PATCH operations on
- * WordPress entities such as posts, categories, and tags.
- * </p>
+ * <p>This package contains models used to represent request payloads sent to
+ * the WordPress REST API when creating or updating resources.
  */
 package com.ev.wordpress.client.domain.dto.requests;

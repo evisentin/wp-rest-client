@@ -7,6 +7,7 @@ import com.ev.wordpress.client.adapter.apache.query.mappers.PostQueryParamMapper
 import com.ev.wordpress.client.adapter.apache.query.mappers.TagQueryParamMapper;
 import com.ev.wordpress.client.domain.api.WpBaseRestClient;
 import com.ev.wordpress.client.domain.auth.WpAuthenticationStrategy;
+import com.ev.wordpress.client.domain.configuration.SslConfiguration;
 import com.ev.wordpress.client.domain.configuration.TimeoutConfiguration;
 import com.ev.wordpress.client.domain.dto.WpCategory;
 import com.ev.wordpress.client.domain.dto.WpPagedResponse;
@@ -38,6 +39,7 @@ import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
+import org.apache.hc.client5.http.ssl.ClientTlsStrategyBuilder;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
@@ -45,6 +47,7 @@ import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.net.URIBuilder;
 import org.apache.hc.core5.util.Timeout;
 
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -63,13 +66,73 @@ import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
+/**
+ * Apache HttpClient-based implementation of {@link WpBaseRestClient}.
+ *
+ * <p>
+ * This client provides a synchronous wrapper around the WordPress REST API using
+ * {@link org.apache.hc.client5.http.impl.classic.CloseableHttpClient} as the underlying HTTP transport.
+ *
+ * <p>
+ * It supports CRUD operations and paginated queries for core WordPress resources such as posts, categories, and tags.
+ *
+ * <p>
+ * The client is configured with an authentication strategy and automatically registers internal interceptors for:
+ * <ul>
+ *     <li>Authentication ({@link AuthenticationInterceptor})</li>
+ *     <li>WordPress-specific error handling ({@link WpErrorInterceptor})</li>
+ * </ul>
+ *
+ * <p>
+ * Optional {@link SslConfiguration} and {@link TimeoutConfiguration} can be provided
+ * to customize TLS behaviour, connection management, and request timeouts.
+ *
+ * <b>Thread Safety</b>
+ *
+ * <p>
+ * Instances of this class are thread-safe and intended to be reused.
+ *
+ * @see WpBaseRestClient
+ * @see AuthenticationInterceptor
+ * @see WpErrorInterceptor
+ */
 public class ApacheWpRestClient extends WpBaseRestClient {
 
     private final CloseableHttpClient httpClient;
     private final ObjectMapper mapper;
 
+    /**
+     * Creates a new {@code ApacheWpRestClient}.
+     *
+     * <p>
+     * The client is initialized with the given base URL and authentication strategy, and backed by an Apache
+     * {@link CloseableHttpClient} configured with internal authentication and error-handling interceptors.
+     *
+     * <p>
+     * If a {@link SslConfiguration} is provided, it is used to configure the underlying TLS strategy. If {@code null},
+     * the default JVM SSL configuration is used.
+     *
+     * <p>
+     * If a {@link TimeoutConfiguration} is provided, it is applied to the HTTP client, including connection, response,
+     * and connection request timeouts. If {@code null}, default HttpClient settings are used.
+     *
+     * @param baseUrl
+     *         the base URL of the WordPress instance (must not be {@code null})
+     * @param authenticationStrategy
+     *         the authentication strategy used to sign requests (must not be {@code null})
+     * @param sslConfiguration
+     *         optional SSL configuration; may be {@code null}
+     * @param timeoutConfiguration
+     *         optional timeout configuration; may be {@code null}
+     *
+     * @throws NullPointerException
+     *         if {@code baseUrl} or {@code authenticationStrategy} is {@code null}
+     * @throws IllegalStateException
+     *         if the provided {@link SslConfiguration} is invalid
+     */
     public ApacheWpRestClient(final @NonNull String baseUrl,
                               final @NonNull WpAuthenticationStrategy authenticationStrategy,
+                              final SslConfiguration sslConfiguration,
                               final TimeoutConfiguration timeoutConfiguration) {
         super(baseUrl, authenticationStrategy);
         this.mapper = new ObjectMapper();
@@ -80,14 +143,12 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         httpClientBuilder.addRequestInterceptorFirst(new AuthenticationInterceptor(authenticationStrategy))
                          .addResponseInterceptorFirst(new WpErrorInterceptor());
 
+        applySslConfigurationIfPresent(httpClientBuilder, sslConfiguration);
         applyTimeoutConfigurationIfPresent(httpClientBuilder, timeoutConfiguration);
 
         this.httpClient = httpClientBuilder.build();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SneakyThrows
     @Override
     public WpCategory createCategory(final @NonNull WpCategoryCreateUpdateRequest creationRequest) {
@@ -99,9 +160,6 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performPostWithBody(builder, creationRequest, WP_CATEGORY_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SneakyThrows
     @Override
     public WpPost createPost(final @NonNull WpPostCreateUpdateRequest creationRequest) {
@@ -112,9 +170,6 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performPostWithBody(builder, creationRequest, WP_POST_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SneakyThrows
     @Override
     public WpTag createTag(final @NonNull WpTagCreateUpdateRequest creationRequest) {
@@ -126,9 +181,6 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performPostWithBody(builder, creationRequest, WP_TAG_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SneakyThrows
     @Override
     public WpCategoryDeletionResponse deleteCategory(final @NonNull Long id) {
@@ -142,9 +194,6 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performDeleteRequest(builder, WP_CATEGORY_DELETION_RESPONSE_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SneakyThrows
     @Override
     public WpPostDeletionResponse deletePost(final @NonNull Long id) {
@@ -156,9 +205,6 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performDeleteRequest(builder, WP_POST_DELETION_RESPONSE_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SneakyThrows
     @Override
     public WpTagDeletionResponse deleteTag(final @NonNull Long id) {
@@ -172,9 +218,6 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performDeleteRequest(builder, WP_TAG_DELETION_RESPONSE_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SneakyThrows
     @Override
     public WpCategory getCategory(final @NonNull Long id, final WpContext context) {
@@ -185,18 +228,12 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performGetRequest(builder, WP_CATEGORY_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SneakyThrows
     @Override
     public WpPost getPost(final @NonNull Long id, final WpContext context) {
         return getPost(id, context, null);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SneakyThrows
     @Override
     public WpPost getPost(final @NonNull Long id, final WpContext context, final String password) {
@@ -209,9 +246,6 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performGetRequest(builder, WP_POST_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SneakyThrows
     @Override
     public WpTag getTag(final @NonNull Long id, final WpContext context) {
@@ -222,9 +256,6 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performGetRequest(builder, WP_TAG_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SneakyThrows
     @Override
     public WpPagedResponse<WpCategory> listCategories(final @NonNull WpPagingQuery pageQuery,
@@ -240,9 +271,6 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performPagingRequest(builder, pageQuery, WP_CATEGORY_LIST_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SneakyThrows
     @Override
     public WpPagedResponse<WpPost> listPosts(final @NonNull WpPagingQuery pageQuery,
@@ -258,9 +286,6 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performPagingRequest(builder, pageQuery, WP_POST_LIST_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SneakyThrows
     @Override
     public WpPagedResponse<WpTag> listTags(final @NonNull WpPagingQuery pageQuery,
@@ -276,9 +301,6 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performPagingRequest(builder, pageQuery, WP_TAG_LIST_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SneakyThrows
     @Override
     public WpPost trashPost(final @NonNull Long id) {
@@ -290,9 +312,6 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performDeleteRequest(builder, WP_POST_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SneakyThrows
     @Override
     public WpCategory updateCategory(final @NonNull Long id,
@@ -304,9 +323,6 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performPostWithBody(builder, updateRequest, WP_CATEGORY_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SneakyThrows
     @Override
     public WpPost updatePost(final @NonNull Long id,
@@ -317,9 +333,6 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performPostWithBody(builder, updateRequest, WP_POST_TYPE);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @SneakyThrows
     @Override
     public WpTag updateTag(final @NonNull Long id,
@@ -420,6 +433,28 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return new URIBuilder(substituted);
     }
 
+    private static void applySslConfigurationIfPresent(final HttpClientBuilder httpClientBuilder,
+                                                       final SslConfiguration sslConfiguration) {
+        if (sslConfiguration != null) {
+            failOnInvalidConfiguration(sslConfiguration);
+
+            final SSLContext sslContext = createSslContext(sslConfiguration);
+
+            final var tlsStrategyBuilder = ClientTlsStrategyBuilder.create()
+                                                                   .setSslContext(sslContext);
+
+            if (sslConfiguration.getHostnameVerifier() != null) {
+                tlsStrategyBuilder.setHostnameVerifier(sslConfiguration.getHostnameVerifier());
+            }
+
+            final var connectionManager = PoolingHttpClientConnectionManagerBuilder.create()
+                                                                                   .setTlsSocketStrategy(tlsStrategyBuilder.buildClassic())
+                                                                                   .build();
+
+            httpClientBuilder.setConnectionManager(connectionManager);
+        }
+    }
+
     private static void applyTimeoutConfigurationIfPresent(final HttpClientBuilder httpClientBuilder,
                                                            final TimeoutConfiguration config) {
         if (config == null) {
@@ -435,6 +470,17 @@ public class ApacheWpRestClient extends WpBaseRestClient {
                 .setDefaultRequestConfig(requestConfig);
     }
 
+    @SneakyThrows
+    private static SSLContext createSslContext(final SslConfiguration sslConfiguration) {
+        final SSLContext sslContext = SSLContext.getInstance("TLS");
+        sslContext.init(
+                null,
+                new javax.net.ssl.TrustManager[]{sslConfiguration.getTrustManager()},
+                new java.security.SecureRandom()
+        );
+        return sslContext;
+    }
+
     private static Map<String, Object> emptyIfNull(final Map<String, Object> map) {
         return ofNullable(map).orElseGet(Collections::emptyMap);
     }
@@ -442,6 +488,12 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     private static void failOnEmptyResponseBody(final ClassicHttpResponse response) throws IOException {
         if (response.getEntity() == null) {
             throw new IOException("Empty response body");
+        }
+    }
+
+    private static void failOnInvalidConfiguration(final SslConfiguration sslConfiguration) {
+        if (sslConfiguration.getTrustManager() == null) {
+            throw new IllegalStateException("SSL configuration requires a trustManager");
         }
     }
 
