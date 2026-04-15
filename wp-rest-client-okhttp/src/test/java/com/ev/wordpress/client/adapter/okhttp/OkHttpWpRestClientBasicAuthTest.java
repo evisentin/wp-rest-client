@@ -2,6 +2,7 @@ package com.ev.wordpress.client.adapter.okhttp;
 
 import com.ev.wordpress.client.domain.api.WpBaseRestClient;
 import com.ev.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
+import com.ev.wordpress.client.domain.configuration.SslConfiguration;
 import com.ev.wordpress.client.testsupport.AbstractBasicAuthenticationWpRestClientContractTest;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -26,17 +27,17 @@ class OkHttpWpRestClientBasicAuthTest extends AbstractBasicAuthenticationWpRestC
                                                                   .trustManager(null)
                                                                   .build();
 
-        assertThatThrownBy(() -> new OkHttpWpRestClient(baseUrl, authenticationStrategy, sslConfiguration))
+        assertThatThrownBy(() -> new OkHttpWpRestClient(baseUrl, authenticationStrategy, sslConfiguration, null))
                 .isInstanceOf(IllegalStateException.class)
                 .hasMessage("SSL configuration requires both sslSocketFactory and trustManager");
     }
 
     @Test
     void constructorFailsOnNullParameters() {
-        assertThatThrownBy(() -> new OkHttpWpRestClient(null, null, null))
+        assertThatThrownBy(() -> new OkHttpWpRestClient(null, null, null, null))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("baseUrl is marked non-null but is null");
-        assertThatThrownBy(() -> new OkHttpWpRestClient("http://localhost:8080", null, null))
+        assertThatThrownBy(() -> new OkHttpWpRestClient("http://localhost:8080", null, null, null))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("authenticationStrategy is marked non-null but is null");
     }
@@ -47,7 +48,7 @@ class OkHttpWpRestClientBasicAuthTest extends AbstractBasicAuthenticationWpRestC
         final String baseUrl = "http://localhost:8080";
         final WpBasicAuthenticationStrategy authenticationStrategy = new WpBasicAuthenticationStrategy("user", "password");
 
-        val client = new OkHttpWpRestClient(baseUrl, authenticationStrategy, null);
+        val client = new OkHttpWpRestClient(baseUrl, authenticationStrategy, null, null);
 
         assertThat(client).isNotNull();
     }
@@ -71,7 +72,7 @@ class OkHttpWpRestClientBasicAuthTest extends AbstractBasicAuthenticationWpRestC
                                                             //.hostnameVerifier((h, s) -> true)
                                                             .build();
 
-        val client = new OkHttpWpRestClient(baseUrl, authenticationStrategy, sslConfiguration);
+        val client = new OkHttpWpRestClient(baseUrl, authenticationStrategy, sslConfiguration, null);
         assertThat(client).isNotNull();
     }
 
@@ -94,7 +95,7 @@ class OkHttpWpRestClientBasicAuthTest extends AbstractBasicAuthenticationWpRestC
                                                             .hostnameVerifier((h, s) -> true)
                                                             .build();
 
-        val client = new OkHttpWpRestClient(baseUrl, authenticationStrategy, sslConfiguration);
+        val client = new OkHttpWpRestClient(baseUrl, authenticationStrategy, sslConfiguration, null);
         assertThat(client).isNotNull();
     }
 
@@ -104,7 +105,7 @@ class OkHttpWpRestClientBasicAuthTest extends AbstractBasicAuthenticationWpRestC
 
         final WpBasicAuthenticationStrategy authenticationStrategy = new WpBasicAuthenticationStrategy("user", "password");
 
-        return new OkHttpWpRestClient(mockServerUrl(), authenticationStrategy, testSSLConfiguration());
+        return new OkHttpWpRestClient(mockServerUrl(), authenticationStrategy, testSSLConfiguration(), null);
     }
 
     @SneakyThrows

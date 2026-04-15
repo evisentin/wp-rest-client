@@ -7,6 +7,8 @@ import com.ev.wordpress.client.adapter.okhttp.query.mappers.PostQueryParamMapper
 import com.ev.wordpress.client.adapter.okhttp.query.mappers.TagQueryParamMapper;
 import com.ev.wordpress.client.domain.api.WpBaseRestClient;
 import com.ev.wordpress.client.domain.auth.WpAuthenticationStrategy;
+import com.ev.wordpress.client.domain.configuration.SslConfiguration;
+import com.ev.wordpress.client.domain.configuration.TimeoutConfiguration;
 import com.ev.wordpress.client.domain.dto.WpCategory;
 import com.ev.wordpress.client.domain.dto.WpPagedResponse;
 import com.ev.wordpress.client.domain.dto.WpPost;
@@ -121,7 +123,8 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @SneakyThrows
     public OkHttpWpRestClient(final @NonNull String baseUrl,
                               final @NonNull WpAuthenticationStrategy authenticationStrategy,
-                              final SslConfiguration sslConfiguration) {
+                              final SslConfiguration sslConfiguration,
+                              final TimeoutConfiguration timeoutConfiguration) {
         super(baseUrl, authenticationStrategy);
         this.mapper = new ObjectMapper();
         mapper.findAndRegisterModules();
@@ -131,6 +134,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
                 .addInterceptor(new WpErrorInterceptor());
 
         applySslConfigurationIfPresent(clientBuilder, sslConfiguration);
+        applyTimeoutConfigurationIfPresent(clientBuilder, timeoutConfiguration);
 
         this.httpClient = clientBuilder.build();
     }
@@ -383,6 +387,15 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
                         "id", id));
 
         return performPostWithBody(builder, updateRequest, WP_TAG_TYPE);
+    }
+
+    private void applyTimeoutConfigurationIfPresent(OkHttpClient.Builder clientBuilder, TimeoutConfiguration config) {
+        if (config != null) {
+            clientBuilder.connectTimeout(config.getConnectTimeout())
+                         .readTimeout(config.getReadTimeout())
+                         .writeTimeout(config.getWriteTimeout())
+                         .callTimeout(config.getCallTimeout());
+        }
     }
 
     private <T> T performDeleteRequest(final HttpUrl.Builder urlBuilder,

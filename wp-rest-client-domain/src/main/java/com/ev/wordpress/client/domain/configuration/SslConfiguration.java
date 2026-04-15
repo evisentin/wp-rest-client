@@ -1,4 +1,4 @@
-package com.ev.wordpress.client.adapter.okhttp;
+package com.ev.wordpress.client.domain.configuration;
 
 import lombok.Builder;
 import lombok.Value;

@@ -7,6 +7,7 @@ import com.ev.wordpress.client.adapter.apache.query.mappers.PostQueryParamMapper
 import com.ev.wordpress.client.adapter.apache.query.mappers.TagQueryParamMapper;
 import com.ev.wordpress.client.domain.api.WpBaseRestClient;
 import com.ev.wordpress.client.domain.auth.WpAuthenticationStrategy;
+import com.ev.wordpress.client.domain.configuration.TimeoutConfiguration;
 import com.ev.wordpress.client.domain.dto.WpCategory;
 import com.ev.wordpress.client.domain.dto.WpPagedResponse;
 import com.ev.wordpress.client.domain.dto.WpPost;
@@ -30,13 +31,19 @@ import org.apache.commons.text.StringSubstitutor;
 import org.apache.hc.client5.http.classic.methods.HttpDelete;
 import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.config.ConnectionConfig;
+import org.apache.hc.client5.http.config.RequestConfig;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
+import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.core5.http.ClassicHttpResponse;
 import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.net.URIBuilder;
+import org.apache.hc.core5.util.Timeout;
 
 import java.io.IOException;
 import java.net.URI;
@@ -45,6 +52,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.ev.wordpress.client.adapter.apache.TypeReferences.*;
 import static com.ev.wordpress.client.domain.dto.parameters.WpQueryParameters.CONTEXT;
@@ -60,16 +68,21 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     private final CloseableHttpClient httpClient;
     private final ObjectMapper mapper;
 
-    public ApacheWpRestClient(final @NonNull String baseUrl, final @NonNull WpAuthenticationStrategy authenticationStrategy) {
+    public ApacheWpRestClient(final @NonNull String baseUrl,
+                              final @NonNull WpAuthenticationStrategy authenticationStrategy,
+                              final TimeoutConfiguration timeoutConfiguration) {
         super(baseUrl, authenticationStrategy);
         this.mapper = new ObjectMapper();
         mapper.findAndRegisterModules();
 
-        this.httpClient = HttpClients.custom()
-                                     .addRequestInterceptorFirst(new AuthenticationInterceptor(authenticationStrategy))
-                                     .addResponseInterceptorFirst(new WpErrorInterceptor())
-                                     // add interceptors, timeouts, etc.
-                                     .build();
+        final HttpClientBuilder httpClientBuilder = HttpClients.custom();
+
+        httpClientBuilder.addRequestInterceptorFirst(new AuthenticationInterceptor(authenticationStrategy))
+                         .addResponseInterceptorFirst(new WpErrorInterceptor());
+
+        applyTimeoutConfigurationIfPresent(httpClientBuilder, timeoutConfiguration);
+
+        this.httpClient = httpClientBuilder.build();
     }
 
     /**
@@ -407,6 +420,21 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return new URIBuilder(substituted);
     }
 
+    private static void applyTimeoutConfigurationIfPresent(final HttpClientBuilder httpClientBuilder,
+                                                           final TimeoutConfiguration config) {
+        if (config == null) {
+            return;
+        }
+
+        final RequestConfig requestConfig = getRequestConfig(config);
+
+        final PoolingHttpClientConnectionManager connectionManager = getPoolingHttpClientConnectionManager(config);
+
+        httpClientBuilder
+                .setConnectionManager(connectionManager)
+                .setDefaultRequestConfig(requestConfig);
+    }
+
     private static Map<String, Object> emptyIfNull(final Map<String, Object> map) {
         return ofNullable(map).orElseGet(Collections::emptyMap);
     }
@@ -415,5 +443,33 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         if (response.getEntity() == null) {
             throw new IOException("Empty response body");
         }
+    }
+
+    private static PoolingHttpClientConnectionManager getPoolingHttpClientConnectionManager(TimeoutConfiguration config) {
+        ConnectionConfig.Builder connBuilder = ConnectionConfig.custom();
+
+        Optional.ofNullable(config.getConnectTimeout())
+                .map(Timeout::of)
+                .ifPresent(connBuilder::setConnectTimeout);
+
+        ConnectionConfig connectionConfig = connBuilder.build();
+
+        return PoolingHttpClientConnectionManagerBuilder.create()
+                                                        .setDefaultConnectionConfig(connectionConfig)
+                                                        .build();
+    }
+
+    private static RequestConfig getRequestConfig(TimeoutConfiguration config) {
+        RequestConfig.Builder builder = RequestConfig.custom();
+
+        Optional.ofNullable(config.getReadTimeout())
+                .map(Timeout::of)
+                .ifPresent(builder::setResponseTimeout);
+
+        Optional.ofNullable(config.getConnectionRequestTimeout())
+                .map(Timeout::of)
+                .ifPresent(builder::setConnectionRequestTimeout);
+
+        return builder.build();
     }
 }

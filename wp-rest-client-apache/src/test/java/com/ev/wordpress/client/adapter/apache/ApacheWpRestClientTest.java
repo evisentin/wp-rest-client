@@ -10,6 +10,6 @@ class ApacheWpRestClientTest extends AbstractBasicAuthenticationWpRestClientCont
     protected WpBaseRestClient client() {
         final WpBasicAuthenticationStrategy authenticationStrategy = new WpBasicAuthenticationStrategy("user", "password");
 
-        return new ApacheWpRestClient(mockServerUrl(), authenticationStrategy);
+        return new ApacheWpRestClient(mockServerUrl(), authenticationStrategy, null);
     }
 }
