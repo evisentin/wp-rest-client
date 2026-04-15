@@ -4,8 +4,10 @@ import com.ev.wordpress.client.domain.api.WpBaseRestClient;
 import com.ev.wordpress.client.domain.api.WpRestClient;
 import com.ev.wordpress.client.domain.dto.WpCategory;
 import com.ev.wordpress.client.domain.dto.WpPagedResponse;
+import com.ev.wordpress.client.domain.dto.WpPost;
 import com.ev.wordpress.client.domain.dto.WpTag;
 import com.ev.wordpress.client.domain.dto.enums.WpContext;
+import com.ev.wordpress.client.domain.dto.enums.WpPostStatus;
 import com.ev.wordpress.client.domain.dto.enums.WpTaxonomy;
 import com.ev.wordpress.client.domain.dto.query.WpCategoryQuery;
 import com.ev.wordpress.client.domain.dto.query.WpPagingQuery;
@@ -14,6 +16,7 @@ import com.ev.wordpress.client.domain.dto.requests.WpCategoryCreateUpdateRequest
 import com.ev.wordpress.client.domain.dto.requests.WpPostCreateUpdateRequest;
 import com.ev.wordpress.client.domain.dto.requests.WpTagCreateUpdateRequest;
 import com.ev.wordpress.client.domain.dto.responses.WpCategoryDeletionResponse;
+import com.ev.wordpress.client.domain.dto.responses.WpPostDeletionResponse;
 import com.ev.wordpress.client.domain.dto.responses.WpTagDeletionResponse;
 import com.ev.wordpress.client.domain.exception.WpBadRequestException;
 import com.ev.wordpress.client.domain.exception.WpForbiddenException;
@@ -730,9 +733,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
     class PostTests {
 
         // TODO: 'CREATE' works
-        // TODO: 'DELETE' works
-
-        // TODO: 'TRASH' works
 
         // TODO: 'GET' works
 
@@ -911,6 +911,49 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                         assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
                         assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
                         assertThat(error.getData()).containsExactly(entry("status", 401));
+                    });
+        }
+
+        @DisplayName("'DELETE' works")
+        @Test
+        void deleteWorks() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/delete.success.json");
+
+            // WHEN
+            final WpPostDeletionResponse response = client.deletePost(1005L);
+
+            // THEN
+            assertThat(response).isNotNull();
+            assertThat(response.isDeleted()).isTrue();
+            assertThat(response.getPrevious())
+                    .satisfies(summary -> {
+                        assertThat(summary).isNotNull();
+                        assertThat(summary.getId()).isEqualTo(1005L);
+                        assertThat(summary.getLink()).isNotBlank();
+
+                        assertThat(summary.getTitle())
+                                .isNotNull()
+                                .satisfies(title -> {
+                                    assertThat(title.getRaw()).isNotNull().isEqualTo("My post");
+                                    assertThat(title.getRendered()).isNotNull().isEqualTo("My post");
+                                });
+
+                        assertThat(summary.getContent())
+                                .isNotNull()
+                                .satisfies(content -> {
+                                    assertThat(content.getRaw()).isNotNull().isEqualTo("My Content");
+                                    assertThat(content.getRendered()).isNotNull().isEqualTo("<p>My Content</p>\n");
+                                });
+                        assertThat(summary.getExcerpt())
+                                .isNotNull()
+                                .satisfies(exceprt -> {
+                                    assertThat(exceprt.getRaw()).isNotNull().isEqualTo("My Content");
+                                    assertThat(exceprt.getRendered()).isNotNull().isEqualTo("<p>My Content</p>\n");
+                                });
+
+                        assertThat(summary.getSlug()).isEqualTo("my-post");
                     });
         }
 
@@ -1096,6 +1139,24 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                         assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
                         assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
                         assertThat(error.getData()).containsExactly(entry("status", 401));
+                    });
+        }
+
+        @DisplayName("'TRASH' works")
+        @Test
+        void trashWorks() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post/trash.success.json");
+
+            // WHEN
+            final WpPost post = client.trashPost(1005L);
+
+            // THEN
+            assertThat(post)
+                    .isNotNull()
+                    .satisfies(t -> {
+                        assertThat(post.getStatus()).isNotNull().isEqualTo(WpPostStatus.TRASH);
                     });
         }
 

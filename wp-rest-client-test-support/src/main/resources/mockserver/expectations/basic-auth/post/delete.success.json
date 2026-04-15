@@ -1,0 +1,101 @@
+[
+    {
+        "httpRequest": {
+            "method": "DELETE",
+            "path": "/wp-json/wp/v2/posts/1005",
+            "queryStringParameters": {
+                "force": [
+                    "true"
+                ]
+            },
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ]
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "deleted": true,
+                    "previous": {
+                        "id": 1005,
+                        "date": "2026-04-15T09:39:36",
+                        "date_gmt": "2026-04-15T09:39:36",
+                        "guid": {
+                            "rendered": "https:\/\/localhost:55629\/my-post\/",
+                            "raw": "https:\/\/localhost:55629\/my-post\/"
+                        },
+                        "modified": "2026-04-15T09:39:36",
+                        "modified_gmt": "2026-04-15T09:39:36",
+                        "password": "",
+                        "slug": "my-post",
+                        "status": "publish",
+                        "type": "post",
+                        "link": "https:\/\/localhost:55629\/my-post\/",
+                        "title": {
+                            "raw": "My post",
+                            "rendered": "My post"
+                        },
+                        "content": {
+                            "raw": "My Content",
+                            "rendered": "<p>My Content<\/p>\n",
+                            "protected": false,
+                            "block_version": 0
+                        },
+                        "excerpt": {
+                            "raw": "My Content",
+                            "rendered": "<p>My Content<\/p>\n",
+                            "protected": false
+                        },
+                        "author": 1,
+                        "featured_media": 0,
+                        "comment_status": "open",
+                        "ping_status": "open",
+                        "sticky": false,
+                        "template": "",
+                        "format": "standard",
+                        "meta": {
+                            "footnotes": ""
+                        },
+                        "categories": [
+                            1
+                        ],
+                        "tags": [],
+                        "permalink_template": "https:\/\/localhost:55629\/%postname%\/",
+                        "generated_slug": "my-post",
+                        "class_list": [
+                            "post-4",
+                            "post",
+                            "type-post",
+                            "status-publish",
+                            "format-standard",
+                            "hentry",
+                            "category-uncategorized"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+]

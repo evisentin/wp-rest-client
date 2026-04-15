@@ -1,5 +1,6 @@
 package com.ev.wordpress.client.domain.dto.responses;
 
+import com.ev.wordpress.client.domain.dto.WpRenderedField;
 import com.ev.wordpress.client.domain.dto.enums.WpPostStatus;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
@@ -21,9 +22,10 @@ public class WpPostDeletionResponse {
     public static class Summary {
         private long id;
 
-        private String description;
         private String link;
-        private String name;
+        private WpRenderedField title;
+        private WpRenderedField content;
+        private WpRenderedField excerpt;
         private String slug;
         private WpPostStatus status;
     }
