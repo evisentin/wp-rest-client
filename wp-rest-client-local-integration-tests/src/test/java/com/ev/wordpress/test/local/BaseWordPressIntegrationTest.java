@@ -27,7 +27,7 @@ import static org.testcontainers.containers.wait.strategy.Wait.forHttp;
 @Slf4j
 @Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-abstract class BaseWordPressIntegrationTest implements WithAssertions {
+public abstract class BaseWordPressIntegrationTest implements WithAssertions {
 
     public static final String WORDPRESS_DB_HOST = "WORDPRESS_DB_HOST";
     public static final String WORDPRESS_DB_NAME = "WORDPRESS_DB_NAME";

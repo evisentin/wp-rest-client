@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 @Slf4j
-abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressIntegrationTest {
+public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressIntegrationTest {
 
     protected WpRestClient adminClient;
     protected WpRestClient standardUserClient;
