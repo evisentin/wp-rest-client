@@ -19,7 +19,7 @@ import static java.util.Collections.emptySet;
  * <p>Instances are immutable and should be created using the {@link Builder}.
  */
 @Getter
-@Builder(setterPrefix = "with", toBuilder = true)
+@Builder(setterPrefix = "with")
 public class WpTagQuery {
 
     /**

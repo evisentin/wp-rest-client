@@ -1,8 +1,10 @@
 package com.ev.wordpress.test.local.testcontainers.base;
 
 import com.ev.wordpress.client.domain.api.WpRestClient;
+import com.ev.wordpress.client.domain.assertions.WordPressAssertions;
+import com.ev.wordpress.client.domain.dto.WpCategory;
+import com.ev.wordpress.client.domain.dto.enums.WpTaxonomy;
 import com.ev.wordpress.client.domain.dto.requests.WpCategoryCreateUpdateRequest;
-import com.ev.wordpress.client.domain.exception.WpBadRequestException;
 import com.ev.wordpress.test.local.testcontainers.BaseWordPressIntegrationTest;
 import com.ev.wordpress.test.local.testcontainers.base.factory.WpRestClientFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +12,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
+import static com.ev.wordpress.test.local.assertions.WpAssertions.assertThrowsWpBadRequest;
+import static java.util.Collections.emptyMap;
 
 /**
  * Base integration test class for WordPress REST API scenarios using Basic Authentication.
@@ -107,6 +112,12 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
     @DisplayName("Category APIs - Integration Tests")
     @Nested
     class CategoryTests {
+
+        private final static String CATEGORY_TEST_NAME = "Category #1";
+        private final static String CATEGORY_TEST_DESCRIPTION = "My first category";
+        private final static String CATEGORY_TEST_SLUG = "category-1";
+
+        @DisplayName("'CREATE' fails on parent not found")
         @Test
         void create__fails_on_parent_not_found() {
 
@@ -119,19 +130,42 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             final WpCategoryCreateUpdateRequest creationRequest =
                     WpCategoryCreateUpdateRequest.builder()
-                                                 .withName("my category")
+                                                 .withName(CATEGORY_TEST_NAME)
                                                  .withParentId(nonExistingParentId)
                                                  .build();
 
-            assertThatThrownBy(() -> adminClient.createCategory(creationRequest))
-                    .hasMessage("Parent term does not exist.")
-                    .extracting(ex -> (WpBadRequestException) ex)
-                    .extracting(WpBadRequestException::getError)
-                    .satisfies(error -> {
-                        assertThat(error.getCode()).isEqualTo("rest_term_invalid");
-                        assertThat(error.getMessage()).isEqualTo("Parent term does not exist.");
-                        assertThat(error.getData()).containsExactly(entry("status", 400));
-                    });
+            assertThrowsWpBadRequest(() -> adminClient.createCategory(creationRequest),
+                    "rest_term_invalid",
+                    "Parent term does not exist.",
+                    emptyMap());
+        }
+
+        @DisplayName("'CREATE' works")
+        @Test
+        void create__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            Long existingParentCategory = wpCreateCategory("Parent", "Parent Category", "parent");
+
+            // WHEN
+            final WpCategory category = adminClient.createCategory(WpCategoryCreateUpdateRequest.builder()
+                                                                                                .withName(CATEGORY_TEST_NAME)
+                                                                                                .withDescription(CATEGORY_TEST_DESCRIPTION)
+                                                                                                .withSlug(CATEGORY_TEST_SLUG)
+                                                                                                .withParentId(existingParentCategory)
+                                                                                                .build());
+            WordPressAssertions.assertThat(category)
+                               .isNotNull()
+                               .hasNonZeroId()
+                               .hasName(CATEGORY_TEST_NAME)
+                               .hasDescription(CATEGORY_TEST_DESCRIPTION)
+                               .hasSlug(CATEGORY_TEST_SLUG)
+                               .hasParentId(existingParentCategory)
+                               .hasCount(0)
+                               .hasTaxonomy(WpTaxonomy.CATEGORY)
+                               .hasLink("");
         }
     }
 }
