@@ -588,15 +588,15 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             // WHEN
             final WpCategory category = client.updateCategory(2L, updateRequest);
 
-            assertThat(category).isNotNull();
-            assertThat(category.getId()).isEqualTo(2L);
-            assertThat(category.getCount()).isEqualTo(0);
-            assertThat(category.getDescription()).isEqualTo(CAT_1_UPDATED_DESCRIPTION);
-            assertThat(category.getLink()).isNotBlank().contains(CAT_1_UPDATED_SLUG);
-            assertThat(category.getName()).isEqualTo(CAT_1_UPDATED_NAME);
-            assertThat(category.getSlug()).isEqualTo(CAT_1_UPDATED_SLUG);
-            assertThat(category.getParentId()).isZero();
-            assertThat(category.getTaxonomy()).isNotNull().isEqualTo(CATEGORY);
+            WordPressAssertions.assertThat(category)
+                               .isNotNull()
+                               .hasId(2L)
+                               .hasCount(0)
+                               .hasDescription(CAT_1_UPDATED_DESCRIPTION)
+                               .hasName(CAT_1_UPDATED_NAME)
+                               .hasSlug(CAT_1_UPDATED_SLUG)
+                               .hasNoParent()
+                               .hasTaxonomy(CATEGORY);
         }
     }
 
