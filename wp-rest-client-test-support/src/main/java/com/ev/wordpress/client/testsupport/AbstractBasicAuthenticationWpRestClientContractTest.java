@@ -2,6 +2,7 @@ package com.ev.wordpress.client.testsupport;
 
 import com.ev.wordpress.client.domain.api.WpBaseRestClient;
 import com.ev.wordpress.client.domain.api.WpRestClient;
+import com.ev.wordpress.client.domain.assertions.WordPressAssertions;
 import com.ev.wordpress.client.domain.dto.WpCategory;
 import com.ev.wordpress.client.domain.dto.WpPagedResponse;
 import com.ev.wordpress.client.domain.dto.WpPost;
@@ -162,15 +163,18 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpCategory category = client.createCategory(createRequest);
 
             // THEN
-            assertThat(category).isNotNull();
-            assertThat(category.getId()).isNotNull();
-            assertThat(category.getParentId()).isEqualTo(parent_id);
-            assertThat(category.getCount()).isEqualTo(0);
-            assertThat(category.getDescription()).isEqualTo(TEST_CATEGORY_DESCRIPTION);
-            assertThat(category.getLink()).isNotBlank().contains(PARENT_SLUG, TEST_CATEGORY_SLUG);
-            assertThat(category.getName()).isEqualTo(TEST_CATEGORY_NAME);
-            assertThat(category.getSlug()).isEqualTo(TEST_CATEGORY_SLUG);
-            assertThat(category.getTaxonomy()).isNotNull().isEqualTo(CATEGORY);
+            WordPressAssertions.assertThat(category)
+                               .isNotNull()
+                               .hasParentId(parent_id)
+                               .hasCount(0)
+                               .hasDescription(TEST_CATEGORY_DESCRIPTION)
+                               .hasName(TEST_CATEGORY_NAME).hasSlug(TEST_CATEGORY_SLUG)
+                               .hasTaxonomy(CATEGORY)
+                               .satisfies(cat -> {
+                                           assertThat(cat.getId()).isNotNull();
+                                           assertThat(cat.getLink()).isNotBlank().contains(PARENT_SLUG, TEST_CATEGORY_SLUG);
+                                       }
+                               );
         }
 
         @DisplayName("'DELETE' fails on HTTP FORBIDDEN")
@@ -227,19 +231,19 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpCategoryDeletionResponse response = client.deleteCategory(1005L);
 
             // THEN
-            assertThat(response).isNotNull();
-            assertThat(response.isDeleted()).isTrue();
-            assertThat(response.getPrevious())
-                    .satisfies(summary -> {
-                        assertThat(summary).isNotNull();
-                        assertThat(summary.getId()).isEqualTo(1005L);
-                        assertThat(summary.getCount()).isZero();
-                        assertThat(summary.getDescription()).isEqualTo(TEST_CATEGORY_DESCRIPTION);
-                        assertThat(summary.getLink()).isNotBlank();
-                        assertThat(summary.getName()).isEqualTo(TEST_CATEGORY_NAME);
-                        assertThat(summary.getSlug()).isEqualTo(TEST_CATEGORY_SLUG);
-                        assertThat(summary.getTaxonomy()).isEqualTo(CATEGORY);
-                    });
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .isDeleted()
+                               .hasPreviousSatisfying(summary ->
+                                       summary.isNotNull()
+                                              .hasId(1005L)
+                                              .hasCount(0)
+                                              .hasDescription(TEST_CATEGORY_DESCRIPTION)
+                                              .hasName(TEST_CATEGORY_NAME)
+                                              .hasSlug(TEST_CATEGORY_SLUG)
+                                              .hasTaxonomy(CATEGORY)
+
+                               );
         }
 
         @DisplayName("'GET' fails on HTTP FORBIDDEN")
@@ -298,14 +302,14 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpCategory category = client.getCategory(catId, WpContext.VIEW);
 
             // THEN
-            assertThat(category).isNotNull();
-            assertThat(category.getId()).isEqualTo(catId);
-            assertThat(category.getCount()).isEqualTo(0);
-            assertThat(category.getDescription()).isEqualTo(TEST_CATEGORY_DESCRIPTION);
-            assertThat(category.getLink()).isNotBlank().contains(TEST_CATEGORY_SLUG);
-            assertThat(category.getName()).isEqualTo(TEST_CATEGORY_NAME);
-            assertThat(category.getSlug()).isEqualTo(TEST_CATEGORY_SLUG);
-            assertThat(category.getTaxonomy()).isNotNull().isEqualTo(CATEGORY);
+            WordPressAssertions.assertThat(category)
+                               .isNotNull()
+                               .hasId(catId)
+                               .hasCount(0)
+                               .hasDescription(TEST_CATEGORY_DESCRIPTION)
+                               .hasName(TEST_CATEGORY_NAME)
+                               .hasSlug(TEST_CATEGORY_SLUG)
+                               .hasTaxonomy(CATEGORY);
         }
 
         @DisplayName("'GET' works without context")
@@ -321,14 +325,14 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpCategory category = client.getCategory(catId, null);
 
             // THEN
-            assertThat(category).isNotNull();
-            assertThat(category.getId()).isEqualTo(catId);
-            assertThat(category.getCount()).isEqualTo(0);
-            assertThat(category.getDescription()).isEqualTo(TEST_CATEGORY_DESCRIPTION);
-            assertThat(category.getLink()).isNotBlank().contains(TEST_CATEGORY_SLUG);
-            assertThat(category.getName()).isEqualTo(TEST_CATEGORY_NAME);
-            assertThat(category.getSlug()).isEqualTo(TEST_CATEGORY_SLUG);
-            assertThat(category.getTaxonomy()).isNotNull().isEqualTo(CATEGORY);
+            WordPressAssertions.assertThat(category)
+                               .isNotNull()
+                               .hasId(catId)
+                               .hasCount(0)
+                               .hasDescription(TEST_CATEGORY_DESCRIPTION)
+                               .hasName(TEST_CATEGORY_NAME)
+                               .hasSlug(TEST_CATEGORY_SLUG)
+                               .hasTaxonomy(CATEGORY);
         }
 
         @DisplayName("'LIST' fails on HTTP FORBIDDEN")
@@ -381,40 +385,37 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpPagedResponse<WpCategory> response = client.listCategories(WpPagingQuery.of(1, 10), null);
 
             // THEN
-            assertThat(response)
-                    .isNotNull()
-                    .satisfies(r -> {
-                        assertThat(r.getPageNumber()).isEqualTo(1);
-                        assertThat(r.getItemsPerPage()).isEqualTo(10);
-                        assertThat(r.getTotalPages()).isEqualTo(1);
-                        assertThat(r.getTotalItems()).isEqualTo(3); // 2 items created here, plus the default category (id=1) which cannot be deleted
-                        assertThat(r.hasNextPage()).isFalse();
-                        assertThat(r.getItems())
-                                .hasSize(3)
-                                .satisfiesExactly(
-                                        cat -> {
-                                            assertThat(cat.getId()).isEqualTo(2L);
-                                            assertThat(cat.getName()).isEqualTo(NAME_1);
-                                            assertThat(cat.getSlug()).isEqualTo(SLUG_1);
-                                            assertThat(cat.getDescription()).isEqualTo(DESCRIPTION_1);
-                                            assertThat(cat.getTaxonomy()).isEqualTo(CATEGORY);
-                                        },
-                                        cat -> {
-                                            assertThat(cat.getId()).isEqualTo(3L);
-                                            assertThat(cat.getName()).isEqualTo(NAME_2);
-                                            assertThat(cat.getSlug()).isEqualTo(SLUG_2);
-                                            assertThat(cat.getDescription()).isEqualTo(DESCRIPTION_2);
-                                            assertThat(cat.getTaxonomy()).isEqualTo(CATEGORY);
-                                        },
-                                        cat -> {
-                                            assertThat(cat.getId()).isEqualTo(1L);
-                                            assertThat(cat.getName()).isEqualTo("Uncategorized");
-                                            assertThat(cat.getSlug()).isEqualTo("uncategorized");
-                                            assertThat(cat.getDescription()).isEmpty();
-                                            assertThat(cat.getTaxonomy()).isEqualTo(CATEGORY);
-                                        }
-                                );
-                    });
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(3) // 2 items created here, plus the default category (id=1) which cannot be deleted
+                               .doesNotHaveNextPage()
+                               .satisfies(r ->
+                                       assertThat(r.getItems())
+                                               .hasSize(3)
+                                               .satisfiesExactly(
+                                                       cat -> WordPressAssertions.assertThat(cat)
+                                                                                 .hasId(2L)
+                                                                                 .hasName(NAME_1)
+                                                                                 .hasSlug(SLUG_1)
+                                                                                 .hasDescription(DESCRIPTION_1)
+                                                                                 .hasTaxonomy(CATEGORY),
+                                                       cat -> WordPressAssertions.assertThat(cat)
+                                                                                 .hasId(3L)
+                                                                                 .hasName(NAME_2)
+                                                                                 .hasSlug(SLUG_2)
+                                                                                 .hasDescription(DESCRIPTION_2)
+                                                                                 .hasTaxonomy(CATEGORY),
+                                                       cat -> WordPressAssertions.assertThat(cat)
+                                                                                 .hasId(1L)
+                                                                                 .hasName("Uncategorized")
+                                                                                 .hasSlug("uncategorized")
+                                                                                 .hasDescription("")
+                                                                                 .hasTaxonomy(CATEGORY)
+
+                                               ));
         }
 
         @DisplayName("'LIST' works with paging and query")
@@ -437,26 +438,25 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpPagedResponse<WpCategory> response = client.listCategories(WpPagingQuery.of(1, 10), categoryQuery);
 
             // THEN
-            assertThat(response)
-                    .isNotNull()
-                    .satisfies(r -> {
-                        assertThat(r.getPageNumber()).isEqualTo(1);
-                        assertThat(r.getItemsPerPage()).isEqualTo(10);
-                        assertThat(r.getTotalPages()).isEqualTo(1);
-                        assertThat(r.getTotalItems()).isEqualTo(1);
-                        assertThat(r.hasNextPage()).isFalse();
-                        assertThat(r.getItems())
-                                .hasSize(1)
-                                .satisfiesExactly(
-                                        cat -> {
-                                            assertThat(cat.getId()).isEqualTo(3L);
-                                            assertThat(cat.getName()).isEqualTo(NAME_2);
-                                            assertThat(cat.getSlug()).isEqualTo(SLUG_2);
-                                            assertThat(cat.getDescription()).isEqualTo(DESCRIPTION_2);
-                                            assertThat(cat.getTaxonomy()).isEqualTo(CATEGORY);
-                                        }
-                                );
-                    });
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(1)
+                               .doesNotHaveNextPage()
+                               .satisfies(r ->
+                                       assertThat(r.getItems())
+                                               .hasSize(1)
+                                               .satisfiesExactly(
+                                                       cat -> WordPressAssertions.assertThat(cat)
+                                                                                 .hasId(3L)
+                                                                                 .hasName(NAME_2)
+                                                                                 .hasSlug(SLUG_2)
+                                                                                 .hasDescription(DESCRIPTION_2)
+                                                                                 .hasTaxonomy(CATEGORY)
+
+                                               ));
         }
 
         @DisplayName("'UPDATE' fails on HTTP BAD REQUEST")

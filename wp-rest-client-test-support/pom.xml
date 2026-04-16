@@ -20,6 +20,13 @@
       <artifactId>wp-rest-client-domain</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.ev.wordpress</groupId>
+      <artifactId>wp-rest-client-domain</artifactId>
+      <version>${project.version}</version>
+      <type>test-jar</type>
+      <scope>compile</scope>
+    </dependency>
 
     <!-- [APACHE COMMONS] -->
     <dependency>
@@ -70,8 +77,15 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin><plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
