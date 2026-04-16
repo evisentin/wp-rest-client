@@ -63,6 +63,12 @@
       <artifactId>okhttp-jvm</artifactId>
     </dependency>
 
+    <!-- [SLF4j] -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+
     <!-- [JUNIT] -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>

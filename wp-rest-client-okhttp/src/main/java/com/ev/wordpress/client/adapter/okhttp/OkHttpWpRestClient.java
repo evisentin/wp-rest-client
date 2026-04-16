@@ -1,6 +1,7 @@
 package com.ev.wordpress.client.adapter.okhttp;
 
 import com.ev.wordpress.client.adapter.okhttp.interceptors.AuthenticationInterceptor;
+import com.ev.wordpress.client.adapter.okhttp.interceptors.LoggingInterceptor;
 import com.ev.wordpress.client.adapter.okhttp.interceptors.WpErrorInterceptor;
 import com.ev.wordpress.client.adapter.okhttp.query.mappers.CategoryQueryParamMapper;
 import com.ev.wordpress.client.adapter.okhttp.query.mappers.PostQueryParamMapper;
@@ -129,6 +130,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         mapper.findAndRegisterModules();
 
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
+                .addInterceptor(new LoggingInterceptor())
                 .addInterceptor(new AuthenticationInterceptor(authenticationStrategy))
                 .addInterceptor(new WpErrorInterceptor());
 

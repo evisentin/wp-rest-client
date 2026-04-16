@@ -6,12 +6,13 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.images.builder.ImageFromDockerfile;
-import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import org.testcontainers.lifecycle.Startables;
 import org.testcontainers.mysql.MySQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
@@ -102,13 +103,8 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
     private final Path WP_FILES_DIR = createTempFilesDir();
     private final Network NETWORK = Network.newNetwork();
 
-    @Container
     private final MySQLContainer database = createDatabaseContainer();
-
-    @Container
     private final GenericContainer<?> wordpress = createWordPressContainer();
-
-    @Container
     protected final GenericContainer<?> wpcli = createWordPressCli();
 
     protected String adminApplicationPassword = "";
@@ -118,7 +114,21 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
 
     @AfterAll
     void cleanUp() {
+        if (wpcli != null) {
+            wpcli.stop();
+        }
+        if (wordpress != null) {
+            wordpress.stop();
+        }
+        if (database != null) {
+            database.stop();
+        }
         deleteIfExists(WP_FILES_DIR);
+    }
+
+    @BeforeAll
+    void startEnvironment() {
+        Startables.deepStart(database, wordpress, wpcli).join();
     }
 
     protected String getHttpsBaseUrl() {
@@ -432,8 +442,6 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
                 // official docs note cli image often needs UID alignment
                 .withCreateContainerCmdModifier(cmd -> cmd.withUser("33:33"))
                 .withCommand("tail", "-f", "/dev/null");
-
-        container.start();
 
         return container;
     }

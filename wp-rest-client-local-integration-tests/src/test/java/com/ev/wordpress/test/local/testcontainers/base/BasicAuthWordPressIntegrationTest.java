@@ -7,6 +7,7 @@ import com.ev.wordpress.client.domain.dto.enums.WpTaxonomy;
 import com.ev.wordpress.client.domain.dto.requests.WpCategoryCreateUpdateRequest;
 import com.ev.wordpress.test.local.testcontainers.BaseWordPressIntegrationTest;
 import com.ev.wordpress.test.local.testcontainers.base.factory.WpRestClientFactory;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -14,7 +15,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static com.ev.wordpress.test.local.assertions.WpAssertions.assertThrowsWpBadRequest;
-import static java.util.Collections.emptyMap;
 
 /**
  * Base integration test class for WordPress REST API scenarios using Basic Authentication.
@@ -136,8 +136,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             assertThrowsWpBadRequest(() -> adminClient.createCategory(creationRequest),
                     "rest_term_invalid",
-                    "Parent term does not exist.",
-                    emptyMap());
+                    "Parent term does not exist.");
         }
 
         @DisplayName("'CREATE' works")
@@ -165,7 +164,15 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                .hasParentId(existingParentCategory)
                                .hasCount(0)
                                .hasTaxonomy(WpTaxonomy.CATEGORY)
-                               .hasLink("");
+                               .hasLink(linkForCategory("parent", CATEGORY_TEST_SLUG));
+        }
+
+        private String linkForCategory(final @NonNull String slug) {
+            return String.format("%s/category/%s/", getHttpsBaseUrl(), slug);
+        }
+
+        private String linkForCategory(final @NonNull String parentSlug, final @NonNull String slug) {
+            return String.format("%s/category/%s/%s/", getHttpsBaseUrl(), parentSlug, slug);
         }
     }
 }

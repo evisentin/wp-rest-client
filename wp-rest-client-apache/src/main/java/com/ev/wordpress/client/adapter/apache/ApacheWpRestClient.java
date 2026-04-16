@@ -1,6 +1,8 @@
 package com.ev.wordpress.client.adapter.apache;
 
 import com.ev.wordpress.client.adapter.apache.interceptors.AuthenticationInterceptor;
+import com.ev.wordpress.client.adapter.apache.interceptors.LoggingRequestInterceptor;
+import com.ev.wordpress.client.adapter.apache.interceptors.LoggingResponseInterceptor;
 import com.ev.wordpress.client.adapter.apache.interceptors.WpErrorInterceptor;
 import com.ev.wordpress.client.adapter.apache.query.mappers.CategoryQueryParamMapper;
 import com.ev.wordpress.client.adapter.apache.query.mappers.PostQueryParamMapper;
@@ -141,7 +143,9 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         final HttpClientBuilder httpClientBuilder = HttpClients.custom();
 
         httpClientBuilder.addRequestInterceptorFirst(new AuthenticationInterceptor(authenticationStrategy))
-                         .addResponseInterceptorFirst(new WpErrorInterceptor());
+                         .addRequestInterceptorFirst(new LoggingRequestInterceptor())
+                         .addResponseInterceptorFirst(new WpErrorInterceptor())
+                         .addResponseInterceptorFirst(new LoggingResponseInterceptor());
 
         applySslConfigurationIfPresent(httpClientBuilder, sslConfiguration);
         applyTimeoutConfigurationIfPresent(httpClientBuilder, timeoutConfiguration);
