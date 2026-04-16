@@ -10,21 +10,42 @@ import lombok.NonNull;
 import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert;
 
+import java.util.Map;
+
+import static java.util.Collections.emptyMap;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.entry;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WpAssertions {
 
-    public static void assertThrowsWpBadRequest(final @NonNull ThrowableAssert.ThrowingCallable shouldRaiseThrowable) {
+    public static void assertThrowsWpBadRequest(final @NonNull ThrowableAssert.ThrowingCallable shouldRaiseThrowable,
+                                                final @NonNull String expectedCode,
+                                                final @NonNull String expectedMessage) {
+        assertThrowsWpBadRequest(shouldRaiseThrowable, expectedCode, expectedMessage, emptyMap());
+    }
+
+    public static void assertThrowsWpBadRequest(final @NonNull ThrowableAssert.ThrowingCallable shouldRaiseThrowable,
+                                                final @NonNull String expectedCode,
+                                                final @NonNull String expectedMessage,
+                                                final Map<String, Object> extraEntries) {
         assertThatThrownBy(shouldRaiseThrowable)
-                .hasMessage("Missing parameter(s): param1")
+                .hasMessage(expectedMessage)
                 .extracting(ex -> (WpBadRequestException) ex)
                 .extracting(WpBadRequestException::getError)
                 .satisfies(error -> {
-                    Assertions.assertThat(error.getCode()).isEqualTo("rest_missing_callback_param");
-                    Assertions.assertThat(error.getMessage()).isEqualTo("Missing parameter(s): param1");
-                    Assertions.assertThat(error.getData()).contains(Assertions.entry("status", 400));
+                    assertThat(error.getCode()).isEqualTo(expectedCode);
+                    assertThat(error.getMessage()).isEqualTo(expectedMessage);
+                    assertThat(error.getData()).containsEntry("status", 400);
+                    if (extraEntries != null) {
+                        assertThat(error.getData()).containsAllEntriesOf(extraEntries);
+                    }
                 });
+    }
+
+    public static void assertThrowsWpBadRequest(final @NonNull ThrowableAssert.ThrowingCallable shouldRaiseThrowable) {
+        assertThrowsWpBadRequest(shouldRaiseThrowable, "rest_missing_callback_param", "Missing parameter(s): param1");
     }
 
     public static void assertThrowsWpForbidden(final @NonNull ThrowableAssert.ThrowingCallable shouldRaiseThrowable) {
@@ -39,16 +60,22 @@ public class WpAssertions {
                 });
     }
 
-    public static void assertThrowsWpNotFound(final @NonNull ThrowableAssert.ThrowingCallable shouldRaiseThrowable) {
+    public static void assertThrowsWpNotFound(final @NonNull ThrowableAssert.ThrowingCallable shouldRaiseThrowable,
+                                              final @NonNull String expectedCode,
+                                              final @NonNull String expectedMessage) {
         assertThatThrownBy(shouldRaiseThrowable)
-                .hasMessage("Term does not exist.")
+                .hasMessage(expectedMessage)
                 .extracting(ex -> (WpNotFoundException) ex)
                 .extracting(WpNotFoundException::getError)
                 .satisfies(error -> {
-                    Assertions.assertThat(error.getCode()).isEqualTo("rest_term_invalid");
-                    Assertions.assertThat(error.getMessage()).isEqualTo("Term does not exist.");
-                    Assertions.assertThat(error.getData()).containsExactly(Assertions.entry("status", 404));
+                    assertThat(error.getCode()).isEqualTo(expectedCode);
+                    assertThat(error.getMessage()).isEqualTo(expectedMessage);
+                    assertThat(error.getData()).containsExactly(entry("status", 404));
                 });
+    }
+
+    public static void assertThrowsWpNotFound(final @NonNull ThrowableAssert.ThrowingCallable shouldRaiseThrowable) {
+        assertThrowsWpNotFound(shouldRaiseThrowable, "rest_term_invalid", "Term does not exist.");
     }
 
     public static void assertThrowsWpUnauthorized(final @NonNull ThrowableAssert.ThrowingCallable shouldRaiseThrowable) {
@@ -57,9 +84,9 @@ public class WpAssertions {
                 .extracting(ex -> (WpUnauthorizedException) ex)
                 .extracting(WpUnauthorizedException::getError)
                 .satisfies(error -> {
-                    Assertions.assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
-                    Assertions.assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
-                    Assertions.assertThat(error.getData()).containsExactly(Assertions.entry("status", 401));
+                    assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
+                    assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
+                    assertThat(error.getData()).containsExactly(entry("status", 401));
                 });
     }
 }
