@@ -16,10 +16,10 @@
     <module>wp-rest-client-domain</module>
     <module>wp-rest-client-okhttp</module>
     <module>wp-rest-client-apache</module>
-    <module>wp-rest-client-local-integration-tests</module>
-    <module>wp-rest-client-test-support</module>
     <module>wp-rest-client-test-commons</module>
+    <module>wp-rest-client-test-integration</module>
     <module>wp-rest-client-test-report</module>
+    <module>wp-rest-client-test-support</module>
   </modules>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <properties>
