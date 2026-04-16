@@ -3,9 +3,11 @@ package com.ev.wordpress.test.integration.base;
 import com.ev.wordpress.client.domain.api.WpRestClient;
 import com.ev.wordpress.client.domain.assertions.WordPressAssertions;
 import com.ev.wordpress.client.domain.dto.WpCategory;
+import com.ev.wordpress.client.domain.dto.WpTag;
 import com.ev.wordpress.client.domain.dto.enums.WpContext;
 import com.ev.wordpress.client.domain.dto.enums.WpTaxonomy;
 import com.ev.wordpress.client.domain.dto.requests.WpCategoryCreateUpdateRequest;
+import com.ev.wordpress.client.domain.dto.requests.WpTagCreateUpdateRequest;
 import com.ev.wordpress.client.domain.dto.responses.WpCategoryDeletionResponse;
 import com.ev.wordpress.test.integration.BaseWordPressIntegrationTest;
 import com.ev.wordpress.test.integration.base.factory.WpRestClientFactory;
@@ -15,6 +17,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+
+import java.util.Map;
 
 import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.CATEGORY;
 import static com.ev.wordpress.client.test.commons.assertions.WpAssertions.assertThrowsWpBadRequest;
@@ -340,5 +344,226 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
         private String linkForCategory(final @NonNull String parentSlug, final @NonNull String slug) {
             return String.format("%s/category/%s/%s/", getHttpsBaseUrl(), parentSlug, slug);
         }
+    }
+
+    @DisplayName("TAG APIs - Integration Tests")
+    @Nested
+    class TagTests {
+
+        private final static String TAG_TEST_NAME = "Tag #1";
+        private final static String TAG_TEST_DESCRIPTION = "My first tag";
+        private final static String TAG_TEST_SLUG = "tag-1";
+
+        @DisplayName("'CREATE' fails on duplicate")
+        @Test
+        void create__fails_on_parent_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // given a tag already exists
+            final Long existingTagId = wpCreateTag(TAG_TEST_NAME, TAG_TEST_DESCRIPTION, TAG_TEST_SLUG);
+
+            // WHEN/THEN
+
+            final WpTagCreateUpdateRequest creationRequest =
+                    WpTagCreateUpdateRequest.builder()
+                                            .withName(TAG_TEST_NAME)
+                                            .build();
+
+            assertThrowsWpBadRequest(() -> adminClient.createTag(creationRequest),
+                    "term_exists",
+                    "A term with the name provided already exists in this taxonomy.",
+                    Map.of("term_id", existingTagId.intValue()));
+        }
+
+        @DisplayName("'CREATE' works")
+        @Test
+        void create__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN
+            final WpTag tag = adminClient.createTag(WpTagCreateUpdateRequest.builder()
+                                                                            .withName(TAG_TEST_NAME)
+                                                                            .withDescription(TAG_TEST_DESCRIPTION)
+                                                                            .withSlug(TAG_TEST_SLUG)
+                                                                            .build());
+            WordPressAssertions.assertThat(tag)
+                               .isNotNull()
+                               .hasNonZeroId()
+                               .hasName(TAG_TEST_NAME)
+                               .hasDescription(TAG_TEST_DESCRIPTION)
+                               .hasSlug(TAG_TEST_SLUG)
+                               .hasCount(0)
+                               .hasTaxonomy(WpTaxonomy.POST_TAG)
+                               .hasLink(linkForTag(TAG_TEST_SLUG));
+        }
+
+        private String linkForTag(final @NonNull String slug) {
+            return String.format("%s/tag/%s/", getHttpsBaseUrl(), slug);
+        }
+
+//        @DisplayName("'DELETE' fails on HTTP NOT FOUND")
+//        @Test
+//        void delete__fails_on_not_found() {
+//
+//            // GIVEN
+//            wpCleanDefaultData();
+//
+//            // WHEN/THEN
+//            assertThrowsWpNotFound(() -> adminClient.deleteCategory(1000L), "rest_term_invalid", "Term does not exist.");
+//        }
+//
+//        @DisplayName("'DELETE' works")
+//        @Test
+//        void delete__works() {
+//
+//            // GIVEN
+//            wpCleanDefaultData();
+//            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
+//
+//            // WHEN
+//            final WpCategoryDeletionResponse deletionResponse = adminClient.deleteCategory(categoryId);
+//
+//            // THEN
+//            WordPressAssertions.assertThat(deletionResponse)
+//                               .isNotNull()
+//                               .isDeleted()
+//                               .hasPreviousSatisfying(summary ->
+//                                       summary.isNotNull()
+//                                              .hasId(categoryId)
+//                                              .hasCount(0)
+//                                              .hasDescription(CATEGORY_TEST_DESCRIPTION)
+//                                              .hasName(CATEGORY_TEST_NAME)
+//                                              .hasSlug(CATEGORY_TEST_SLUG)
+//                                              .hasLink(linkForCategory(CATEGORY_TEST_SLUG))
+//                                              .hasTaxonomy(WpTaxonomy.CATEGORY));
+//        }
+//
+//        @DisplayName("'GET' fails on HTTP NOT FOUND")
+//        @Test
+//        void get__fails_on_not_found() {
+//
+//            // GIVEN
+//            wpCleanDefaultData();
+//            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
+//
+//            // WHEN/THEN
+//            assertThrowsWpNotFound(() -> adminClient.getCategory(categoryId + 1000, null), "rest_term_invalid", "Term does not exist.");
+//        }
+//
+//        @DisplayName("'GET' works with context")
+//        @Test
+//        void get__works_with_context() {
+//
+//            // GIVEN
+//            wpCleanDefaultData();
+//            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
+//
+//            // WHEN
+//            final WpCategory category = adminClient.getCategory(categoryId, WpContext.EDIT);
+//
+//            WordPressAssertions.assertThat(category)
+//                               .isNotNull()
+//                               .hasId(categoryId)
+//                               .hasCount(0)
+//                               .hasDescription(CATEGORY_TEST_DESCRIPTION)
+//                               .hasName(CATEGORY_TEST_NAME)
+//                               .hasSlug(CATEGORY_TEST_SLUG)
+//                               .hasTaxonomy(CATEGORY);
+//        }
+//
+//        @DisplayName("'GET' works with no context")
+//        @Test
+//        void get__works_with_no_context() {
+//
+//            // GIVEN
+//            wpCleanDefaultData();
+//            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
+//
+//            // WHEN
+//            final WpCategory category = adminClient.getCategory(categoryId, null);
+//
+//            WordPressAssertions.assertThat(category)
+//                               .isNotNull()
+//                               .hasId(categoryId)
+//                               .hasCount(0)
+//                               .hasDescription(CATEGORY_TEST_DESCRIPTION)
+//                               .hasName(CATEGORY_TEST_NAME)
+//                               .hasSlug(CATEGORY_TEST_SLUG)
+//                               .hasTaxonomy(CATEGORY);
+//        }
+//
+//        // list__works_with_just_paging
+//        // list__works_with_paging_and_query
+//
+//        @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
+//        @Test
+//        void update__fails_on_not_found() {
+//
+//            // GIVEN
+//            wpCleanDefaultData();
+//
+//            Long nonExistingCategoryId = 1000L;
+//
+//            // WHEN/THEN
+//
+//            final WpCategoryCreateUpdateRequest updateRequest = WpCategoryCreateUpdateRequest.builder().build();
+//            assertThrowsWpNotFound(() -> adminClient.updateCategory(nonExistingCategoryId, updateRequest), "rest_term_invalid", "Term does not exist.");
+//        }
+//
+//        @DisplayName("'UPDATE' fails on parent not found")
+//        @Test
+//        void update__fails_on_parent_not_found() {
+//
+//            // GIVEN
+//            wpCleanDefaultData();
+//
+//            Long nonExistingCategoryId = 1000L;
+//            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
+//
+//            // WHEN/THEN
+//
+//            final WpCategoryCreateUpdateRequest updateRequest =
+//                    WpCategoryCreateUpdateRequest.builder()
+//                                                 .withName("my category")
+//                                                 .withParentId(nonExistingCategoryId)
+//                                                 .build();
+//
+//            assertThrowsWpBadRequest(() -> adminClient.updateCategory(categoryId, updateRequest),
+//                    "rest_term_invalid", "Parent term does not exist.");
+//        }
+//
+//        @DisplayName("'UPDATE' works")
+//        @Test
+//        void update__works() {
+//
+//            // GIVEN
+//            wpCleanDefaultData();
+//
+//            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
+//
+//            // WHEN
+//            final WpCategoryCreateUpdateRequest updateRequest =
+//                    WpCategoryCreateUpdateRequest.builder()
+//                                                 .withName(CATEGORY_TEST_NAME + " UPDATED")
+//                                                 .withDescription(CATEGORY_TEST_DESCRIPTION + " UPDATED")
+//                                                 .withSlug(CATEGORY_TEST_SLUG + " UPDATED")
+//                                                 .build();
+//
+//            final WpCategory category = adminClient.updateCategory(categoryId, updateRequest);
+//
+//            // THEN
+//            WordPressAssertions.assertThat(category)
+//                               .isNotNull()
+//                               .hasId(categoryId)
+//                               .hasCount(0)
+//                               .hasDescription(CATEGORY_TEST_DESCRIPTION + " UPDATED")
+//                               .hasName(CATEGORY_TEST_NAME + " UPDATED")
+//                               .hasSlug(toWordPressSlug(CATEGORY_TEST_SLUG + " UPDATED"))
+//                               .hasTaxonomy(CATEGORY);
+//        }
     }
 }

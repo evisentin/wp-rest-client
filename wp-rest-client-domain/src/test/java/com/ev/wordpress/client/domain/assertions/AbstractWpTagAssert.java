@@ -51,6 +51,16 @@ public abstract class AbstractWpTagAssert<SELF extends AbstractWpTagAssert<SELF>
         return myself;
     }
 
+    public SELF hasNonZeroId() {
+        isNotNull();
+
+        if (actual.getId() == 0L) {
+            failWithMessage("Expected tag id to be non-zero but was <0>");
+        }
+
+        return myself;
+    }
+
     public SELF hasSlug(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getSlug(), expected)) {
