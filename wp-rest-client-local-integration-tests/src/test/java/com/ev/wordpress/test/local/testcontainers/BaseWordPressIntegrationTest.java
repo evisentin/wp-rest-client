@@ -24,6 +24,59 @@ import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 import static org.testcontainers.containers.BindMode.READ_WRITE;
 import static org.testcontainers.containers.wait.strategy.Wait.forHttp;
 
+/**
+ * Base class for WordPress integration tests using Testcontainers.
+ *
+ * <p>This class provides a fully isolated and reproducible test environment by
+ * orchestrating a WordPress instance, a MySQL database, and a WP-CLI container within a shared Docker network. It is
+ * designed to simplify end-to-end testing of WordPress integrations by handling infrastructure setup, lifecycle
+ * management, and common test utilities.</p>
+ *
+ * <h2>Features</h2>
+ * <ul>
+ *   <li>Provisioning of a MySQL database container preconfigured for WordPress</li>
+ *   <li>Startup of a WordPress container with HTTPS support</li>
+ *   <li>Dedicated WP-CLI container for executing administrative commands</li>
+ *   <li>Utility methods for installation, configuration, and data management</li>
+ *   <li>Predefined test users and authentication setup</li>
+ * </ul>
+ *
+ * <h2>Test Lifecycle</h2>
+ * <p>The containers are managed by Testcontainers and shared across test methods
+ * within the same test class ({@link TestInstance.Lifecycle#PER_CLASS}). Temporary
+ * file resources are cleaned up after all tests have completed.</p>
+ *
+ * <h2>Typical Usage</h2>
+ * <pre>{@code
+ * class MyIntegrationTest extends BaseWordPressIntegrationTest {
+ *
+ *     @Override
+ *     public String getWordPressVersion() {
+ *         return "6.5";
+ *     }
+ *
+ *     @Test
+ *     void shouldDoSomething() {
+ *         wpInitWordPress(getHttpsBaseUrl());
+ *         wpConfigureDefaultUsers();
+ *         wpActivatePermalinks();
+ *
+ *         // perform test logic...
+ *     }
+ * }
+ * }</pre>
+ *
+ * <h2>Notes</h2>
+ * <ul>
+ *   <li>All interactions with WordPress are performed via WP-CLI inside the container</li>
+ *   <li>Helper methods fail fast if underlying commands return non-zero exit codes</li>
+ *   <li>The environment is intended for testing purposes only and is not production-ready</li>
+ * </ul>
+ *
+ * @see org.testcontainers.junit.jupiter.Testcontainers
+ * @see org.testcontainers.containers.GenericContainer
+ * @see org.testcontainers.mysql.MySQLContainer
+ */
 @Slf4j
 @Testcontainers
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
