@@ -3,8 +3,10 @@ package com.ev.wordpress.test.local.testcontainers.base;
 import com.ev.wordpress.client.domain.api.WpRestClient;
 import com.ev.wordpress.client.domain.assertions.WordPressAssertions;
 import com.ev.wordpress.client.domain.dto.WpCategory;
+import com.ev.wordpress.client.domain.dto.enums.WpContext;
 import com.ev.wordpress.client.domain.dto.enums.WpTaxonomy;
 import com.ev.wordpress.client.domain.dto.requests.WpCategoryCreateUpdateRequest;
+import com.ev.wordpress.client.domain.dto.responses.WpCategoryDeletionResponse;
 import com.ev.wordpress.test.local.testcontainers.BaseWordPressIntegrationTest;
 import com.ev.wordpress.test.local.testcontainers.base.factory.WpRestClientFactory;
 import lombok.NonNull;
@@ -14,7 +16,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.CATEGORY;
 import static com.ev.wordpress.test.local.assertions.WpAssertions.assertThrowsWpBadRequest;
+import static com.ev.wordpress.test.local.assertions.WpAssertions.assertThrowsWpNotFound;
+import static com.ev.wordpress.test.utils.SlugUtils.toWordPressSlug;
 
 /**
  * Base integration test class for WordPress REST API scenarios using Basic Authentication.
@@ -165,6 +170,167 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                .hasCount(0)
                                .hasTaxonomy(WpTaxonomy.CATEGORY)
                                .hasLink(linkForCategory("parent", CATEGORY_TEST_SLUG));
+        }
+
+        @DisplayName("'DELETE' fails on HTTP NOT FOUND")
+        @Test
+        void delete__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.deleteCategory(1000L), "rest_term_invalid", "Term does not exist.");
+        }
+
+        @DisplayName("'DELETE' works")
+        @Test
+        void delete__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
+
+            // WHEN
+            final WpCategoryDeletionResponse deletionResponse = adminClient.deleteCategory(categoryId);
+
+            // THEN
+            WordPressAssertions.assertThat(deletionResponse)
+                               .isNotNull()
+                               .isDeleted()
+                               .hasPreviousSatisfying(summary ->
+                                       summary.isNotNull()
+                                              .hasId(categoryId)
+                                              .hasCount(0)
+                                              .hasDescription(CATEGORY_TEST_DESCRIPTION)
+                                              .hasName(CATEGORY_TEST_NAME)
+                                              .hasSlug(CATEGORY_TEST_SLUG)
+                                              .hasLink(linkForCategory(CATEGORY_TEST_SLUG))
+                                              .hasTaxonomy(WpTaxonomy.CATEGORY));
+        }
+
+        @DisplayName("'GET' fails on HTTP NOT FOUND")
+        @Test
+        void get__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.getCategory(categoryId + 1000, null), "rest_term_invalid", "Term does not exist.");
+        }
+
+        @DisplayName("'GET' works with context")
+        @Test
+        void get__works_with_context() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
+
+            // WHEN
+            final WpCategory category = adminClient.getCategory(categoryId, WpContext.EDIT);
+
+            WordPressAssertions.assertThat(category)
+                               .isNotNull()
+                               .hasId(categoryId)
+                               .hasCount(0)
+                               .hasDescription(CATEGORY_TEST_DESCRIPTION)
+                               .hasName(CATEGORY_TEST_NAME)
+                               .hasSlug(CATEGORY_TEST_SLUG)
+                               .hasTaxonomy(CATEGORY);
+        }
+
+        @DisplayName("'GET' works with no context")
+        @Test
+        void get__works_with_no_context() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
+
+            // WHEN
+            final WpCategory category = adminClient.getCategory(categoryId, null);
+
+            WordPressAssertions.assertThat(category)
+                               .isNotNull()
+                               .hasId(categoryId)
+                               .hasCount(0)
+                               .hasDescription(CATEGORY_TEST_DESCRIPTION)
+                               .hasName(CATEGORY_TEST_NAME)
+                               .hasSlug(CATEGORY_TEST_SLUG)
+                               .hasTaxonomy(CATEGORY);
+        }
+
+        // list__works_with_just_paging
+        // list__works_with_paging_and_query
+
+        @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
+        @Test
+        void update__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            Long nonExistingCategoryId = 1000L;
+
+            // WHEN/THEN
+
+            final WpCategoryCreateUpdateRequest updateRequest = WpCategoryCreateUpdateRequest.builder().build();
+            assertThrowsWpNotFound(() -> adminClient.updateCategory(nonExistingCategoryId, updateRequest), "rest_term_invalid", "Term does not exist.");
+        }
+
+        @DisplayName("'UPDATE' fails on parent not found")
+        @Test
+        void update__fails_on_parent_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            Long nonExistingCategoryId = 1000L;
+            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
+
+            // WHEN/THEN
+
+            final WpCategoryCreateUpdateRequest updateRequest =
+                    WpCategoryCreateUpdateRequest.builder()
+                                                 .withName("my category")
+                                                 .withParentId(nonExistingCategoryId)
+                                                 .build();
+
+            assertThrowsWpBadRequest(() -> adminClient.updateCategory(categoryId, updateRequest),
+                    "rest_term_invalid", "Parent term does not exist.");
+        }
+
+        @DisplayName("'UPDATE' works")
+        @Test
+        void update__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
+
+            // WHEN
+            final WpCategoryCreateUpdateRequest updateRequest =
+                    WpCategoryCreateUpdateRequest.builder()
+                                                 .withName(CATEGORY_TEST_NAME + " UPDATED")
+                                                 .withDescription(CATEGORY_TEST_DESCRIPTION + " UPDATED")
+                                                 .withSlug(CATEGORY_TEST_SLUG + " UPDATED")
+                                                 .build();
+
+            final WpCategory category = adminClient.updateCategory(categoryId, updateRequest);
+
+            // THEN
+            WordPressAssertions.assertThat(category)
+                               .isNotNull()
+                               .hasId(categoryId)
+                               .hasCount(0)
+                               .hasDescription(CATEGORY_TEST_DESCRIPTION + " UPDATED")
+                               .hasName(CATEGORY_TEST_NAME + " UPDATED")
+                               .hasSlug(toWordPressSlug(CATEGORY_TEST_SLUG + " UPDATED"))
+                               .hasTaxonomy(CATEGORY);
         }
 
         private String linkForCategory(final @NonNull String slug) {
