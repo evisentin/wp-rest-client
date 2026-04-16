@@ -20,7 +20,7 @@ import static java.util.Collections.emptySet;
  *
  */
 @Getter
-@Builder(setterPrefix = "with", toBuilder = true)
+@Builder(setterPrefix = "with")
 public class WpCategoryQuery {
 
     /**

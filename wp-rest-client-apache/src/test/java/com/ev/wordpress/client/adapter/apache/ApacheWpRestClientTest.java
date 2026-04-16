@@ -3,7 +3,8 @@ package com.ev.wordpress.client.adapter.apache;
 import com.ev.wordpress.client.domain.api.WpBaseRestClient;
 import com.ev.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
 import com.ev.wordpress.client.domain.configuration.SslConfiguration;
-import com.ev.wordpress.client.testsupport.AbstractBasicAuthenticationWpRestClientContractTest;
+import com.ev.wordpress.client.test.commons.ssl.TestX509TrustManager;
+import com.ev.wordpress.client.test.support.AbstractBasicAuthenticationWpRestClientContractTest;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.X509TrustManager;

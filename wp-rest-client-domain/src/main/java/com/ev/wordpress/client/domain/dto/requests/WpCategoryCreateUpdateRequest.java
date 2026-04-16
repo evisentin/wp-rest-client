@@ -12,7 +12,7 @@ import java.util.Map;
 
 @Getter
 @Setter
-@Builder(setterPrefix = "with", toBuilder = true)
+@Builder(setterPrefix = "with")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class WpCategoryCreateUpdateRequest {
     /**

@@ -15,7 +15,7 @@ import java.util.Set;
 
 @Getter
 @Setter
-@Builder(setterPrefix = "with", toBuilder = true)
+@Builder(setterPrefix = "with")
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class WpPostCreateUpdateRequest {
 
