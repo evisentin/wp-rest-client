@@ -1,12 +1,11 @@
-package com.ev.wordpress.client.testsupport;
+package com.ev.wordpress.client.test.commons.utils;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import java.text.Normalizer;
 import java.util.Locale;
-
-import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
  * Utility class for generating WordPress-compatible slugs from arbitrary strings.
@@ -44,7 +43,7 @@ public final class SlugUtils {
      * @return a normalized slug string, or {@code null} if the input is {@code null}
      */
     public static String toWordPressSlug(final String input) {
-        if (isBlank(input)) {
+        if (StringUtils.isBlank(input)) {
             return null;
         }
 

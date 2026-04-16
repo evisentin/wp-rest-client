@@ -1,4 +1,4 @@
-package com.ev.wordpress.client.testsupport;
+package com.ev.wordpress.client.test.support;
 
 import com.ev.wordpress.client.domain.api.WpBaseRestClient;
 import com.ev.wordpress.client.domain.api.WpRestClient;
@@ -36,11 +36,11 @@ import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.TRASH;
 import static com.ev.wordpress.client.domain.dto.enums.WpSortDirection.ASC;
 import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.CATEGORY;
 import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.POST_TAG;
-import static com.ev.wordpress.client.testsupport.SlugUtils.toWordPressSlug;
-import static com.ev.wordpress.client.testsupport.WpAssertions.assertThrowsWpBadRequest;
-import static com.ev.wordpress.client.testsupport.WpAssertions.assertThrowsWpForbidden;
-import static com.ev.wordpress.client.testsupport.WpAssertions.assertThrowsWpNotFound;
-import static com.ev.wordpress.client.testsupport.WpAssertions.assertThrowsWpUnauthorized;
+import static com.ev.wordpress.client.test.commons.assertions.WpAssertions.assertThrowsWpBadRequest;
+import static com.ev.wordpress.client.test.commons.assertions.WpAssertions.assertThrowsWpForbidden;
+import static com.ev.wordpress.client.test.commons.assertions.WpAssertions.assertThrowsWpNotFound;
+import static com.ev.wordpress.client.test.commons.assertions.WpAssertions.assertThrowsWpUnauthorized;
+import static com.ev.wordpress.client.test.commons.utils.SlugUtils.toWordPressSlug;
 import static java.util.Collections.emptySet;
 
 public abstract class AbstractBasicAuthenticationWpRestClientContractTest extends AbstractMockServerTest {

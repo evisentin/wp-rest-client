@@ -1,4 +1,4 @@
-package com.ev.wordpress.client.testsupport;
+package com.ev.wordpress.client.test.commons.assertions;
 
 import com.ev.wordpress.client.domain.exception.WpBadRequestException;
 import com.ev.wordpress.client.domain.exception.WpForbiddenException;
@@ -7,11 +7,10 @@ import com.ev.wordpress.client.domain.exception.WpUnauthorizedException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
+import org.assertj.core.api.Assertions;
 import org.assertj.core.api.ThrowableAssert;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.Assertions.entry;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class WpAssertions {
@@ -22,9 +21,9 @@ public class WpAssertions {
                 .extracting(ex -> (WpBadRequestException) ex)
                 .extracting(WpBadRequestException::getError)
                 .satisfies(error -> {
-                    assertThat(error.getCode()).isEqualTo("rest_missing_callback_param");
-                    assertThat(error.getMessage()).isEqualTo("Missing parameter(s): param1");
-                    assertThat(error.getData()).contains(entry("status", 400));
+                    Assertions.assertThat(error.getCode()).isEqualTo("rest_missing_callback_param");
+                    Assertions.assertThat(error.getMessage()).isEqualTo("Missing parameter(s): param1");
+                    Assertions.assertThat(error.getData()).contains(Assertions.entry("status", 400));
                 });
     }
 
@@ -34,9 +33,9 @@ public class WpAssertions {
                 .extracting(ex -> (WpForbiddenException) ex)
                 .extracting(WpForbiddenException::getError)
                 .satisfies(error -> {
-                    assertThat(error.getCode()).isEqualTo("rest_forbidden");
-                    assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
-                    assertThat(error.getData()).containsExactly(entry("status", 403));
+                    Assertions.assertThat(error.getCode()).isEqualTo("rest_forbidden");
+                    Assertions.assertThat(error.getMessage()).isEqualTo("Sorry, you are not allowed to do that.");
+                    Assertions.assertThat(error.getData()).containsExactly(Assertions.entry("status", 403));
                 });
     }
 
@@ -46,9 +45,9 @@ public class WpAssertions {
                 .extracting(ex -> (WpNotFoundException) ex)
                 .extracting(WpNotFoundException::getError)
                 .satisfies(error -> {
-                    assertThat(error.getCode()).isEqualTo("rest_term_invalid");
-                    assertThat(error.getMessage()).isEqualTo("Term does not exist.");
-                    assertThat(error.getData()).containsExactly(entry("status", 404));
+                    Assertions.assertThat(error.getCode()).isEqualTo("rest_term_invalid");
+                    Assertions.assertThat(error.getMessage()).isEqualTo("Term does not exist.");
+                    Assertions.assertThat(error.getData()).containsExactly(Assertions.entry("status", 404));
                 });
     }
 
@@ -58,9 +57,9 @@ public class WpAssertions {
                 .extracting(ex -> (WpUnauthorizedException) ex)
                 .extracting(WpUnauthorizedException::getError)
                 .satisfies(error -> {
-                    assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
-                    assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
-                    assertThat(error.getData()).containsExactly(entry("status", 401));
+                    Assertions.assertThat(error.getCode()).isEqualTo("rest_not_logged_in");
+                    Assertions.assertThat(error.getMessage()).isEqualTo("You are not currently logged in.");
+                    Assertions.assertThat(error.getData()).containsExactly(Assertions.entry("status", 401));
                 });
     }
 }

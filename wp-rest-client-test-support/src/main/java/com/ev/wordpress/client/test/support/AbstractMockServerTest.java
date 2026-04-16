@@ -1,4 +1,4 @@
-package com.ev.wordpress.client.testsupport;
+package com.ev.wordpress.client.test.support;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

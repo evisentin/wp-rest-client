@@ -3,7 +3,7 @@ package com.ev.wordpress.client.adapter.okhttp;
 import com.ev.wordpress.client.domain.api.WpBaseRestClient;
 import com.ev.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
 import com.ev.wordpress.client.domain.configuration.SslConfiguration;
-import com.ev.wordpress.client.testsupport.AbstractBasicAuthenticationWpRestClientContractTest;
+import com.ev.wordpress.client.test.support.AbstractBasicAuthenticationWpRestClientContractTest;
 import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.Test;

@@ -18,6 +18,7 @@
     <module>wp-rest-client-apache</module>
     <module>wp-rest-client-local-integration-tests</module>
     <module>wp-rest-client-test-support</module>
+    <module>wp-rest-client-test-commons</module>
     <module>wp-rest-client-test-report</module>
   </modules>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->

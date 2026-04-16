@@ -1,5 +1,6 @@
-package com.ev.wordpress.client.testsupport;
+package com.ev.wordpress.client.test.support;
 
+import com.ev.wordpress.client.test.commons.utils.SlugUtils;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 

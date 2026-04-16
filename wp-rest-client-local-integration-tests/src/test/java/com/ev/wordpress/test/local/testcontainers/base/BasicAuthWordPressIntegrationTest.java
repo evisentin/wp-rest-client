@@ -17,9 +17,9 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.CATEGORY;
+import static com.ev.wordpress.client.test.commons.utils.SlugUtils.toWordPressSlug;
 import static com.ev.wordpress.test.local.assertions.WpAssertions.assertThrowsWpBadRequest;
 import static com.ev.wordpress.test.local.assertions.WpAssertions.assertThrowsWpNotFound;
-import static com.ev.wordpress.test.utils.SlugUtils.toWordPressSlug;
 
 /**
  * Base integration test class for WordPress REST API scenarios using Basic Authentication.
