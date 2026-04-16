@@ -8,9 +8,7 @@ import com.ev.wordpress.client.domain.dto.WpPagedResponse;
 import com.ev.wordpress.client.domain.dto.WpPost;
 import com.ev.wordpress.client.domain.dto.WpTag;
 import com.ev.wordpress.client.domain.dto.enums.WpContext;
-import com.ev.wordpress.client.domain.dto.enums.WpPostStatus;
 import com.ev.wordpress.client.domain.dto.enums.WpTagOrderFields;
-import com.ev.wordpress.client.domain.dto.enums.WpTaxonomy;
 import com.ev.wordpress.client.domain.dto.query.WpCategoryQuery;
 import com.ev.wordpress.client.domain.dto.query.WpPagingQuery;
 import com.ev.wordpress.client.domain.dto.query.WpPostQuery;
@@ -21,6 +19,7 @@ import com.ev.wordpress.client.domain.dto.requests.WpTagCreateUpdateRequest;
 import com.ev.wordpress.client.domain.dto.responses.WpCategoryDeletionResponse;
 import com.ev.wordpress.client.domain.dto.responses.WpPostDeletionResponse;
 import com.ev.wordpress.client.domain.dto.responses.WpTagDeletionResponse;
+import lombok.NonNull;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -33,13 +32,16 @@ import static com.ev.wordpress.client.domain.dto.enums.WpContext.EDIT;
 import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.DRAFT;
 import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.PRIVATE;
 import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.PUBLISH;
+import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.TRASH;
 import static com.ev.wordpress.client.domain.dto.enums.WpSortDirection.ASC;
 import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.CATEGORY;
+import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.POST_TAG;
 import static com.ev.wordpress.client.testsupport.SlugUtils.toWordPressSlug;
 import static com.ev.wordpress.client.testsupport.WpAssertions.assertThrowsWpBadRequest;
 import static com.ev.wordpress.client.testsupport.WpAssertions.assertThrowsWpForbidden;
 import static com.ev.wordpress.client.testsupport.WpAssertions.assertThrowsWpNotFound;
 import static com.ev.wordpress.client.testsupport.WpAssertions.assertThrowsWpUnauthorized;
+import static java.util.Collections.emptySet;
 
 public abstract class AbstractBasicAuthenticationWpRestClientContractTest extends AbstractMockServerTest {
     private WpRestClient client;
@@ -50,6 +52,10 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
     }
 
     protected abstract WpBaseRestClient client();
+
+    private static String toBlock(final @NonNull String text) {
+        return String.format("<p>%s</p>\n", text);
+    }
 
     @DisplayName("'CATEGORY' Operations")
     @Nested
@@ -705,36 +711,30 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpPost post = client.createPost(createUpdateRequest);
 
             // THEN
-            assertThat(post).isNotNull();
-            assertThat(post.getId()).isNotNull();
-            assertThat(post.getLink()).isNotBlank();
-            assertThat(post.getSlug()).isEmpty();
-            assertThat(post.getGeneratedSlug()).isEqualTo(toWordPressSlug(TITLE));
-            assertThat(post.getStatus()).isEqualTo(DRAFT);
-            assertThat(post.getType()).isEqualTo("post");
-            assertThat(post.getTitle())
-                    .satisfies(f -> {
-                        assertThat(f.getRaw()).isEqualTo(TITLE);
-                        assertThat(f.getRendered()).isEqualTo(TITLE);
-                    });
-            assertThat(post.getContent())
-                    .satisfies(f -> {
-                        assertThat(f.getRaw()).isEqualTo(CONTENT);
-                        assertThat(f.getRendered()).isEqualTo("<p>" + CONTENT + "</p>\n");
-                        assertThat(f.getIsProtected()).isNotNull().isFalse();
-                        assertThat(f.getBlockVersion()).isNotNull().isZero();
-                    });
+            WordPressAssertions.assertThat(post)
+                               .isNotNull()
+                               .hasSlug("")
+                               .hasGeneratedSlug(toWordPressSlug(TITLE))
+                               .hasStatus(DRAFT)
+                               .hasType("post")
+                               .hasTitleSatisfying(t ->
+                                       t.hasRaw(TITLE)
+                                        .hasRaw(TITLE)
+                               )
+                               .hasContentSatisfying(c ->
+                                       c.hasRaw(CONTENT)
+                                        .hasRendered(toBlock(CONTENT))
+                                        .isNotProtected()
+                                        .hasBlockVersion(0)
 
-            assertThat(post.getExcerpt())
-                    .satisfies(f -> {
-                        assertThat(f.getRaw()).isEmpty();
-                        assertThat(f.getRendered()).isEqualTo("<p>" + CONTENT + "</p>\n");
-                        assertThat(f.getIsProtected()).isNotNull().isFalse();
-                        assertThat(f.getBlockVersion()).isNull();
-                    });
+                               ).hasExcerptSatisfying(e ->
+                                       e.hasRaw("")
+                                        .hasRendered(toBlock(CONTENT))
+                                        .isNotProtected()
 
-            assertThat(post.getCategories()).containsExactly(3L);
-            assertThat(post.getTags()).containsExactly(2L);
+                               )
+                               .hasCategories(Set.of(3L))
+                               .hasTags(Set.of(2L));
         }
 
         @DisplayName("'CREATE' works with password")
@@ -760,35 +760,29 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpPost post = client.createPost(createUpdateRequest);
 
             // THEN
-            assertThat(post).isNotNull();
-            assertThat(post.getId()).isNotNull();
-            assertThat(post.getSlug()).isEqualTo(toWordPressSlug(TITLE));
-            assertThat(post.getGeneratedSlug()).isEqualTo(toWordPressSlug(TITLE));
-            assertThat(post.getStatus()).isEqualTo(PUBLISH);
-            assertThat(post.getPassword()).isNotNull().isEqualTo("my password");
-            assertThat(post.getType()).isEqualTo("post");
-            assertThat(post.getTitle())
-                    .satisfies(f -> {
-                        assertThat(f.getRaw()).isEqualTo(TITLE);
-                        assertThat(f.getRendered()).isEqualTo(TITLE);
-                        assertThat(f.getIsProtected()).isNull();
-                        assertThat(f.getBlockVersion()).isNull();
-                    });
-            assertThat(post.getContent())
-                    .satisfies(f -> {
-                        assertThat(f.getRaw()).isEqualTo(CONTENT);
-                        assertThat(f.getRendered()).isEqualTo("<p>" + CONTENT + "</p>\n");
-                        assertThat(f.getIsProtected()).isNotNull().isTrue();
-                        assertThat(f.getBlockVersion()).isNotNull().isZero();
-                    });
+            WordPressAssertions.assertThat(post)
+                               .isNotNull()
+                               .hasSlug(toWordPressSlug(TITLE))
+                               .hasGeneratedSlug(toWordPressSlug(TITLE))
+                               .hasStatus(PUBLISH)
+                               .hasPassword("my password")
+                               .hasType("post")
+                               .hasTitleSatisfying(t ->
+                                       t.hasRaw(TITLE)
+                                        .hasRaw(TITLE)
+                               )
+                               .hasContentSatisfying(c ->
+                                       c.hasRaw(CONTENT)
+                                        .hasRendered(toBlock(CONTENT))
+                                        .isProtected()
+                                        .hasBlockVersion(0)
 
-            assertThat(post.getExcerpt())
-                    .satisfies(f -> {
-                        assertThat(f.getRaw()).isEqualTo(CONTENT);
-                        assertThat(f.getRendered()).isEqualTo("<p>" + CONTENT + "</p>\n");
-                        assertThat(f.getIsProtected()).isNotNull().isTrue();
-                        assertThat(f.getBlockVersion()).isNull();
-                    });
+                               ).hasExcerptSatisfying(e ->
+                                       e.hasRaw(CONTENT)
+                                        .hasRendered(toBlock(CONTENT))
+                                        .isProtected()
+
+                               );
         }
 
         @DisplayName("'DELETE' fails on HTTP FORBIDDEN")
@@ -845,36 +839,24 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpPostDeletionResponse response = client.deletePost(1005L);
 
             // THEN
-            assertThat(response).isNotNull();
-            assertThat(response.isDeleted()).isTrue();
-            assertThat(response.getPrevious())
-                    .satisfies(summary -> {
-                        assertThat(summary).isNotNull();
-                        assertThat(summary.getId()).isEqualTo(1005L);
-                        assertThat(summary.getLink()).isNotBlank();
 
-                        assertThat(summary.getTitle())
-                                .isNotNull()
-                                .satisfies(title -> {
-                                    assertThat(title.getRaw()).isNotNull().isEqualTo("My post");
-                                    assertThat(title.getRendered()).isNotNull().isEqualTo("My post");
-                                });
-
-                        assertThat(summary.getContent())
-                                .isNotNull()
-                                .satisfies(content -> {
-                                    assertThat(content.getRaw()).isNotNull().isEqualTo("My Content");
-                                    assertThat(content.getRendered()).isNotNull().isEqualTo("<p>My Content</p>\n");
-                                });
-                        assertThat(summary.getExcerpt())
-                                .isNotNull()
-                                .satisfies(exceprt -> {
-                                    assertThat(exceprt.getRaw()).isNotNull().isEqualTo("My Content");
-                                    assertThat(exceprt.getRendered()).isNotNull().isEqualTo("<p>My Content</p>\n");
-                                });
-
-                        assertThat(summary.getSlug()).isEqualTo("my-post");
-                    });
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .isDeleted()
+                               .hasPreviousSatisfying(summary ->
+                                       summary.isNotNull()
+                                              .hasId(1005L)
+                                              .hasSlug("my-post")
+                                              .hasTitleSatisfying(title ->
+                                                      title.hasRaw("My post")
+                                                           .hasRendered("My post"))
+                                              .hasContentSatisfying(content ->
+                                                      content.hasRaw("My Content")
+                                                             .hasRendered(toBlock("My Content")))
+                                              .hasExcerptSatisfying(excerpt ->
+                                                      excerpt.hasRaw("My Content")
+                                                             .hasRendered(toBlock("My Content")))
+                               );
         }
 
         @DisplayName("'GET' fails on HTTP FORBIDDEN")
@@ -937,12 +919,10 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpPost post = client.getPost(id, EDIT);
 
             // THEN
-            assertThat(post)
-                    .isNotNull()
-                    .satisfies(p -> {
-                        assertThat(p.getId()).isEqualTo(id);
-                        assertThat(p.getStatus()).isEqualTo(DRAFT);
-                    });
+            WordPressAssertions.assertThat(post)
+                               .isNotNull()
+                               .hasId(id)
+                               .hasStatus(DRAFT);
         }
 
         @DisplayName("'GET' works (with context and password)")
@@ -958,12 +938,10 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpPost post = client.getPost(id, EDIT, "my-password");
 
             // THEN
-            assertThat(post)
-                    .isNotNull()
-                    .satisfies(p -> {
-                        assertThat(p.getId()).isEqualTo(id);
-                        assertThat(p.getStatus()).isEqualTo(DRAFT);
-                    });
+            WordPressAssertions.assertThat(post)
+                               .isNotNull()
+                               .hasId(id)
+                               .hasStatus(DRAFT);
         }
 
         @DisplayName("'GET' works (with no context - default)")
@@ -979,12 +957,10 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpPost post = client.getPost(id, null);
 
             // THEN
-            assertThat(post)
-                    .isNotNull()
-                    .satisfies(p -> {
-                        assertThat(p.getId()).isEqualTo(id);
-                        assertThat(p.getStatus()).isEqualTo(DRAFT);
-                    });
+            WordPressAssertions.assertThat(post)
+                               .isNotNull()
+                               .hasId(id)
+                               .hasStatus(DRAFT);
         }
 
         @DisplayName("'LIST' fails on HTTP FORBIDDEN")
@@ -1029,38 +1005,32 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpPagedResponse<WpPost> response = client.listPosts(WpPagingQuery.of(1, 10), null);
 
             // THEN
-            assertThat(response)
-                    .isNotNull()
-                    .satisfies(r -> {
-                        assertThat(r.getPageNumber()).isEqualTo(1);
-                        assertThat(r.getItemsPerPage()).isEqualTo(10);
-                        assertThat(r.getTotalPages()).isEqualTo(1);
-                        assertThat(r.getTotalItems()).isEqualTo(1);
-                        assertThat(r.hasNextPage()).isFalse();
-                        assertThat(r.getItems()).hasSize(1);
-                        assertThat(r.getItems()).element(0).satisfies(p -> {
-                            assertThat(p).isNotNull();
-                            assertThat(p.getId()).isNotNull().isEqualTo(4L);
-                            assertThat(p.getLink()).isEqualTo("https://localhost:61975/my-first-post/");
-                            assertThat(p.getSlug()).isEqualTo("my-first-post");
-                            assertThat(p.getStatus()).isEqualTo(PUBLISH);
-                            assertThat(p.getType()).isEqualTo("post");
-                            assertThat(p.getCategories()).containsExactly(1L);
-                            assertThat(p.getTags()).isEmpty();
-
-                            // during listing we have just "rendered", not "raw"
-                            assertThat(p.getTitle().getRaw()).isNull();
-                            assertThat(p.getTitle().getRendered()).isEqualTo("My first post");
-
-                            // during listing we have just "rendered", not "raw"
-                            assertThat(p.getContent().getRaw()).isNull();
-                            assertThat(p.getContent().getRendered()).isEqualTo("");
-
-                            // during listing we have just "rendered", not "raw"
-                            assertThat(p.getExcerpt().getRaw()).isNull();
-                            assertThat(p.getExcerpt().getRendered()).isEqualTo("");
-                        });
-                    });
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(1)
+                               .doesNotHaveNextPage()
+                               .satisfies(r ->
+                                       WordPressAssertions.assertThat(r.getItems().get(0))
+                                                          .isNotNull()
+                                                          .hasId(4L)
+                                                          .hasLink("https://localhost:61975/my-first-post/")
+                                                          .hasSlug("my-first-post")
+                                                          .hasStatus(PUBLISH)
+                                                          .hasType("post")
+                                                          .hasCategories(Set.of(1L))
+                                                          .hasTags(emptySet())
+                                                          .hasTitleSatisfying(title ->
+                                                                  title.hasRaw(null) // during listing we have just "rendered", not "raw"
+                                                                       .hasRendered("My first post"))
+                                                          .hasContentSatisfying(title ->
+                                                                  title.hasRaw(null) // during listing we have just "rendered", not "raw"
+                                                                       .hasRendered(""))
+                                                          .hasExcerptSatisfying(excerpt ->
+                                                                  excerpt.hasRaw(null) // during listing we have just "rendered", not "raw"
+                                                                         .hasRendered("")));
         }
 
         @DisplayName("'LIST' works with paging and query")
@@ -1080,26 +1050,24 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpPagedResponse<WpPost> response = client.listPosts(WpPagingQuery.of(1, 10), postQuery);
 
             // THEN
-            assertThat(response)
-                    .isNotNull()
-                    .satisfies(r -> {
-                        assertThat(r.getPageNumber()).isEqualTo(1);
-                        assertThat(r.getItemsPerPage()).isEqualTo(10);
-                        assertThat(r.getTotalPages()).isEqualTo(1);
-                        assertThat(r.getTotalItems()).isEqualTo(2);
-                        assertThat(r.hasNextPage()).isFalse();
-                        assertThat(r.getItems()).hasSize(2); // TWO POSTS (FILTER)
-                        assertThat(r.getItems()).element(0).satisfies(p -> {
-                            assertThat(p).isNotNull();
-                            assertThat(p.getStatus()).isEqualTo(DRAFT);
-                            assertThat(p.getId()).isNotNull().isEqualTo(4L);
-                        });
-                        assertThat(r.getItems()).element(1).satisfies(p -> {
-                            assertThat(p).isNotNull();
-                            assertThat(p.getStatus()).isEqualTo(PRIVATE);
-                            assertThat(p.getId()).isNotNull().isEqualTo(5L);
-                        });
-                    });
+
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(2)
+                               .doesNotHaveNextPage()
+                               .satisfies(r -> {
+                                   WordPressAssertions.assertThat(r.getItems().get(0))
+                                                      .isNotNull()
+                                                      .hasId(4L)
+                                                      .hasStatus(DRAFT);
+                                   WordPressAssertions.assertThat(r.getItems().get(1))
+                                                      .isNotNull()
+                                                      .hasId(5L)
+                                                      .hasStatus(PRIVATE);
+                               });
         }
 
         @DisplayName("'TRASH' fails on HTTP FORBIDDEN")
@@ -1156,11 +1124,9 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpPost post = client.trashPost(1005L);
 
             // THEN
-            assertThat(post)
-                    .isNotNull()
-                    .satisfies(t -> {
-                        assertThat(post.getStatus()).isNotNull().isEqualTo(WpPostStatus.TRASH);
-                    });
+            WordPressAssertions.assertThat(post)
+                               .isNotNull()
+                               .hasStatus(TRASH);
         }
 
         @DisplayName("'UPDATE' fails on HTTP BAD REQUEST")
@@ -1292,15 +1258,19 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             // WHEN
             val post = client.updatePost(4L, updateRequest);
 
-            assertThat(post)
-                    .isNotNull()
-                    .satisfies(p -> {
-                        assertThat(p.getId()).isEqualTo(4L);
-                        assertThat(p.getStatus()).isEqualTo(DRAFT);
-                        assertThat(p.getTitle().getRaw()).isNotNull().isEqualTo(TITLE + " UPDATED");
-                        assertThat(p.getContent().getRaw()).isNotNull().isEqualTo(CONTENT + " UPDATED");
-                        assertThat(p.getExcerpt().getRaw()).isNotNull().isEqualTo(CONTENT + " UPDATED");
-                    });
+            WordPressAssertions.assertThat(post)
+                               .isNotNull()
+                               .hasId(4L)
+                               .hasStatus(DRAFT)
+                               .hasTitleSatisfying(title ->
+                                       title.hasRaw(TITLE + " UPDATED")
+                                            .hasRendered(TITLE + " UPDATED"))
+                               .hasContentSatisfying(content ->
+                                       content.hasRaw(CONTENT + " UPDATED")
+                                              .hasRendered(toBlock(CONTENT + " UPDATED")))
+                               .hasExcerptSatisfying(excerpt ->
+                                       excerpt.hasRaw(CONTENT + " UPDATED")
+                                              .hasRendered(toBlock(CONTENT + " UPDATED")));
         }
     }
 
@@ -1428,14 +1398,13 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpTag tag = client.createTag(createRequest);
 
             // THEN
-            assertThat(tag).isNotNull();
-            assertThat(tag.getId()).isNotNull();
-            assertThat(tag.getCount()).isEqualTo(0);
-            assertThat(tag.getDescription()).isEqualTo(DESCRIPTION);
-            assertThat(tag.getLink()).isNotBlank().contains(SLUG);
-            assertThat(tag.getName()).isEqualTo(NAME);
-            assertThat(tag.getSlug()).isEqualTo(SLUG);
-            assertThat(tag.getTaxonomy()).isNotNull().isEqualTo(WpTaxonomy.POST_TAG);
+            WordPressAssertions.assertThat(tag)
+                               .isNotNull()
+                               .hasCount(0)
+                               .hasDescription(DESCRIPTION)
+                               .hasName(NAME)
+                               .hasSlug(SLUG)
+                               .hasTaxonomy(POST_TAG);
         }
 
         @DisplayName("'DELETE' fails on HTTP FORBIDDEN")
@@ -1492,19 +1461,18 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpTagDeletionResponse response = client.deleteTag(1005L);
 
             // THEN
-            assertThat(response).isNotNull();
-            assertThat(response.isDeleted()).isTrue();
-            assertThat(response.getPrevious())
-                    .satisfies(summary -> {
-                        assertThat(summary).isNotNull();
-                        assertThat(summary.getId()).isEqualTo(1005L);
-                        assertThat(summary.getCount()).isZero();
-                        assertThat(summary.getDescription()).isEqualTo("Tag #1");
-                        assertThat(summary.getLink()).isNotBlank();
-                        assertThat(summary.getName()).isEqualTo("tag1");
-                        assertThat(summary.getSlug()).isEqualTo("tag-1");
-                        assertThat(summary.getTaxonomy()).isEqualTo(WpTaxonomy.POST_TAG);
-                    });
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .isDeleted()
+                               .hasPreviousSatisfying(summary ->
+                                       summary.isNotNull()
+                                              .hasId(1005L)
+                                              .hasCount(0)
+                                              .hasDescription("Tag #1")
+                                              .hasName("tag1")
+                                              .hasSlug("tag-1")
+                                              .hasTaxonomy(POST_TAG)
+                               );
         }
 
         @DisplayName("'GET' fails on HTTP FORBIDDEN")
@@ -1563,14 +1531,14 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpTag tag = client.getTag(tagId, EDIT);
 
             // THEN
-            assertThat(tag).isNotNull();
-            assertThat(tag.getId()).isEqualTo(tagId);
-            assertThat(tag.getCount()).isEqualTo(0);
-            assertThat(tag.getDescription()).isEqualTo("Tag #1");
-            assertThat(tag.getLink()).isEqualTo("http://localhost:58033/tag/tag-1/");
-            assertThat(tag.getName()).isEqualTo("tag1");
-            assertThat(tag.getSlug()).isEqualTo("tag-1");
-            assertThat(tag.getTaxonomy()).isNotNull().isEqualTo(WpTaxonomy.POST_TAG);
+            WordPressAssertions.assertThat(tag)
+                               .isNotNull()
+                               .hasId(tagId)
+                               .hasCount(0)
+                               .hasDescription("Tag #1")
+                               .hasName("tag1")
+                               .hasSlug("tag-1")
+                               .hasTaxonomy(POST_TAG);
         }
 
         @DisplayName("'GET' works (with no context - default)")
@@ -1586,14 +1554,14 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpTag tag = client.getTag(tagId, null);
 
             // THEN
-            assertThat(tag).isNotNull();
-            assertThat(tag.getId()).isEqualTo(tagId);
-            assertThat(tag.getCount()).isEqualTo(0);
-            assertThat(tag.getDescription()).isEqualTo("Tag #1");
-            assertThat(tag.getLink()).isEqualTo("http://localhost:58033/tag/tag-1/");
-            assertThat(tag.getName()).isEqualTo("tag1");
-            assertThat(tag.getSlug()).isEqualTo("tag-1");
-            assertThat(tag.getTaxonomy()).isNotNull().isEqualTo(WpTaxonomy.POST_TAG);
+            WordPressAssertions.assertThat(tag)
+                               .isNotNull()
+                               .hasId(tagId)
+                               .hasCount(0)
+                               .hasDescription("Tag #1")
+                               .hasName("tag1")
+                               .hasSlug("tag-1")
+                               .hasTaxonomy(POST_TAG);
         }
 
         @DisplayName("'LIST' fails on HTTP FORBIDDEN")
@@ -1638,29 +1606,31 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpPagedResponse<WpTag> response = client.listTags(WpPagingQuery.of(1, 10), null);
 
             // THEN
-            assertThat(response)
-                    .isNotNull()
-                    .satisfies(r -> {
-                        assertThat(r.getPageNumber()).isEqualTo(1);
-                        assertThat(r.getItemsPerPage()).isEqualTo(10);
-                        assertThat(r.getTotalPages()).isEqualTo(1);
-                        assertThat(r.getTotalItems()).isEqualTo(2);
-                        assertThat(r.hasNextPage()).isFalse();
-                        assertThat(r.getItems())
-                                .hasSize(2)
-                                .satisfiesExactly(
-                                        tag -> {
-                                            assertThat(tag.getName()).isEqualTo("tag1");
-                                            assertThat(tag.getSlug()).isEqualTo("tag-1");
-                                            assertThat(tag.getDescription()).isEqualTo("Tag #1");
-                                        },
-                                        tag -> {
-                                            assertThat(tag.getName()).isEqualTo("tag2");
-                                            assertThat(tag.getSlug()).isEqualTo("tag-2");
-                                            assertThat(tag.getDescription()).isEqualTo("Tag #2");
-                                        }
-                                );
-                    });
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(2)
+                               .doesNotHaveNextPage()
+                               .satisfies(r ->
+                                       assertThat(r.getItems())
+                                               .hasSize(2)
+                                               .satisfiesExactly(
+                                                       tag ->
+                                                               WordPressAssertions.assertThat(tag)
+                                                                                  .isNotNull()
+                                                                                  .hasName("tag1")
+                                                                                  .hasDescription("Tag #1")
+                                                                                  .hasSlug("tag-1")
+                                                       ,
+                                                       tag ->
+                                                               WordPressAssertions.assertThat(tag)
+                                                                                  .isNotNull()
+                                                                                  .hasName("tag2")
+                                                                                  .hasDescription("Tag #2")
+                                                                                  .hasSlug("tag-2")
+                                               ));
         }
 
         @DisplayName("'LIST' works with paging and query")
@@ -1679,24 +1649,26 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpPagedResponse<WpTag> response = client.listTags(WpPagingQuery.of(1, 10), tagQuery);
 
             // THEN
-            assertThat(response)
-                    .isNotNull()
-                    .satisfies(r -> {
-                        assertThat(r.getPageNumber()).isEqualTo(1);
-                        assertThat(r.getItemsPerPage()).isEqualTo(10);
-                        assertThat(r.getTotalPages()).isEqualTo(1);
-                        assertThat(r.getTotalItems()).isEqualTo(1);
-                        assertThat(r.hasNextPage()).isFalse();
-                        assertThat(r.getItems())
-                                .hasSize(1) // just "tag-2"
-                                .satisfiesExactly(
-                                        tag -> {
-                                            assertThat(tag.getName()).isEqualTo("tag2");
-                                            assertThat(tag.getSlug()).isEqualTo("tag-2");
-                                            assertThat(tag.getDescription()).isEqualTo("Tag #2");
-                                        }
-                                );
-                    });
+
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(1)
+                               .doesNotHaveNextPage()
+                               .satisfies(r ->
+                                       assertThat(r.getItems())
+                                               .hasSize(1)
+                                               .satisfiesExactly(
+
+                                                       tag ->
+                                                               WordPressAssertions.assertThat(tag)
+                                                                                  .isNotNull()
+                                                                                  .hasName("tag2")
+                                                                                  .hasDescription("Tag #2")
+                                                                                  .hasSlug("tag-2")
+                                               ));
         }
 
         @DisplayName("'UPDATE' fails on HTTP BAD REQUEST")
@@ -1829,14 +1801,13 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpTag tag = client.updateTag(2L, updateRequest);
 
             // THEN
-            assertThat(tag).isNotNull();
-            assertThat(tag.getId()).isNotNull();
-            assertThat(tag.getCount()).isEqualTo(0);
-            assertThat(tag.getDescription()).isEqualTo(DESCRIPTION);
-            assertThat(tag.getLink()).isNotBlank().contains(SLUG);
-            assertThat(tag.getName()).isEqualTo(NAME);
-            assertThat(tag.getSlug()).isEqualTo(SLUG);
-            assertThat(tag.getTaxonomy()).isNotNull().isEqualTo(WpTaxonomy.POST_TAG);
+            WordPressAssertions.assertThat(tag)
+                               .isNotNull()
+                               .hasCount(0)
+                               .hasDescription(DESCRIPTION)
+                               .hasName(NAME)
+                               .hasSlug(SLUG)
+                               .hasTaxonomy(POST_TAG);
         }
     }
 }

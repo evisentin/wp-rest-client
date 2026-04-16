@@ -138,7 +138,6 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         this.httpClient = clientBuilder.build();
     }
 
-
     @Override
     @SneakyThrows
     public WpCategory createCategory(final @NonNull WpCategoryCreateUpdateRequest creationRequest) {

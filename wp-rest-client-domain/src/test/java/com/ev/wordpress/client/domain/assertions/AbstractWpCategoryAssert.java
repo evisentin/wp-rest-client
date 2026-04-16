@@ -53,7 +53,7 @@ public abstract class AbstractWpCategoryAssert<SELF extends AbstractWpCategoryAs
 
     public SELF hasNoParent() {
         isNotNull();
-        if ( actual.getParentId() != 0) {
+        if (actual.getParentId() != 0) {
             failWithMessage("Expected category to have no parent but parentId was <%s>", actual.getParentId());
         }
         return myself;
