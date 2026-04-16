@@ -75,15 +75,15 @@
     </license>
   </licenses>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-  <!--    <developers>-->
-  <!--        <developer>-->
-  <!--            <id>ev</id>-->
-  <!--            <name>TODO Your Name</name>-->
-  <!--            <email>TODO your.email@example.com</email>-->
-  <!--            <organization>EV</organization>-->
-  <!--            <organizationUrl>https://github.com/ev</organizationUrl>-->
-  <!--        </developer>-->
-  <!--    </developers>-->
+  <developers>
+    <developer>
+      <id>ev</id>
+      <name>Enrico Visentin</name>
+      <email>evisentin.dev@gmail.com</email>
+      <organization>EVISENTIN</organization>
+      <organizationUrl>https://github.com/evisentin</organizationUrl>
+    </developer>
+  </developers>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <scm>
     <connection>scm:git:git://github.com/evisentin/wp-rest-client.git</connection>
@@ -184,6 +184,20 @@
     <pluginManagement>
       <plugins>
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+        <!--
+          Maven Compiler Plugin
+
+          This plugin is responsible for compiling the project's source code.
+
+          Key configurations:
+          - <release>: Specifies the Java version to compile against (ensures both source and target compatibility,
+            and links against the correct standard library).
+          - <annotationProcessorPaths>: Defines annotation processors used during compilation.
+
+          In this case:
+          - Lombok is configured as an annotation processor, enabling generation of boilerplate code (e.g., getters,
+            setters, builders) at compile time without requiring it on the runtime classpath.
+        -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
@@ -200,6 +214,20 @@
           </configuration>
         </plugin>
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+        <!--
+          Maven Surefire Plugin
+
+          Runs the project's unit tests during the test phase.
+
+          - <argLine> passes JVM arguments to the test runtime.
+
+          - The -javaagent option attaches Mockito as a Java agent at test time.
+            This enables advanced Mockito features such as mocking final classes, static methods, and inline mocking.
+
+          - The agent is loaded from the local Maven repository so it does not become a runtime dependency of the application.
+
+          This keeps test capabilities powerful while ensuring the final artifact remains clean.
+        -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
@@ -211,12 +239,38 @@
           </configuration>
         </plugin>
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+        <!--
+          Maven Surefire Report Plugin
+
+          Generates human-readable reports from the results produced by the Maven Surefire Plugin (unit test execution).
+
+          These reports are typically used for site generation or CI visibility, making it easier to review test
+          outcomes without parsing raw logs.
+
+          Note: This plugin does not run tests; it only formats and presents the results.
+        -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-report-plugin</artifactId>
           <version>${maven-surefire-report-plugin.version}</version>
         </plugin>
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+        <!--
+          Maven Failsafe Plugin
+
+          Executes integration tests during the integration-test and verify phases.
+
+          Unlike the Maven Surefire Plugin (which runs unit tests), Failsafe is designed for tests that require a fully
+          built application or external resources (e.g., databases, services).
+
+          - <argLine> passes JVM arguments to the test runtime.
+
+          - The -javaagent option attaches Mockito as a Java agent at test time, enabling advanced features such as
+            mocking final classes, static methods, and inline mocking.
+
+          Using Failsafe ensures that integration tests run separately from unit tests and do not interfere with the
+          standard build lifecycle.
+        -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
@@ -228,12 +282,34 @@
           </configuration>
         </plugin>
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+        <!--
+          Maven JAR Plugin
+
+          Packages the compiled classes and resources into a JAR file.
+
+          This is the default artifact produced by the build. The plugin can be further configured (if needed) to
+          customize manifest entries, include additional resources, or attach supplementary JARs
+          (e.g., sources or tests).
+        -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <version>${maven.jar.plugin.version}</version>
         </plugin>
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+        <!--
+          Maven Source Plugin
+
+          Attaches a JAR containing the project's source code to the build.
+
+          - The "attach-sources" execution ensures a sources JAR is created alongside the main artifact during the build.
+
+          - The "jar-no-fork" goal generates the sources JAR without triggering a separate build lifecycle, keeping the
+            build efficient.
+
+          Publishing sources improves usability for consumers (e.g., IDE navigation, debugging) and is a common best
+          practice for open-source libraries.
+        -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
@@ -248,6 +324,32 @@
           </executions>
         </plugin>
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+        <!--
+          Maven Javadoc Plugin
+
+          Generates API documentation (Javadoc) and packages it as part of the build.
+
+          Configuration highlights:
+          - Ensures consistent encoding (UTF-8) for source and generated documentation.
+          - <show>public</show> limits documentation to the public API surface.
+          - <failOnError>false</failOnError> prevents the build from failing due to Javadoc issues, which is useful
+            when strict doclint rules are not fully met.
+          - Disables automatic link detection to avoid external lookup delays or failures.
+
+          Additional options:
+          - "-noqualifier" simplifies type names in generated docs.
+          - "lombok" enables better handling of Lombok-generated elements.
+          - "-Xdoclint:all,-missing" enables most doc checks but ignores missing comments.
+
+          Executions:
+          - "generate-javadoc-html" creates browsable documentation during the
+            prepare-package phase and places it in the build's site directory.
+          - "attach-javadoc-jar" produces a Javadoc JAR attached to the artifact,
+            which is useful for IDE integration and artifact repositories.
+
+          Providing Javadoc is a best practice for open-source projects, improving
+          usability and API discoverability.
+        -->
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
@@ -258,6 +360,8 @@
             <docencoding>UTF-8</docencoding>
             <charset>UTF-8</charset>
             <failOnError>false</failOnError>
+            <detectLinks>false</detectLinks>
+            <detectOfflineLinks>false</detectOfflineLinks>
             <additionalOptions>
               <additionalOption>-noqualifier</additionalOption>
               <additionalOption>lombok</additionalOption>
@@ -291,6 +395,17 @@
 
     <plugins>
       <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+      <!--
+        Maven Enforcer Plugin
+
+        Enforces build constraints to ensure a consistent and reproducible development environment across all contributors.
+
+        In this configuration:
+        - requireMavenVersion ensures that the build is executed with a minimum Maven version (3.9.14).
+
+        This prevents subtle build issues caused by differences in Maven behaviour across versions and provides early,
+        clear feedback if the environment is not compatible.
+      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
@@ -312,6 +427,19 @@
         </executions>
       </plugin>
       <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+      <!--
+        JaCoCo Maven Plugin
+
+        Integrates code coverage analysis into the build.
+
+        - The "prepare-agent" execution attaches the JaCoCo Java agent before tests run, enabling collection of coverage
+          data during execution.
+
+        - The "report" execution (bound to the verify phase) generates a coverage report from the collected data.
+
+        This setup provides insight into how much of the codebase is exercised by tests, helping maintain test quality
+        and identify untested areas.
+      -->
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
@@ -335,6 +463,31 @@
         </executions>
       </plugin>
       <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+      <!--
+        Maven Javadoc Plugin (Aggregated)
+
+        Generates unified Javadoc across all modules and attaches it to the build. This plugin is actively executed
+        from the parent POM.
+
+        Executions:
+        - "aggregate-javadoc-html" (verify phase)
+          Builds a single, combined HTML documentation site for all modules.
+          Output is written to the build's site directory.
+
+        - "aggregate-javadoc-jar" (package phase)
+          Produces a JAR containing the aggregated Javadoc, typically
+          published alongside the main artifacts.
+
+        Configuration highlights:
+        - Uses consistent UTF-8 encoding for reliable documentation output.
+        - <show>public</show> restricts docs to the public API surface.
+        - <failOnError>true</failOnError> enforces strict documentation correctness (build fails on Javadoc errors).
+        - Adds links to the official Java API for better navigation.
+        - Includes options to improve readability and support Lombok.
+
+        This setup is especially useful in multi-module projects, providing a single entry point for API documentation
+        instead of per-module docs.
+      -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
