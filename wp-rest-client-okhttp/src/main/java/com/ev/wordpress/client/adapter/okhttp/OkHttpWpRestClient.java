@@ -130,9 +130,9 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         mapper.findAndRegisterModules();
 
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
-                .addInterceptor(new LoggingInterceptor())
                 .addInterceptor(new AuthenticationInterceptor(authenticationStrategy))
-                .addInterceptor(new WpErrorInterceptor());
+                .addInterceptor(new WpErrorInterceptor())
+                .addInterceptor(new LoggingInterceptor());
 
         applySslConfigurationIfPresent(clientBuilder, sslConfiguration);
         applyTimeoutConfigurationIfPresent(clientBuilder, timeoutConfiguration);

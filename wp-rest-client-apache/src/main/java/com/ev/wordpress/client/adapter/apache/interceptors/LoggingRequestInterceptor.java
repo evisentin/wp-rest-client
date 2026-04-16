@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class LoggingRequestInterceptor implements HttpRequestInterceptor {
 
-    private static final String PREFIX = ">> ";
+    private static final String PREFIX = ">>> ";
 
     @Override
     public void process(HttpRequest request, EntityDetails entity, HttpContext context)
@@ -24,7 +24,8 @@ public class LoggingRequestInterceptor implements HttpRequestInterceptor {
 
         StringBuilder sb = new StringBuilder();
         sb.append("\n")
-          .append(PREFIX).append("=== HTTP REQUEST ===\n");
+          .append(PREFIX)
+          .append(">>> HTTP REQUEST >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 
         sb.append(PREFIX)
           .append(request.getMethod())
@@ -61,8 +62,6 @@ public class LoggingRequestInterceptor implements HttpRequestInterceptor {
                         : new StringEntity(body, StandardCharsets.UTF_8));
             }
         }
-
-        sb.append(PREFIX).append("====================");
 
         log.debug(sb.toString());
     }

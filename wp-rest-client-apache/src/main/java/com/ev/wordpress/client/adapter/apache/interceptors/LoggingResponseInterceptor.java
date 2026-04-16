@@ -12,7 +12,7 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class LoggingResponseInterceptor implements HttpResponseInterceptor {
 
-    private static final String PREFIX = "<< ";
+    private static final String PREFIX = "<<< ";
 
     @Override
     public void process(HttpResponse response, EntityDetails entity, HttpContext context)
@@ -24,7 +24,7 @@ public class LoggingResponseInterceptor implements HttpResponseInterceptor {
 
         StringBuilder sb = new StringBuilder();
         sb.append("\n")
-          .append(PREFIX).append("=== HTTP RESPONSE ===\n");
+          .append(PREFIX).append("<<< HTTP RESPONSE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
 
         sb.append(PREFIX)
           .append("Status: ")

@@ -10,8 +10,8 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class LoggingInterceptor implements Interceptor {
 
-    private static final String REQUEST_PREFIX = ">> ";
-    private static final String RESPONSE_PREFIX = "<< ";
+    private static final String REQUEST_PREFIX = ">>> ";
+    private static final String RESPONSE_PREFIX = "<<< ";
 
     @Override
     public Response intercept(Chain chain) throws IOException {
@@ -24,7 +24,8 @@ public class LoggingInterceptor implements Interceptor {
 
         StringBuilder reqLog = new StringBuilder();
         reqLog.append("\n")
-              .append(REQUEST_PREFIX).append("=== HTTP REQUEST ===\n");
+              .append(REQUEST_PREFIX)
+              .append(">>> HTTP REQUEST >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
 
         reqLog.append(REQUEST_PREFIX)
               .append(request.method())
@@ -53,14 +54,14 @@ public class LoggingInterceptor implements Interceptor {
                   .append("\n");
         }
 
-        reqLog.append(REQUEST_PREFIX).append("====================");
         log.debug(reqLog.toString());
 
         Response response = chain.proceed(request);
 
         StringBuilder resLog = new StringBuilder();
         resLog.append("\n")
-              .append(RESPONSE_PREFIX).append("=== HTTP RESPONSE ===\n");
+              .append(RESPONSE_PREFIX)
+              .append("<<< HTTP RESPONSE <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n");
 
         resLog.append(RESPONSE_PREFIX)
               .append("Status: ")
@@ -92,7 +93,6 @@ public class LoggingInterceptor implements Interceptor {
                                .build();
         }
 
-        resLog.append(RESPONSE_PREFIX).append("====================");
         log.debug(resLog.toString());
 
         return response;

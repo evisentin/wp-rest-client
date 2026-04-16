@@ -143,9 +143,10 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         final HttpClientBuilder httpClientBuilder = HttpClients.custom();
 
         httpClientBuilder.addRequestInterceptorFirst(new AuthenticationInterceptor(authenticationStrategy))
-                         .addRequestInterceptorFirst(new LoggingRequestInterceptor())
-                         .addResponseInterceptorFirst(new WpErrorInterceptor())
-                         .addResponseInterceptorFirst(new LoggingResponseInterceptor());
+                         .addRequestInterceptorLast(new LoggingRequestInterceptor());
+
+        httpClientBuilder.addResponseInterceptorFirst(new LoggingResponseInterceptor())
+                         .addResponseInterceptorLast(new WpErrorInterceptor());
 
         applySslConfigurationIfPresent(httpClientBuilder, sslConfiguration);
         applyTimeoutConfigurationIfPresent(httpClientBuilder, timeoutConfiguration);
