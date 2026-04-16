@@ -9,7 +9,9 @@
   * [Module `wp-rest-client-domain`](#module-wp-rest-client-domain)
   * [Module `wp-rest-client-apache`](#module-wp-rest-client-apache)
   * [Module `wp-rest-client-okhttp`](#module-wp-rest-client-okhttp)
+  * [Module `wp-rest-client-test-commons`](#module-wp-rest-client-test-commons)
   * [Module `wp-rest-client-test-support`](#module-wp-rest-client-test-support)
+  * [Module `wp-rest-client-test-integration`](#module-wp-rest-client-test-integration)
   * [Module `wp-rest-client-test-report`](#module-wp-rest-client-test-report)
 - [Key Concept: Contract Testing](#key-concept-contract-testing)
   * [Why this matters](#why-this-matters)
@@ -50,8 +52,10 @@ The project is organised as a Maven multi-module build:
 - `wp-rest-client-domain`
 - `wp-rest-client-apache`
 - `wp-rest-client-okhttp`
-- `wp-rest-client-test-report`
-- `wp-rest-client-test-support`
+- `wp-rest-client-test-commons` *(not deployed to Maven Central)*
+- `wp-rest-client-test-support` *(not deployed to Maven Central)*
+- `wp-rest-client-test-integration` *(not deployed to Maven Central)*
+- `wp-rest-client-test-report` *(not deployed to Maven Central)*
 
 ### Module `wp-rest-client-domain`
 
@@ -77,7 +81,6 @@ Responsibilities:
 
 - HTTP communication using Apache HttpClient
 - Same contract as other implementations
--
 
 ---
 
@@ -95,6 +98,17 @@ Responsibilities:
 
 ---
 
+### Module `wp-rest-client-test-commons`
+
+Contains:
+
+- Shared test utilities
+- Common helpers used across test modules
+
+**PLEASE NOTE:** This module is **not deployed to Maven Central**.
+
+---
+
 ### Module `wp-rest-client-test-support`
 
 This is one of the **most important modules** in the project.
@@ -106,6 +120,21 @@ Contains:
 - Common test fixtures
 
 **PLEASE NOTE:** This module defines the **expected behaviour** of any compliant implementation.
+
+---
+
+### Module `wp-rest-client-test-integration`
+
+Contains:
+
+- Integration tests based on **Testcontainers**
+- Test suites executed against multiple WordPress versions
+
+Purpose:
+
+- Ensure **compatibility across different WordPress versions**
+
+**PLEASE NOTE:** This module is **not deployed to Maven Central**.
 
 ---
 
