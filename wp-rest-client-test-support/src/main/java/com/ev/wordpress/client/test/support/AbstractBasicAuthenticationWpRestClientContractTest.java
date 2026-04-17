@@ -36,11 +36,11 @@ import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.TRASH;
 import static com.ev.wordpress.client.domain.dto.enums.WpSortDirection.ASC;
 import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.CATEGORY;
 import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.POST_TAG;
-import static com.ev.wordpress.client.test.commons.assertions.WpAssertions.assertThrowsWpBadRequest;
-import static com.ev.wordpress.client.test.commons.assertions.WpAssertions.assertThrowsWpForbidden;
-import static com.ev.wordpress.client.test.commons.assertions.WpAssertions.assertThrowsWpNotFound;
-import static com.ev.wordpress.client.test.commons.assertions.WpAssertions.assertThrowsWpUnauthorized;
-import static com.ev.wordpress.client.test.commons.utils.SlugUtils.toWordPressSlug;
+import static com.ev.wordpress.client.test.support.SlugUtils.toWordPressSlug;
+import static com.ev.wordpress.client.test.support.WpAssertions.assertThrowsWpBadRequest;
+import static com.ev.wordpress.client.test.support.WpAssertions.assertThrowsWpForbidden;
+import static com.ev.wordpress.client.test.support.WpAssertions.assertThrowsWpNotFound;
+import static com.ev.wordpress.client.test.support.WpAssertions.assertThrowsWpUnauthorized;
 import static java.util.Collections.emptySet;
 
 public abstract class AbstractBasicAuthenticationWpRestClientContractTest extends AbstractMockServerTest {
@@ -61,9 +61,9 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
     @Nested
     class CategoryTests {
 
-        private static final String TEST_CATEGORY_NAME = "my category";
-        private static final String TEST_CATEGORY_DESCRIPTION = "my category description";
-        private static final String TEST_CATEGORY_SLUG = "my-category";
+        private static final String CATEGORY_NAME = "my category";
+        private static final String CATEGORY_DESCRIPTION = "my category description";
+        private static final String CATEGORY_SLUG = "my-category";
 
         @DisplayName("'CREATE' fails on HTTP BAD REQUEST")
         @Test
@@ -74,9 +74,9 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
             final WpCategoryCreateUpdateRequest createRequest =
                     WpCategoryCreateUpdateRequest.builder()
-                                                 .withName(TEST_CATEGORY_NAME)
-                                                 .withDescription(TEST_CATEGORY_DESCRIPTION)
-                                                 .withSlug(TEST_CATEGORY_SLUG)
+                                                 .withName(CATEGORY_NAME)
+                                                 .withDescription(CATEGORY_DESCRIPTION)
+                                                 .withSlug(CATEGORY_SLUG)
                                                  .build();
 
             // WHEN/THEN
@@ -91,8 +91,8 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpCategoryCreateUpdateRequest createRequest =
                     WpCategoryCreateUpdateRequest.builder()
                                                  .withName("   ")
-                                                 .withDescription(TEST_CATEGORY_DESCRIPTION)
-                                                 .withSlug(TEST_CATEGORY_SLUG)
+                                                 .withDescription(CATEGORY_DESCRIPTION)
+                                                 .withSlug(CATEGORY_SLUG)
                                                  .build();
 
             // WHEN/THEN
@@ -110,9 +110,9 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
             final WpCategoryCreateUpdateRequest createRequest =
                     WpCategoryCreateUpdateRequest.builder()
-                                                 .withName(TEST_CATEGORY_NAME)
-                                                 .withDescription(TEST_CATEGORY_DESCRIPTION)
-                                                 .withSlug(TEST_CATEGORY_SLUG)
+                                                 .withName(CATEGORY_NAME)
+                                                 .withDescription(CATEGORY_DESCRIPTION)
+                                                 .withSlug(CATEGORY_SLUG)
                                                  .build();
 
             // WHEN/THEN
@@ -138,9 +138,9 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
             final WpCategoryCreateUpdateRequest createRequest =
                     WpCategoryCreateUpdateRequest.builder()
-                                                 .withName(TEST_CATEGORY_NAME)
-                                                 .withDescription(TEST_CATEGORY_DESCRIPTION)
-                                                 .withSlug(TEST_CATEGORY_SLUG)
+                                                 .withName(CATEGORY_NAME)
+                                                 .withDescription(CATEGORY_DESCRIPTION)
+                                                 .withSlug(CATEGORY_SLUG)
                                                  .build();
 
             // WHEN/THEN
@@ -160,9 +160,9 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             // WHEN
             final WpCategoryCreateUpdateRequest createRequest =
                     WpCategoryCreateUpdateRequest.builder()
-                                                 .withName(TEST_CATEGORY_NAME)
-                                                 .withDescription(TEST_CATEGORY_DESCRIPTION)
-                                                 .withSlug(TEST_CATEGORY_SLUG)
+                                                 .withName(CATEGORY_NAME)
+                                                 .withDescription(CATEGORY_DESCRIPTION)
+                                                 .withSlug(CATEGORY_SLUG)
                                                  .withParentId(parent_id)
                                                  .build();
 
@@ -173,12 +173,12 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .isNotNull()
                                .hasParentId(parent_id)
                                .hasCount(0)
-                               .hasDescription(TEST_CATEGORY_DESCRIPTION)
-                               .hasName(TEST_CATEGORY_NAME).hasSlug(TEST_CATEGORY_SLUG)
+                               .hasDescription(CATEGORY_DESCRIPTION)
+                               .hasName(CATEGORY_NAME).hasSlug(CATEGORY_SLUG)
                                .hasTaxonomy(CATEGORY)
                                .satisfies(cat -> {
                                            assertThat(cat.getId()).isNotNull();
-                                           assertThat(cat.getLink()).isNotBlank().contains(PARENT_SLUG, TEST_CATEGORY_SLUG);
+                                           assertThat(cat.getLink()).isNotBlank().contains(PARENT_SLUG, CATEGORY_SLUG);
                                        }
                                );
         }
@@ -244,9 +244,9 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                        summary.isNotNull()
                                               .hasId(1005L)
                                               .hasCount(0)
-                                              .hasDescription(TEST_CATEGORY_DESCRIPTION)
-                                              .hasName(TEST_CATEGORY_NAME)
-                                              .hasSlug(TEST_CATEGORY_SLUG)
+                                              .hasDescription(CATEGORY_DESCRIPTION)
+                                              .hasName(CATEGORY_NAME)
+                                              .hasSlug(CATEGORY_SLUG)
                                               .hasTaxonomy(CATEGORY)
 
                                );
@@ -312,9 +312,9 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .isNotNull()
                                .hasId(catId)
                                .hasCount(0)
-                               .hasDescription(TEST_CATEGORY_DESCRIPTION)
-                               .hasName(TEST_CATEGORY_NAME)
-                               .hasSlug(TEST_CATEGORY_SLUG)
+                               .hasDescription(CATEGORY_DESCRIPTION)
+                               .hasName(CATEGORY_NAME)
+                               .hasSlug(CATEGORY_SLUG)
                                .hasTaxonomy(CATEGORY);
         }
 
@@ -335,9 +335,9 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .isNotNull()
                                .hasId(catId)
                                .hasCount(0)
-                               .hasDescription(TEST_CATEGORY_DESCRIPTION)
-                               .hasName(TEST_CATEGORY_NAME)
-                               .hasSlug(TEST_CATEGORY_SLUG)
+                               .hasDescription(CATEGORY_DESCRIPTION)
+                               .hasName(CATEGORY_NAME)
+                               .hasSlug(CATEGORY_SLUG)
                                .hasTaxonomy(CATEGORY);
         }
 
@@ -719,7 +719,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasType("post")
                                .hasTitleSatisfying(t ->
                                        t.hasRaw(TITLE)
-                                        .hasRaw(TITLE)
+                                        .hasRendered(TITLE)
                                )
                                .hasContentSatisfying(c ->
                                        c.hasRaw(CONTENT)
@@ -769,7 +769,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasType("post")
                                .hasTitleSatisfying(t ->
                                        t.hasRaw(TITLE)
-                                        .hasRaw(TITLE)
+                                        .hasRendered(TITLE)
                                )
                                .hasContentSatisfying(c ->
                                        c.hasRaw(CONTENT)

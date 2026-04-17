@@ -3,12 +3,23 @@ package com.ev.wordpress.test.integration.base;
 import com.ev.wordpress.client.domain.api.WpRestClient;
 import com.ev.wordpress.client.domain.assertions.WordPressAssertions;
 import com.ev.wordpress.client.domain.dto.WpCategory;
+import com.ev.wordpress.client.domain.dto.WpPagedResponse;
+import com.ev.wordpress.client.domain.dto.WpPost;
 import com.ev.wordpress.client.domain.dto.WpTag;
 import com.ev.wordpress.client.domain.dto.enums.WpContext;
+import com.ev.wordpress.client.domain.dto.enums.WpOpenClosed;
+import com.ev.wordpress.client.domain.dto.enums.WpTagOrderFields;
 import com.ev.wordpress.client.domain.dto.enums.WpTaxonomy;
+import com.ev.wordpress.client.domain.dto.query.WpCategoryQuery;
+import com.ev.wordpress.client.domain.dto.query.WpPagingQuery;
+import com.ev.wordpress.client.domain.dto.query.WpPostQuery;
+import com.ev.wordpress.client.domain.dto.query.WpTagQuery;
 import com.ev.wordpress.client.domain.dto.requests.WpCategoryCreateUpdateRequest;
+import com.ev.wordpress.client.domain.dto.requests.WpPostCreateUpdateRequest;
 import com.ev.wordpress.client.domain.dto.requests.WpTagCreateUpdateRequest;
 import com.ev.wordpress.client.domain.dto.responses.WpCategoryDeletionResponse;
+import com.ev.wordpress.client.domain.dto.responses.WpPostDeletionResponse;
+import com.ev.wordpress.client.domain.dto.responses.WpTagDeletionResponse;
 import com.ev.wordpress.test.integration.BaseWordPressIntegrationTest;
 import com.ev.wordpress.test.integration.base.factory.WpRestClientFactory;
 import lombok.NonNull;
@@ -19,11 +30,21 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
+import java.util.Set;
 
+import static com.ev.wordpress.client.domain.dto.enums.WpOpenClosed.CLOSED;
+import static com.ev.wordpress.client.domain.dto.enums.WpOpenClosed.OPEN;
+import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.DRAFT;
+import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.PRIVATE;
+import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.PUBLISH;
+import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.TRASH;
+import static com.ev.wordpress.client.domain.dto.enums.WpSortDirection.ASC;
 import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.CATEGORY;
-import static com.ev.wordpress.client.test.commons.assertions.WpAssertions.assertThrowsWpBadRequest;
-import static com.ev.wordpress.client.test.commons.assertions.WpAssertions.assertThrowsWpNotFound;
-import static com.ev.wordpress.client.test.commons.utils.SlugUtils.toWordPressSlug;
+import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.POST_TAG;
+import static com.ev.wordpress.test.integration.base.SlugUtils.toWordPressSlug;
+import static com.ev.wordpress.test.integration.base.WpAssertions.assertThrowsWpBadRequest;
+import static com.ev.wordpress.test.integration.base.WpAssertions.assertThrowsWpNotFound;
+import static java.util.Collections.emptySet;
 
 /**
  * Base integration test class for WordPress REST API scenarios using Basic Authentication.
@@ -118,13 +139,37 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
     protected abstract WpRestClientFactory clientFactory();
 
+    private Long givenCategoryExists(final String name, final String description, final String slug) {
+        return wpCreateCategory(name, description, slug);
+    }
+
+    private Long givenTagExists(final String name, final String description, final String slug) {
+        return wpCreateTag(name, description, slug);
+    }
+
+    private static WpCategoryCreateUpdateRequest.WpCategoryCreateUpdateRequestBuilder categoryCreateUpdateRequest() {
+        return WpCategoryCreateUpdateRequest.builder();
+    }
+
+    private static WpPostCreateUpdateRequest.WpPostCreateUpdateRequestBuilder postCreateUpdateRequest() {
+        return WpPostCreateUpdateRequest.builder();
+    }
+
+    private static WpTagCreateUpdateRequest.WpTagCreateUpdateRequestBuilder tagCreateUpdateRequest() {
+        return WpTagCreateUpdateRequest.builder();
+    }
+
     @DisplayName("Category APIs - Integration Tests")
     @Nested
     class CategoryTests {
 
-        private final static String CATEGORY_TEST_NAME = "Category #1";
-        private final static String CATEGORY_TEST_DESCRIPTION = "My first category";
-        private final static String CATEGORY_TEST_SLUG = "category-1";
+        private final static String CATEGORY_1_NAME = "Category #1";
+        private final static String CATEGORY_1_DESCRIPTION = "My first category";
+        private final static String CATEGORY_1_SLUG = "category-1";
+
+        private final static String CATEGORY_2_NAME = "Category #2";
+        private final static String CATEGORY_2_DESCRIPTION = "My second category";
+        private final static String CATEGORY_2_SLUG = "category-2";
 
         @DisplayName("'CREATE' fails on parent not found")
         @Test
@@ -138,10 +183,10 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             // WHEN/THEN
 
             final WpCategoryCreateUpdateRequest creationRequest =
-                    WpCategoryCreateUpdateRequest.builder()
-                                                 .withName(CATEGORY_TEST_NAME)
-                                                 .withParentId(nonExistingParentId)
-                                                 .build();
+                    categoryCreateUpdateRequest()
+                            .withName(CATEGORY_1_NAME)
+                            .withParentId(nonExistingParentId)
+                            .build();
 
             assertThrowsWpBadRequest(() -> adminClient.createCategory(creationRequest),
                     "rest_term_invalid",
@@ -154,26 +199,26 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // GIVEN
             wpCleanDefaultData();
-
-            Long existingParentCategory = wpCreateCategory("Parent", "Parent Category", "parent");
+            Long existingParentCategory = givenCategoryExists("Parent", "Parent Category", "parent");
 
             // WHEN
-            final WpCategory category = adminClient.createCategory(WpCategoryCreateUpdateRequest.builder()
-                                                                                                .withName(CATEGORY_TEST_NAME)
-                                                                                                .withDescription(CATEGORY_TEST_DESCRIPTION)
-                                                                                                .withSlug(CATEGORY_TEST_SLUG)
-                                                                                                .withParentId(existingParentCategory)
-                                                                                                .build());
+            final WpCategory category = adminClient.createCategory(categoryCreateUpdateRequest()
+                    .withName(CATEGORY_1_NAME)
+                    .withDescription(CATEGORY_1_DESCRIPTION)
+                    .withSlug(CATEGORY_1_SLUG)
+                    .withParentId(existingParentCategory)
+                    .build());
+            // THEN
             WordPressAssertions.assertThat(category)
                                .isNotNull()
                                .hasNonZeroId()
-                               .hasName(CATEGORY_TEST_NAME)
-                               .hasDescription(CATEGORY_TEST_DESCRIPTION)
-                               .hasSlug(CATEGORY_TEST_SLUG)
+                               .hasName(CATEGORY_1_NAME)
+                               .hasDescription(CATEGORY_1_DESCRIPTION)
+                               .hasSlug(CATEGORY_1_SLUG)
                                .hasParentId(existingParentCategory)
                                .hasCount(0)
-                               .hasTaxonomy(WpTaxonomy.CATEGORY)
-                               .hasLink(linkForCategory("parent", CATEGORY_TEST_SLUG));
+                               .hasTaxonomy(CATEGORY)
+                               .hasLink(linkForCategory("parent", CATEGORY_1_SLUG));
         }
 
         @DisplayName("'DELETE' fails on HTTP NOT FOUND")
@@ -193,7 +238,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // GIVEN
             wpCleanDefaultData();
-            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
+            final Long categoryId = givenCategoryExists(CATEGORY_1_NAME, CATEGORY_1_DESCRIPTION, CATEGORY_1_SLUG);
 
             // WHEN
             final WpCategoryDeletionResponse deletionResponse = adminClient.deleteCategory(categoryId);
@@ -206,11 +251,11 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                        summary.isNotNull()
                                               .hasId(categoryId)
                                               .hasCount(0)
-                                              .hasDescription(CATEGORY_TEST_DESCRIPTION)
-                                              .hasName(CATEGORY_TEST_NAME)
-                                              .hasSlug(CATEGORY_TEST_SLUG)
-                                              .hasLink(linkForCategory(CATEGORY_TEST_SLUG))
-                                              .hasTaxonomy(WpTaxonomy.CATEGORY));
+                                              .hasDescription(CATEGORY_1_DESCRIPTION)
+                                              .hasName(CATEGORY_1_NAME)
+                                              .hasSlug(CATEGORY_1_SLUG)
+                                              .hasLink(linkForCategory(CATEGORY_1_SLUG))
+                                              .hasTaxonomy(CATEGORY));
         }
 
         @DisplayName("'GET' fails on HTTP NOT FOUND")
@@ -219,7 +264,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // GIVEN
             wpCleanDefaultData();
-            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
+            final Long categoryId = givenCategoryExists(CATEGORY_1_NAME, CATEGORY_1_DESCRIPTION, CATEGORY_1_SLUG);
 
             // WHEN/THEN
             assertThrowsWpNotFound(() -> adminClient.getCategory(categoryId + 1000, null), "rest_term_invalid", "Term does not exist.");
@@ -231,18 +276,19 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // GIVEN
             wpCleanDefaultData();
-            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
+            final Long categoryId = givenCategoryExists(CATEGORY_1_NAME, CATEGORY_1_DESCRIPTION, CATEGORY_1_SLUG);
 
             // WHEN
             final WpCategory category = adminClient.getCategory(categoryId, WpContext.EDIT);
 
+            // THEN
             WordPressAssertions.assertThat(category)
                                .isNotNull()
                                .hasId(categoryId)
                                .hasCount(0)
-                               .hasDescription(CATEGORY_TEST_DESCRIPTION)
-                               .hasName(CATEGORY_TEST_NAME)
-                               .hasSlug(CATEGORY_TEST_SLUG)
+                               .hasDescription(CATEGORY_1_DESCRIPTION)
+                               .hasName(CATEGORY_1_NAME)
+                               .hasSlug(CATEGORY_1_SLUG)
                                .hasTaxonomy(CATEGORY);
         }
 
@@ -252,23 +298,101 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // GIVEN
             wpCleanDefaultData();
-            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
+            final Long categoryId = givenCategoryExists(CATEGORY_1_NAME, CATEGORY_1_DESCRIPTION, CATEGORY_1_SLUG);
 
             // WHEN
             final WpCategory category = adminClient.getCategory(categoryId, null);
 
+            // THEN
             WordPressAssertions.assertThat(category)
                                .isNotNull()
                                .hasId(categoryId)
                                .hasCount(0)
-                               .hasDescription(CATEGORY_TEST_DESCRIPTION)
-                               .hasName(CATEGORY_TEST_NAME)
-                               .hasSlug(CATEGORY_TEST_SLUG)
+                               .hasDescription(CATEGORY_1_DESCRIPTION)
+                               .hasName(CATEGORY_1_NAME)
+                               .hasSlug(CATEGORY_1_SLUG)
                                .hasTaxonomy(CATEGORY);
         }
 
-        // list__works_with_just_paging
-        // list__works_with_paging_and_query
+        @DisplayName("'LIST' works with just paging")
+        @Test
+        void list__works_with_just_paging() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            final Long cat1_id = givenCategoryExists(CATEGORY_1_NAME, CATEGORY_1_DESCRIPTION, CATEGORY_1_SLUG);
+            final Long cat2_id = givenCategoryExists(CATEGORY_2_NAME, CATEGORY_2_DESCRIPTION, CATEGORY_2_SLUG);
+
+            // WHEN
+            final WpPagedResponse<WpCategory> response = adminClient.listCategories(WpPagingQuery.of(1, 10), null);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(3)
+                               .doesNotHaveNextPage();
+
+            assertThat(response.getItems())
+                    .isNotNull()
+                    .hasSize(3)
+                    .extracting(
+                            WpCategory::getId,
+                            WpCategory::getName,
+                            WpCategory::getDescription,
+                            WpCategory::getSlug,
+                            WpCategory::getTaxonomy
+                    )
+                    .containsExactly(
+                            tuple(cat1_id, CATEGORY_1_NAME, CATEGORY_1_DESCRIPTION, CATEGORY_1_SLUG, CATEGORY),
+                            tuple(cat2_id, CATEGORY_2_NAME, CATEGORY_2_DESCRIPTION, CATEGORY_2_SLUG, CATEGORY),
+                            tuple(1L, "Uncategorized", "", "uncategorized", CATEGORY)
+                    );
+        }
+
+        @DisplayName("'LIST' works with paging and query")
+        @Test
+        void list__works_with_paging_and_query() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            final Long cat1_id = givenCategoryExists(CATEGORY_1_NAME, CATEGORY_1_DESCRIPTION, CATEGORY_1_SLUG);
+            final Long cat2_id = givenCategoryExists(CATEGORY_2_NAME, CATEGORY_2_DESCRIPTION, CATEGORY_2_SLUG);
+
+            // Filter just for category #2
+            final WpCategoryQuery categoryQuery = WpCategoryQuery.builder()
+                                                                 .withSlug(CATEGORY_2_SLUG)
+                                                                 .build();
+
+            // WHEN
+            final WpPagedResponse<WpCategory> response = adminClient.listCategories(WpPagingQuery.of(1, 10), categoryQuery);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(1)
+                               .doesNotHaveNextPage();
+
+            assertThat(response.getItems())
+                    .isNotNull()
+                    .hasSize(1)
+                    .extracting(
+                            WpCategory::getId,
+                            WpCategory::getName,
+                            WpCategory::getDescription,
+                            WpCategory::getSlug,
+                            WpCategory::getTaxonomy)
+                    .containsExactly(
+                            tuple(cat2_id, CATEGORY_2_NAME, CATEGORY_2_DESCRIPTION, CATEGORY_2_SLUG, CATEGORY)
+                    );
+        }
 
         @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
         @Test
@@ -276,12 +400,10 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // GIVEN
             wpCleanDefaultData();
-
             Long nonExistingCategoryId = 1000L;
 
             // WHEN/THEN
-
-            final WpCategoryCreateUpdateRequest updateRequest = WpCategoryCreateUpdateRequest.builder().build();
+            final WpCategoryCreateUpdateRequest updateRequest = categoryCreateUpdateRequest().build();
             assertThrowsWpNotFound(() -> adminClient.updateCategory(nonExistingCategoryId, updateRequest), "rest_term_invalid", "Term does not exist.");
         }
 
@@ -293,15 +415,13 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             wpCleanDefaultData();
 
             Long nonExistingCategoryId = 1000L;
-            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
+            final Long categoryId = givenCategoryExists(CATEGORY_1_NAME, CATEGORY_1_DESCRIPTION, CATEGORY_1_SLUG);
 
             // WHEN/THEN
-
-            final WpCategoryCreateUpdateRequest updateRequest =
-                    WpCategoryCreateUpdateRequest.builder()
-                                                 .withName("my category")
-                                                 .withParentId(nonExistingCategoryId)
-                                                 .build();
+            final WpCategoryCreateUpdateRequest updateRequest = categoryCreateUpdateRequest()
+                    .withName("my category")
+                    .withParentId(nonExistingCategoryId)
+                    .build();
 
             assertThrowsWpBadRequest(() -> adminClient.updateCategory(categoryId, updateRequest),
                     "rest_term_invalid", "Parent term does not exist.");
@@ -314,15 +434,15 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             // GIVEN
             wpCleanDefaultData();
 
-            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
+            final Long categoryId = givenCategoryExists(CATEGORY_1_NAME, CATEGORY_1_DESCRIPTION, CATEGORY_1_SLUG);
 
             // WHEN
             final WpCategoryCreateUpdateRequest updateRequest =
-                    WpCategoryCreateUpdateRequest.builder()
-                                                 .withName(CATEGORY_TEST_NAME + " UPDATED")
-                                                 .withDescription(CATEGORY_TEST_DESCRIPTION + " UPDATED")
-                                                 .withSlug(CATEGORY_TEST_SLUG + " UPDATED")
-                                                 .build();
+                    categoryCreateUpdateRequest()
+                            .withName(CATEGORY_1_NAME + " UPDATED")
+                            .withDescription(CATEGORY_1_DESCRIPTION + " UPDATED")
+                            .withSlug(CATEGORY_1_SLUG + " UPDATED")
+                            .build();
 
             final WpCategory category = adminClient.updateCategory(categoryId, updateRequest);
 
@@ -331,9 +451,9 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                .isNotNull()
                                .hasId(categoryId)
                                .hasCount(0)
-                               .hasDescription(CATEGORY_TEST_DESCRIPTION + " UPDATED")
-                               .hasName(CATEGORY_TEST_NAME + " UPDATED")
-                               .hasSlug(toWordPressSlug(CATEGORY_TEST_SLUG + " UPDATED"))
+                               .hasDescription(CATEGORY_1_DESCRIPTION + " UPDATED")
+                               .hasName(CATEGORY_1_NAME + " UPDATED")
+                               .hasSlug(toWordPressSlug(CATEGORY_1_SLUG + " UPDATED"))
                                .hasTaxonomy(CATEGORY);
         }
 
@@ -350,9 +470,13 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
     @Nested
     class TagTests {
 
-        private final static String TAG_TEST_NAME = "Tag #1";
-        private final static String TAG_TEST_DESCRIPTION = "My first tag";
-        private final static String TAG_TEST_SLUG = "tag-1";
+        private final static String TAG_1_NAME = "Tag #1";
+        private final static String TAG_1_DESCRIPTION = "My first tag";
+        private final static String TAG_1_SLUG = "tag-1";
+
+        private final static String TAG_2_NAME = "Tag #2";
+        private final static String TAG_2_DESCRIPTION = "My second tag";
+        private final static String TAG_2_SLUG = "tag-2";
 
         @DisplayName("'CREATE' fails on duplicate")
         @Test
@@ -362,14 +486,13 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             wpCleanDefaultData();
 
             // given a tag already exists
-            final Long existingTagId = wpCreateTag(TAG_TEST_NAME, TAG_TEST_DESCRIPTION, TAG_TEST_SLUG);
+            final Long existingTagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
 
             // WHEN/THEN
-
             final WpTagCreateUpdateRequest creationRequest =
-                    WpTagCreateUpdateRequest.builder()
-                                            .withName(TAG_TEST_NAME)
-                                            .build();
+                    tagCreateUpdateRequest()
+                            .withName(TAG_1_NAME)
+                            .build();
 
             assertThrowsWpBadRequest(() -> adminClient.createTag(creationRequest),
                     "term_exists",
@@ -385,185 +508,793 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             wpCleanDefaultData();
 
             // WHEN
-            final WpTag tag = adminClient.createTag(WpTagCreateUpdateRequest.builder()
-                                                                            .withName(TAG_TEST_NAME)
-                                                                            .withDescription(TAG_TEST_DESCRIPTION)
-                                                                            .withSlug(TAG_TEST_SLUG)
-                                                                            .build());
+            final WpTag tag = adminClient.createTag(tagCreateUpdateRequest()
+                    .withName(TAG_1_NAME)
+                    .withDescription(TAG_1_DESCRIPTION)
+                    .withSlug(TAG_1_SLUG)
+                    .build());
+
+            // THEN
             WordPressAssertions.assertThat(tag)
                                .isNotNull()
                                .hasNonZeroId()
-                               .hasName(TAG_TEST_NAME)
-                               .hasDescription(TAG_TEST_DESCRIPTION)
-                               .hasSlug(TAG_TEST_SLUG)
+                               .hasName(TAG_1_NAME)
+                               .hasDescription(TAG_1_DESCRIPTION)
+                               .hasSlug(TAG_1_SLUG)
                                .hasCount(0)
                                .hasTaxonomy(WpTaxonomy.POST_TAG)
-                               .hasLink(linkForTag(TAG_TEST_SLUG));
+                               .hasLink(linkForTag(TAG_1_SLUG));
+        }
+
+        @DisplayName("'DELETE' fails on HTTP NOT FOUND")
+        @Test
+        void delete__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.deleteTag(1000L), "rest_term_invalid", "Term does not exist.");
+        }
+
+        @DisplayName("'DELETE' works")
+        @Test
+        void delete__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+
+            // WHEN
+            final WpTagDeletionResponse deletionResponse = adminClient.deleteTag(tagId);
+
+            // THEN
+            WordPressAssertions.assertThat(deletionResponse)
+                               .isNotNull()
+                               .isDeleted()
+                               .hasPreviousSatisfying(summary ->
+                                       summary.isNotNull()
+                                              .hasId(tagId)
+                                              .hasCount(0)
+                                              .hasDescription(TAG_1_DESCRIPTION)
+                                              .hasName(TAG_1_NAME)
+                                              .hasSlug(TAG_1_SLUG)
+                                              .hasLink(linkForTag(TAG_1_SLUG))
+                                              .hasTaxonomy(POST_TAG));
+        }
+
+        @DisplayName("'GET' fails on HTTP NOT FOUND")
+        @Test
+        void get__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.getTag(tagId + 1000, null), "rest_term_invalid", "Term does not exist.");
+        }
+
+        @DisplayName("'GET' works with context")
+        @Test
+        void get__works_with_context() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+
+            // WHEN
+            final WpTag tag = adminClient.getTag(tagId, WpContext.EDIT);
+
+            // THEN
+            WordPressAssertions.assertThat(tag)
+                               .isNotNull()
+                               .hasId(tagId)
+                               .hasCount(0)
+                               .hasDescription(TAG_1_DESCRIPTION)
+                               .hasName(TAG_1_NAME)
+                               .hasSlug(TAG_1_SLUG)
+                               .hasTaxonomy(POST_TAG);
+        }
+
+        @DisplayName("'GET' works with no context")
+        @Test
+        void get__works_with_no_context() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+
+            // WHEN
+            final WpTag tag = adminClient.getTag(tagId, null);
+
+            // THEN
+            WordPressAssertions.assertThat(tag)
+                               .isNotNull()
+                               .hasId(tagId)
+                               .hasCount(0)
+                               .hasDescription(TAG_1_DESCRIPTION)
+                               .hasName(TAG_1_NAME)
+                               .hasSlug(TAG_1_SLUG)
+                               .hasTaxonomy(POST_TAG);
+        }
+
+        @DisplayName("'LIST' works with just paging")
+        @Test
+        void list__works_with_just_paging() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            final Long cat1_id = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+            final Long cat2_id = givenTagExists(TAG_2_NAME, TAG_2_DESCRIPTION, TAG_2_SLUG);
+
+            // WHEN
+            final WpPagedResponse<WpTag> response = adminClient.listTags(WpPagingQuery.of(1, 10), null);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(2)
+                               .doesNotHaveNextPage();
+
+            assertThat(response.getItems())
+                    .isNotNull()
+                    .hasSize(2)
+                    .extracting(
+                            WpTag::getId,
+                            WpTag::getName,
+                            WpTag::getDescription,
+                            WpTag::getSlug,
+                            WpTag::getTaxonomy
+                    )
+                    .containsExactly(
+                            tuple(cat1_id, TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG, POST_TAG),
+                            tuple(cat2_id, TAG_2_NAME, TAG_2_DESCRIPTION, TAG_2_SLUG, POST_TAG)
+                    );
+        }
+
+        @DisplayName("'LIST' works with paging and query")
+        @Test
+        void list__works_with_paging_and_query() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            final Long cat1_id = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+            final Long cat2_id = givenTagExists(TAG_2_NAME, TAG_2_DESCRIPTION, TAG_2_SLUG);
+
+            // Filter just for tag #2
+            final WpTagQuery tagQuery = WpTagQuery.builder()
+                                                  .withSlug(TAG_2_SLUG)
+                                                  .build();
+
+            // WHEN
+            final WpPagedResponse<WpTag> response = adminClient.listTags(WpPagingQuery.of(1, 10), tagQuery);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(1)
+                               .doesNotHaveNextPage();
+
+            assertThat(response.getItems())
+                    .isNotNull()
+                    .hasSize(1)
+                    .extracting(
+                            WpTag::getId,
+                            WpTag::getName,
+                            WpTag::getDescription,
+                            WpTag::getSlug,
+                            WpTag::getTaxonomy
+                    )
+                    .containsExactly(
+                            tuple(cat2_id, TAG_2_NAME, TAG_2_DESCRIPTION, TAG_2_SLUG, POST_TAG)
+                    );
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
+        @Test
+        void update__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            Long nonExistingTagId = 1000L;
+
+            // WHEN/THEN
+            final WpTagCreateUpdateRequest updateRequest = tagCreateUpdateRequest().build();
+            assertThrowsWpNotFound(() -> adminClient.updateTag(nonExistingTagId, updateRequest), "rest_term_invalid", "Term does not exist.");
+        }
+
+        @DisplayName("'UPDATE' works")
+        @Test
+        void update__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+
+            // WHEN
+            final WpTagCreateUpdateRequest updateRequest =
+                    tagCreateUpdateRequest()
+                            .withName(TAG_1_NAME + " UPDATED")
+                            .withDescription(TAG_1_DESCRIPTION + " UPDATED")
+                            .withSlug(TAG_1_SLUG + " UPDATED")
+                            .build();
+
+            final WpTag tag = adminClient.updateTag(tagId, updateRequest);
+
+            // THEN
+            WordPressAssertions.assertThat(tag)
+                               .isNotNull()
+                               .hasId(tagId)
+                               .hasCount(0)
+                               .hasDescription(TAG_1_DESCRIPTION + " UPDATED")
+                               .hasName(TAG_1_NAME + " UPDATED")
+                               .hasSlug(toWordPressSlug(TAG_1_SLUG + " UPDATED"))
+                               .hasTaxonomy(POST_TAG);
         }
 
         private String linkForTag(final @NonNull String slug) {
             return String.format("%s/tag/%s/", getHttpsBaseUrl(), slug);
         }
+    }
 
-//        @DisplayName("'DELETE' fails on HTTP NOT FOUND")
-//        @Test
-//        void delete__fails_on_not_found() {
-//
-//            // GIVEN
-//            wpCleanDefaultData();
-//
-//            // WHEN/THEN
-//            assertThrowsWpNotFound(() -> adminClient.deleteCategory(1000L), "rest_term_invalid", "Term does not exist.");
-//        }
-//
-//        @DisplayName("'DELETE' works")
-//        @Test
-//        void delete__works() {
-//
-//            // GIVEN
-//            wpCleanDefaultData();
-//            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
-//
-//            // WHEN
-//            final WpCategoryDeletionResponse deletionResponse = adminClient.deleteCategory(categoryId);
-//
-//            // THEN
-//            WordPressAssertions.assertThat(deletionResponse)
-//                               .isNotNull()
-//                               .isDeleted()
-//                               .hasPreviousSatisfying(summary ->
-//                                       summary.isNotNull()
-//                                              .hasId(categoryId)
-//                                              .hasCount(0)
-//                                              .hasDescription(CATEGORY_TEST_DESCRIPTION)
-//                                              .hasName(CATEGORY_TEST_NAME)
-//                                              .hasSlug(CATEGORY_TEST_SLUG)
-//                                              .hasLink(linkForCategory(CATEGORY_TEST_SLUG))
-//                                              .hasTaxonomy(WpTaxonomy.CATEGORY));
-//        }
-//
-//        @DisplayName("'GET' fails on HTTP NOT FOUND")
-//        @Test
-//        void get__fails_on_not_found() {
-//
-//            // GIVEN
-//            wpCleanDefaultData();
-//            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
-//
-//            // WHEN/THEN
-//            assertThrowsWpNotFound(() -> adminClient.getCategory(categoryId + 1000, null), "rest_term_invalid", "Term does not exist.");
-//        }
-//
-//        @DisplayName("'GET' works with context")
-//        @Test
-//        void get__works_with_context() {
-//
-//            // GIVEN
-//            wpCleanDefaultData();
-//            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
-//
-//            // WHEN
-//            final WpCategory category = adminClient.getCategory(categoryId, WpContext.EDIT);
-//
-//            WordPressAssertions.assertThat(category)
-//                               .isNotNull()
-//                               .hasId(categoryId)
-//                               .hasCount(0)
-//                               .hasDescription(CATEGORY_TEST_DESCRIPTION)
-//                               .hasName(CATEGORY_TEST_NAME)
-//                               .hasSlug(CATEGORY_TEST_SLUG)
-//                               .hasTaxonomy(CATEGORY);
-//        }
-//
-//        @DisplayName("'GET' works with no context")
-//        @Test
-//        void get__works_with_no_context() {
-//
-//            // GIVEN
-//            wpCleanDefaultData();
-//            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
-//
-//            // WHEN
-//            final WpCategory category = adminClient.getCategory(categoryId, null);
-//
-//            WordPressAssertions.assertThat(category)
-//                               .isNotNull()
-//                               .hasId(categoryId)
-//                               .hasCount(0)
-//                               .hasDescription(CATEGORY_TEST_DESCRIPTION)
-//                               .hasName(CATEGORY_TEST_NAME)
-//                               .hasSlug(CATEGORY_TEST_SLUG)
-//                               .hasTaxonomy(CATEGORY);
-//        }
-//
-//        // list__works_with_just_paging
-//        // list__works_with_paging_and_query
-//
-//        @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
-//        @Test
-//        void update__fails_on_not_found() {
-//
-//            // GIVEN
-//            wpCleanDefaultData();
-//
-//            Long nonExistingCategoryId = 1000L;
-//
-//            // WHEN/THEN
-//
-//            final WpCategoryCreateUpdateRequest updateRequest = WpCategoryCreateUpdateRequest.builder().build();
-//            assertThrowsWpNotFound(() -> adminClient.updateCategory(nonExistingCategoryId, updateRequest), "rest_term_invalid", "Term does not exist.");
-//        }
-//
-//        @DisplayName("'UPDATE' fails on parent not found")
-//        @Test
-//        void update__fails_on_parent_not_found() {
-//
-//            // GIVEN
-//            wpCleanDefaultData();
-//
-//            Long nonExistingCategoryId = 1000L;
-//            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
-//
-//            // WHEN/THEN
-//
-//            final WpCategoryCreateUpdateRequest updateRequest =
-//                    WpCategoryCreateUpdateRequest.builder()
-//                                                 .withName("my category")
-//                                                 .withParentId(nonExistingCategoryId)
-//                                                 .build();
-//
-//            assertThrowsWpBadRequest(() -> adminClient.updateCategory(categoryId, updateRequest),
-//                    "rest_term_invalid", "Parent term does not exist.");
-//        }
-//
-//        @DisplayName("'UPDATE' works")
-//        @Test
-//        void update__works() {
-//
-//            // GIVEN
-//            wpCleanDefaultData();
-//
-//            final Long categoryId = wpCreateCategory(CATEGORY_TEST_NAME, CATEGORY_TEST_DESCRIPTION, CATEGORY_TEST_SLUG);
-//
-//            // WHEN
-//            final WpCategoryCreateUpdateRequest updateRequest =
-//                    WpCategoryCreateUpdateRequest.builder()
-//                                                 .withName(CATEGORY_TEST_NAME + " UPDATED")
-//                                                 .withDescription(CATEGORY_TEST_DESCRIPTION + " UPDATED")
-//                                                 .withSlug(CATEGORY_TEST_SLUG + " UPDATED")
-//                                                 .build();
-//
-//            final WpCategory category = adminClient.updateCategory(categoryId, updateRequest);
-//
-//            // THEN
-//            WordPressAssertions.assertThat(category)
-//                               .isNotNull()
-//                               .hasId(categoryId)
-//                               .hasCount(0)
-//                               .hasDescription(CATEGORY_TEST_DESCRIPTION + " UPDATED")
-//                               .hasName(CATEGORY_TEST_NAME + " UPDATED")
-//                               .hasSlug(toWordPressSlug(CATEGORY_TEST_SLUG + " UPDATED"))
-//                               .hasTaxonomy(CATEGORY);
-//        }
+    @DisplayName("Post APIs - Integration Tests")
+    @Nested
+    class PostTests {
+
+        private final static String POST_1_TITLE = "Post #1";
+        private final static String POST_1_CONTENT = "My first post";
+        private final static String POST_1_SLUG = "post-1";
+
+        private final static String POST_2_TITLE = "Post #2";
+        private final static String POST_2_CONTENT = "My second post";
+        private final static String POST_2_SLUG = "post-2";
+
+        private final static String POST_3_TITLE = "Post #3";
+        private final static String POST_3_CONTENT = "My third post";
+        private final static String POST_3_SLUG = "post-3";
+
+        @DisplayName("'CREATE' works")
+        @Test
+        void create__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long tagCH = givenTagExists("switzerland", "Switzerland", "switzerland");
+            final Long categoryNews = givenCategoryExists("news", "News", "news");
+
+            // WHEN
+            WpPostCreateUpdateRequest createUpdateRequest =
+                    postCreateUpdateRequest()
+                            .withTitle(POST_1_TITLE)
+                            .withContent(POST_1_CONTENT)
+                            .withCategories(Set.of(categoryNews))
+                            .withTags(Set.of(tagCH))
+                            .build();
+
+            final WpPost post = adminClient.createPost(createUpdateRequest);
+
+            // THEN
+            WordPressAssertions.assertThat(post)
+                               .isNotNull()
+                               .hasId()
+                               .hasLink(linkForPost(post.getId()))
+                               .hasSlug("")
+                               .hasGeneratedSlug(toWordPressSlug(POST_1_TITLE))
+                               .hasStatus(DRAFT)
+                               .hasCommentStatus(OPEN)
+                               .hasPingStatus(OPEN)
+                               .hasType("post")
+                               .hasTitleSatisfying(t ->
+                                       t.hasRaw(POST_1_TITLE)
+                                        .hasRendered(POST_1_TITLE))
+                               .hasContentSatisfying(c ->
+                                       c.hasRaw(POST_1_CONTENT)
+                                        .hasRendered(toBlock(POST_1_CONTENT))
+                                        .isNotProtected()
+                                        .hasBlockVersion(0))
+                               .hasExcerptSatisfying(e ->
+                                       e.hasRaw("")
+                                        .hasRendered(toBlock(POST_1_CONTENT))
+                                        .isNotProtected()
+                                        .hasBlockVersion(null))
+                               .hasCategories(Set.of(categoryNews))
+                               .hasTags(Set.of(tagCH));
+        }
+
+        @DisplayName("'CREATE' works with non-existing tags or categories")
+        @Test
+        void create__works_on_non_existing_categories_or_tags() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long nonExistingTag1 = 1001L, nonExistingTag2 = 1002L, nonExistingTag3 = 1003L;
+            final Long nonExistingCategory1 = 2001L, nonExistingCategory2 = 2002L, nonExistingCategory3 = 3003L;
+
+            // WHEN
+            WpPostCreateUpdateRequest createUpdateRequest =
+                    postCreateUpdateRequest()
+                            .withTitle(POST_1_TITLE)
+                            .withContent(POST_1_CONTENT)
+                            .withCategories(Set.of(nonExistingCategory1, nonExistingCategory2, nonExistingCategory3))
+                            .withTags(Set.of(nonExistingTag1, nonExistingTag2, nonExistingTag3))
+                            .withStatus(PRIVATE)
+                            .withCommentStatus(WpOpenClosed.CLOSED)
+                            .withPingStatus(WpOpenClosed.CLOSED)
+                            .build();
+
+            final WpPost post = adminClient.createPost(createUpdateRequest);
+
+            // THEN
+            WordPressAssertions.assertThat(post)
+                               .isNotNull()
+                               .hasId()
+                               .hasLink(linkForPost(post.getSlug())) // not draft, the link has the slug
+                               .hasSlug(toWordPressSlug(POST_1_TITLE))
+                               .hasGeneratedSlug(toWordPressSlug(POST_1_TITLE))
+                               .hasStatus(PRIVATE)
+                               .hasCommentStatus(CLOSED)
+                               .hasPingStatus(CLOSED)
+                               .hasType("post")
+                               .hasTitleSatisfying(t ->
+                                       t.hasRaw(POST_1_TITLE)
+                                        .hasRendered(POST_1_TITLE))
+                               .hasContentSatisfying(c ->
+                                       c.hasRaw(POST_1_CONTENT)
+                                        .hasRendered(toBlock(POST_1_CONTENT))
+                                        .isNotProtected()
+                                        .hasBlockVersion(0))
+                               .hasExcerptSatisfying(e ->
+                                       e.hasRaw("")
+                                        .hasRendered(toBlock(POST_1_CONTENT))
+                                        .isNotProtected()
+                                        .hasBlockVersion(null))
+                               .hasCategories(emptySet())
+                               .hasTags(emptySet());
+        }
+
+        @DisplayName("'CREATE' works with password")
+        @Test
+        void create__works_with_password() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long tagCH = givenTagExists("switzerland", "Switzerland", "switzerland");
+            final Long categoryNews = givenCategoryExists("news", "News", "news");
+
+            // WHEN
+            WpPostCreateUpdateRequest createUpdateRequest =
+                    postCreateUpdateRequest()
+                            .withTitle(POST_1_TITLE)
+                            .withContent(POST_1_CONTENT)
+                            .withCategories(Set.of(categoryNews))
+                            .withTags(Set.of(tagCH))
+                            .withPassword("my password")
+                            .withStatus(PUBLISH)
+                            .build();
+
+            final WpPost post = adminClient.createPost(createUpdateRequest);
+
+            // THEN
+            WordPressAssertions.assertThat(post)
+                               .isNotNull()
+                               .hasId()
+                               .hasLink(linkForPost(post.getSlug())) // not draft, the link has the slug
+                               .hasSlug(toWordPressSlug(POST_1_TITLE))
+                               .hasGeneratedSlug(toWordPressSlug(POST_1_TITLE))
+                               .hasStatus(PUBLISH)
+                               .hasPassword("my password")
+                               .hasCommentStatus(OPEN)
+                               .hasPingStatus(OPEN)
+                               .hasType("post")
+                               .hasTitleSatisfying(t ->
+                                       t.hasRaw(POST_1_TITLE)
+                                        .hasRendered(POST_1_TITLE))
+                               .hasContentSatisfying(c ->
+                                       c.hasRaw(POST_1_CONTENT)
+                                        .hasRendered(toBlock(POST_1_CONTENT))
+                                        .isProtected() // PASSWORD --> PROTECTED
+                                        .hasBlockVersion(0))
+                               .hasExcerptSatisfying(e ->
+                                       e.hasRaw("")
+                                        .hasRendered(toBlock(POST_1_CONTENT))
+                                        .isProtected() // PASSWORD --> PROTECTED
+                                        .hasBlockVersion(null))
+                               .hasCategories(Set.of(categoryNews))
+                               .hasTags(Set.of(tagCH));
+        }
+
+        @DisplayName("'DELETE' fails on HTTP NOT FOUND")
+        @Test
+        void delete__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.deletePost(1000L), "rest_post_invalid_id", "Invalid post ID.");
+        }
+
+        @DisplayName("'DELETE' works")
+        @Test
+        void delete__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            WpPostCreateUpdateRequest createUpdateRequest =
+                    postCreateUpdateRequest()
+                            .withTitle(POST_1_TITLE)
+                            .withContent(POST_1_CONTENT)
+                            .withStatus(PUBLISH)
+                            .build();
+
+            final WpPost existingPost = adminClient.createPost(createUpdateRequest);
+
+            // WHEN
+            final WpPostDeletionResponse deletionResponse = adminClient.deletePost(existingPost.getId());
+
+            // THEN
+            WordPressAssertions.assertThat(deletionResponse)
+                               .isNotNull()
+                               .isDeleted()
+                               .hasPreviousSatisfying(summary ->
+                                       summary.isNotNull()
+                                              .hasId(existingPost.getId())
+                                              .hasTitleSatisfying(t ->
+                                                      t.hasRaw(POST_1_TITLE)
+                                                       .hasRendered(POST_1_TITLE))
+                                              .hasContentSatisfying(c ->
+                                                      c.hasRaw(POST_1_CONTENT)
+                                                       .hasRendered(toBlock(POST_1_CONTENT))
+                                                       .isNotProtected()
+                                                       .hasBlockVersion(0))
+                                              .hasExcerptSatisfying(e ->
+                                                      e.hasRaw("")
+                                                       .hasRendered(toBlock(POST_1_CONTENT))
+                                                       .isNotProtected()
+                                                       .hasBlockVersion(null))
+                                              .hasSlug(POST_1_SLUG)
+                                              .hasStatus(existingPost.getStatus()));
+        }
+
+        @DisplayName("'GET' fails on HTTP NOT FOUND")
+        @Test
+        void get__fails_on_not_found() {
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.getPost(1000L, null), "rest_post_invalid_id", "Invalid post ID.");
+        }
+
+        @DisplayName("'GET' works with password")
+        @Test
+        void get__gets_content_on_password_protected_post_and_password() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            final String PASSWORD = "password$$";
+
+            WpPostCreateUpdateRequest createUpdateRequest =
+                    postCreateUpdateRequest()
+                            .withTitle(POST_1_TITLE)
+                            .withContent(POST_1_CONTENT)
+                            .withStatus(PUBLISH)
+                            .withPassword(PASSWORD)
+                            .build();
+
+            final WpPost existingPost = adminClient.createPost(createUpdateRequest);
+
+            // WHEN
+            final WpPost post = standardUserClient.getPost(existingPost.getId(), WpContext.VIEW, PASSWORD);
+
+            // THEN
+            WordPressAssertions.assertThat(post)
+                               .isNotNull()
+                               .hasId()
+                               .hasStatus(PUBLISH)
+                               .hasPassword(null)
+                               .hasCommentStatus(OPEN)
+                               .hasPingStatus(OPEN)
+                               .hasType("post")
+                               .hasTitleSatisfying(t ->
+                                       t.hasRaw(null)
+                                        .hasRendered(POST_1_TITLE))
+                               .hasContentSatisfying(c ->
+                                       c.hasRaw(null)
+                                        .hasRendered(toBlock(POST_1_CONTENT))
+                                        .isProtected() // PASSWORD --> PROTECTED
+                                        .hasBlockVersion(null))
+                               .hasExcerptSatisfying(e ->
+                                       e.hasRaw(null)
+                                        .hasRendered(toBlock(POST_1_CONTENT))
+                                        .isProtected() // PASSWORD --> PROTECTED
+                                        .hasBlockVersion(null));
+        }
+
+        @DisplayName("'GET' returns empty content if protected and no password provided")
+        @Test
+        void get__gets_empty_content_on_password_protected_post_and_no_password() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            WpPostCreateUpdateRequest createUpdateRequest =
+                    postCreateUpdateRequest()
+                            .withTitle(POST_1_TITLE)
+                            .withContent(POST_1_CONTENT)
+                            .withStatus(PUBLISH)
+                            .withPassword("password$$")
+                            .build();
+
+            final WpPost existingPost = adminClient.createPost(createUpdateRequest);
+
+            // WHEN
+            final WpPost post = standardUserClient.getPost(existingPost.getId(), WpContext.VIEW);
+
+            // THEN
+            WordPressAssertions.assertThat(post)
+                               .isNotNull()
+                               .hasId()
+                               .hasStatus(PUBLISH)
+                               .hasPassword(null)
+                               .hasCommentStatus(OPEN)
+                               .hasPingStatus(OPEN)
+                               .hasType("post")
+                               .hasTitleSatisfying(t ->
+                                       t.hasRaw(null)
+                                        .hasRendered(POST_1_TITLE))
+                               .hasContentSatisfying(c ->
+                                       c.hasRaw(null)
+                                        .hasRendered("")
+                                        .isProtected() // PASSWORD --> PROTECTED
+                                        .hasBlockVersion(null))
+                               .hasExcerptSatisfying(e ->
+                                       e.hasRaw(null)
+                                        .hasRendered("")
+                                        .isProtected() // PASSWORD --> PROTECTED
+                                        .hasBlockVersion(null));
+        }
+
+        @DisplayName("'GET' works with context")
+        @Test
+        void get__works_with_context() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            WpPostCreateUpdateRequest createUpdateRequest =
+                    postCreateUpdateRequest()
+                            .withTitle(POST_1_TITLE)
+                            .withContent(POST_1_CONTENT)
+                            .withStatus(PUBLISH)
+                            .build();
+
+            final WpPost existingPost = adminClient.createPost(createUpdateRequest);
+
+            // WHEN
+            final WpPost post = adminClient.getPost(existingPost.getId(), WpContext.EDIT);
+
+            // THEN
+            assertThat(post).isNotNull();
+            assertThat(post.getId()).isNotNull().isEqualTo(existingPost.getId());
+        }
+
+        @DisplayName("'GET' works without context")
+        @Test
+        void get__works_with_no_context() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            WpPostCreateUpdateRequest createUpdateRequest =
+                    postCreateUpdateRequest()
+                            .withTitle(POST_1_TITLE)
+                            .withContent(POST_1_CONTENT)
+                            .withStatus(PUBLISH)
+                            .build();
+
+            final WpPost existingPost = adminClient.createPost(createUpdateRequest);
+
+            // WHEN
+            final WpPost post = adminClient.getPost(existingPost.getId(), null);
+
+            // THEN
+            assertThat(post).isNotNull();
+            assertThat(post.getId()).isNotNull().isEqualTo(existingPost.getId());
+        }
+
+        @DisplayName("'LIST' works with paging")
+        @Test
+        void list__works_with_just_paging() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final WpPost existingPost = adminClient.createPost(postCreateUpdateRequest()
+                    .withTitle(POST_1_TITLE)
+                    .withStatus(PUBLISH)
+                    .build());
+
+            // WHEN
+            final WpPagedResponse<WpPost> response = adminClient.listPosts(WpPagingQuery.of(1, 10), null);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(1)
+                               .doesNotHaveNextPage();
+            assertThat(response.getItems())
+                    .isNotNull()
+                    .hasSize(1)
+                    .first()
+                    .satisfies(item ->
+                            WordPressAssertions.assertThat(item)
+                                               .hasId(existingPost.getId())
+                                               .hasLink(existingPost.getLink())
+                                               .hasSlug(existingPost.getSlug())
+                                               .hasStatus(PUBLISH)
+                                               .hasType(existingPost.getType())
+                                               // during listing we have just "rendered", not "raw"
+                                               .hasTitleSatisfying(title -> title.hasRendered(existingPost.getTitle().getRendered()))
+
+                                               // during listing we have just "rendered", not "raw"
+                                               .hasContentSatisfying(content -> content.hasRendered(existingPost.getContent().getRendered()))
+                                               // during listing we have just "rendered", not "raw"
+                                               .hasExcerptSatisfying(excerpt -> excerpt.hasRendered(existingPost.getExcerpt().getRendered()))
+                    );
+        }
+
+        @DisplayName("'LIST' works with paging and query")
+        @Test
+        void list__works_with_paging_and_query() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final WpPost draft_post = adminClient.createPost(postCreateUpdateRequest()
+                    .withTitle(POST_1_TITLE)
+                    .withStatus(DRAFT)
+                    .build());
+
+            final WpPost private_post = adminClient.createPost(postCreateUpdateRequest()
+                    .withTitle(POST_2_TITLE)
+                    .withStatus(PRIVATE)
+                    .build());
+
+            final WpPost published_post = adminClient.createPost(postCreateUpdateRequest()
+                    .withTitle(POST_3_TITLE)
+                    .withStatus(PUBLISH)
+                    .build());
+
+            // WHEN
+            final WpPostQuery postQuery = WpPostQuery.builder()
+                                                     .withStatuses(Set.of(DRAFT, PRIVATE))
+                                                     .withOrder(ASC)
+                                                     .withOrderBy(WpTagOrderFields.ID)
+                                                     .build();
+
+            final WpPagedResponse<WpPost> response = adminClient.listPosts(WpPagingQuery.of(1, 10), postQuery);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(2)// TWO POSTS (FILTER)
+                               .doesNotHaveNextPage();
+            assertThat(response.getItems())
+                    .isNotNull()
+                    .hasSize(2) // TWO POSTS (FILTER)
+                    .extracting(WpPost::getId)
+                    .containsExactly(draft_post.getId(), private_post.getId());
+        }
+
+        @DisplayName("'TRASH' fails on HTTP NOT FOUND")
+        @Test
+        void trash__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.trashPost(1000L), "rest_post_invalid_id", "Invalid post ID.");
+        }
+
+        @DisplayName("'TRASH' works")
+        @Test
+        void trash__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            WpPostCreateUpdateRequest createUpdateRequest =
+                    postCreateUpdateRequest()
+                            .withTitle(POST_1_TITLE)
+                            .withContent(POST_1_CONTENT)
+                            .withStatus(PUBLISH)
+                            .build();
+
+            final WpPost existingPost = adminClient.createPost(createUpdateRequest);
+
+            // WHEN
+            final WpPost deletionResponse = adminClient.trashPost(existingPost.getId());
+
+            // THEN
+            WordPressAssertions.assertThat(deletionResponse)
+                               .isNotNull()
+                               .hasId(existingPost.getId())
+                               .hasStatus(TRASH);
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
+        @Test
+        void update__fails_on_not_found() {
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.updatePost(1000L, postCreateUpdateRequest().build()),
+                    "rest_post_invalid_id", "Invalid post ID.");
+        }
+
+        @DisplayName("'UPDATE' works")
+        @Test
+        void update__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            WpPostCreateUpdateRequest createUpdateRequest =
+                    postCreateUpdateRequest()
+                            .withTitle(POST_1_TITLE)
+                            .withContent(POST_1_CONTENT)
+                            .withStatus(PUBLISH)
+                            .build();
+
+            final WpPost existingPost = adminClient.createPost(createUpdateRequest);
+
+            // WHEN
+            WpPostCreateUpdateRequest updateRequest =
+                    postCreateUpdateRequest()
+                            .withTitle(POST_1_TITLE + " UPDATED")
+                            .withContent(POST_1_CONTENT + " UPDATED")
+                            .withExcerpt(POST_1_CONTENT + " UPDATED")
+                            .withStatus(DRAFT)
+                            .build();
+
+            final WpPost post = adminClient.updatePost(existingPost.getId(), updateRequest);
+
+            // THEN
+            // TODO: fix assertions
+            assertThat(post)
+                    .isNotNull()
+                    .satisfies(p -> {
+                        assertThat(p.getId()).isEqualTo(existingPost.getId());
+                        assertThat(p.getStatus()).isEqualTo(DRAFT);
+                        assertThat(p.getTitle().getRaw()).isNotNull().isEqualTo(POST_1_TITLE + " UPDATED");
+                        assertThat(p.getContent().getRaw()).isNotNull().isEqualTo(POST_1_CONTENT + " UPDATED");
+                        assertThat(p.getExcerpt().getRaw()).isNotNull().isEqualTo(POST_1_CONTENT + " UPDATED");
+                    });
+        }
+
+        private String linkForPost(final @NonNull Long id) {
+            return String.format("%s/?p=%d", getHttpsBaseUrl(), id);
+        }
+
+        private String linkForPost(final @NonNull String slug) {
+            return String.format("%s/%s/", getHttpsBaseUrl(), slug);
+        }
+
+        private static String toBlock(final @NonNull String text) {
+            return String.format("<p>%s</p>\n", text);
+        }
     }
 }

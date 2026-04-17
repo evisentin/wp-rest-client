@@ -1,4 +1,4 @@
-package com.ev.wordpress.client.test.commons.assertions;
+package com.ev.wordpress.test.integration.base;
 
 import com.ev.wordpress.client.domain.exception.WpBadRequestException;
 import com.ev.wordpress.client.domain.exception.WpForbiddenException;

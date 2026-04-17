@@ -20,7 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 
-import static com.ev.wordpress.client.test.commons.utils.TestFileUtils.deleteIfExists;
+import static com.ev.wordpress.test.integration.TestFileUtils.deleteIfExists;
 import static org.apache.commons.lang3.StringUtils.trimToEmpty;
 import static org.testcontainers.containers.BindMode.READ_WRITE;
 import static org.testcontainers.containers.wait.strategy.Wait.forHttp;
