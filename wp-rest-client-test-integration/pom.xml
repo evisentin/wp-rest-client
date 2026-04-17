@@ -12,6 +12,10 @@
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <artifactId>wp-rest-client-test-integration</artifactId>
   <name>WP REST Client - WordPress integration tests</name>
+  <description>
+    Integration test suite for the WP REST Client using Testcontainers, executing tests against multiple WordPress
+    versions to ensure cross-version compatibility.
+  </description>
   <packaging>jar</packaging>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <properties>
@@ -88,12 +92,6 @@
       <artifactId>wp-rest-client-domain</artifactId>
       <version>${project.version}</version>
       <type>test-jar</type>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>com.ev.wordpress</groupId>
-      <artifactId>wp-rest-client-test-commons</artifactId>
-      <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
 

@@ -21,9 +21,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 
 import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.CATEGORY;
-import static com.ev.wordpress.client.test.commons.assertions.WpAssertions.assertThrowsWpBadRequest;
-import static com.ev.wordpress.client.test.commons.assertions.WpAssertions.assertThrowsWpNotFound;
-import static com.ev.wordpress.client.test.commons.utils.SlugUtils.toWordPressSlug;
+import static com.ev.wordpress.test.integration.base.SlugUtils.toWordPressSlug;
+import static com.ev.wordpress.test.integration.base.WpAssertions.assertThrowsWpBadRequest;
+import static com.ev.wordpress.test.integration.base.WpAssertions.assertThrowsWpNotFound;
 
 /**
  * Base integration test class for WordPress REST API scenarios using Basic Authentication.

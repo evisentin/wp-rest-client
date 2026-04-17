@@ -36,11 +36,11 @@ import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.TRASH;
 import static com.ev.wordpress.client.domain.dto.enums.WpSortDirection.ASC;
 import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.CATEGORY;
 import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.POST_TAG;
-import static com.ev.wordpress.client.test.commons.assertions.WpAssertions.assertThrowsWpBadRequest;
-import static com.ev.wordpress.client.test.commons.assertions.WpAssertions.assertThrowsWpForbidden;
-import static com.ev.wordpress.client.test.commons.assertions.WpAssertions.assertThrowsWpNotFound;
-import static com.ev.wordpress.client.test.commons.assertions.WpAssertions.assertThrowsWpUnauthorized;
-import static com.ev.wordpress.client.test.commons.utils.SlugUtils.toWordPressSlug;
+import static com.ev.wordpress.client.test.support.SlugUtils.toWordPressSlug;
+import static com.ev.wordpress.client.test.support.WpAssertions.assertThrowsWpBadRequest;
+import static com.ev.wordpress.client.test.support.WpAssertions.assertThrowsWpForbidden;
+import static com.ev.wordpress.client.test.support.WpAssertions.assertThrowsWpNotFound;
+import static com.ev.wordpress.client.test.support.WpAssertions.assertThrowsWpUnauthorized;
 import static java.util.Collections.emptySet;
 
 public abstract class AbstractBasicAuthenticationWpRestClientContractTest extends AbstractMockServerTest {

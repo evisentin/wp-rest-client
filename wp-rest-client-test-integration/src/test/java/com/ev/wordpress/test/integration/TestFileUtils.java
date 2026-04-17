@@ -1,4 +1,4 @@
-package com.ev.wordpress.client.test.commons.utils;
+package com.ev.wordpress.test.integration;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

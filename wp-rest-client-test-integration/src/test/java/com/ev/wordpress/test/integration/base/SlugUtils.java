@@ -1,4 +1,4 @@
-package com.ev.wordpress.client.test.commons.utils;
+package com.ev.wordpress.test.integration.base;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -14,7 +14,7 @@ import java.util.Locale;
  * common WordPress slug generation behaviour by applying the following transformations:
  * <ul>
  *     <li>Trims leading and trailing whitespace</li>
- *     <li>Converts all characters to lowercase using {@link java.util.Locale#ROOT}</li>
+ *     <li>Converts all characters to lowercase using {@link Locale#ROOT}</li>
  *     <li>Removes diacritics (e.g., "é" → "e", "ü" → "u")</li>
  *     <li>Removes apostrophes (both ASCII and typographic)</li>
  *     <li>Replaces sequences of non-alphanumeric characters with a single dash ({@code -})</li>
