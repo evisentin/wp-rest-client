@@ -8,9 +8,11 @@ import com.ev.wordpress.client.domain.dto.WpPost;
 import com.ev.wordpress.client.domain.dto.WpTag;
 import com.ev.wordpress.client.domain.dto.enums.WpContext;
 import com.ev.wordpress.client.domain.dto.enums.WpOpenClosed;
+import com.ev.wordpress.client.domain.dto.enums.WpTagOrderFields;
 import com.ev.wordpress.client.domain.dto.enums.WpTaxonomy;
 import com.ev.wordpress.client.domain.dto.query.WpCategoryQuery;
 import com.ev.wordpress.client.domain.dto.query.WpPagingQuery;
+import com.ev.wordpress.client.domain.dto.query.WpPostQuery;
 import com.ev.wordpress.client.domain.dto.query.WpTagQuery;
 import com.ev.wordpress.client.domain.dto.requests.WpCategoryCreateUpdateRequest;
 import com.ev.wordpress.client.domain.dto.requests.WpPostCreateUpdateRequest;
@@ -36,6 +38,7 @@ import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.DRAFT;
 import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.PRIVATE;
 import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.PUBLISH;
 import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.TRASH;
+import static com.ev.wordpress.client.domain.dto.enums.WpSortDirection.ASC;
 import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.CATEGORY;
 import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.POST_TAG;
 import static com.ev.wordpress.test.integration.base.SlugUtils.toWordPressSlug;
@@ -144,6 +147,18 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
         return wpCreateTag(name, description, slug);
     }
 
+    private static WpCategoryCreateUpdateRequest.WpCategoryCreateUpdateRequestBuilder categoryCreateUpdateRequest() {
+        return WpCategoryCreateUpdateRequest.builder();
+    }
+
+    private static WpPostCreateUpdateRequest.WpPostCreateUpdateRequestBuilder postCreateUpdateRequest() {
+        return WpPostCreateUpdateRequest.builder();
+    }
+
+    private static WpTagCreateUpdateRequest.WpTagCreateUpdateRequestBuilder tagCreateUpdateRequest() {
+        return WpTagCreateUpdateRequest.builder();
+    }
+
     @DisplayName("Category APIs - Integration Tests")
     @Nested
     class CategoryTests {
@@ -168,10 +183,10 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             // WHEN/THEN
 
             final WpCategoryCreateUpdateRequest creationRequest =
-                    WpCategoryCreateUpdateRequest.builder()
-                                                 .withName(CATEGORY_1_NAME)
-                                                 .withParentId(nonExistingParentId)
-                                                 .build();
+                    categoryCreateUpdateRequest()
+                            .withName(CATEGORY_1_NAME)
+                            .withParentId(nonExistingParentId)
+                            .build();
 
             assertThrowsWpBadRequest(() -> adminClient.createCategory(creationRequest),
                     "rest_term_invalid",
@@ -187,12 +202,12 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             Long existingParentCategory = givenCategoryExists("Parent", "Parent Category", "parent");
 
             // WHEN
-            final WpCategory category = adminClient.createCategory(WpCategoryCreateUpdateRequest.builder()
-                                                                                                .withName(CATEGORY_1_NAME)
-                                                                                                .withDescription(CATEGORY_1_DESCRIPTION)
-                                                                                                .withSlug(CATEGORY_1_SLUG)
-                                                                                                .withParentId(existingParentCategory)
-                                                                                                .build());
+            final WpCategory category = adminClient.createCategory(categoryCreateUpdateRequest()
+                    .withName(CATEGORY_1_NAME)
+                    .withDescription(CATEGORY_1_DESCRIPTION)
+                    .withSlug(CATEGORY_1_SLUG)
+                    .withParentId(existingParentCategory)
+                    .build());
             // THEN
             WordPressAssertions.assertThat(category)
                                .isNotNull()
@@ -373,8 +388,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                             WpCategory::getName,
                             WpCategory::getDescription,
                             WpCategory::getSlug,
-                            WpCategory::getTaxonomy
-                    )
+                            WpCategory::getTaxonomy)
                     .containsExactly(
                             tuple(cat2_id, CATEGORY_2_NAME, CATEGORY_2_DESCRIPTION, CATEGORY_2_SLUG, CATEGORY)
                     );
@@ -389,7 +403,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             Long nonExistingCategoryId = 1000L;
 
             // WHEN/THEN
-            final WpCategoryCreateUpdateRequest updateRequest = WpCategoryCreateUpdateRequest.builder().build();
+            final WpCategoryCreateUpdateRequest updateRequest = categoryCreateUpdateRequest().build();
             assertThrowsWpNotFound(() -> adminClient.updateCategory(nonExistingCategoryId, updateRequest), "rest_term_invalid", "Term does not exist.");
         }
 
@@ -404,11 +418,10 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             final Long categoryId = givenCategoryExists(CATEGORY_1_NAME, CATEGORY_1_DESCRIPTION, CATEGORY_1_SLUG);
 
             // WHEN/THEN
-            final WpCategoryCreateUpdateRequest updateRequest =
-                    WpCategoryCreateUpdateRequest.builder()
-                                                 .withName("my category")
-                                                 .withParentId(nonExistingCategoryId)
-                                                 .build();
+            final WpCategoryCreateUpdateRequest updateRequest = categoryCreateUpdateRequest()
+                    .withName("my category")
+                    .withParentId(nonExistingCategoryId)
+                    .build();
 
             assertThrowsWpBadRequest(() -> adminClient.updateCategory(categoryId, updateRequest),
                     "rest_term_invalid", "Parent term does not exist.");
@@ -425,11 +438,11 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // WHEN
             final WpCategoryCreateUpdateRequest updateRequest =
-                    WpCategoryCreateUpdateRequest.builder()
-                                                 .withName(CATEGORY_1_NAME + " UPDATED")
-                                                 .withDescription(CATEGORY_1_DESCRIPTION + " UPDATED")
-                                                 .withSlug(CATEGORY_1_SLUG + " UPDATED")
-                                                 .build();
+                    categoryCreateUpdateRequest()
+                            .withName(CATEGORY_1_NAME + " UPDATED")
+                            .withDescription(CATEGORY_1_DESCRIPTION + " UPDATED")
+                            .withSlug(CATEGORY_1_SLUG + " UPDATED")
+                            .build();
 
             final WpCategory category = adminClient.updateCategory(categoryId, updateRequest);
 
@@ -477,9 +490,9 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // WHEN/THEN
             final WpTagCreateUpdateRequest creationRequest =
-                    WpTagCreateUpdateRequest.builder()
-                                            .withName(TAG_1_NAME)
-                                            .build();
+                    tagCreateUpdateRequest()
+                            .withName(TAG_1_NAME)
+                            .build();
 
             assertThrowsWpBadRequest(() -> adminClient.createTag(creationRequest),
                     "term_exists",
@@ -495,11 +508,11 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             wpCleanDefaultData();
 
             // WHEN
-            final WpTag tag = adminClient.createTag(WpTagCreateUpdateRequest.builder()
-                                                                            .withName(TAG_1_NAME)
-                                                                            .withDescription(TAG_1_DESCRIPTION)
-                                                                            .withSlug(TAG_1_SLUG)
-                                                                            .build());
+            final WpTag tag = adminClient.createTag(tagCreateUpdateRequest()
+                    .withName(TAG_1_NAME)
+                    .withDescription(TAG_1_DESCRIPTION)
+                    .withSlug(TAG_1_SLUG)
+                    .build());
 
             // THEN
             WordPressAssertions.assertThat(tag)
@@ -695,7 +708,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             Long nonExistingTagId = 1000L;
 
             // WHEN/THEN
-            final WpTagCreateUpdateRequest updateRequest = WpTagCreateUpdateRequest.builder().build();
+            final WpTagCreateUpdateRequest updateRequest = tagCreateUpdateRequest().build();
             assertThrowsWpNotFound(() -> adminClient.updateTag(nonExistingTagId, updateRequest), "rest_term_invalid", "Term does not exist.");
         }
 
@@ -710,11 +723,11 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // WHEN
             final WpTagCreateUpdateRequest updateRequest =
-                    WpTagCreateUpdateRequest.builder()
-                                            .withName(TAG_1_NAME + " UPDATED")
-                                            .withDescription(TAG_1_DESCRIPTION + " UPDATED")
-                                            .withSlug(TAG_1_SLUG + " UPDATED")
-                                            .build();
+                    tagCreateUpdateRequest()
+                            .withName(TAG_1_NAME + " UPDATED")
+                            .withDescription(TAG_1_DESCRIPTION + " UPDATED")
+                            .withSlug(TAG_1_SLUG + " UPDATED")
+                            .build();
 
             final WpTag tag = adminClient.updateTag(tagId, updateRequest);
 
@@ -746,6 +759,10 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
         private final static String POST_2_CONTENT = "My second post";
         private final static String POST_2_SLUG = "post-2";
 
+        private final static String POST_3_TITLE = "Post #3";
+        private final static String POST_3_CONTENT = "My third post";
+        private final static String POST_3_SLUG = "post-3";
+
         @DisplayName("'CREATE' works")
         @Test
         void create__works() {
@@ -757,12 +774,12 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // WHEN
             WpPostCreateUpdateRequest createUpdateRequest =
-                    WpPostCreateUpdateRequest.builder()
-                                             .withTitle(POST_1_TITLE)
-                                             .withContent(POST_1_CONTENT)
-                                             .withCategories(Set.of(categoryNews))
-                                             .withTags(Set.of(tagCH))
-                                             .build();
+                    postCreateUpdateRequest()
+                            .withTitle(POST_1_TITLE)
+                            .withContent(POST_1_CONTENT)
+                            .withCategories(Set.of(categoryNews))
+                            .withTags(Set.of(tagCH))
+                            .build();
 
             final WpPost post = adminClient.createPost(createUpdateRequest);
 
@@ -805,15 +822,15 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // WHEN
             WpPostCreateUpdateRequest createUpdateRequest =
-                    WpPostCreateUpdateRequest.builder()
-                                             .withTitle(POST_1_TITLE)
-                                             .withContent(POST_1_CONTENT)
-                                             .withCategories(Set.of(nonExistingCategory1, nonExistingCategory2, nonExistingCategory3))
-                                             .withTags(Set.of(nonExistingTag1, nonExistingTag2, nonExistingTag3))
-                                             .withStatus(PRIVATE)
-                                             .withCommentStatus(WpOpenClosed.CLOSED)
-                                             .withPingStatus(WpOpenClosed.CLOSED)
-                                             .build();
+                    postCreateUpdateRequest()
+                            .withTitle(POST_1_TITLE)
+                            .withContent(POST_1_CONTENT)
+                            .withCategories(Set.of(nonExistingCategory1, nonExistingCategory2, nonExistingCategory3))
+                            .withTags(Set.of(nonExistingTag1, nonExistingTag2, nonExistingTag3))
+                            .withStatus(PRIVATE)
+                            .withCommentStatus(WpOpenClosed.CLOSED)
+                            .withPingStatus(WpOpenClosed.CLOSED)
+                            .build();
 
             final WpPost post = adminClient.createPost(createUpdateRequest);
 
@@ -856,14 +873,14 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // WHEN
             WpPostCreateUpdateRequest createUpdateRequest =
-                    WpPostCreateUpdateRequest.builder()
-                                             .withTitle(POST_1_TITLE)
-                                             .withContent(POST_1_CONTENT)
-                                             .withCategories(Set.of(categoryNews))
-                                             .withTags(Set.of(tagCH))
-                                             .withPassword("my password")
-                                             .withStatus(PUBLISH)
-                                             .build();
+                    postCreateUpdateRequest()
+                            .withTitle(POST_1_TITLE)
+                            .withContent(POST_1_CONTENT)
+                            .withCategories(Set.of(categoryNews))
+                            .withTags(Set.of(tagCH))
+                            .withPassword("my password")
+                            .withStatus(PUBLISH)
+                            .build();
 
             final WpPost post = adminClient.createPost(createUpdateRequest);
 
@@ -915,11 +932,11 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             wpCleanDefaultData();
 
             WpPostCreateUpdateRequest createUpdateRequest =
-                    WpPostCreateUpdateRequest.builder()
-                                             .withTitle(POST_1_TITLE)
-                                             .withContent(POST_1_CONTENT)
-                                             .withStatus(PUBLISH)
-                                             .build();
+                    postCreateUpdateRequest()
+                            .withTitle(POST_1_TITLE)
+                            .withContent(POST_1_CONTENT)
+                            .withStatus(PUBLISH)
+                            .build();
 
             final WpPost existingPost = adminClient.createPost(createUpdateRequest);
 
@@ -970,12 +987,12 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             final String PASSWORD = "password$$";
 
             WpPostCreateUpdateRequest createUpdateRequest =
-                    WpPostCreateUpdateRequest.builder()
-                                             .withTitle(POST_1_TITLE)
-                                             .withContent(POST_1_CONTENT)
-                                             .withStatus(PUBLISH)
-                                             .withPassword(PASSWORD)
-                                             .build();
+                    postCreateUpdateRequest()
+                            .withTitle(POST_1_TITLE)
+                            .withContent(POST_1_CONTENT)
+                            .withStatus(PUBLISH)
+                            .withPassword(PASSWORD)
+                            .build();
 
             final WpPost existingPost = adminClient.createPost(createUpdateRequest);
 
@@ -1013,12 +1030,12 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             // GIVEN
             wpCleanDefaultData();
             WpPostCreateUpdateRequest createUpdateRequest =
-                    WpPostCreateUpdateRequest.builder()
-                                             .withTitle(POST_1_TITLE)
-                                             .withContent(POST_1_CONTENT)
-                                             .withStatus(PUBLISH)
-                                             .withPassword("password$$")
-                                             .build();
+                    postCreateUpdateRequest()
+                            .withTitle(POST_1_TITLE)
+                            .withContent(POST_1_CONTENT)
+                            .withStatus(PUBLISH)
+                            .withPassword("password$$")
+                            .build();
 
             final WpPost existingPost = adminClient.createPost(createUpdateRequest);
 
@@ -1049,6 +1066,138 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                         .hasBlockVersion(null));
         }
 
+        @DisplayName("'GET' works with context")
+        @Test
+        void get__works_with_context() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            WpPostCreateUpdateRequest createUpdateRequest =
+                    postCreateUpdateRequest()
+                            .withTitle(POST_1_TITLE)
+                            .withContent(POST_1_CONTENT)
+                            .withStatus(PUBLISH)
+                            .build();
+
+            final WpPost existingPost = adminClient.createPost(createUpdateRequest);
+
+            // WHEN
+            final WpPost post = adminClient.getPost(existingPost.getId(), WpContext.EDIT);
+
+            // THEN
+            assertThat(post).isNotNull();
+            assertThat(post.getId()).isNotNull().isEqualTo(existingPost.getId());
+        }
+
+        @DisplayName("'GET' works without context")
+        @Test
+        void get__works_with_no_context() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            WpPostCreateUpdateRequest createUpdateRequest =
+                    postCreateUpdateRequest()
+                            .withTitle(POST_1_TITLE)
+                            .withContent(POST_1_CONTENT)
+                            .withStatus(PUBLISH)
+                            .build();
+
+            final WpPost existingPost = adminClient.createPost(createUpdateRequest);
+
+            // WHEN
+            final WpPost post = adminClient.getPost(existingPost.getId(), null);
+
+            // THEN
+            assertThat(post).isNotNull();
+            assertThat(post.getId()).isNotNull().isEqualTo(existingPost.getId());
+        }
+
+        @DisplayName("'LIST' works with paging")
+        @Test
+        void list__works_with_just_paging() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final WpPost existingPost = adminClient.createPost(postCreateUpdateRequest()
+                    .withTitle(POST_1_TITLE)
+                    .withStatus(PUBLISH)
+                    .build());
+
+            // WHEN
+            final WpPagedResponse<WpPost> response = adminClient.listPosts(WpPagingQuery.of(1, 10), null);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(1)
+                               .doesNotHaveNextPage();
+            assertThat(response.getItems())
+                    .isNotNull()
+                    .hasSize(1)
+                    .first()
+                    .satisfies(item ->
+                            WordPressAssertions.assertThat(item)
+                                               .hasId(existingPost.getId())
+                                               .hasLink(existingPost.getLink())
+                                               .hasSlug(existingPost.getSlug())
+                                               .hasStatus(PUBLISH)
+                                               .hasType(existingPost.getType())
+                                               // during listing we have just "rendered", not "raw"
+                                               .hasTitleSatisfying(title -> title.hasRendered(existingPost.getTitle().getRendered()))
+
+                                               // during listing we have just "rendered", not "raw"
+                                               .hasContentSatisfying(content -> content.hasRendered(existingPost.getContent().getRendered()))
+                                               // during listing we have just "rendered", not "raw"
+                                               .hasExcerptSatisfying(excerpt -> excerpt.hasRendered(existingPost.getExcerpt().getRendered()))
+                    );
+        }
+
+        @DisplayName("'LIST' works with paging and query")
+        @Test
+        void list__works_with_paging_and_query() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final WpPost draft_post = adminClient.createPost(postCreateUpdateRequest()
+                    .withTitle(POST_1_TITLE)
+                    .withStatus(DRAFT)
+                    .build());
+
+            final WpPost private_post = adminClient.createPost(postCreateUpdateRequest()
+                    .withTitle(POST_2_TITLE)
+                    .withStatus(PRIVATE)
+                    .build());
+
+            final WpPost published_post = adminClient.createPost(postCreateUpdateRequest()
+                    .withTitle(POST_3_TITLE)
+                    .withStatus(PUBLISH)
+                    .build());
+
+            // WHEN
+            final WpPostQuery postQuery = WpPostQuery.builder()
+                                                     .withStatuses(Set.of(DRAFT, PRIVATE))
+                                                     .withOrder(ASC)
+                                                     .withOrderBy(WpTagOrderFields.ID)
+                                                     .build();
+
+            final WpPagedResponse<WpPost> response = adminClient.listPosts(WpPagingQuery.of(1, 10), postQuery);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(2)// TWO POSTS (FILTER)
+                               .doesNotHaveNextPage();
+            assertThat(response.getItems())
+                    .isNotNull()
+                    .hasSize(2) // TWO POSTS (FILTER)
+                    .extracting(WpPost::getId)
+                    .containsExactly(draft_post.getId(), private_post.getId());
+        }
+
         @DisplayName("'TRASH' fails on HTTP NOT FOUND")
         @Test
         void trash__fails_on_not_found() {
@@ -1068,11 +1217,11 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             wpCleanDefaultData();
 
             WpPostCreateUpdateRequest createUpdateRequest =
-                    WpPostCreateUpdateRequest.builder()
-                                             .withTitle(POST_1_TITLE)
-                                             .withContent(POST_1_CONTENT)
-                                             .withStatus(PUBLISH)
-                                             .build();
+                    postCreateUpdateRequest()
+                            .withTitle(POST_1_TITLE)
+                            .withContent(POST_1_CONTENT)
+                            .withStatus(PUBLISH)
+                            .build();
 
             final WpPost existingPost = adminClient.createPost(createUpdateRequest);
 
@@ -1084,6 +1233,56 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                .isNotNull()
                                .hasId(existingPost.getId())
                                .hasStatus(TRASH);
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
+        @Test
+        void update__fails_on_not_found() {
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.updatePost(1000L, postCreateUpdateRequest().build()),
+                    "rest_post_invalid_id", "Invalid post ID.");
+        }
+
+        @DisplayName("'UPDATE' works")
+        @Test
+        void update__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            WpPostCreateUpdateRequest createUpdateRequest =
+                    postCreateUpdateRequest()
+                            .withTitle(POST_1_TITLE)
+                            .withContent(POST_1_CONTENT)
+                            .withStatus(PUBLISH)
+                            .build();
+
+            final WpPost existingPost = adminClient.createPost(createUpdateRequest);
+
+            // WHEN
+            WpPostCreateUpdateRequest updateRequest =
+                    postCreateUpdateRequest()
+                            .withTitle(POST_1_TITLE + " UPDATED")
+                            .withContent(POST_1_CONTENT + " UPDATED")
+                            .withExcerpt(POST_1_CONTENT + " UPDATED")
+                            .withStatus(DRAFT)
+                            .build();
+
+            final WpPost post = adminClient.updatePost(existingPost.getId(), updateRequest);
+
+            // THEN
+            // TODO: fix assertions
+            assertThat(post)
+                    .isNotNull()
+                    .satisfies(p -> {
+                        assertThat(p.getId()).isEqualTo(existingPost.getId());
+                        assertThat(p.getStatus()).isEqualTo(DRAFT);
+                        assertThat(p.getTitle().getRaw()).isNotNull().isEqualTo(POST_1_TITLE + " UPDATED");
+                        assertThat(p.getContent().getRaw()).isNotNull().isEqualTo(POST_1_CONTENT + " UPDATED");
+                        assertThat(p.getExcerpt().getRaw()).isNotNull().isEqualTo(POST_1_CONTENT + " UPDATED");
+                    });
         }
 
         private String linkForPost(final @NonNull Long id) {
