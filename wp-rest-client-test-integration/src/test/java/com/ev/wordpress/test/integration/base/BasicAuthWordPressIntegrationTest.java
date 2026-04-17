@@ -4,6 +4,7 @@ import com.ev.wordpress.client.domain.api.WpRestClient;
 import com.ev.wordpress.client.domain.assertions.WordPressAssertions;
 import com.ev.wordpress.client.domain.dto.WpCategory;
 import com.ev.wordpress.client.domain.dto.WpPagedResponse;
+import com.ev.wordpress.client.domain.dto.WpPost;
 import com.ev.wordpress.client.domain.dto.WpTag;
 import com.ev.wordpress.client.domain.dto.enums.WpContext;
 import com.ev.wordpress.client.domain.dto.enums.WpTaxonomy;
@@ -11,6 +12,7 @@ import com.ev.wordpress.client.domain.dto.query.WpCategoryQuery;
 import com.ev.wordpress.client.domain.dto.query.WpPagingQuery;
 import com.ev.wordpress.client.domain.dto.query.WpTagQuery;
 import com.ev.wordpress.client.domain.dto.requests.WpCategoryCreateUpdateRequest;
+import com.ev.wordpress.client.domain.dto.requests.WpPostCreateUpdateRequest;
 import com.ev.wordpress.client.domain.dto.requests.WpTagCreateUpdateRequest;
 import com.ev.wordpress.client.domain.dto.responses.WpCategoryDeletionResponse;
 import com.ev.wordpress.client.domain.dto.responses.WpTagDeletionResponse;
@@ -24,7 +26,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
+import java.util.Set;
 
+import static com.ev.wordpress.client.domain.dto.enums.WpOpenClosed.OPEN;
+import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.DRAFT;
 import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.CATEGORY;
 import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.POST_TAG;
 import static com.ev.wordpress.test.integration.base.SlugUtils.toWordPressSlug;
@@ -719,6 +724,75 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
         private String linkForTag(final @NonNull String slug) {
             return String.format("%s/tag/%s/", getHttpsBaseUrl(), slug);
+        }
+    }
+
+    @DisplayName("Post APIs - Integration Tests")
+    @Nested
+    class PostTests {
+
+        private final static String POST_1_TITLE = "Post #1";
+        private final static String POST_1_CONTENT = "My first post";
+        private final static String POST_1_SLUG = "post-1";
+
+        private final static String POST_2_TITLE = "Post #2";
+        private final static String POST_2_CONTENT = "My second post";
+        private final static String POST_2_SLUG = "post-2";
+
+        @DisplayName("'CREATE' works")
+        @Test
+        void create__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long tagCH = givenCategoryExists("switzerland", "Switzerland", "switzerland");
+            final Long categoryNews = givenCategoryExists("news", "News", "news");
+
+            // WHEN
+            WpPostCreateUpdateRequest createUpdateRequest =
+                    WpPostCreateUpdateRequest.builder()
+                                             .withTitle(POST_1_TITLE)
+                                             .withContent(POST_1_CONTENT)
+                                             .withCategories(Set.of(categoryNews))
+                                             .withTags(Set.of(tagCH))
+                                             .build();
+
+            final WpPost post = adminClient.createPost(createUpdateRequest);
+
+            // THEN
+            WordPressAssertions.assertThat(post)
+                               .isNotNull()
+                               .hasId()
+                               .hasLink(linkForPost(post.getId()))
+                               .hasSlug("")
+                               .hasGeneratedSlug(toWordPressSlug(POST_1_TITLE))
+                               .hasStatus(DRAFT)
+                               .hasCommentStatus(OPEN)
+                               .hasPingStatus(OPEN)
+                               .hasType("post")
+                               .hasTitleSatisfying(t ->
+                                       t.hasRaw(POST_1_TITLE)
+                                        .hasRendered(POST_1_TITLE))
+                               .hasContentSatisfying(c ->
+                                       c.hasRaw(POST_1_CONTENT)
+                                        .hasRendered(toBlock(POST_1_CONTENT))
+                                        .isNotProtected()
+                                        .hasBlockVersion(0))
+                               .hasExcerptSatisfying(e ->
+                                       e.hasRaw("")
+                                        .hasRendered(toBlock(POST_1_CONTENT))
+                                        .isNotProtected()
+                                        .hasBlockVersion(null))
+                               .hasCategories(Set.of(categoryNews))
+                               .hasTags(Set.of(tagCH));
+        }
+
+        private String linkForPost(final @NonNull Long id) {
+            return String.format("%s/?p=%d", getHttpsBaseUrl(), id);
+        }
+
+        private static String toBlock(final @NonNull String text) {
+            return String.format("<p>%s</p>\n", text);
         }
     }
 }

@@ -108,6 +108,16 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
+    public SELF hasId() {
+        isNotNull();
+
+        if (actual.getId() == null) {
+            failWithMessage("Expected post id to be non-null");
+        }
+
+        return myself;
+    }
+
     public SELF hasId(final Long expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getId(), expected)) {

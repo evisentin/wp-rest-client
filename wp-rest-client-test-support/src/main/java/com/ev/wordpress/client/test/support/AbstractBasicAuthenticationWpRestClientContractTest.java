@@ -719,7 +719,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasType("post")
                                .hasTitleSatisfying(t ->
                                        t.hasRaw(TITLE)
-                                        .hasRaw(TITLE)
+                                        .hasRendered(TITLE)
                                )
                                .hasContentSatisfying(c ->
                                        c.hasRaw(CONTENT)
@@ -769,7 +769,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasType("post")
                                .hasTitleSatisfying(t ->
                                        t.hasRaw(TITLE)
-                                        .hasRaw(TITLE)
+                                        .hasRendered(TITLE)
                                )
                                .hasContentSatisfying(c ->
                                        c.hasRaw(CONTENT)
