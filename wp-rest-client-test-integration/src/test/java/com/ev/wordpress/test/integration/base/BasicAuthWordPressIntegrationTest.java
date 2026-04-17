@@ -7,6 +7,7 @@ import com.ev.wordpress.client.domain.dto.WpPagedResponse;
 import com.ev.wordpress.client.domain.dto.WpPost;
 import com.ev.wordpress.client.domain.dto.WpTag;
 import com.ev.wordpress.client.domain.dto.enums.WpContext;
+import com.ev.wordpress.client.domain.dto.enums.WpOpenClosed;
 import com.ev.wordpress.client.domain.dto.enums.WpTaxonomy;
 import com.ev.wordpress.client.domain.dto.query.WpCategoryQuery;
 import com.ev.wordpress.client.domain.dto.query.WpPagingQuery;
@@ -15,6 +16,7 @@ import com.ev.wordpress.client.domain.dto.requests.WpCategoryCreateUpdateRequest
 import com.ev.wordpress.client.domain.dto.requests.WpPostCreateUpdateRequest;
 import com.ev.wordpress.client.domain.dto.requests.WpTagCreateUpdateRequest;
 import com.ev.wordpress.client.domain.dto.responses.WpCategoryDeletionResponse;
+import com.ev.wordpress.client.domain.dto.responses.WpPostDeletionResponse;
 import com.ev.wordpress.client.domain.dto.responses.WpTagDeletionResponse;
 import com.ev.wordpress.test.integration.BaseWordPressIntegrationTest;
 import com.ev.wordpress.test.integration.base.factory.WpRestClientFactory;
@@ -28,13 +30,18 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 import java.util.Set;
 
+import static com.ev.wordpress.client.domain.dto.enums.WpOpenClosed.CLOSED;
 import static com.ev.wordpress.client.domain.dto.enums.WpOpenClosed.OPEN;
 import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.DRAFT;
+import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.PRIVATE;
+import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.PUBLISH;
+import static com.ev.wordpress.client.domain.dto.enums.WpPostStatus.TRASH;
 import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.CATEGORY;
 import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.POST_TAG;
 import static com.ev.wordpress.test.integration.base.SlugUtils.toWordPressSlug;
 import static com.ev.wordpress.test.integration.base.WpAssertions.assertThrowsWpBadRequest;
 import static com.ev.wordpress.test.integration.base.WpAssertions.assertThrowsWpNotFound;
+import static java.util.Collections.emptySet;
 
 /**
  * Base integration test class for WordPress REST API scenarios using Basic Authentication.
@@ -745,7 +752,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // GIVEN
             wpCleanDefaultData();
-            final Long tagCH = givenCategoryExists("switzerland", "Switzerland", "switzerland");
+            final Long tagCH = givenTagExists("switzerland", "Switzerland", "switzerland");
             final Long categoryNews = givenCategoryExists("news", "News", "news");
 
             // WHEN
@@ -787,8 +794,304 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                .hasTags(Set.of(tagCH));
         }
 
+        @DisplayName("'CREATE' works with non-existing tags or categories")
+        @Test
+        void create__works_on_non_existing_categories_or_tags() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long nonExistingTag1 = 1001L, nonExistingTag2 = 1002L, nonExistingTag3 = 1003L;
+            final Long nonExistingCategory1 = 2001L, nonExistingCategory2 = 2002L, nonExistingCategory3 = 3003L;
+
+            // WHEN
+            WpPostCreateUpdateRequest createUpdateRequest =
+                    WpPostCreateUpdateRequest.builder()
+                                             .withTitle(POST_1_TITLE)
+                                             .withContent(POST_1_CONTENT)
+                                             .withCategories(Set.of(nonExistingCategory1, nonExistingCategory2, nonExistingCategory3))
+                                             .withTags(Set.of(nonExistingTag1, nonExistingTag2, nonExistingTag3))
+                                             .withStatus(PRIVATE)
+                                             .withCommentStatus(WpOpenClosed.CLOSED)
+                                             .withPingStatus(WpOpenClosed.CLOSED)
+                                             .build();
+
+            final WpPost post = adminClient.createPost(createUpdateRequest);
+
+            // THEN
+            WordPressAssertions.assertThat(post)
+                               .isNotNull()
+                               .hasId()
+                               .hasLink(linkForPost(post.getSlug())) // not draft, the link has the slug
+                               .hasSlug(toWordPressSlug(POST_1_TITLE))
+                               .hasGeneratedSlug(toWordPressSlug(POST_1_TITLE))
+                               .hasStatus(PRIVATE)
+                               .hasCommentStatus(CLOSED)
+                               .hasPingStatus(CLOSED)
+                               .hasType("post")
+                               .hasTitleSatisfying(t ->
+                                       t.hasRaw(POST_1_TITLE)
+                                        .hasRendered(POST_1_TITLE))
+                               .hasContentSatisfying(c ->
+                                       c.hasRaw(POST_1_CONTENT)
+                                        .hasRendered(toBlock(POST_1_CONTENT))
+                                        .isNotProtected()
+                                        .hasBlockVersion(0))
+                               .hasExcerptSatisfying(e ->
+                                       e.hasRaw("")
+                                        .hasRendered(toBlock(POST_1_CONTENT))
+                                        .isNotProtected()
+                                        .hasBlockVersion(null))
+                               .hasCategories(emptySet())
+                               .hasTags(emptySet());
+        }
+
+        @DisplayName("'CREATE' works with password")
+        @Test
+        void create__works_with_password() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long tagCH = givenTagExists("switzerland", "Switzerland", "switzerland");
+            final Long categoryNews = givenCategoryExists("news", "News", "news");
+
+            // WHEN
+            WpPostCreateUpdateRequest createUpdateRequest =
+                    WpPostCreateUpdateRequest.builder()
+                                             .withTitle(POST_1_TITLE)
+                                             .withContent(POST_1_CONTENT)
+                                             .withCategories(Set.of(categoryNews))
+                                             .withTags(Set.of(tagCH))
+                                             .withPassword("my password")
+                                             .withStatus(PUBLISH)
+                                             .build();
+
+            final WpPost post = adminClient.createPost(createUpdateRequest);
+
+            // THEN
+            WordPressAssertions.assertThat(post)
+                               .isNotNull()
+                               .hasId()
+                               .hasLink(linkForPost(post.getSlug())) // not draft, the link has the slug
+                               .hasSlug(toWordPressSlug(POST_1_TITLE))
+                               .hasGeneratedSlug(toWordPressSlug(POST_1_TITLE))
+                               .hasStatus(PUBLISH)
+                               .hasPassword("my password")
+                               .hasCommentStatus(OPEN)
+                               .hasPingStatus(OPEN)
+                               .hasType("post")
+                               .hasTitleSatisfying(t ->
+                                       t.hasRaw(POST_1_TITLE)
+                                        .hasRendered(POST_1_TITLE))
+                               .hasContentSatisfying(c ->
+                                       c.hasRaw(POST_1_CONTENT)
+                                        .hasRendered(toBlock(POST_1_CONTENT))
+                                        .isProtected() // PASSWORD --> PROTECTED
+                                        .hasBlockVersion(0))
+                               .hasExcerptSatisfying(e ->
+                                       e.hasRaw("")
+                                        .hasRendered(toBlock(POST_1_CONTENT))
+                                        .isProtected() // PASSWORD --> PROTECTED
+                                        .hasBlockVersion(null))
+                               .hasCategories(Set.of(categoryNews))
+                               .hasTags(Set.of(tagCH));
+        }
+
+        @DisplayName("'DELETE' fails on HTTP NOT FOUND")
+        @Test
+        void delete__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.deletePost(1000L), "rest_post_invalid_id", "Invalid post ID.");
+        }
+
+        @DisplayName("'DELETE' works")
+        @Test
+        void delete__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            WpPostCreateUpdateRequest createUpdateRequest =
+                    WpPostCreateUpdateRequest.builder()
+                                             .withTitle(POST_1_TITLE)
+                                             .withContent(POST_1_CONTENT)
+                                             .withStatus(PUBLISH)
+                                             .build();
+
+            final WpPost existingPost = adminClient.createPost(createUpdateRequest);
+
+            // WHEN
+            final WpPostDeletionResponse deletionResponse = adminClient.deletePost(existingPost.getId());
+
+            // THEN
+            WordPressAssertions.assertThat(deletionResponse)
+                               .isNotNull()
+                               .isDeleted()
+                               .hasPreviousSatisfying(summary ->
+                                       summary.isNotNull()
+                                              .hasId(existingPost.getId())
+                                              .hasTitleSatisfying(t ->
+                                                      t.hasRaw(POST_1_TITLE)
+                                                       .hasRendered(POST_1_TITLE))
+                                              .hasContentSatisfying(c ->
+                                                      c.hasRaw(POST_1_CONTENT)
+                                                       .hasRendered(toBlock(POST_1_CONTENT))
+                                                       .isNotProtected()
+                                                       .hasBlockVersion(0))
+                                              .hasExcerptSatisfying(e ->
+                                                      e.hasRaw("")
+                                                       .hasRendered(toBlock(POST_1_CONTENT))
+                                                       .isNotProtected()
+                                                       .hasBlockVersion(null))
+                                              .hasSlug(POST_1_SLUG)
+                                              .hasStatus(existingPost.getStatus()));
+        }
+
+        @DisplayName("'GET' fails on HTTP NOT FOUND")
+        @Test
+        void get__fails_on_not_found() {
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.getPost(1000L, null), "rest_post_invalid_id", "Invalid post ID.");
+        }
+
+        @DisplayName("'GET' works with password")
+        @Test
+        void get__gets_content_on_password_protected_post_and_password() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            final String PASSWORD = "password$$";
+
+            WpPostCreateUpdateRequest createUpdateRequest =
+                    WpPostCreateUpdateRequest.builder()
+                                             .withTitle(POST_1_TITLE)
+                                             .withContent(POST_1_CONTENT)
+                                             .withStatus(PUBLISH)
+                                             .withPassword(PASSWORD)
+                                             .build();
+
+            final WpPost existingPost = adminClient.createPost(createUpdateRequest);
+
+            // WHEN
+            final WpPost post = standardUserClient.getPost(existingPost.getId(), WpContext.VIEW, PASSWORD);
+
+            // THEN
+            WordPressAssertions.assertThat(post)
+                               .isNotNull()
+                               .hasId()
+                               .hasStatus(PUBLISH)
+                               .hasPassword(null)
+                               .hasCommentStatus(OPEN)
+                               .hasPingStatus(OPEN)
+                               .hasType("post")
+                               .hasTitleSatisfying(t ->
+                                       t.hasRaw(null)
+                                        .hasRendered(POST_1_TITLE))
+                               .hasContentSatisfying(c ->
+                                       c.hasRaw(null)
+                                        .hasRendered(toBlock(POST_1_CONTENT))
+                                        .isProtected() // PASSWORD --> PROTECTED
+                                        .hasBlockVersion(null))
+                               .hasExcerptSatisfying(e ->
+                                       e.hasRaw(null)
+                                        .hasRendered(toBlock(POST_1_CONTENT))
+                                        .isProtected() // PASSWORD --> PROTECTED
+                                        .hasBlockVersion(null));
+        }
+
+        @DisplayName("'GET' returns empty content if protected and no password provided")
+        @Test
+        void get__gets_empty_content_on_password_protected_post_and_no_password() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            WpPostCreateUpdateRequest createUpdateRequest =
+                    WpPostCreateUpdateRequest.builder()
+                                             .withTitle(POST_1_TITLE)
+                                             .withContent(POST_1_CONTENT)
+                                             .withStatus(PUBLISH)
+                                             .withPassword("password$$")
+                                             .build();
+
+            final WpPost existingPost = adminClient.createPost(createUpdateRequest);
+
+            // WHEN
+            final WpPost post = standardUserClient.getPost(existingPost.getId(), WpContext.VIEW);
+
+            // THEN
+            WordPressAssertions.assertThat(post)
+                               .isNotNull()
+                               .hasId()
+                               .hasStatus(PUBLISH)
+                               .hasPassword(null)
+                               .hasCommentStatus(OPEN)
+                               .hasPingStatus(OPEN)
+                               .hasType("post")
+                               .hasTitleSatisfying(t ->
+                                       t.hasRaw(null)
+                                        .hasRendered(POST_1_TITLE))
+                               .hasContentSatisfying(c ->
+                                       c.hasRaw(null)
+                                        .hasRendered("")
+                                        .isProtected() // PASSWORD --> PROTECTED
+                                        .hasBlockVersion(null))
+                               .hasExcerptSatisfying(e ->
+                                       e.hasRaw(null)
+                                        .hasRendered("")
+                                        .isProtected() // PASSWORD --> PROTECTED
+                                        .hasBlockVersion(null));
+        }
+
+        @DisplayName("'TRASH' fails on HTTP NOT FOUND")
+        @Test
+        void trash__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.trashPost(1000L), "rest_post_invalid_id", "Invalid post ID.");
+        }
+
+        @DisplayName("'TRASH' works")
+        @Test
+        void trash__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            WpPostCreateUpdateRequest createUpdateRequest =
+                    WpPostCreateUpdateRequest.builder()
+                                             .withTitle(POST_1_TITLE)
+                                             .withContent(POST_1_CONTENT)
+                                             .withStatus(PUBLISH)
+                                             .build();
+
+            final WpPost existingPost = adminClient.createPost(createUpdateRequest);
+
+            // WHEN
+            final WpPost deletionResponse = adminClient.trashPost(existingPost.getId());
+
+            // THEN
+            WordPressAssertions.assertThat(deletionResponse)
+                               .isNotNull()
+                               .hasId(existingPost.getId())
+                               .hasStatus(TRASH);
+        }
+
         private String linkForPost(final @NonNull Long id) {
             return String.format("%s/?p=%d", getHttpsBaseUrl(), id);
+        }
+
+        private String linkForPost(final @NonNull String slug) {
+            return String.format("%s/%s/", getHttpsBaseUrl(), slug);
         }
 
         private static String toBlock(final @NonNull String text) {
