@@ -9,9 +9,11 @@ import com.ev.wordpress.client.domain.dto.enums.WpContext;
 import com.ev.wordpress.client.domain.dto.enums.WpTaxonomy;
 import com.ev.wordpress.client.domain.dto.query.WpCategoryQuery;
 import com.ev.wordpress.client.domain.dto.query.WpPagingQuery;
+import com.ev.wordpress.client.domain.dto.query.WpTagQuery;
 import com.ev.wordpress.client.domain.dto.requests.WpCategoryCreateUpdateRequest;
 import com.ev.wordpress.client.domain.dto.requests.WpTagCreateUpdateRequest;
 import com.ev.wordpress.client.domain.dto.responses.WpCategoryDeletionResponse;
+import com.ev.wordpress.client.domain.dto.responses.WpTagDeletionResponse;
 import com.ev.wordpress.test.integration.BaseWordPressIntegrationTest;
 import com.ev.wordpress.test.integration.base.factory.WpRestClientFactory;
 import lombok.NonNull;
@@ -24,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 
 import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.CATEGORY;
+import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.POST_TAG;
 import static com.ev.wordpress.test.integration.base.SlugUtils.toWordPressSlug;
 import static com.ev.wordpress.test.integration.base.WpAssertions.assertThrowsWpBadRequest;
 import static com.ev.wordpress.test.integration.base.WpAssertions.assertThrowsWpNotFound;
@@ -123,6 +126,10 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
     private Long givenCategoryExists(final String name, final String description, final String slug) {
         return wpCreateCategory(name, description, slug);
+    }
+
+    private Long givenTagExists(final String name, final String description, final String slug) {
+        return wpCreateTag(name, description, slug);
     }
 
     @DisplayName("Category APIs - Integration Tests")
@@ -438,9 +445,13 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
     @Nested
     class TagTests {
 
-        private final static String TAG_NAME = "Tag #1";
-        private final static String TAG_DESCRIPTION = "My first tag";
-        private final static String TAG_SLUG = "tag-1";
+        private final static String TAG_1_NAME = "Tag #1";
+        private final static String TAG_1_DESCRIPTION = "My first tag";
+        private final static String TAG_1_SLUG = "tag-1";
+
+        private final static String TAG_2_NAME = "Tag #2";
+        private final static String TAG_2_DESCRIPTION = "My second tag";
+        private final static String TAG_2_SLUG = "tag-2";
 
         @DisplayName("'CREATE' fails on duplicate")
         @Test
@@ -450,12 +461,12 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             wpCleanDefaultData();
 
             // given a tag already exists
-            final Long existingTagId = wpCreateTag(TAG_NAME, TAG_DESCRIPTION, TAG_SLUG);
+            final Long existingTagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
 
             // WHEN/THEN
             final WpTagCreateUpdateRequest creationRequest =
                     WpTagCreateUpdateRequest.builder()
-                                            .withName(TAG_NAME)
+                                            .withName(TAG_1_NAME)
                                             .build();
 
             assertThrowsWpBadRequest(() -> adminClient.createTag(creationRequest),
@@ -473,21 +484,237 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // WHEN
             final WpTag tag = adminClient.createTag(WpTagCreateUpdateRequest.builder()
-                                                                            .withName(TAG_NAME)
-                                                                            .withDescription(TAG_DESCRIPTION)
-                                                                            .withSlug(TAG_SLUG)
+                                                                            .withName(TAG_1_NAME)
+                                                                            .withDescription(TAG_1_DESCRIPTION)
+                                                                            .withSlug(TAG_1_SLUG)
                                                                             .build());
 
             // THEN
             WordPressAssertions.assertThat(tag)
                                .isNotNull()
                                .hasNonZeroId()
-                               .hasName(TAG_NAME)
-                               .hasDescription(TAG_DESCRIPTION)
-                               .hasSlug(TAG_SLUG)
+                               .hasName(TAG_1_NAME)
+                               .hasDescription(TAG_1_DESCRIPTION)
+                               .hasSlug(TAG_1_SLUG)
                                .hasCount(0)
                                .hasTaxonomy(WpTaxonomy.POST_TAG)
-                               .hasLink(linkForTag(TAG_SLUG));
+                               .hasLink(linkForTag(TAG_1_SLUG));
+        }
+
+        @DisplayName("'DELETE' fails on HTTP NOT FOUND")
+        @Test
+        void delete__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.deleteTag(1000L), "rest_term_invalid", "Term does not exist.");
+        }
+
+        @DisplayName("'DELETE' works")
+        @Test
+        void delete__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+
+            // WHEN
+            final WpTagDeletionResponse deletionResponse = adminClient.deleteTag(tagId);
+
+            // THEN
+            WordPressAssertions.assertThat(deletionResponse)
+                               .isNotNull()
+                               .isDeleted()
+                               .hasPreviousSatisfying(summary ->
+                                       summary.isNotNull()
+                                              .hasId(tagId)
+                                              .hasCount(0)
+                                              .hasDescription(TAG_1_DESCRIPTION)
+                                              .hasName(TAG_1_NAME)
+                                              .hasSlug(TAG_1_SLUG)
+                                              .hasLink(linkForTag(TAG_1_SLUG))
+                                              .hasTaxonomy(POST_TAG));
+        }
+
+        @DisplayName("'GET' fails on HTTP NOT FOUND")
+        @Test
+        void get__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.getTag(tagId + 1000, null), "rest_term_invalid", "Term does not exist.");
+        }
+
+        @DisplayName("'GET' works with context")
+        @Test
+        void get__works_with_context() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+
+            // WHEN
+            final WpTag tag = adminClient.getTag(tagId, WpContext.EDIT);
+
+            // THEN
+            WordPressAssertions.assertThat(tag)
+                               .isNotNull()
+                               .hasId(tagId)
+                               .hasCount(0)
+                               .hasDescription(TAG_1_DESCRIPTION)
+                               .hasName(TAG_1_NAME)
+                               .hasSlug(TAG_1_SLUG)
+                               .hasTaxonomy(POST_TAG);
+        }
+
+        @DisplayName("'GET' works with no context")
+        @Test
+        void get__works_with_no_context() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+
+            // WHEN
+            final WpTag tag = adminClient.getTag(tagId, null);
+
+            // THEN
+            WordPressAssertions.assertThat(tag)
+                               .isNotNull()
+                               .hasId(tagId)
+                               .hasCount(0)
+                               .hasDescription(TAG_1_DESCRIPTION)
+                               .hasName(TAG_1_NAME)
+                               .hasSlug(TAG_1_SLUG)
+                               .hasTaxonomy(POST_TAG);
+        }
+
+        @DisplayName("'LIST' works with just paging")
+        @Test
+        void list__works_with_just_paging() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            final Long cat1_id = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+            final Long cat2_id = givenTagExists(TAG_2_NAME, TAG_2_DESCRIPTION, TAG_2_SLUG);
+
+            // WHEN
+            final WpPagedResponse<WpTag> response = adminClient.listTags(WpPagingQuery.of(1, 10), null);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(2)
+                               .doesNotHaveNextPage();
+
+            assertThat(response.getItems())
+                    .isNotNull()
+                    .hasSize(2)
+                    .extracting(
+                            WpTag::getId,
+                            WpTag::getName,
+                            WpTag::getDescription,
+                            WpTag::getSlug,
+                            WpTag::getTaxonomy
+                    )
+                    .containsExactly(
+                            tuple(cat1_id, TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG, POST_TAG),
+                            tuple(cat2_id, TAG_2_NAME, TAG_2_DESCRIPTION, TAG_2_SLUG, POST_TAG)
+                    );
+        }
+
+        @DisplayName("'LIST' works with paging and query")
+        @Test
+        void list__works_with_paging_and_query() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            final Long cat1_id = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+            final Long cat2_id = givenTagExists(TAG_2_NAME, TAG_2_DESCRIPTION, TAG_2_SLUG);
+
+            // Filter just for tag #2
+            final WpTagQuery tagQuery = WpTagQuery.builder()
+                                                  .withSlug(TAG_2_SLUG)
+                                                  .build();
+
+            // WHEN
+            final WpPagedResponse<WpTag> response = adminClient.listTags(WpPagingQuery.of(1, 10), tagQuery);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(1)
+                               .doesNotHaveNextPage();
+
+            assertThat(response.getItems())
+                    .isNotNull()
+                    .hasSize(1)
+                    .extracting(
+                            WpTag::getId,
+                            WpTag::getName,
+                            WpTag::getDescription,
+                            WpTag::getSlug,
+                            WpTag::getTaxonomy
+                    )
+                    .containsExactly(
+                            tuple(cat2_id, TAG_2_NAME, TAG_2_DESCRIPTION, TAG_2_SLUG, POST_TAG)
+                    );
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
+        @Test
+        void update__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            Long nonExistingTagId = 1000L;
+
+            // WHEN/THEN
+            final WpTagCreateUpdateRequest updateRequest = WpTagCreateUpdateRequest.builder().build();
+            assertThrowsWpNotFound(() -> adminClient.updateTag(nonExistingTagId, updateRequest), "rest_term_invalid", "Term does not exist.");
+        }
+
+        @DisplayName("'UPDATE' works")
+        @Test
+        void update__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+
+            // WHEN
+            final WpTagCreateUpdateRequest updateRequest =
+                    WpTagCreateUpdateRequest.builder()
+                                            .withName(TAG_1_NAME + " UPDATED")
+                                            .withDescription(TAG_1_DESCRIPTION + " UPDATED")
+                                            .withSlug(TAG_1_SLUG + " UPDATED")
+                                            .build();
+
+            final WpTag tag = adminClient.updateTag(tagId, updateRequest);
+
+            // THEN
+            WordPressAssertions.assertThat(tag)
+                               .isNotNull()
+                               .hasId(tagId)
+                               .hasCount(0)
+                               .hasDescription(TAG_1_DESCRIPTION + " UPDATED")
+                               .hasName(TAG_1_NAME + " UPDATED")
+                               .hasSlug(toWordPressSlug(TAG_1_SLUG + " UPDATED"))
+                               .hasTaxonomy(POST_TAG);
         }
 
         private String linkForTag(final @NonNull String slug) {
