@@ -22,10 +22,8 @@
     </dependency>
     <dependency>
       <groupId>com.ev.wordpress</groupId>
-      <artifactId>wp-rest-client-domain</artifactId>
+      <artifactId>wp-rest-client-domain-assertions</artifactId>
       <version>${project.version}</version>
-      <type>test-jar</type>
-      <scope>compile</scope>
     </dependency>
 
     <!-- [APACHE COMMONS] -->

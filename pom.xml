@@ -14,6 +14,7 @@
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <modules>
     <module>wp-rest-client-domain</module>
+    <module>wp-rest-client-domain-assertions</module>
     <module>wp-rest-client-okhttp</module>
     <module>wp-rest-client-apache</module>
     <module>wp-rest-client-test-integration</module>
