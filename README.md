@@ -49,6 +49,7 @@ Currently, the project includes two implementations:
 The project is organised as a Maven multi-module build:
 
 - `wp-rest-client-domain`
+- `wp-rest-client-domain-assertions`  *(not deployed to Maven Central)*
 - `wp-rest-client-apache`
 - `wp-rest-client-okhttp`
 - `wp-rest-client-test-support` *(not deployed to Maven Central)*
