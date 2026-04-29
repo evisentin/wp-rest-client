@@ -95,6 +95,11 @@ Using the Maven wrapper:
 ./mvnw clean install
 ```
 
+or 
+```shell
+mvn clean install -Pintegration-tests
+```
+
 Or with a global Maven installation:
 
 ```bash
