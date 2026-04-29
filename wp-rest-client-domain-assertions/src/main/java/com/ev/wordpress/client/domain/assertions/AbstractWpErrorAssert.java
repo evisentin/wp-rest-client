@@ -5,14 +5,14 @@ import org.assertj.core.api.AbstractObjectAssert;
 
 import java.util.Map;
 
-public abstract class AbstractWpErrorAssert<SELF extends AbstractWpErrorAssert<SELF>>
-        extends AbstractObjectAssert<SELF, WpError> {
+public abstract class AbstractWpErrorAssert<S extends AbstractWpErrorAssert<S>>
+        extends AbstractObjectAssert<S, WpError> {
 
     protected AbstractWpErrorAssert(final WpError actual, final Class<?> selfType) {
         super(actual, selfType);
     }
 
-    public SELF containsDataEntry(final String key, final Object expectedValue) {
+    public S containsDataEntry(final String key, final Object expectedValue) {
         isNotNull();
         if (actual.getData() == null || !actual.getData().containsKey(key)) {
             failWithMessage("Expected error data to contain key <%s> but data was <%s>", key, actual.getData());
@@ -24,7 +24,7 @@ public abstract class AbstractWpErrorAssert<SELF extends AbstractWpErrorAssert<S
         return myself;
     }
 
-    public SELF hasCode(final String expected) {
+    public S hasCode(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getCode(), expected)) {
             failWithMessage("Expected error code to be <%s> but was <%s>", expected, actual.getCode());
@@ -32,7 +32,7 @@ public abstract class AbstractWpErrorAssert<SELF extends AbstractWpErrorAssert<S
         return myself;
     }
 
-    public SELF hasData(final Map<String, Object> expected) {
+    public S hasData(final Map<String, Object> expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getData(), expected)) {
             failWithMessage("Expected error data to be <%s> but was <%s>", expected, actual.getData());
@@ -40,7 +40,7 @@ public abstract class AbstractWpErrorAssert<SELF extends AbstractWpErrorAssert<S
         return myself;
     }
 
-    public SELF hasMessage(final String expected) {
+    public S hasMessage(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getMessage(), expected)) {
             failWithMessage("Expected error message to be <%s> but was <%s>", expected, actual.getMessage());

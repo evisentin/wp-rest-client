@@ -1278,6 +1278,18 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
     @Nested
     class TagTests {
 
+        public static final String TAG_1_DESCRIPTION = "Tag #1";
+        public static final String TAG_1_NAME = "tag1";
+        public static final String TAG_1_SLUG = "tag-1";
+
+        public static final String TAG_2_NAME = "tag2";
+        public static final String TAG_2_DESCRIPTION = "Tag #2";
+        public static final String TAG_2_SLUG = "tag-2";
+
+        public static final String MY_TAG_NAME = "my tag";
+        public static final String MY_TAG_DESCRIPTION = "my description";
+        public static final String MY_TAG_SLUG = "my-tag";
+
         @DisplayName("'CREATE' fails on HTTP BAD REQUEST")
         @Test
         void createFailsOnBadRequest() {
@@ -1285,9 +1297,9 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             // GIVEN
             givenExpectationFromFile("basic-auth/tag/create.failure.bad-request.json");
 
-            final String NAME = "my tag";
-            final String DESCRIPTION = "my description";
-            final String SLUG = "my-tag";
+            final String NAME = MY_TAG_NAME;
+            final String DESCRIPTION = MY_TAG_DESCRIPTION;
+            final String SLUG = MY_TAG_SLUG;
 
             final WpTagCreateUpdateRequest createRequest =
                     WpTagCreateUpdateRequest.builder()
@@ -1306,14 +1318,12 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
             // GIVEN
             final String NAME = "  ";
-            final String DESCRIPTION = "my description";
-            final String SLUG = "my-tag";
 
             final WpTagCreateUpdateRequest createRequest =
                     WpTagCreateUpdateRequest.builder()
                                             .withName(NAME)
-                                            .withDescription(DESCRIPTION)
-                                            .withSlug(SLUG)
+                                            .withDescription(MY_TAG_DESCRIPTION)
+                                            .withSlug(MY_TAG_SLUG)
                                             .build();
 
             // WHEN/THEN
@@ -1329,15 +1339,11 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             // GIVEN
             givenExpectationFromFile("basic-auth/tag/create.failure.forbidden.json");
 
-            final String NAME = "my tag";
-            final String DESCRIPTION = "my description";
-            final String SLUG = "my-tag";
-
             final WpTagCreateUpdateRequest createRequest =
                     WpTagCreateUpdateRequest.builder()
-                                            .withName(NAME)
-                                            .withDescription(DESCRIPTION)
-                                            .withSlug(SLUG)
+                                            .withName(MY_TAG_NAME)
+                                            .withDescription(MY_TAG_DESCRIPTION)
+                                            .withSlug(MY_TAG_SLUG)
                                             .build();
 
             // WHEN/THEN
@@ -1361,15 +1367,11 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             // GIVEN
             givenExpectationFromFile("basic-auth/tag/create.failure.unauthorized.json");
 
-            final String NAME = "my tag";
-            final String DESCRIPTION = "my description";
-            final String SLUG = "my-tag";
-
             final WpTagCreateUpdateRequest createRequest =
                     WpTagCreateUpdateRequest.builder()
-                                            .withName(NAME)
-                                            .withDescription(DESCRIPTION)
-                                            .withSlug(SLUG)
+                                            .withName(MY_TAG_NAME)
+                                            .withDescription(MY_TAG_DESCRIPTION)
+                                            .withSlug(MY_TAG_SLUG)
                                             .build();
 
             // WHEN/THEN
@@ -1383,15 +1385,11 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             // GIVEN
             givenExpectationFromFile("basic-auth/tag/create.success.json");
 
-            final String NAME = "my tag";
-            final String DESCRIPTION = "my description";
-            final String SLUG = "my-tag";
-
             final WpTagCreateUpdateRequest createRequest =
                     WpTagCreateUpdateRequest.builder()
-                                            .withName(NAME)
-                                            .withDescription(DESCRIPTION)
-                                            .withSlug(SLUG)
+                                            .withName(MY_TAG_NAME)
+                                            .withDescription(MY_TAG_DESCRIPTION)
+                                            .withSlug(MY_TAG_SLUG)
                                             .build();
 
             // WHEN
@@ -1401,9 +1399,9 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             WordPressAssertions.assertThat(tag)
                                .isNotNull()
                                .hasCount(0)
-                               .hasDescription(DESCRIPTION)
-                               .hasName(NAME)
-                               .hasSlug(SLUG)
+                               .hasDescription(MY_TAG_DESCRIPTION)
+                               .hasName(MY_TAG_NAME)
+                               .hasSlug(MY_TAG_SLUG)
                                .hasTaxonomy(POST_TAG);
         }
 
@@ -1468,9 +1466,9 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                        summary.isNotNull()
                                               .hasId(1005L)
                                               .hasCount(0)
-                                              .hasDescription("Tag #1")
-                                              .hasName("tag1")
-                                              .hasSlug("tag-1")
+                                              .hasDescription(TAG_1_DESCRIPTION)
+                                              .hasName(TAG_1_NAME)
+                                              .hasSlug(TAG_1_SLUG)
                                               .hasTaxonomy(POST_TAG)
                                );
         }
@@ -1535,9 +1533,9 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .isNotNull()
                                .hasId(tagId)
                                .hasCount(0)
-                               .hasDescription("Tag #1")
-                               .hasName("tag1")
-                               .hasSlug("tag-1")
+                               .hasDescription(TAG_1_DESCRIPTION)
+                               .hasName(TAG_1_NAME)
+                               .hasSlug(TAG_1_SLUG)
                                .hasTaxonomy(POST_TAG);
         }
 
@@ -1558,9 +1556,9 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .isNotNull()
                                .hasId(tagId)
                                .hasCount(0)
-                               .hasDescription("Tag #1")
-                               .hasName("tag1")
-                               .hasSlug("tag-1")
+                               .hasDescription(TAG_1_DESCRIPTION)
+                               .hasName(TAG_1_NAME)
+                               .hasSlug(TAG_1_SLUG)
                                .hasTaxonomy(POST_TAG);
         }
 
@@ -1620,16 +1618,16 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                        tag ->
                                                                WordPressAssertions.assertThat(tag)
                                                                                   .isNotNull()
-                                                                                  .hasName("tag1")
-                                                                                  .hasDescription("Tag #1")
-                                                                                  .hasSlug("tag-1")
+                                                                                  .hasName(TAG_1_NAME)
+                                                                                  .hasDescription(TAG_1_DESCRIPTION)
+                                                                                  .hasSlug(TAG_1_SLUG)
                                                        ,
                                                        tag ->
                                                                WordPressAssertions.assertThat(tag)
                                                                                   .isNotNull()
-                                                                                  .hasName("tag2")
-                                                                                  .hasDescription("Tag #2")
-                                                                                  .hasSlug("tag-2")
+                                                                                  .hasName(TAG_2_NAME)
+                                                                                  .hasDescription(TAG_2_DESCRIPTION)
+                                                                                  .hasSlug(TAG_2_SLUG)
                                                ));
         }
 
@@ -1642,7 +1640,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
             // WHEN
             final WpTagQuery tagQuery = WpTagQuery.builder()
-                                                  .withSlug("tag-2")
+                                                  .withSlug(TAG_2_SLUG)
                                                   .withExcludeIds(Set.of(2000L))
                                                   .build();
 
@@ -1665,9 +1663,9 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                        tag ->
                                                                WordPressAssertions.assertThat(tag)
                                                                                   .isNotNull()
-                                                                                  .hasName("tag2")
-                                                                                  .hasDescription("Tag #2")
-                                                                                  .hasSlug("tag-2")
+                                                                                  .hasName(TAG_2_NAME)
+                                                                                  .hasDescription(TAG_2_DESCRIPTION)
+                                                                                  .hasSlug(TAG_2_SLUG)
                                                ));
         }
 

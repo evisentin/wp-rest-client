@@ -88,6 +88,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  */
 public class OkHttpWpRestClient extends WpBaseRestClient {
 
+    public static final String BASE_URL = "baseUrl";
     private final OkHttpClient httpClient;
     private final ObjectMapper mapper;
 
@@ -147,7 +148,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
             throw new IllegalArgumentException("name cannot be blank");
 
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/categories",
-                Map.of("baseUrl", baseUrl));
+                Map.of(BASE_URL, baseUrl));
 
         return performPostWithBody(builder, creationRequest, WP_CATEGORY_TYPE);
     }
@@ -156,7 +157,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @SneakyThrows
     public WpPost createPost(final @NonNull WpPostCreateUpdateRequest creationRequest) {
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts",
-                Map.of("baseUrl", baseUrl));
+                Map.of(BASE_URL, baseUrl));
 
         return performPostWithBody(builder, creationRequest, WP_POST_TYPE);
     }
@@ -169,7 +170,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
             throw new IllegalArgumentException("name cannot be blank");
 
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/tags",
-                Map.of("baseUrl", baseUrl));
+                Map.of(BASE_URL, baseUrl));
 
         return performPostWithBody(builder, creationRequest, WP_TAG_TYPE);
     }
@@ -178,7 +179,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @SneakyThrows
     public WpCategoryDeletionResponse deleteCategory(final @NonNull Long id) {
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/categories/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
 
         // For tags/terms, WordPress does not support trashing, and the REST API explicitly
         // requires force to be true for delete.
@@ -191,7 +192,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @SneakyThrows
     public WpPostDeletionResponse deletePost(@NonNull Long id) {
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
 
         builder.addQueryParameter(FORCE, Boolean.TRUE.toString());
 
@@ -202,7 +203,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @SneakyThrows
     public WpTagDeletionResponse deleteTag(final @NonNull Long id) {
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/tags/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
 
         // For tags/terms, WordPress does not support trashing, and the REST API explicitly
         // requires force to be true for delete.
@@ -215,7 +216,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @Override
     public WpCategory getCategory(final @NonNull Long id, final WpContext context) {
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/categories/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
 
         builder.addQueryParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
 
@@ -231,7 +232,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @Override
     public WpPost getPost(final @NonNull Long id, final WpContext context, final String password) {
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
 
         builder.addQueryParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
 
@@ -246,7 +247,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     public WpTag getTag(@NonNull final Long id, final WpContext context) {
 
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/tags/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
 
         builder.addQueryParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
 
@@ -257,7 +258,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @SneakyThrows
     public WpPagedResponse<WpCategory> listCategories(final @NonNull WpPagingQuery pageQuery,
                                                       final WpCategoryQuery categoryQuery) {
-        final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/categories", Map.of("baseUrl", baseUrl));
+        final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/categories", Map.of(BASE_URL, baseUrl));
 
         builder.addQueryParameter(PAGE, Integer.toString(pageQuery.getPageNumber()))
                .addQueryParameter(PER_PAGE, Integer.toString(pageQuery.getPageSize()));
@@ -270,7 +271,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @Override
     @SneakyThrows
     public WpPagedResponse<WpPost> listPosts(final @NonNull WpPagingQuery pageQuery, final WpPostQuery postQuery) {
-        final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts", Map.of("baseUrl", baseUrl));
+        final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts", Map.of(BASE_URL, baseUrl));
 
         builder.addQueryParameter(PAGE, Integer.toString(pageQuery.getPageNumber()))
                .addQueryParameter(PER_PAGE, Integer.toString(pageQuery.getPageSize()));
@@ -284,7 +285,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @SneakyThrows
     public WpPagedResponse<WpTag> listTags(final @NonNull WpPagingQuery pageQuery, final WpTagQuery tagQuery) {
 
-        final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/tags", Map.of("baseUrl", baseUrl));
+        final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/tags", Map.of(BASE_URL, baseUrl));
 
         builder.addQueryParameter(PAGE, Integer.toString(pageQuery.getPageNumber()))
                .addQueryParameter(PER_PAGE, Integer.toString(pageQuery.getPageSize()));
@@ -298,7 +299,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @SneakyThrows
     public WpPost trashPost(@NonNull Long id) {
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
 
         builder.addQueryParameter(FORCE, Boolean.FALSE.toString());
 
@@ -310,7 +311,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     public WpCategory updateCategory(final @NonNull Long id,
                                      final @NonNull WpCategoryCreateUpdateRequest updateRequest) {
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/categories/${id}",
-                Map.of("baseUrl", baseUrl,
+                Map.of(BASE_URL, baseUrl,
                         "id", id));
 
         return performPostWithBody(builder, updateRequest, WP_CATEGORY_TYPE);
@@ -321,7 +322,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     public WpPost updatePost(final @NonNull Long id,
                              final @NonNull WpPostCreateUpdateRequest updateRequest) {
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts/${id}",
-                Map.of("baseUrl", baseUrl,
+                Map.of(BASE_URL, baseUrl,
                         "id", id));
 
         return performPostWithBody(builder, updateRequest, WP_POST_TYPE);
@@ -333,7 +334,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
                            final @NonNull WpTagCreateUpdateRequest updateRequest) {
 
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/tags/${id}",
-                Map.of("baseUrl", baseUrl,
+                Map.of(BASE_URL, baseUrl,
                         "id", id));
 
         return performPostWithBody(builder, updateRequest, WP_TAG_TYPE);

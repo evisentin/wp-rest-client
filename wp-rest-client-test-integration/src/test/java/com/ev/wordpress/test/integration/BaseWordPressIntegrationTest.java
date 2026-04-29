@@ -100,8 +100,8 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
     public static final String WP_STANDARD_USER_NAME = "myuser@email.com";
     public static final String WP_STANDARD_USER_PASSWORD = "user123!";
 
-    private final Path WP_FILES_DIR = createTempFilesDir();
-    private final Network NETWORK = Network.newNetwork();
+    private final Path wpFilesDir = createTempFilesDir();
+    private final Network network = Network.newNetwork();
 
     private final MySQLContainer database = createDatabaseContainer();
     private final GenericContainer<?> wordpress = createWordPressContainer();
@@ -123,7 +123,7 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
         if (database != null) {
             database.stop();
         }
-        deleteIfExists(WP_FILES_DIR);
+        deleteIfExists(wpFilesDir);
     }
 
     @BeforeAll
@@ -386,8 +386,8 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
                 .withDatabaseName(VAL_DB_NAME)
                 .withUsername(VAL_DB_USER_NAME)
                 .withPassword(VAL_DB_PASSWORD)
-                .withNetwork(NETWORK)
-                .withNetwork(NETWORK)
+                .withNetwork(network)
+                .withNetwork(network)
                 .withNetworkAliases("db_host"); // important for VAL_DB_HOST
     }
 
@@ -419,13 +419,13 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
     private GenericContainer<?> createWordPressCli() {
 
         return new GenericContainer<>(DockerImageName.parse("wordpress:cli"))
-                .withNetwork(NETWORK)
+                .withNetwork(network)
                 .dependsOn(wordpress)
                 .withEnv(WORDPRESS_DB_HOST, VAL_DB_HOST)
                 .withEnv(WORDPRESS_DB_NAME, VAL_DB_NAME)
                 .withEnv(WORDPRESS_DB_USER, VAL_DB_USER_NAME)
                 .withEnv(WORDPRESS_DB_PASSWORD, VAL_DB_PASSWORD)
-                .withFileSystemBind(WP_FILES_DIR.toAbsolutePath().toString(), "/var/www/html", READ_WRITE)
+                .withFileSystemBind(wpFilesDir.toAbsolutePath().toString(), "/var/www/html", READ_WRITE)
                 // official docs note cli image often needs UID alignment
                 .withCreateContainerCmdModifier(cmd -> cmd.withUser("33:33"))
                 .withCommand("tail", "-f", "/dev/null");
@@ -435,13 +435,13 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
     private GenericContainer<?> createWordPressContainer() {
 
         return new GenericContainer<>(wordpressHttpsImage(getWordPressVersion()))
-                .withNetwork(NETWORK)
+                .withNetwork(network)
                 .dependsOn(database)
                 .withEnv(WORDPRESS_DB_HOST, VAL_DB_HOST)
                 .withEnv(WORDPRESS_DB_NAME, VAL_DB_NAME)
                 .withEnv(WORDPRESS_DB_USER, VAL_DB_USER_NAME)
                 .withEnv(WORDPRESS_DB_PASSWORD, VAL_DB_PASSWORD)
-                .withFileSystemBind(WP_FILES_DIR.toAbsolutePath().toString(), "/var/www/html", READ_WRITE)
+                .withFileSystemBind(wpFilesDir.toAbsolutePath().toString(), "/var/www/html", READ_WRITE)
                 .withExposedPorts(443)
                 .waitingFor(
                         forHttp("/")

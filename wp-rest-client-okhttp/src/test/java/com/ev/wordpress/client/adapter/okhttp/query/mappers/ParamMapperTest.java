@@ -30,7 +30,6 @@ public interface ParamMapperTest extends WithAssertions {
 
     default void assertThatUrlContainsNoQueryParam(final @NonNull HttpUrl url) {
         assertThat(url.queryParameterNames()).isEmpty();
-        ;
     }
 
     private static List<String> toExpectedValues(final Object value) {

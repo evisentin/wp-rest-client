@@ -4,14 +4,14 @@ import com.ev.wordpress.client.domain.dto.WpTag;
 import com.ev.wordpress.client.domain.dto.enums.WpTaxonomy;
 import org.assertj.core.api.AbstractObjectAssert;
 
-public abstract class AbstractWpTagAssert<SELF extends AbstractWpTagAssert<SELF>>
-        extends AbstractObjectAssert<SELF, WpTag> {
+public abstract class AbstractWpTagAssert<S extends AbstractWpTagAssert<S>>
+        extends AbstractObjectAssert<S, WpTag> {
 
     protected AbstractWpTagAssert(final WpTag actual, final Class<?> selfType) {
         super(actual, selfType);
     }
 
-    public SELF hasCount(final long expected) {
+    public S hasCount(final long expected) {
         isNotNull();
         if (actual.getCount() != expected) {
             failWithMessage("Expected tag count to be <%s> but was <%s>", expected, actual.getCount());
@@ -19,7 +19,7 @@ public abstract class AbstractWpTagAssert<SELF extends AbstractWpTagAssert<SELF>
         return myself;
     }
 
-    public SELF hasDescription(final String expected) {
+    public S hasDescription(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getDescription(), expected)) {
             failWithMessage("Expected tag description to be <%s> but was <%s>", expected, actual.getDescription());
@@ -27,7 +27,7 @@ public abstract class AbstractWpTagAssert<SELF extends AbstractWpTagAssert<SELF>
         return myself;
     }
 
-    public SELF hasId(final long expected) {
+    public S hasId(final long expected) {
         isNotNull();
         if (actual.getId() != expected) {
             failWithMessage("Expected tag id to be <%s> but was <%s>", expected, actual.getId());
@@ -35,7 +35,7 @@ public abstract class AbstractWpTagAssert<SELF extends AbstractWpTagAssert<SELF>
         return myself;
     }
 
-    public SELF hasLink(final String expected) {
+    public S hasLink(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getLink(), expected)) {
             failWithMessage("Expected tag link to be <%s> but was <%s>", expected, actual.getLink());
@@ -43,7 +43,7 @@ public abstract class AbstractWpTagAssert<SELF extends AbstractWpTagAssert<SELF>
         return myself;
     }
 
-    public SELF hasName(final String expected) {
+    public S hasName(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getName(), expected)) {
             failWithMessage("Expected tag name to be <%s> but was <%s>", expected, actual.getName());
@@ -51,7 +51,7 @@ public abstract class AbstractWpTagAssert<SELF extends AbstractWpTagAssert<SELF>
         return myself;
     }
 
-    public SELF hasNonZeroId() {
+    public S hasNonZeroId() {
         isNotNull();
 
         if (actual.getId() == 0L) {
@@ -61,7 +61,7 @@ public abstract class AbstractWpTagAssert<SELF extends AbstractWpTagAssert<SELF>
         return myself;
     }
 
-    public SELF hasSlug(final String expected) {
+    public S hasSlug(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getSlug(), expected)) {
             failWithMessage("Expected tag slug to be <%s> but was <%s>", expected, actual.getSlug());
@@ -69,7 +69,7 @@ public abstract class AbstractWpTagAssert<SELF extends AbstractWpTagAssert<SELF>
         return myself;
     }
 
-    public SELF hasTaxonomy(final WpTaxonomy expected) {
+    public S hasTaxonomy(final WpTaxonomy expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getTaxonomy(), expected)) {
             failWithMessage("Expected tag taxonomy to be <%s> but was <%s>", expected, actual.getTaxonomy());
