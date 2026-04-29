@@ -2,6 +2,7 @@ package com.ev.wordpress.client.adapter.apache.interceptors;
 
 import com.ev.wordpress.client.domain.auth.WpAuthenticationStrategy;
 import com.ev.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.core5.http.EntityDetails;
 import org.apache.hc.core5.http.HttpRequest;
 import org.apache.hc.core5.http.protocol.HttpContext;
@@ -21,6 +22,9 @@ class AuthenticationInterceptorTest implements WithAssertions {
     private final WpAuthenticationStrategy strategy = new WpBasicAuthenticationStrategy("user", "password");
 
     @Mock
+    private CloseableHttpClient authHttpClient;
+
+    @Mock
     private HttpRequest request;
 
     @Mock
@@ -33,16 +37,20 @@ class AuthenticationInterceptorTest implements WithAssertions {
 
     @BeforeEach
     void setUp() {
-        interceptor = new AuthenticationInterceptor(strategy);
+        interceptor = new AuthenticationInterceptor(strategy, authHttpClient);
     }
 
     @Test
     @DisplayName("should fail on null strategy")
     void shouldAFailOnNullStrategy() {
 
-        assertThatThrownBy(() -> new AuthenticationInterceptor(null))
+        assertThatThrownBy(() -> new AuthenticationInterceptor(null, null))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("strategy is marked non-null but is null");
+
+        assertThatThrownBy(() -> new AuthenticationInterceptor(new WpBasicAuthenticationStrategy("user", "password"), null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("authHttpClient is marked non-null but is null");
     }
 
     @Test

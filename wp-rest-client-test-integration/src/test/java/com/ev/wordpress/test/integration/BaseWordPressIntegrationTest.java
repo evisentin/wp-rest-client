@@ -95,7 +95,7 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
 
     public static final String WP_ADMIN_USER_NAME = "admin";
     public static final String WP_ADMIN_PASSWORD = "admin123!";
-    public static final String WP_JWT_SECRET = "test-secret-123";
+    public static final String WP_JWT_SECRET = "NOOfWLMHypGdbSdEUlKkQAMiuneifuoG";
 
     public static final String WP_STANDARD_USER_NAME = "myuser@email.com";
     public static final String WP_STANDARD_USER_PASSWORD = "user123!";
@@ -333,31 +333,21 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
      *
      */
     @SneakyThrows
-    protected void wpInstallAndActivateWpRestApiAuthenticationPlugin() {
+    protected void wpInstallAndActivateWpRestApiAuthenticationPlugin(boolean jwt) {
         // install + activate plugin
-        val pluginInstallResult = wpcli.execInContainer(
-                "wp", "--allow-root", "--path=/var/www/html",
-                "plugin", "install", "wp-rest-api-authentication",
-                "--activate"
-        );
+        val pluginInstallResult = wpcli.execInContainer("wp", "--allow-root", "--path=/var/www/html", "plugin", "install", "wp-rest-api-authentication", "--activate");
 
         failOnError(pluginInstallResult, "wp-rest-api-authentication install failed");
 
-        wpcli.execInContainer(
-                "wp", "--allow-root", "--path=/var/www/html",
-                "option", "update", "mo_api_authentication_selected_authentication_method", "basic_auth"
-        );
-        wpcli.execInContainer(
-                "wp", "--allow-root", "--path=/var/www/html",
-                "option", "update", "mo_api_authentication_enable_jwt", "1"
-        );
+        final String authMethod = jwt ? "jwt_auth" : "basic_auth";
 
-        wpcli.execInContainer(
-                "wp", "--allow-root", "--path=/var/www/html",
-                "option", "update",
-                "mo_api_authentication_jwt_client_secret",
-                WP_JWT_SECRET
-        );
+        wpcli.execInContainer("wp", "--allow-root", "--path=/var/www/html", "option", "update", "mo_api_authentication_selected_authentication_method", authMethod);
+
+        if (jwt) {
+            wpcli.execInContainer("wp", "--allow-root", "--path=/var/www/html", "option", "update", "mo_api_authentication_enable_jwt", "1");
+            wpcli.execInContainer("wp", "--allow-root", "--path=/var/www/html", "option", "update", "mo_api_authentication_jwt_client_secret", WP_JWT_SECRET);
+            wpcli.execInContainer("wp", "--allow-root", "--path=/var/www/html", "option", "update", "mo_api_authentication_jwt_signing_algorithm", "HS256");
+        }
     }
 
     /**
@@ -377,17 +367,13 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
      */
     @SneakyThrows
     protected boolean wpIsWordPressInstalled() {
-        val execResult = wpcli.execInContainer(
-                "wp", "--allow-root", "--path=/var/www/html", "core", "is-installed"
-        );
+        val execResult = wpcli.execInContainer("wp", "--allow-root", "--path=/var/www/html", "core", "is-installed");
         return execResult.getExitCode() == 0;
     }
 
     @SneakyThrows
     private void createAdminApplicationPassword() {
-        val applicationPasswordCreationResult = wpcli.execInContainer(
-                "wp", "user", "application-password", "create", "admin", "my-app", "--porcelain"
-        );
+        val applicationPasswordCreationResult = wpcli.execInContainer("wp", "user", "application-password", "create", "admin", "my-app", "--porcelain");
 
         failOnError(applicationPasswordCreationResult, "application password creation failed");
 
@@ -431,7 +417,8 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
     @SuppressWarnings("resource")
     @SneakyThrows
     private GenericContainer<?> createWordPressCli() {
-        val container = new GenericContainer<>(DockerImageName.parse("wordpress:cli"))
+
+        return new GenericContainer<>(DockerImageName.parse("wordpress:cli"))
                 .withNetwork(NETWORK)
                 .dependsOn(wordpress)
                 .withEnv(WORDPRESS_DB_HOST, VAL_DB_HOST)
@@ -442,8 +429,6 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
                 // official docs note cli image often needs UID alignment
                 .withCreateContainerCmdModifier(cmd -> cmd.withUser("33:33"))
                 .withCommand("tail", "-f", "/dev/null");
-
-        return container;
     }
 
     @SuppressWarnings("resource")
@@ -470,7 +455,7 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
 
     private static void failOnError(final @NonNull org.testcontainers.containers.Container.ExecResult execResult, final @NonNull String message) {
         if (execResult.getExitCode() != 0) {
-            final String errorMessage = String.format("%s\nSTDOUT:\n%s\nSTDERR:\n%s", message, execResult.getStdout(), execResult.getStderr());
+            final String errorMessage = String.format("%s%nSTDOUT:%n%s%nSTDERR:%n%s", message, execResult.getStdout(), execResult.getStderr());
             throw new IllegalStateException(errorMessage);
         }
     }

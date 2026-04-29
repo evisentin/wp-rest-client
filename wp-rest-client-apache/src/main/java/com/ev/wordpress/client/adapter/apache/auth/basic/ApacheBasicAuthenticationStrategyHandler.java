@@ -1,5 +1,6 @@
-package com.ev.wordpress.client.adapter.apache.auth;
+package com.ev.wordpress.client.adapter.apache.auth.basic;
 
+import com.ev.wordpress.client.adapter.apache.auth.ApacheAuthenticationStrategyHandler;
 import com.ev.wordpress.client.domain.auth.WpAuthenticationStrategy;
 import com.ev.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
 import lombok.NonNull;

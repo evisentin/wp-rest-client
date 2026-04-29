@@ -130,7 +130,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         mapper.findAndRegisterModules();
 
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
-                .addInterceptor(new AuthenticationInterceptor(authenticationStrategy))
+                .addInterceptor(new AuthenticationInterceptor(authenticationStrategy, buildAuthHttpClient(sslConfiguration, timeoutConfiguration)))
                 .addInterceptor(new WpErrorInterceptor())
                 .addInterceptor(new LoggingInterceptor());
 
@@ -346,6 +346,14 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
                          .writeTimeout(config.getWriteTimeout())
                          .callTimeout(config.getCallTimeout());
         }
+    }
+
+    private OkHttpClient buildAuthHttpClient(SslConfiguration sslConfiguration, TimeoutConfiguration timeoutConfiguration) {
+        OkHttpClient.Builder authClientBuilder = new OkHttpClient.Builder();
+        applySslConfigurationIfPresent(authClientBuilder, sslConfiguration);
+        applyTimeoutConfigurationIfPresent(authClientBuilder, timeoutConfiguration);
+
+        return authClientBuilder.build();
     }
 
     private <T> T performDeleteRequest(final HttpUrl.Builder urlBuilder,

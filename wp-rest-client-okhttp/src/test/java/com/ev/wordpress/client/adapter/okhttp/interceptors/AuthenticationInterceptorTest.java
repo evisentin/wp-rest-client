@@ -3,6 +3,7 @@ package com.ev.wordpress.client.adapter.okhttp.interceptors;
 import com.ev.wordpress.client.domain.auth.WpAuthenticationStrategy;
 import com.ev.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
 import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.assertj.core.api.WithAssertions;
@@ -26,6 +27,9 @@ class AuthenticationInterceptorTest implements WithAssertions {
     private final WpAuthenticationStrategy strategy = new WpBasicAuthenticationStrategy("user", "password");
 
     @Mock
+    private OkHttpClient authHttpClient;
+
+    @Mock
     private Interceptor.Chain chain;
 
     @Mock
@@ -37,14 +41,18 @@ class AuthenticationInterceptorTest implements WithAssertions {
     @DisplayName("constructor should fail on null strategy")
     void constructorShouldFailOnNullStrategy() {
 
-        assertThatThrownBy(() -> new AuthenticationInterceptor(null))
+        assertThatThrownBy(() -> new AuthenticationInterceptor(null, null))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("strategy is marked non-null but is null");
+
+        assertThatThrownBy(() -> new AuthenticationInterceptor(new WpAuthenticationStrategy() {}, null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("authHttpClient is marked non-null but is null");
     }
 
     @BeforeEach
     void setUp() {
-        interceptor = new AuthenticationInterceptor(strategy);
+        interceptor = new AuthenticationInterceptor(strategy, authHttpClient);
     }
 
     @Test

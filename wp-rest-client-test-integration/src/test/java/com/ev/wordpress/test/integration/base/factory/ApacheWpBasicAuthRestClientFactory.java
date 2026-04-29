@@ -1,6 +1,9 @@
 package com.ev.wordpress.test.integration.base.factory;
 
+import com.ev.wordpress.client.adapter.apache.ApacheWpRestClient;
 import com.ev.wordpress.client.domain.api.WpRestClient;
+import com.ev.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
+import com.ev.wordpress.client.domain.configuration.SslConfiguration;
 import com.ev.wordpress.test.integration.BaseWordPressIntegrationTest;
 import com.ev.wordpress.test.integration.base.BasicAuthWordPressIntegrationTest;
 
@@ -37,7 +40,7 @@ import com.ev.wordpress.test.integration.base.BasicAuthWordPressIntegrationTest;
  * </ul>
  *
  * <h2>Extensibility</h2>
- * <p>Concrete subclasses must provide a {@link WpRestClientFactory} implementation
+ * <p>Concrete subclasses must provide a {@link WpBasicAuthRestClientFactory} implementation
  * by overriding {@link BasicAuthWordPressIntegrationTest#clientFactory()} to control how REST clients are created.</p>
  *
  * <h2>Typical Usage</h2>
@@ -58,8 +61,23 @@ import com.ev.wordpress.test.integration.base.BasicAuthWordPressIntegrationTest;
  *
  * @see BaseWordPressIntegrationTest
  * @see WpRestClient
- * @see WpRestClientFactory
+ * @see WpBasicAuthRestClientFactory
  */
-public interface WpRestClientFactory {
-    WpRestClient create(String baseUrl, String username, String password);
+public final class ApacheWpBasicAuthRestClientFactory implements WpBasicAuthRestClientFactory {
+
+    private final SslConfiguration sslConfiguration;
+
+    public ApacheWpBasicAuthRestClientFactory(SslConfiguration sslConfiguration) {
+        this.sslConfiguration = sslConfiguration;
+    }
+
+    @Override
+    public WpRestClient create(String baseUrl, String username, String password) {
+        return new ApacheWpRestClient(
+                baseUrl,
+                new WpBasicAuthenticationStrategy(username, password),
+                sslConfiguration,
+                null
+        );
+    }
 }

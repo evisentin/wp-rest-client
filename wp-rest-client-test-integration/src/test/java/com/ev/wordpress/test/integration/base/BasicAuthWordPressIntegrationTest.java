@@ -21,7 +21,7 @@ import com.ev.wordpress.client.domain.dto.responses.WpCategoryDeletionResponse;
 import com.ev.wordpress.client.domain.dto.responses.WpPostDeletionResponse;
 import com.ev.wordpress.client.domain.dto.responses.WpTagDeletionResponse;
 import com.ev.wordpress.test.integration.BaseWordPressIntegrationTest;
-import com.ev.wordpress.test.integration.base.factory.WpRestClientFactory;
+import com.ev.wordpress.test.integration.base.factory.WpBasicAuthRestClientFactory;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
@@ -79,7 +79,7 @@ import static java.util.Collections.emptySet;
  * </ul>
  *
  * <h2>Extensibility</h2>
- * <p>Concrete subclasses must provide a {@link WpRestClientFactory} implementation
+ * <p>Concrete subclasses must provide a {@link WpBasicAuthRestClientFactory} implementation
  * by overriding {@link #clientFactory()} to control how REST clients are created.</p>
  *
  * <h2>Typical Usage</h2>
@@ -100,7 +100,7 @@ import static java.util.Collections.emptySet;
  *
  * @see BaseWordPressIntegrationTest
  * @see WpRestClient
- * @see WpRestClientFactory
+ * @see WpBasicAuthRestClientFactory
  */
 @Slf4j
 public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressIntegrationTest {
@@ -137,7 +137,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
         );
     }
 
-    protected abstract WpRestClientFactory clientFactory();
+    protected abstract WpBasicAuthRestClientFactory clientFactory();
 
     private Long givenCategoryExists(final String name, final String description, final String slug) {
         return wpCreateCategory(name, description, slug);
@@ -163,13 +163,13 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
     @Nested
     class CategoryTests {
 
-        private final static String CATEGORY_1_NAME = "Category #1";
-        private final static String CATEGORY_1_DESCRIPTION = "My first category";
-        private final static String CATEGORY_1_SLUG = "category-1";
+        private static final String CATEGORY_1_NAME = "Category #1";
+        private static final String CATEGORY_1_DESCRIPTION = "My first category";
+        private static final String CATEGORY_1_SLUG = "category-1";
 
-        private final static String CATEGORY_2_NAME = "Category #2";
-        private final static String CATEGORY_2_DESCRIPTION = "My second category";
-        private final static String CATEGORY_2_SLUG = "category-2";
+        private static final String CATEGORY_2_NAME = "Category #2";
+        private static final String CATEGORY_2_DESCRIPTION = "My second category";
+        private static final String CATEGORY_2_SLUG = "category-2";
 
         @DisplayName("'CREATE' fails on parent not found")
         @Test
@@ -470,13 +470,13 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
     @Nested
     class TagTests {
 
-        private final static String TAG_1_NAME = "Tag #1";
-        private final static String TAG_1_DESCRIPTION = "My first tag";
-        private final static String TAG_1_SLUG = "tag-1";
+        private static final String TAG_1_NAME = "Tag #1";
+        private static final String TAG_1_DESCRIPTION = "My first tag";
+        private static final String TAG_1_SLUG = "tag-1";
 
-        private final static String TAG_2_NAME = "Tag #2";
-        private final static String TAG_2_DESCRIPTION = "My second tag";
-        private final static String TAG_2_SLUG = "tag-2";
+        private static final String TAG_2_NAME = "Tag #2";
+        private static final String TAG_2_DESCRIPTION = "My second tag";
+        private static final String TAG_2_SLUG = "tag-2";
 
         @DisplayName("'CREATE' fails on duplicate")
         @Test
@@ -751,17 +751,13 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
     @Nested
     class PostTests {
 
-        private final static String POST_1_TITLE = "Post #1";
-        private final static String POST_1_CONTENT = "My first post";
-        private final static String POST_1_SLUG = "post-1";
+        private static final String POST_1_TITLE = "Post #1";
+        private static final String POST_1_CONTENT = "My first post";
+        private static final String POST_1_SLUG = "post-1";
 
-        private final static String POST_2_TITLE = "Post #2";
-        private final static String POST_2_CONTENT = "My second post";
-        private final static String POST_2_SLUG = "post-2";
+        private static final String POST_2_TITLE = "Post #2";
 
-        private final static String POST_3_TITLE = "Post #3";
-        private final static String POST_3_CONTENT = "My third post";
-        private final static String POST_3_SLUG = "post-3";
+        private static final String POST_3_TITLE = "Post #3";
 
         @DisplayName("'CREATE' works")
         @Test

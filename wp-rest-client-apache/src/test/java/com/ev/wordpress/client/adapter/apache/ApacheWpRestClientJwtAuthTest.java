@@ -1,20 +1,20 @@
 package com.ev.wordpress.client.adapter.apache;
 
 import com.ev.wordpress.client.domain.api.WpBaseRestClient;
-import com.ev.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
+import com.ev.wordpress.client.domain.auth.WpJwtAuthenticationStrategy;
 import com.ev.wordpress.client.domain.configuration.SslConfiguration;
-
-import com.ev.wordpress.client.test.support.AbstractBasicAuthenticationWpRestClientContractTest;
+import com.ev.wordpress.client.test.support.AbstractJwtAuthenticationWpRestClientContractTest;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;
 
-class ApacheWpRestClientTest extends AbstractBasicAuthenticationWpRestClientContractTest {
+class ApacheWpRestClientJwtAuthTest extends AbstractJwtAuthenticationWpRestClientContractTest {
 
     @Override
     protected WpBaseRestClient client() {
-        final WpBasicAuthenticationStrategy authenticationStrategy = new WpBasicAuthenticationStrategy("user", "password");
+        final String jwtTokenUrl = mockServerUrl() + "/wp-json/api/v1/token";
+        final WpJwtAuthenticationStrategy authenticationStrategy = new WpJwtAuthenticationStrategy("user", "password", jwtTokenUrl);
 
         return new ApacheWpRestClient(mockServerUrl(), authenticationStrategy, insecure(), null);
     }

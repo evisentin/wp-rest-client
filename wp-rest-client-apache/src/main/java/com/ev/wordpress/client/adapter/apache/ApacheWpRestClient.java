@@ -140,9 +140,11 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         this.mapper = new ObjectMapper();
         mapper.findAndRegisterModules();
 
+        final CloseableHttpClient authHttpClient = buildAuthHttpClient(sslConfiguration, timeoutConfiguration);
+
         final HttpClientBuilder httpClientBuilder = HttpClients.custom();
 
-        httpClientBuilder.addRequestInterceptorFirst(new AuthenticationInterceptor(authenticationStrategy))
+        httpClientBuilder.addRequestInterceptorFirst(new AuthenticationInterceptor(authenticationStrategy, authHttpClient))
                          .addRequestInterceptorLast(new LoggingRequestInterceptor());
 
         httpClientBuilder.addResponseInterceptorFirst(new LoggingResponseInterceptor())
@@ -473,6 +475,16 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         httpClientBuilder
                 .setConnectionManager(connectionManager)
                 .setDefaultRequestConfig(requestConfig);
+    }
+
+    private static CloseableHttpClient buildAuthHttpClient(SslConfiguration sslConfiguration, TimeoutConfiguration timeoutConfiguration) {
+        final HttpClientBuilder authClientBuilder = HttpClients.custom();
+
+        applySslConfigurationIfPresent(authClientBuilder, sslConfiguration);
+        applyTimeoutConfigurationIfPresent(authClientBuilder, timeoutConfiguration);
+
+        final CloseableHttpClient build = authClientBuilder.build();
+        return build;
     }
 
     @SneakyThrows

@@ -1,5 +1,6 @@
-package com.ev.wordpress.client.adapter.okhttp.auth;
+package com.ev.wordpress.client.adapter.okhttp.auth.basic;
 
+import com.ev.wordpress.client.adapter.okhttp.auth.OkHttpAuthenticationStrategyHandler;
 import com.ev.wordpress.client.domain.auth.WpAuthenticationStrategy;
 import com.ev.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
 import lombok.NonNull;

@@ -6,7 +6,7 @@ import com.ev.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
 import com.ev.wordpress.client.domain.configuration.SslConfiguration;
 
 /**
- * {@link WpRestClientFactory} implementation based on OkHttp.
+ * {@link WpBasicAuthRestClientFactory} implementation based on OkHttp.
  *
  * <p>This factory creates instances of {@link OkHttpWpRestClient} configured
  * with Basic Authentication and a provided {@link SslConfiguration}.</p>
@@ -30,11 +30,11 @@ import com.ev.wordpress.client.domain.configuration.SslConfiguration;
  * @see SslConfiguration
  */
 
-public final class OkHttpWpRestClientFactory implements WpRestClientFactory {
+public final class OkHttpWpBasicAuthRestClientFactory implements WpBasicAuthRestClientFactory {
 
     private final SslConfiguration sslConfiguration;
 
-    public OkHttpWpRestClientFactory(SslConfiguration sslConfiguration) {
+    public OkHttpWpBasicAuthRestClientFactory(SslConfiguration sslConfiguration) {
         this.sslConfiguration = sslConfiguration;
     }
 

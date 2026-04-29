@@ -4,6 +4,7 @@ import com.ev.wordpress.client.adapter.okhttp.auth.OkHttpAuthenticationStrategyH
 import com.ev.wordpress.client.domain.auth.WpAuthenticationStrategy;
 import lombok.NonNull;
 import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
@@ -14,11 +15,14 @@ import static com.ev.wordpress.client.adapter.okhttp.constants.HttpHeaders.AUTHO
 
 public class AuthenticationInterceptor implements Interceptor {
 
-    private final OkHttpAuthenticationStrategyHandlerRegistry registry = new OkHttpAuthenticationStrategyHandlerRegistry();
+    private final OkHttpAuthenticationStrategyHandlerRegistry registry;
     private final WpAuthenticationStrategy strategy;
 
-    public AuthenticationInterceptor(final @NonNull WpAuthenticationStrategy strategy) {
+    public AuthenticationInterceptor(final @NonNull WpAuthenticationStrategy strategy,
+                                     final @NonNull OkHttpClient authHttpClient) {
+
         this.strategy = strategy;
+        registry = new OkHttpAuthenticationStrategyHandlerRegistry(authHttpClient);
     }
 
     @NotNull
