@@ -827,7 +827,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                             .withContent(POST_1_CONTENT)
                             .withCategories(Set.of(nonExistingCategory1, nonExistingCategory2, nonExistingCategory3))
                             .withTags(Set.of(nonExistingTag1, nonExistingTag2, nonExistingTag3))
-                            .withStatus(PRIVATE)
+                            .withStatus(PUBLISH)
                             .withCommentStatus(WpOpenClosed.CLOSED)
                             .withPingStatus(WpOpenClosed.CLOSED)
                             .build();
@@ -841,7 +841,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                .hasLink(linkForPost(post.getSlug())) // not draft, the link has the slug
                                .hasSlug(toWordPressSlug(POST_1_TITLE))
                                .hasGeneratedSlug(toWordPressSlug(POST_1_TITLE))
-                               .hasStatus(PRIVATE)
+                               .hasStatus(PUBLISH)
                                .hasCommentStatus(CLOSED)
                                .hasPingStatus(CLOSED)
                                .hasType("post")
