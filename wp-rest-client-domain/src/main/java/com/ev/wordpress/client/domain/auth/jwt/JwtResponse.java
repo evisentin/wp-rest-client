@@ -1,4 +1,4 @@
-package com.ev.wordpress.client.adapter.apache.auth.jwt;
+package com.ev.wordpress.client.domain.auth.jwt;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
