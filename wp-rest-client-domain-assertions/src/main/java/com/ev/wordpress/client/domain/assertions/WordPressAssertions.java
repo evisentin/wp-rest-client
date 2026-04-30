@@ -1,10 +1,10 @@
 package com.ev.wordpress.client.domain.assertions;
 
-import com.ev.wordpress.client.domain.dto.*;
-import com.ev.wordpress.client.domain.dto.responses.WpCategoryDeletionResponse;
-import com.ev.wordpress.client.domain.dto.responses.WpPostDeletionResponse;
-import com.ev.wordpress.client.domain.dto.responses.WpTagDeletionResponse;
-import com.ev.wordpress.client.domain.dto.responses.WpTermDeletionResponse;
+import com.ev.wordpress.client.domain.model.*;
+import com.ev.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
+import com.ev.wordpress.client.domain.model.responses.WpPostDeletionResponse;
+import com.ev.wordpress.client.domain.model.responses.WpTagDeletionResponse;
+import com.ev.wordpress.client.domain.model.responses.WpTermDeletionResponse;
 
 public final class WordPressAssertions {
 

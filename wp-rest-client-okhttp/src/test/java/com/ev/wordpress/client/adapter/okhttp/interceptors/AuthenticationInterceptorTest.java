@@ -16,7 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
 
-import static com.ev.wordpress.client.adapter.okhttp.constants.HttpHeaders.AUTHORIZATION;
+import static com.ev.wordpress.client.adapter.okhttp.http.HttpHeaders.AUTHORIZATION;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;

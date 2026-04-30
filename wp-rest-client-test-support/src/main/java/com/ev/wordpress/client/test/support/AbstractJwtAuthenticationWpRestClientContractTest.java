@@ -3,14 +3,14 @@ package com.ev.wordpress.client.test.support;
 import com.ev.wordpress.client.domain.api.WpBaseRestClient;
 import com.ev.wordpress.client.domain.api.WpRestClient;
 import com.ev.wordpress.client.domain.assertions.WordPressAssertions;
-import com.ev.wordpress.client.domain.dto.WpCategory;
-import com.ev.wordpress.client.domain.dto.enums.WpContext;
+import com.ev.wordpress.client.domain.model.WpCategory;
+import com.ev.wordpress.client.domain.model.enums.WpContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static com.ev.wordpress.client.domain.dto.enums.WpTaxonomy.CATEGORY;
+import static com.ev.wordpress.client.domain.model.enums.WpTaxonomy.CATEGORY;
 
 public abstract class AbstractJwtAuthenticationWpRestClientContractTest extends AbstractMockServerTest {
     private WpRestClient client;

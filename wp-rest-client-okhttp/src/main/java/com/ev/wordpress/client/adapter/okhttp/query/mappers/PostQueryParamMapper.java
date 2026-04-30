@@ -1,15 +1,15 @@
 package com.ev.wordpress.client.adapter.okhttp.query.mappers;
 
-import com.ev.wordpress.client.domain.dto.query.WpPostQuery;
+import com.ev.wordpress.client.domain.model.query.WpPostQuery;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import okhttp3.HttpUrl;
 
-import static com.ev.wordpress.client.domain.dto.parameters.WpQueryParameters.*;
+import static com.ev.wordpress.client.domain.model.parameters.WpQueryParameters.*;
 
 /**
- * Maps {@link com.ev.wordpress.client.domain.dto.query.WpPostQuery} into HTTP query parameters for post-related
+ * Maps {@link com.ev.wordpress.client.domain.model.query.WpPostQuery} into HTTP query parameters for post-related
  * WordPress endpoints.
  *
  * <p>This mapper supports a wide range of filtering options such as date ranges,
@@ -19,7 +19,7 @@ import static com.ev.wordpress.client.domain.dto.parameters.WpQueryParameters.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class PostQueryParamMapper extends AbstractQueryParamMapper {
     /**
-     * Maps the given {@link com.ev.wordpress.client.domain.dto.query.WpPostQuery} into query parameters and adds them
+     * Maps the given {@link com.ev.wordpress.client.domain.model.query.WpPostQuery} into query parameters and adds them
      * to the provided {@link HttpUrl.Builder}.
      *
      * <p>If the query is {@code null}, no parameters are added.

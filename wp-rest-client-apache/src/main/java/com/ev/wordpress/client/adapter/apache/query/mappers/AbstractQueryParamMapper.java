@@ -1,6 +1,6 @@
 package com.ev.wordpress.client.adapter.apache.query.mappers;
 
-import com.ev.wordpress.client.domain.dto.enums.WpHasValueEnum;
+import com.ev.wordpress.client.domain.model.enums.WpHasValueEnum;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 

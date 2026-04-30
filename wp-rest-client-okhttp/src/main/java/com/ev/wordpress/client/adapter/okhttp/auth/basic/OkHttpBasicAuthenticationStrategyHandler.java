@@ -2,7 +2,7 @@ package com.ev.wordpress.client.adapter.okhttp.auth.basic;
 
 import com.ev.wordpress.client.adapter.okhttp.auth.OkHttpAuthenticationStrategyHandler;
 import com.ev.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
-import com.ev.wordpress.client.domain.auth.providers.BasicAuthenticationHeaderProvider;
+import com.ev.wordpress.client.domain.auth.header.BasicAuthenticationHeaderProvider;
 import lombok.NonNull;
 
 public class OkHttpBasicAuthenticationStrategyHandler

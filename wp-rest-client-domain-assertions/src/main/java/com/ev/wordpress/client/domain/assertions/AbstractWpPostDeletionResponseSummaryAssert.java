@@ -1,7 +1,7 @@
 package com.ev.wordpress.client.domain.assertions;
 
-import com.ev.wordpress.client.domain.dto.enums.WpPostStatus;
-import com.ev.wordpress.client.domain.dto.responses.WpPostDeletionResponse;
+import com.ev.wordpress.client.domain.model.enums.WpPostStatus;
+import com.ev.wordpress.client.domain.model.responses.WpPostDeletionResponse;
 import org.assertj.core.api.AbstractObjectAssert;
 
 import java.util.function.Consumer;

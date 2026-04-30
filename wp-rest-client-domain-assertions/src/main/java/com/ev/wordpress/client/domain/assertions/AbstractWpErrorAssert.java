@@ -1,6 +1,6 @@
 package com.ev.wordpress.client.domain.assertions;
 
-import com.ev.wordpress.client.domain.dto.WpError;
+import com.ev.wordpress.client.domain.model.WpError;
 import org.assertj.core.api.AbstractObjectAssert;
 
 import java.util.Map;

@@ -1,6 +1,6 @@
 package com.ev.wordpress.client.domain.assertions;
 
-import com.ev.wordpress.client.domain.dto.responses.WpTermDeletionResponse;
+import com.ev.wordpress.client.domain.model.responses.WpTermDeletionResponse;
 import org.assertj.core.api.AbstractObjectAssert;
 
 import java.util.function.Consumer;

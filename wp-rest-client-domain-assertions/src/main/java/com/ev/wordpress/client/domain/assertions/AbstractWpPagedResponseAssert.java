@@ -1,6 +1,6 @@
 package com.ev.wordpress.client.domain.assertions;
 
-import com.ev.wordpress.client.domain.dto.WpPagedResponse;
+import com.ev.wordpress.client.domain.model.WpPagedResponse;
 import org.assertj.core.api.AbstractObjectAssert;
 
 import java.util.List;

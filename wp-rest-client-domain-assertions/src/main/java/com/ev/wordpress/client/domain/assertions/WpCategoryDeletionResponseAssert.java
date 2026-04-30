@@ -1,6 +1,6 @@
 package com.ev.wordpress.client.domain.assertions;
 
-import com.ev.wordpress.client.domain.dto.responses.WpCategoryDeletionResponse;
+import com.ev.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
 
 public class WpCategoryDeletionResponseAssert
         extends AbstractWpTermDeletionResponseAssert<WpCategoryDeletionResponseAssert, WpCategoryDeletionResponse> {

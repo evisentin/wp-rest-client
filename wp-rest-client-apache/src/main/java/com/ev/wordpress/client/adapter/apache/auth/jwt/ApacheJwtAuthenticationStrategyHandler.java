@@ -2,7 +2,7 @@ package com.ev.wordpress.client.adapter.apache.auth.jwt;
 
 import com.ev.wordpress.client.adapter.apache.auth.ApacheAuthenticationStrategyHandler;
 import com.ev.wordpress.client.domain.auth.WpJwtAuthenticationStrategy;
-import com.ev.wordpress.client.domain.auth.providers.JwtAuthenticationHeaderProvider;
+import com.ev.wordpress.client.domain.auth.header.JwtAuthenticationHeaderProvider;
 import lombok.NonNull;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 

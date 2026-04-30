@@ -1,10 +1,10 @@
 package com.ev.wordpress.client.adapter.apache.interceptors;
 
-import com.ev.wordpress.client.domain.dto.WpError;
 import com.ev.wordpress.client.domain.exception.WpBadRequestException;
 import com.ev.wordpress.client.domain.exception.WpForbiddenException;
 import com.ev.wordpress.client.domain.exception.WpNotFoundException;
 import com.ev.wordpress.client.domain.exception.WpUnauthorizedException;
+import com.ev.wordpress.client.domain.model.WpError;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.io.entity.EntityUtils;

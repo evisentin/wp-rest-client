@@ -1,6 +1,6 @@
 package com.ev.wordpress.client.domain.assertions;
 
-import com.ev.wordpress.client.domain.dto.WpPost;
+import com.ev.wordpress.client.domain.model.WpPost;
 
 public class WpPostAssert extends AbstractWpPostAssert<WpPostAssert> {
 

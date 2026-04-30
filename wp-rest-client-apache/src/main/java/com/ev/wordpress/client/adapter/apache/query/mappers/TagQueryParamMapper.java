@@ -1,12 +1,12 @@
 package com.ev.wordpress.client.adapter.apache.query.mappers;
 
-import com.ev.wordpress.client.domain.dto.query.WpTagQuery;
+import com.ev.wordpress.client.domain.model.query.WpTagQuery;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.apache.hc.core5.net.URIBuilder;
 
-import static com.ev.wordpress.client.domain.dto.parameters.WpQueryParameters.*;
+import static com.ev.wordpress.client.domain.model.parameters.WpQueryParameters.*;
 
 /**
  * Maps {@link WpTagQuery} into HTTP query parameters for tag-related WordPress endpoints.

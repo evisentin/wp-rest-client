@@ -1,7 +1,7 @@
 package com.ev.wordpress.client.domain.assertions;
 
-import com.ev.wordpress.client.domain.dto.WpCategory;
-import com.ev.wordpress.client.domain.dto.enums.WpTaxonomy;
+import com.ev.wordpress.client.domain.model.WpCategory;
+import com.ev.wordpress.client.domain.model.enums.WpTaxonomy;
 import org.assertj.core.api.AbstractObjectAssert;
 
 public abstract class AbstractWpCategoryAssert<S extends AbstractWpCategoryAssert<S>>

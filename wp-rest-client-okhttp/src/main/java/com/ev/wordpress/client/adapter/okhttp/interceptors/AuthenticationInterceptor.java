@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 
-import static com.ev.wordpress.client.adapter.okhttp.constants.HttpHeaders.AUTHORIZATION;
+import static com.ev.wordpress.client.adapter.okhttp.http.HttpHeaders.AUTHORIZATION;
 
 public class AuthenticationInterceptor implements Interceptor {
 

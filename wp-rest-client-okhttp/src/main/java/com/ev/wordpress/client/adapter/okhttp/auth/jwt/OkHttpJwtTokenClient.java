@@ -10,8 +10,8 @@ import okhttp3.*;
 
 import java.io.IOException;
 
-import static com.ev.wordpress.client.adapter.okhttp.constants.HttpHeaders.ACCEPT;
-import static com.ev.wordpress.client.adapter.okhttp.constants.MimeTypes.APPLICATION_JSON;
+import static com.ev.wordpress.client.adapter.okhttp.http.HttpHeaders.ACCEPT;
+import static com.ev.wordpress.client.adapter.okhttp.http.MimeTypes.APPLICATION_JSON;
 
 public class OkHttpJwtTokenClient implements JwtTokenClient {
 

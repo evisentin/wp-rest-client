@@ -2,7 +2,7 @@ package com.ev.wordpress.client.adapter.okhttp.auth.jwt;
 
 import com.ev.wordpress.client.adapter.okhttp.auth.OkHttpAuthenticationStrategyHandler;
 import com.ev.wordpress.client.domain.auth.WpJwtAuthenticationStrategy;
-import com.ev.wordpress.client.domain.auth.providers.JwtAuthenticationHeaderProvider;
+import com.ev.wordpress.client.domain.auth.header.JwtAuthenticationHeaderProvider;
 import lombok.NonNull;
 import okhttp3.OkHttpClient;
 

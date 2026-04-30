@@ -1,6 +1,6 @@
 package com.ev.wordpress.client.domain.assertions;
 
-import com.ev.wordpress.client.domain.dto.WpRenderedField;
+import com.ev.wordpress.client.domain.model.WpRenderedField;
 import org.assertj.core.api.AbstractObjectAssert;
 
 public abstract class AbstractWpRenderedFieldAssert<S extends AbstractWpRenderedFieldAssert<S>>

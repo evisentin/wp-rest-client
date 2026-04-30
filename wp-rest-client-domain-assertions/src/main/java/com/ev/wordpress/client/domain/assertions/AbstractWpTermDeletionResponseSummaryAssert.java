@@ -1,7 +1,7 @@
 package com.ev.wordpress.client.domain.assertions;
 
-import com.ev.wordpress.client.domain.dto.enums.WpTaxonomy;
-import com.ev.wordpress.client.domain.dto.responses.WpTermDeletionResponse;
+import com.ev.wordpress.client.domain.model.enums.WpTaxonomy;
+import com.ev.wordpress.client.domain.model.responses.WpTermDeletionResponse;
 import org.assertj.core.api.AbstractObjectAssert;
 
 public abstract class AbstractWpTermDeletionResponseSummaryAssert<S extends AbstractWpTermDeletionResponseSummaryAssert<S>>

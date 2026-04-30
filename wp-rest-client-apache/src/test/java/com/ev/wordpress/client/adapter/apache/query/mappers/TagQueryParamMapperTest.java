@@ -1,15 +1,15 @@
 package com.ev.wordpress.client.adapter.apache.query.mappers;
 
-import com.ev.wordpress.client.domain.dto.enums.WpContext;
-import com.ev.wordpress.client.domain.dto.enums.WpSortDirection;
-import com.ev.wordpress.client.domain.dto.enums.WpTagOrderFields;
-import com.ev.wordpress.client.domain.dto.query.WpTagQuery;
+import com.ev.wordpress.client.domain.model.enums.WpContext;
+import com.ev.wordpress.client.domain.model.enums.WpSortDirection;
+import com.ev.wordpress.client.domain.model.enums.WpTagOrderFields;
+import com.ev.wordpress.client.domain.model.query.WpTagQuery;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
 import java.util.Set;
 
-import static com.ev.wordpress.client.domain.dto.parameters.WpQueryParameters.*;
+import static com.ev.wordpress.client.domain.model.parameters.WpQueryParameters.*;
 
 class TagQueryParamMapperTest extends ParamMapperTest {
 

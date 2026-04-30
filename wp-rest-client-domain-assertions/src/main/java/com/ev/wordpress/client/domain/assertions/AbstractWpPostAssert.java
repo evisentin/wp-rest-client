@@ -1,9 +1,9 @@
 package com.ev.wordpress.client.domain.assertions;
 
-import com.ev.wordpress.client.domain.dto.WpPost;
-import com.ev.wordpress.client.domain.dto.enums.WpOpenClosed;
-import com.ev.wordpress.client.domain.dto.enums.WpPostFormat;
-import com.ev.wordpress.client.domain.dto.enums.WpPostStatus;
+import com.ev.wordpress.client.domain.model.WpPost;
+import com.ev.wordpress.client.domain.model.enums.WpOpenClosed;
+import com.ev.wordpress.client.domain.model.enums.WpPostFormat;
+import com.ev.wordpress.client.domain.model.enums.WpPostStatus;
 import org.assertj.core.api.AbstractObjectAssert;
 
 import java.time.LocalDateTime;
