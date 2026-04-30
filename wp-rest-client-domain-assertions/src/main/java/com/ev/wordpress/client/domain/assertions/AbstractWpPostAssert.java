@@ -1,23 +1,23 @@
 package com.ev.wordpress.client.domain.assertions;
 
-import com.ev.wordpress.client.domain.dto.WpPost;
-import com.ev.wordpress.client.domain.dto.enums.WpOpenClosed;
-import com.ev.wordpress.client.domain.dto.enums.WpPostFormat;
-import com.ev.wordpress.client.domain.dto.enums.WpPostStatus;
+import com.ev.wordpress.client.domain.model.WpPost;
+import com.ev.wordpress.client.domain.model.enums.WpOpenClosed;
+import com.ev.wordpress.client.domain.model.enums.WpPostFormat;
+import com.ev.wordpress.client.domain.model.enums.WpPostStatus;
 import org.assertj.core.api.AbstractObjectAssert;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SELF>>
-        extends AbstractObjectAssert<SELF, WpPost> {
+public abstract class AbstractWpPostAssert<S extends AbstractWpPostAssert<S>>
+        extends AbstractObjectAssert<S, WpPost> {
 
     protected AbstractWpPostAssert(final WpPost actual, final Class<?> selfType) {
         super(actual, selfType);
     }
 
-    public SELF hasAuthorId(final Long expected) {
+    public S hasAuthorId(final Long expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getAuthorId(), expected)) {
             failWithMessage("Expected authorId to be <%s> but was <%s>", expected, actual.getAuthorId());
@@ -25,7 +25,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasCategories(final Set<Long> expected) {
+    public S hasCategories(final Set<Long> expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getCategories(), expected)) {
             failWithMessage("Expected categories to be <%s> but was <%s>", expected, actual.getCategories());
@@ -33,7 +33,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasCommentStatus(final WpOpenClosed expected) {
+    public S hasCommentStatus(final WpOpenClosed expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getCommentStatus(), expected)) {
             failWithMessage("Expected commentStatus to be <%s> but was <%s>", expected, actual.getCommentStatus());
@@ -41,7 +41,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasContentSatisfying(final Consumer<WpRenderedFieldAssert> requirements) {
+    public S hasContentSatisfying(final Consumer<WpRenderedFieldAssert> requirements) {
         isNotNull();
         if (actual.getContent() == null) {
             failWithMessage("Expected content to be present but it was null");
@@ -50,7 +50,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasDate(final LocalDateTime expected) {
+    public S hasDate(final LocalDateTime expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getDate(), expected)) {
             failWithMessage("Expected post date to be <%s> but was <%s>", expected, actual.getDate());
@@ -58,7 +58,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasDateGMT(final LocalDateTime expected) {
+    public S hasDateGMT(final LocalDateTime expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getDateGMT(), expected)) {
             failWithMessage("Expected post dateGMT to be <%s> but was <%s>", expected, actual.getDateGMT());
@@ -66,7 +66,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasExcerptSatisfying(final Consumer<WpRenderedFieldAssert> requirements) {
+    public S hasExcerptSatisfying(final Consumer<WpRenderedFieldAssert> requirements) {
         isNotNull();
         if (actual.getExcerpt() == null) {
             failWithMessage("Expected excerpt to be present but it was null");
@@ -75,7 +75,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasFeaturedMediaId(final Long expected) {
+    public S hasFeaturedMediaId(final Long expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getFeaturedMediaId(), expected)) {
             failWithMessage("Expected featuredMediaId to be <%s> but was <%s>", expected, actual.getFeaturedMediaId());
@@ -83,7 +83,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasFormat(final WpPostFormat expected) {
+    public S hasFormat(final WpPostFormat expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getFormat(), expected)) {
             failWithMessage("Expected format to be <%s> but was <%s>", expected, actual.getFormat());
@@ -91,7 +91,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasGeneratedSlug(final String expected) {
+    public S hasGeneratedSlug(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getGeneratedSlug(), expected)) {
             failWithMessage("Expected generatedSlug to be <%s> but was <%s>", expected, actual.getGeneratedSlug());
@@ -99,7 +99,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasGuidSatisfying(final Consumer<WpRenderedFieldAssert> requirements) {
+    public S hasGuidSatisfying(final Consumer<WpRenderedFieldAssert> requirements) {
         isNotNull();
         if (actual.getGuid() == null) {
             failWithMessage("Expected guid to be present but it was null");
@@ -108,7 +108,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasId() {
+    public S hasId() {
         isNotNull();
 
         if (actual.getId() == null) {
@@ -118,7 +118,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasId(final Long expected) {
+    public S hasId(final Long expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getId(), expected)) {
             failWithMessage("Expected post id to be <%s> but was <%s>", expected, actual.getId());
@@ -126,7 +126,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasLink(final String expected) {
+    public S hasLink(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getLink(), expected)) {
             failWithMessage("Expected post link to be <%s> but was <%s>", expected, actual.getLink());
@@ -134,7 +134,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasModified(final LocalDateTime expected) {
+    public S hasModified(final LocalDateTime expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getModified(), expected)) {
             failWithMessage("Expected post modified to be <%s> but was <%s>", expected, actual.getModified());
@@ -142,7 +142,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasModifiedGMT(final LocalDateTime expected) {
+    public S hasModifiedGMT(final LocalDateTime expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getModifiedGMT(), expected)) {
             failWithMessage("Expected post modifiedGMT to be <%s> but was <%s>", expected, actual.getModifiedGMT());
@@ -150,7 +150,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasPassword(final String expected) {
+    public S hasPassword(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getPassword(), expected)) {
             failWithMessage("Expected post password to be <%s> but was <%s>", expected, actual.getPassword());
@@ -158,7 +158,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasPermalinkTemplate(final String expected) {
+    public S hasPermalinkTemplate(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getPermalinkTemplate(), expected)) {
             failWithMessage("Expected permalinkTemplate to be <%s> but was <%s>", expected, actual.getPermalinkTemplate());
@@ -166,7 +166,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasPingStatus(final WpOpenClosed expected) {
+    public S hasPingStatus(final WpOpenClosed expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getPingStatus(), expected)) {
             failWithMessage("Expected pingStatus to be <%s> but was <%s>", expected, actual.getPingStatus());
@@ -174,7 +174,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasSlug(final String expected) {
+    public S hasSlug(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getSlug(), expected)) {
             failWithMessage("Expected post slug to be <%s> but was <%s>", expected, actual.getSlug());
@@ -182,7 +182,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasStatus(final WpPostStatus expected) {
+    public S hasStatus(final WpPostStatus expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getStatus(), expected)) {
             failWithMessage("Expected post status to be <%s> but was <%s>", expected, actual.getStatus());
@@ -190,7 +190,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasTags(final Set<Long> expected) {
+    public S hasTags(final Set<Long> expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getTags(), expected)) {
             failWithMessage("Expected tags to be <%s> but was <%s>", expected, actual.getTags());
@@ -198,7 +198,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasTemplate(final String expected) {
+    public S hasTemplate(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getTemplate(), expected)) {
             failWithMessage("Expected template to be <%s> but was <%s>", expected, actual.getTemplate());
@@ -206,7 +206,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasTitleSatisfying(final Consumer<WpRenderedFieldAssert> requirements) {
+    public S hasTitleSatisfying(final Consumer<WpRenderedFieldAssert> requirements) {
         isNotNull();
         if (actual.getTitle() == null) {
             failWithMessage("Expected title to be present but it was null");
@@ -215,7 +215,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF hasType(final String expected) {
+    public S hasType(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getType(), expected)) {
             failWithMessage("Expected post type to be <%s> but was <%s>", expected, actual.getType());
@@ -223,7 +223,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF isNotSticky() {
+    public S isNotSticky() {
         isNotNull();
         if (actual.isSticky()) {
             failWithMessage("Expected post not to be sticky but it was");
@@ -231,7 +231,7 @@ public abstract class AbstractWpPostAssert<SELF extends AbstractWpPostAssert<SEL
         return myself;
     }
 
-    public SELF isSticky() {
+    public S isSticky() {
         isNotNull();
         if (!actual.isSticky()) {
             failWithMessage("Expected post to be sticky but it was not");

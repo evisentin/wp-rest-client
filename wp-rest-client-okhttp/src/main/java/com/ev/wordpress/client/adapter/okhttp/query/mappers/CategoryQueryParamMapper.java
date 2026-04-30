@@ -1,16 +1,16 @@
 package com.ev.wordpress.client.adapter.okhttp.query.mappers;
 
-import com.ev.wordpress.client.domain.dto.query.WpCategoryQuery;
+import com.ev.wordpress.client.domain.model.query.WpCategoryQuery;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import okhttp3.HttpUrl;
 
-import static com.ev.wordpress.client.domain.dto.parameters.WpQueryParameters.*;
+import static com.ev.wordpress.client.domain.model.parameters.WpQueryParameters.*;
 
 /**
- * Maps {@link com.ev.wordpress.client.domain.dto.query.WpCategoryQuery} into HTTP query parameters for category-related
- * WordPress endpoints.
+ * Maps {@link com.ev.wordpress.client.domain.model.query.WpCategoryQuery} into HTTP query parameters for
+ * category-related WordPress endpoints.
  *
  * <p>This class converts the fields of a query object into the corresponding
  * query parameters expected by the WordPress REST API.
@@ -20,7 +20,7 @@ import static com.ev.wordpress.client.domain.dto.parameters.WpQueryParameters.*;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CategoryQueryParamMapper extends AbstractQueryParamMapper {
     /**
-     * Maps the given {@link com.ev.wordpress.client.domain.dto.query.WpCategoryQuery} into query parameters and adds
+     * Maps the given {@link com.ev.wordpress.client.domain.model.query.WpCategoryQuery} into query parameters and adds
      * them to the provided {@link HttpUrl.Builder}.
      *
      * <p>If the query is {@code null}, no parameters are added.

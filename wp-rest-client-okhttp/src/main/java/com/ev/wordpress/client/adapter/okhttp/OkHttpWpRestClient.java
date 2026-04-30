@@ -10,21 +10,21 @@ import com.ev.wordpress.client.domain.api.WpBaseRestClient;
 import com.ev.wordpress.client.domain.auth.WpAuthenticationStrategy;
 import com.ev.wordpress.client.domain.configuration.SslConfiguration;
 import com.ev.wordpress.client.domain.configuration.TimeoutConfiguration;
-import com.ev.wordpress.client.domain.dto.WpCategory;
-import com.ev.wordpress.client.domain.dto.WpPagedResponse;
-import com.ev.wordpress.client.domain.dto.WpPost;
-import com.ev.wordpress.client.domain.dto.WpTag;
-import com.ev.wordpress.client.domain.dto.enums.WpContext;
-import com.ev.wordpress.client.domain.dto.query.WpCategoryQuery;
-import com.ev.wordpress.client.domain.dto.query.WpPagingQuery;
-import com.ev.wordpress.client.domain.dto.query.WpPostQuery;
-import com.ev.wordpress.client.domain.dto.query.WpTagQuery;
-import com.ev.wordpress.client.domain.dto.requests.WpCategoryCreateUpdateRequest;
-import com.ev.wordpress.client.domain.dto.requests.WpPostCreateUpdateRequest;
-import com.ev.wordpress.client.domain.dto.requests.WpTagCreateUpdateRequest;
-import com.ev.wordpress.client.domain.dto.responses.WpCategoryDeletionResponse;
-import com.ev.wordpress.client.domain.dto.responses.WpPostDeletionResponse;
-import com.ev.wordpress.client.domain.dto.responses.WpTagDeletionResponse;
+import com.ev.wordpress.client.domain.model.WpCategory;
+import com.ev.wordpress.client.domain.model.WpPagedResponse;
+import com.ev.wordpress.client.domain.model.WpPost;
+import com.ev.wordpress.client.domain.model.WpTag;
+import com.ev.wordpress.client.domain.model.enums.WpContext;
+import com.ev.wordpress.client.domain.model.query.WpCategoryQuery;
+import com.ev.wordpress.client.domain.model.query.WpPagingQuery;
+import com.ev.wordpress.client.domain.model.query.WpPostQuery;
+import com.ev.wordpress.client.domain.model.query.WpTagQuery;
+import com.ev.wordpress.client.domain.model.requests.WpCategoryCreateUpdateRequest;
+import com.ev.wordpress.client.domain.model.requests.WpPostCreateUpdateRequest;
+import com.ev.wordpress.client.domain.model.requests.WpTagCreateUpdateRequest;
+import com.ev.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
+import com.ev.wordpress.client.domain.model.responses.WpPostDeletionResponse;
+import com.ev.wordpress.client.domain.model.responses.WpTagDeletionResponse;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -41,15 +41,15 @@ import java.util.Map;
 import java.util.Objects;
 
 import static com.ev.wordpress.client.adapter.okhttp.TypeReferences.*;
-import static com.ev.wordpress.client.adapter.okhttp.constants.HttpHeaders.ACCEPT;
-import static com.ev.wordpress.client.adapter.okhttp.constants.HttpHeaders.X_WP_TOTAL;
-import static com.ev.wordpress.client.adapter.okhttp.constants.HttpHeaders.X_WP_TOTAL_PAGES;
-import static com.ev.wordpress.client.adapter.okhttp.constants.MediaTypes.MEDIA_TYPE_APPLICATION_JSON;
-import static com.ev.wordpress.client.adapter.okhttp.constants.MimeTypes.APPLICATION_JSON;
-import static com.ev.wordpress.client.domain.dto.parameters.WpQueryParameters.CONTEXT;
-import static com.ev.wordpress.client.domain.dto.parameters.WpQueryParameters.FORCE;
-import static com.ev.wordpress.client.domain.dto.parameters.WpQueryParameters.PAGE;
-import static com.ev.wordpress.client.domain.dto.parameters.WpQueryParameters.PER_PAGE;
+import static com.ev.wordpress.client.adapter.okhttp.http.HttpHeaders.ACCEPT;
+import static com.ev.wordpress.client.adapter.okhttp.http.HttpHeaders.X_WP_TOTAL;
+import static com.ev.wordpress.client.adapter.okhttp.http.HttpHeaders.X_WP_TOTAL_PAGES;
+import static com.ev.wordpress.client.adapter.okhttp.http.MediaTypes.MEDIA_TYPE_APPLICATION_JSON;
+import static com.ev.wordpress.client.adapter.okhttp.http.MimeTypes.APPLICATION_JSON;
+import static com.ev.wordpress.client.domain.model.parameters.WpQueryParameters.CONTEXT;
+import static com.ev.wordpress.client.domain.model.parameters.WpQueryParameters.FORCE;
+import static com.ev.wordpress.client.domain.model.parameters.WpQueryParameters.PAGE;
+import static com.ev.wordpress.client.domain.model.parameters.WpQueryParameters.PER_PAGE;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.anyNull;
@@ -88,6 +88,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  */
 public class OkHttpWpRestClient extends WpBaseRestClient {
 
+    public static final String BASE_URL = "baseUrl";
     private final OkHttpClient httpClient;
     private final ObjectMapper mapper;
 
@@ -130,7 +131,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         mapper.findAndRegisterModules();
 
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
-                .addInterceptor(new AuthenticationInterceptor(authenticationStrategy))
+                .addInterceptor(new AuthenticationInterceptor(authenticationStrategy, buildAuthHttpClient(sslConfiguration, timeoutConfiguration)))
                 .addInterceptor(new WpErrorInterceptor())
                 .addInterceptor(new LoggingInterceptor());
 
@@ -147,7 +148,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
             throw new IllegalArgumentException("name cannot be blank");
 
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/categories",
-                Map.of("baseUrl", baseUrl));
+                Map.of(BASE_URL, baseUrl));
 
         return performPostWithBody(builder, creationRequest, WP_CATEGORY_TYPE);
     }
@@ -156,7 +157,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @SneakyThrows
     public WpPost createPost(final @NonNull WpPostCreateUpdateRequest creationRequest) {
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts",
-                Map.of("baseUrl", baseUrl));
+                Map.of(BASE_URL, baseUrl));
 
         return performPostWithBody(builder, creationRequest, WP_POST_TYPE);
     }
@@ -169,7 +170,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
             throw new IllegalArgumentException("name cannot be blank");
 
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/tags",
-                Map.of("baseUrl", baseUrl));
+                Map.of(BASE_URL, baseUrl));
 
         return performPostWithBody(builder, creationRequest, WP_TAG_TYPE);
     }
@@ -178,7 +179,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @SneakyThrows
     public WpCategoryDeletionResponse deleteCategory(final @NonNull Long id) {
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/categories/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
 
         // For tags/terms, WordPress does not support trashing, and the REST API explicitly
         // requires force to be true for delete.
@@ -191,7 +192,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @SneakyThrows
     public WpPostDeletionResponse deletePost(@NonNull Long id) {
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
 
         builder.addQueryParameter(FORCE, Boolean.TRUE.toString());
 
@@ -202,7 +203,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @SneakyThrows
     public WpTagDeletionResponse deleteTag(final @NonNull Long id) {
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/tags/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
 
         // For tags/terms, WordPress does not support trashing, and the REST API explicitly
         // requires force to be true for delete.
@@ -215,7 +216,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @Override
     public WpCategory getCategory(final @NonNull Long id, final WpContext context) {
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/categories/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
 
         builder.addQueryParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
 
@@ -231,7 +232,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @Override
     public WpPost getPost(final @NonNull Long id, final WpContext context, final String password) {
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
 
         builder.addQueryParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
 
@@ -246,7 +247,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     public WpTag getTag(@NonNull final Long id, final WpContext context) {
 
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/tags/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
 
         builder.addQueryParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
 
@@ -257,7 +258,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @SneakyThrows
     public WpPagedResponse<WpCategory> listCategories(final @NonNull WpPagingQuery pageQuery,
                                                       final WpCategoryQuery categoryQuery) {
-        final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/categories", Map.of("baseUrl", baseUrl));
+        final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/categories", Map.of(BASE_URL, baseUrl));
 
         builder.addQueryParameter(PAGE, Integer.toString(pageQuery.getPageNumber()))
                .addQueryParameter(PER_PAGE, Integer.toString(pageQuery.getPageSize()));
@@ -270,7 +271,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @Override
     @SneakyThrows
     public WpPagedResponse<WpPost> listPosts(final @NonNull WpPagingQuery pageQuery, final WpPostQuery postQuery) {
-        final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts", Map.of("baseUrl", baseUrl));
+        final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts", Map.of(BASE_URL, baseUrl));
 
         builder.addQueryParameter(PAGE, Integer.toString(pageQuery.getPageNumber()))
                .addQueryParameter(PER_PAGE, Integer.toString(pageQuery.getPageSize()));
@@ -284,7 +285,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @SneakyThrows
     public WpPagedResponse<WpTag> listTags(final @NonNull WpPagingQuery pageQuery, final WpTagQuery tagQuery) {
 
-        final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/tags", Map.of("baseUrl", baseUrl));
+        final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/tags", Map.of(BASE_URL, baseUrl));
 
         builder.addQueryParameter(PAGE, Integer.toString(pageQuery.getPageNumber()))
                .addQueryParameter(PER_PAGE, Integer.toString(pageQuery.getPageSize()));
@@ -298,7 +299,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @SneakyThrows
     public WpPost trashPost(@NonNull Long id) {
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
 
         builder.addQueryParameter(FORCE, Boolean.FALSE.toString());
 
@@ -310,7 +311,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     public WpCategory updateCategory(final @NonNull Long id,
                                      final @NonNull WpCategoryCreateUpdateRequest updateRequest) {
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/categories/${id}",
-                Map.of("baseUrl", baseUrl,
+                Map.of(BASE_URL, baseUrl,
                         "id", id));
 
         return performPostWithBody(builder, updateRequest, WP_CATEGORY_TYPE);
@@ -321,7 +322,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     public WpPost updatePost(final @NonNull Long id,
                              final @NonNull WpPostCreateUpdateRequest updateRequest) {
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts/${id}",
-                Map.of("baseUrl", baseUrl,
+                Map.of(BASE_URL, baseUrl,
                         "id", id));
 
         return performPostWithBody(builder, updateRequest, WP_POST_TYPE);
@@ -333,7 +334,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
                            final @NonNull WpTagCreateUpdateRequest updateRequest) {
 
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/tags/${id}",
-                Map.of("baseUrl", baseUrl,
+                Map.of(BASE_URL, baseUrl,
                         "id", id));
 
         return performPostWithBody(builder, updateRequest, WP_TAG_TYPE);
@@ -346,6 +347,14 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
                          .writeTimeout(config.getWriteTimeout())
                          .callTimeout(config.getCallTimeout());
         }
+    }
+
+    private OkHttpClient buildAuthHttpClient(SslConfiguration sslConfiguration, TimeoutConfiguration timeoutConfiguration) {
+        OkHttpClient.Builder authClientBuilder = new OkHttpClient.Builder();
+        applySslConfigurationIfPresent(authClientBuilder, sslConfiguration);
+        applyTimeoutConfigurationIfPresent(authClientBuilder, timeoutConfiguration);
+
+        return authClientBuilder.build();
     }
 
     private <T> T performDeleteRequest(final HttpUrl.Builder urlBuilder,

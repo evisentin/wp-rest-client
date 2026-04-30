@@ -20,7 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.io.IOException;
 import java.util.stream.Stream;
 
-import static com.ev.wordpress.client.adapter.okhttp.constants.MediaTypes.MEDIA_TYPE_APPLICATION_JSON;
+import static com.ev.wordpress.client.adapter.okhttp.http.MediaTypes.MEDIA_TYPE_APPLICATION_JSON;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)

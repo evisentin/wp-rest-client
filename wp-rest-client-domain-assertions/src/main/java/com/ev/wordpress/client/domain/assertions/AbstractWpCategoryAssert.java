@@ -1,17 +1,17 @@
 package com.ev.wordpress.client.domain.assertions;
 
-import com.ev.wordpress.client.domain.dto.WpCategory;
-import com.ev.wordpress.client.domain.dto.enums.WpTaxonomy;
+import com.ev.wordpress.client.domain.model.WpCategory;
+import com.ev.wordpress.client.domain.model.enums.WpTaxonomy;
 import org.assertj.core.api.AbstractObjectAssert;
 
-public abstract class AbstractWpCategoryAssert<SELF extends AbstractWpCategoryAssert<SELF>>
-        extends AbstractObjectAssert<SELF, WpCategory> {
+public abstract class AbstractWpCategoryAssert<S extends AbstractWpCategoryAssert<S>>
+        extends AbstractObjectAssert<S, WpCategory> {
 
     protected AbstractWpCategoryAssert(final WpCategory actual, final Class<?> selfType) {
         super(actual, selfType);
     }
 
-    public SELF hasCount(final long expected) {
+    public S hasCount(final long expected) {
         isNotNull();
         if (actual.getCount() != expected) {
             failWithMessage("Expected category count to be <%s> but was <%s>", expected, actual.getCount());
@@ -19,7 +19,7 @@ public abstract class AbstractWpCategoryAssert<SELF extends AbstractWpCategoryAs
         return myself;
     }
 
-    public SELF hasDescription(final String expected) {
+    public S hasDescription(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getDescription(), expected)) {
             failWithMessage("Expected category description to be <%s> but was <%s>", expected, actual.getDescription());
@@ -27,7 +27,7 @@ public abstract class AbstractWpCategoryAssert<SELF extends AbstractWpCategoryAs
         return myself;
     }
 
-    public SELF hasId(final long expected) {
+    public S hasId(final long expected) {
         isNotNull();
         if (actual.getId() != expected) {
             failWithMessage("Expected category id to be <%s> but was <%s>", expected, actual.getId());
@@ -35,7 +35,7 @@ public abstract class AbstractWpCategoryAssert<SELF extends AbstractWpCategoryAs
         return myself;
     }
 
-    public SELF hasLink(final String expected) {
+    public S hasLink(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getLink(), expected)) {
             failWithMessage("Expected category link to be <%s> but was <%s>", expected, actual.getLink());
@@ -43,7 +43,7 @@ public abstract class AbstractWpCategoryAssert<SELF extends AbstractWpCategoryAs
         return myself;
     }
 
-    public SELF hasName(final String expected) {
+    public S hasName(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getName(), expected)) {
             failWithMessage("Expected category name to be <%s> but was <%s>", expected, actual.getName());
@@ -51,7 +51,7 @@ public abstract class AbstractWpCategoryAssert<SELF extends AbstractWpCategoryAs
         return myself;
     }
 
-    public SELF hasNoParent() {
+    public S hasNoParent() {
         isNotNull();
         if (actual.getParentId() != 0) {
             failWithMessage("Expected category to have no parent but parentId was <%s>", actual.getParentId());
@@ -59,7 +59,7 @@ public abstract class AbstractWpCategoryAssert<SELF extends AbstractWpCategoryAs
         return myself;
     }
 
-    public SELF hasNonZeroId() {
+    public S hasNonZeroId() {
         isNotNull();
 
         if (actual.getId() == 0L) {
@@ -69,7 +69,7 @@ public abstract class AbstractWpCategoryAssert<SELF extends AbstractWpCategoryAs
         return myself;
     }
 
-    public SELF hasParentId(final Long expected) {
+    public S hasParentId(final Long expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getParentId(), expected)) {
             failWithMessage("Expected category parentId to be <%s> but was <%s>", expected, actual.getParentId());
@@ -77,7 +77,7 @@ public abstract class AbstractWpCategoryAssert<SELF extends AbstractWpCategoryAs
         return myself;
     }
 
-    public SELF hasSlug(final String expected) {
+    public S hasSlug(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getSlug(), expected)) {
             failWithMessage("Expected category slug to be <%s> but was <%s>", expected, actual.getSlug());
@@ -85,7 +85,7 @@ public abstract class AbstractWpCategoryAssert<SELF extends AbstractWpCategoryAs
         return myself;
     }
 
-    public SELF hasTaxonomy(final WpTaxonomy expected) {
+    public S hasTaxonomy(final WpTaxonomy expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getTaxonomy(), expected)) {
             failWithMessage("Expected category taxonomy to be <%s> but was <%s>", expected, actual.getTaxonomy());

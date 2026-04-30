@@ -1,10 +1,10 @@
 package com.ev.wordpress.client.adapter.okhttp.query.mappers;
 
-import com.ev.wordpress.client.domain.dto.enums.WpContext;
-import com.ev.wordpress.client.domain.dto.enums.WpPostStatus;
-import com.ev.wordpress.client.domain.dto.enums.WpSortDirection;
-import com.ev.wordpress.client.domain.dto.enums.WpTagOrderFields;
-import com.ev.wordpress.client.domain.dto.query.WpPostQuery;
+import com.ev.wordpress.client.domain.model.enums.WpContext;
+import com.ev.wordpress.client.domain.model.enums.WpPostStatus;
+import com.ev.wordpress.client.domain.model.enums.WpSortDirection;
+import com.ev.wordpress.client.domain.model.enums.WpTagOrderFields;
+import com.ev.wordpress.client.domain.model.query.WpPostQuery;
 import okhttp3.HttpUrl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import static com.ev.wordpress.client.domain.dto.parameters.WpQueryParameters.*;
+import static com.ev.wordpress.client.domain.model.parameters.WpQueryParameters.*;
 
 class PostQueryParamMapperTest implements ParamMapperTest {
 

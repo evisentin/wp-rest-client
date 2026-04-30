@@ -1,6 +1,6 @@
 package com.ev.wordpress.client.domain.assertions;
 
-import com.ev.wordpress.client.domain.dto.WpError;
+import com.ev.wordpress.client.domain.model.WpError;
 
 public class WpErrorAssert extends AbstractWpErrorAssert<WpErrorAssert> {
 

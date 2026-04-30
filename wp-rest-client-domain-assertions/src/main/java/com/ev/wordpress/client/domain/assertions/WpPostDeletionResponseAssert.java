@@ -1,6 +1,6 @@
 package com.ev.wordpress.client.domain.assertions;
 
-import com.ev.wordpress.client.domain.dto.responses.WpPostDeletionResponse;
+import com.ev.wordpress.client.domain.model.responses.WpPostDeletionResponse;
 
 public class WpPostDeletionResponseAssert extends AbstractWpPostDeletionResponseAssert<WpPostDeletionResponseAssert> {
 

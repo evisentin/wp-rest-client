@@ -1,6 +1,6 @@
 package com.ev.wordpress.client.adapter.okhttp.query.mappers;
 
-import com.ev.wordpress.client.domain.dto.enums.WpHasValueEnum;
+import com.ev.wordpress.client.domain.model.enums.WpHasValueEnum;
 import lombok.NonNull;
 import okhttp3.HttpUrl;
 import org.assertj.core.api.WithAssertions;

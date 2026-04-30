@@ -1,6 +1,6 @@
 package com.ev.wordpress.client.domain.assertions;
 
-import com.ev.wordpress.client.domain.dto.WpCategory;
+import com.ev.wordpress.client.domain.model.WpCategory;
 
 public class WpCategoryAssert extends AbstractWpCategoryAssert<WpCategoryAssert> {
 

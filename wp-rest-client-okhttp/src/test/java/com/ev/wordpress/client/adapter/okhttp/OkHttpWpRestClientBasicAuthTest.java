@@ -116,11 +116,10 @@ class OkHttpWpRestClientBasicAuthTest extends AbstractBasicAuthenticationWpRestC
 
         SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
 
-        SslConfiguration sslConfig = SslConfiguration.builder()
-                                                     .sslSocketFactory(sslSocketFactory)
-                                                     .trustManager(trustManager)
-                                                     .hostnameVerifier((h, s) -> true)
-                                                     .build();
-        return sslConfig;
+        return SslConfiguration.builder()
+                               .sslSocketFactory(sslSocketFactory)
+                               .trustManager(trustManager)
+                               .hostnameVerifier((h, s) -> true)
+                               .build();
     }
 }

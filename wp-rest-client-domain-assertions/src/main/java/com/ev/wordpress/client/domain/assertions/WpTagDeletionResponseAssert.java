@@ -1,6 +1,6 @@
 package com.ev.wordpress.client.domain.assertions;
 
-import com.ev.wordpress.client.domain.dto.responses.WpTagDeletionResponse;
+import com.ev.wordpress.client.domain.model.responses.WpTagDeletionResponse;
 
 public class WpTagDeletionResponseAssert
         extends AbstractWpTermDeletionResponseAssert<WpTagDeletionResponseAssert, WpTagDeletionResponse> {

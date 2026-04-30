@@ -1,11 +1,11 @@
 package com.ev.wordpress.client.adapter.okhttp;
 
-import com.ev.wordpress.client.domain.dto.WpCategory;
-import com.ev.wordpress.client.domain.dto.WpPost;
-import com.ev.wordpress.client.domain.dto.WpTag;
-import com.ev.wordpress.client.domain.dto.responses.WpCategoryDeletionResponse;
-import com.ev.wordpress.client.domain.dto.responses.WpPostDeletionResponse;
-import com.ev.wordpress.client.domain.dto.responses.WpTagDeletionResponse;
+import com.ev.wordpress.client.domain.model.WpCategory;
+import com.ev.wordpress.client.domain.model.WpPost;
+import com.ev.wordpress.client.domain.model.WpTag;
+import com.ev.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
+import com.ev.wordpress.client.domain.model.responses.WpPostDeletionResponse;
+import com.ev.wordpress.client.domain.model.responses.WpTagDeletionResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import java.util.List;

@@ -1,18 +1,18 @@
 package com.ev.wordpress.client.domain.assertions;
 
-import com.ev.wordpress.client.domain.dto.enums.WpTaxonomy;
-import com.ev.wordpress.client.domain.dto.responses.WpTermDeletionResponse;
+import com.ev.wordpress.client.domain.model.enums.WpTaxonomy;
+import com.ev.wordpress.client.domain.model.responses.WpTermDeletionResponse;
 import org.assertj.core.api.AbstractObjectAssert;
 
-public abstract class AbstractWpTermDeletionResponseSummaryAssert<SELF extends AbstractWpTermDeletionResponseSummaryAssert<SELF>>
-        extends AbstractObjectAssert<SELF, WpTermDeletionResponse.Summary> {
+public abstract class AbstractWpTermDeletionResponseSummaryAssert<S extends AbstractWpTermDeletionResponseSummaryAssert<S>>
+        extends AbstractObjectAssert<S, WpTermDeletionResponse.Summary> {
 
     protected AbstractWpTermDeletionResponseSummaryAssert(final WpTermDeletionResponse.Summary actual,
                                                           final Class<?> selfType) {
         super(actual, selfType);
     }
 
-    public SELF hasCount(final long expected) {
+    public S hasCount(final long expected) {
         isNotNull();
         if (actual.getCount() != expected) {
             failWithMessage("Expected previous.count to be <%s> but was <%s>", expected, actual.getCount());
@@ -20,7 +20,7 @@ public abstract class AbstractWpTermDeletionResponseSummaryAssert<SELF extends A
         return myself;
     }
 
-    public SELF hasDescription(final String expected) {
+    public S hasDescription(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getDescription(), expected)) {
             failWithMessage("Expected previous.description to be <%s> but was <%s>", expected, actual.getDescription());
@@ -28,7 +28,7 @@ public abstract class AbstractWpTermDeletionResponseSummaryAssert<SELF extends A
         return myself;
     }
 
-    public SELF hasId(final long expected) {
+    public S hasId(final long expected) {
         isNotNull();
         if (actual.getId() != expected) {
             failWithMessage("Expected previous.id to be <%s> but was <%s>", expected, actual.getId());
@@ -36,7 +36,7 @@ public abstract class AbstractWpTermDeletionResponseSummaryAssert<SELF extends A
         return myself;
     }
 
-    public SELF hasLink(final String expected) {
+    public S hasLink(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getLink(), expected)) {
             failWithMessage("Expected previous.link to be <%s> but was <%s>", expected, actual.getLink());
@@ -44,7 +44,7 @@ public abstract class AbstractWpTermDeletionResponseSummaryAssert<SELF extends A
         return myself;
     }
 
-    public SELF hasName(final String expected) {
+    public S hasName(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getName(), expected)) {
             failWithMessage("Expected previous.name to be <%s> but was <%s>", expected, actual.getName());
@@ -52,7 +52,7 @@ public abstract class AbstractWpTermDeletionResponseSummaryAssert<SELF extends A
         return myself;
     }
 
-    public SELF hasSlug(final String expected) {
+    public S hasSlug(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getSlug(), expected)) {
             failWithMessage("Expected previous.slug to be <%s> but was <%s>", expected, actual.getSlug());
@@ -60,7 +60,7 @@ public abstract class AbstractWpTermDeletionResponseSummaryAssert<SELF extends A
         return myself;
     }
 
-    public SELF hasTaxonomy(final WpTaxonomy expected) {
+    public S hasTaxonomy(final WpTaxonomy expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getTaxonomy(), expected)) {
             failWithMessage("Expected previous.taxonomy to be <%s> but was <%s>", expected, actual.getTaxonomy());

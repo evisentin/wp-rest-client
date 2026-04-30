@@ -1,11 +1,11 @@
 package com.ev.wordpress.client.adapter.okhttp.interceptors;
 
-import com.ev.wordpress.client.adapter.okhttp.constants.HttpStatusCodes;
-import com.ev.wordpress.client.domain.dto.WpError;
+import com.ev.wordpress.client.adapter.okhttp.http.HttpStatusCodes;
 import com.ev.wordpress.client.domain.exception.WpBadRequestException;
 import com.ev.wordpress.client.domain.exception.WpForbiddenException;
 import com.ev.wordpress.client.domain.exception.WpNotFoundException;
 import com.ev.wordpress.client.domain.exception.WpUnauthorizedException;
+import com.ev.wordpress.client.domain.model.WpError;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;

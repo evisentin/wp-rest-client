@@ -1,6 +1,6 @@
 package com.ev.wordpress.client.domain.exception;
 
-import com.ev.wordpress.client.domain.dto.WpError;
+import com.ev.wordpress.client.domain.model.WpError;
 import lombok.Getter;
 
 import java.util.Optional;

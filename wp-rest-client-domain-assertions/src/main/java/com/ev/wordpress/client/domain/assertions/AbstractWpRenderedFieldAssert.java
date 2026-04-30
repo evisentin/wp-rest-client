@@ -1,16 +1,16 @@
 package com.ev.wordpress.client.domain.assertions;
 
-import com.ev.wordpress.client.domain.dto.WpRenderedField;
+import com.ev.wordpress.client.domain.model.WpRenderedField;
 import org.assertj.core.api.AbstractObjectAssert;
 
-public abstract class AbstractWpRenderedFieldAssert<SELF extends AbstractWpRenderedFieldAssert<SELF>>
-        extends AbstractObjectAssert<SELF, WpRenderedField> {
+public abstract class AbstractWpRenderedFieldAssert<S extends AbstractWpRenderedFieldAssert<S>>
+        extends AbstractObjectAssert<S, WpRenderedField> {
 
     protected AbstractWpRenderedFieldAssert(final WpRenderedField actual, final Class<?> selfType) {
         super(actual, selfType);
     }
 
-    public SELF hasBlockVersion(final Integer expected) {
+    public S hasBlockVersion(final Integer expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getBlockVersion(), expected)) {
             failWithMessage("Expected blockVersion to be <%s> but was <%s>", expected, actual.getBlockVersion());
@@ -18,7 +18,7 @@ public abstract class AbstractWpRenderedFieldAssert<SELF extends AbstractWpRende
         return myself;
     }
 
-    public SELF hasRaw(final String expected) {
+    public S hasRaw(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getRaw(), expected)) {
             failWithMessage("Expected raw to be <%s> but was <%s>", expected, actual.getRaw());
@@ -26,7 +26,7 @@ public abstract class AbstractWpRenderedFieldAssert<SELF extends AbstractWpRende
         return myself;
     }
 
-    public SELF hasRendered(final String expected) {
+    public S hasRendered(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getRendered(), expected)) {
             failWithMessage("Expected rendered to be <%s> but was <%s>", expected, actual.getRendered());
@@ -34,7 +34,7 @@ public abstract class AbstractWpRenderedFieldAssert<SELF extends AbstractWpRende
         return myself;
     }
 
-    public SELF isNotProtected() {
+    public S isNotProtected() {
         isNotNull();
         if (!Boolean.FALSE.equals(actual.getIsProtected())) {
             failWithMessage("Expected field to be not protected but was <%s>", actual.getIsProtected());
@@ -42,7 +42,7 @@ public abstract class AbstractWpRenderedFieldAssert<SELF extends AbstractWpRende
         return myself;
     }
 
-    public SELF isProtected() {
+    public S isProtected() {
         isNotNull();
         if (!Boolean.TRUE.equals(actual.getIsProtected())) {
             failWithMessage("Expected field to be protected but was <%s>", actual.getIsProtected());

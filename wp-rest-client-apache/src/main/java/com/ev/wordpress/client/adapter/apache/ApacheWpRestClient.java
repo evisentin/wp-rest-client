@@ -11,21 +11,21 @@ import com.ev.wordpress.client.domain.api.WpBaseRestClient;
 import com.ev.wordpress.client.domain.auth.WpAuthenticationStrategy;
 import com.ev.wordpress.client.domain.configuration.SslConfiguration;
 import com.ev.wordpress.client.domain.configuration.TimeoutConfiguration;
-import com.ev.wordpress.client.domain.dto.WpCategory;
-import com.ev.wordpress.client.domain.dto.WpPagedResponse;
-import com.ev.wordpress.client.domain.dto.WpPost;
-import com.ev.wordpress.client.domain.dto.WpTag;
-import com.ev.wordpress.client.domain.dto.enums.WpContext;
-import com.ev.wordpress.client.domain.dto.query.WpCategoryQuery;
-import com.ev.wordpress.client.domain.dto.query.WpPagingQuery;
-import com.ev.wordpress.client.domain.dto.query.WpPostQuery;
-import com.ev.wordpress.client.domain.dto.query.WpTagQuery;
-import com.ev.wordpress.client.domain.dto.requests.WpCategoryCreateUpdateRequest;
-import com.ev.wordpress.client.domain.dto.requests.WpPostCreateUpdateRequest;
-import com.ev.wordpress.client.domain.dto.requests.WpTagCreateUpdateRequest;
-import com.ev.wordpress.client.domain.dto.responses.WpCategoryDeletionResponse;
-import com.ev.wordpress.client.domain.dto.responses.WpPostDeletionResponse;
-import com.ev.wordpress.client.domain.dto.responses.WpTagDeletionResponse;
+import com.ev.wordpress.client.domain.model.WpCategory;
+import com.ev.wordpress.client.domain.model.WpPagedResponse;
+import com.ev.wordpress.client.domain.model.WpPost;
+import com.ev.wordpress.client.domain.model.WpTag;
+import com.ev.wordpress.client.domain.model.enums.WpContext;
+import com.ev.wordpress.client.domain.model.query.WpCategoryQuery;
+import com.ev.wordpress.client.domain.model.query.WpPagingQuery;
+import com.ev.wordpress.client.domain.model.query.WpPostQuery;
+import com.ev.wordpress.client.domain.model.query.WpTagQuery;
+import com.ev.wordpress.client.domain.model.requests.WpCategoryCreateUpdateRequest;
+import com.ev.wordpress.client.domain.model.requests.WpPostCreateUpdateRequest;
+import com.ev.wordpress.client.domain.model.requests.WpTagCreateUpdateRequest;
+import com.ev.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
+import com.ev.wordpress.client.domain.model.responses.WpPostDeletionResponse;
+import com.ev.wordpress.client.domain.model.responses.WpTagDeletionResponse;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.NonNull;
@@ -60,13 +60,14 @@ import java.util.Map;
 import java.util.Optional;
 
 import static com.ev.wordpress.client.adapter.apache.TypeReferences.*;
-import static com.ev.wordpress.client.domain.dto.parameters.WpQueryParameters.CONTEXT;
-import static com.ev.wordpress.client.domain.dto.parameters.WpQueryParameters.FORCE;
-import static com.ev.wordpress.client.domain.dto.parameters.WpQueryParameters.PAGE;
-import static com.ev.wordpress.client.domain.dto.parameters.WpQueryParameters.PER_PAGE;
+import static com.ev.wordpress.client.domain.model.parameters.WpQueryParameters.CONTEXT;
+import static com.ev.wordpress.client.domain.model.parameters.WpQueryParameters.FORCE;
+import static com.ev.wordpress.client.domain.model.parameters.WpQueryParameters.PAGE;
+import static com.ev.wordpress.client.domain.model.parameters.WpQueryParameters.PER_PAGE;
 import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
+import static org.apache.hc.core5.http.HttpHeaders.ACCEPT;
 
 /**
  * Apache HttpClient-based implementation of {@link WpBaseRestClient}.
@@ -100,6 +101,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  */
 public class ApacheWpRestClient extends WpBaseRestClient {
 
+    public static final String BASE_URL = "baseUrl";
     private final CloseableHttpClient httpClient;
     private final ObjectMapper mapper;
 
@@ -140,9 +142,11 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         this.mapper = new ObjectMapper();
         mapper.findAndRegisterModules();
 
+        final CloseableHttpClient authHttpClient = buildAuthHttpClient(sslConfiguration, timeoutConfiguration);
+
         final HttpClientBuilder httpClientBuilder = HttpClients.custom();
 
-        httpClientBuilder.addRequestInterceptorFirst(new AuthenticationInterceptor(authenticationStrategy))
+        httpClientBuilder.addRequestInterceptorFirst(new AuthenticationInterceptor(authenticationStrategy, authHttpClient))
                          .addRequestInterceptorLast(new LoggingRequestInterceptor());
 
         httpClientBuilder.addResponseInterceptorFirst(new LoggingResponseInterceptor())
@@ -160,7 +164,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         if (isBlank(creationRequest.getName()))
             throw new IllegalArgumentException("name cannot be blank");
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/categories",
-                Map.of("baseUrl", baseUrl));
+                Map.of(BASE_URL, baseUrl));
 
         return performPostWithBody(builder, creationRequest, WP_CATEGORY_TYPE);
     }
@@ -170,7 +174,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     public WpPost createPost(final @NonNull WpPostCreateUpdateRequest creationRequest) {
 
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts",
-                Map.of("baseUrl", baseUrl));
+                Map.of(BASE_URL, baseUrl));
 
         return performPostWithBody(builder, creationRequest, WP_POST_TYPE);
     }
@@ -181,7 +185,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         if (isBlank(creationRequest.getName()))
             throw new IllegalArgumentException("name cannot be blank");
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/tags",
-                Map.of("baseUrl", baseUrl));
+                Map.of(BASE_URL, baseUrl));
 
         return performPostWithBody(builder, creationRequest, WP_TAG_TYPE);
     }
@@ -190,7 +194,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     @Override
     public WpCategoryDeletionResponse deleteCategory(final @NonNull Long id) {
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/categories/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
 
         // For tags/terms, WordPress does not support trashing, and the REST API explicitly
         // requires force to be true for delete.
@@ -203,7 +207,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     @Override
     public WpPostDeletionResponse deletePost(final @NonNull Long id) {
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
 
         builder.addParameter(FORCE, Boolean.TRUE.toString());
 
@@ -214,7 +218,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     @Override
     public WpTagDeletionResponse deleteTag(final @NonNull Long id) {
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/tags/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
 
         // For tags/terms, WordPress does not support trashing, and the REST API explicitly
         // requires force to be true for delete.
@@ -227,7 +231,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     @Override
     public WpCategory getCategory(final @NonNull Long id, final WpContext context) {
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/categories/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
         builder.addParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
 
         return performGetRequest(builder, WP_CATEGORY_TYPE);
@@ -243,7 +247,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     @Override
     public WpPost getPost(final @NonNull Long id, final WpContext context, final String password) {
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
         builder.addParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
         if (isNotBlank(password))
             builder.addParameter("password", password);
@@ -255,7 +259,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     @Override
     public WpTag getTag(final @NonNull Long id, final WpContext context) {
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/tags/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
         builder.addParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
 
         return performGetRequest(builder, WP_TAG_TYPE);
@@ -266,7 +270,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     public WpPagedResponse<WpCategory> listCategories(final @NonNull WpPagingQuery pageQuery,
                                                       final WpCategoryQuery categoryQuery) {
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/categories",
-                Map.of("baseUrl", baseUrl));
+                Map.of(BASE_URL, baseUrl));
 
         builder.addParameter(PAGE, Integer.toString(pageQuery.getPageNumber()));
         builder.addParameter(PER_PAGE, Integer.toString(pageQuery.getPageSize()));
@@ -281,7 +285,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     public WpPagedResponse<WpPost> listPosts(final @NonNull WpPagingQuery pageQuery,
                                              final WpPostQuery postQuery) {
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts",
-                Map.of("baseUrl", baseUrl));
+                Map.of(BASE_URL, baseUrl));
 
         builder.addParameter(PAGE, Integer.toString(pageQuery.getPageNumber()));
         builder.addParameter(PER_PAGE, Integer.toString(pageQuery.getPageSize()));
@@ -296,7 +300,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     public WpPagedResponse<WpTag> listTags(final @NonNull WpPagingQuery pageQuery,
                                            final WpTagQuery tagQuery) {
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/tags",
-                Map.of("baseUrl", baseUrl));
+                Map.of(BASE_URL, baseUrl));
 
         builder.addParameter(PAGE, Integer.toString(pageQuery.getPageNumber()));
         builder.addParameter(PER_PAGE, Integer.toString(pageQuery.getPageSize()));
@@ -310,7 +314,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     @Override
     public WpPost trashPost(final @NonNull Long id) {
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
 
         builder.addParameter(FORCE, Boolean.FALSE.toString());
 
@@ -323,7 +327,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
                                      final @NonNull WpCategoryCreateUpdateRequest updateRequest) {
 
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/categories/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
 
         return performPostWithBody(builder, updateRequest, WP_CATEGORY_TYPE);
     }
@@ -333,7 +337,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     public WpPost updatePost(final @NonNull Long id,
                              final @NonNull WpPostCreateUpdateRequest updateRequest) {
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
 
         return performPostWithBody(builder, updateRequest, WP_POST_TYPE);
     }
@@ -343,7 +347,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     public WpTag updateTag(final @NonNull Long id,
                            final @NonNull WpTagCreateUpdateRequest updateRequest) {
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/tags/${id}",
-                Map.of("baseUrl", baseUrl, "id", id));
+                Map.of(BASE_URL, baseUrl, "id", id));
 
         return performPostWithBody(builder, updateRequest, WP_TAG_TYPE);
     }
@@ -355,7 +359,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         URI uri = uriBuilder.build();
 
         HttpDelete request = new HttpDelete(uri);
-        request.setHeader(HttpHeaders.ACCEPT, "application/json");
+        request.setHeader(ACCEPT, "application/json");
 
         return httpClient.execute(request, response -> {
             String body = EntityUtils.toString(response.getEntity());
@@ -370,7 +374,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         URI uri = uriBuilder.build();
 
         HttpGet request = new HttpGet(uri);
-        request.setHeader(HttpHeaders.ACCEPT, "application/json");
+        request.setHeader(ACCEPT, "application/json");
 
         return httpClient.execute(request, response -> {
             String body = EntityUtils.toString(response.getEntity());
@@ -385,7 +389,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         URI uri = uriBuilder.build();
 
         HttpGet request = new HttpGet(uri);
-        request.setHeader(HttpHeaders.ACCEPT, "application/json");
+        request.setHeader(ACCEPT, "application/json");
 
         return httpClient.execute(request, response -> {
             int totalItems = ofNullable(response.getHeader("X-WP-Total"))
@@ -419,7 +423,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         URI uri = uriBuilder.build();
 
         HttpPost request = new HttpPost(uri);
-        request.setHeader(HttpHeaders.ACCEPT, "application/json");
+        request.setHeader(ACCEPT, "application/json");
         request.setHeader(HttpHeaders.CONTENT_TYPE, "application/json");
 
         String jsonBody = mapper.writeValueAsString(requestBody);
@@ -473,6 +477,15 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         httpClientBuilder
                 .setConnectionManager(connectionManager)
                 .setDefaultRequestConfig(requestConfig);
+    }
+
+    private static CloseableHttpClient buildAuthHttpClient(SslConfiguration sslConfiguration, TimeoutConfiguration timeoutConfiguration) {
+        final HttpClientBuilder authClientBuilder = HttpClients.custom();
+
+        applySslConfigurationIfPresent(authClientBuilder, sslConfiguration);
+        applyTimeoutConfigurationIfPresent(authClientBuilder, timeoutConfiguration);
+
+        return authClientBuilder.build();
     }
 
     @SneakyThrows

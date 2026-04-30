@@ -1,6 +1,6 @@
 package com.ev.wordpress.client.domain.assertions;
 
-import com.ev.wordpress.client.domain.dto.WpTag;
+import com.ev.wordpress.client.domain.model.WpTag;
 
 public class WpTagAssert extends AbstractWpTagAssert<WpTagAssert> {
 

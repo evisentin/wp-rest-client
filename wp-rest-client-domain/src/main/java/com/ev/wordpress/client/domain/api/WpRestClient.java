@@ -1,20 +1,20 @@
 package com.ev.wordpress.client.domain.api;
 
-import com.ev.wordpress.client.domain.dto.WpCategory;
-import com.ev.wordpress.client.domain.dto.WpPagedResponse;
-import com.ev.wordpress.client.domain.dto.WpPost;
-import com.ev.wordpress.client.domain.dto.WpTag;
-import com.ev.wordpress.client.domain.dto.enums.WpContext;
-import com.ev.wordpress.client.domain.dto.query.WpCategoryQuery;
-import com.ev.wordpress.client.domain.dto.query.WpPagingQuery;
-import com.ev.wordpress.client.domain.dto.query.WpPostQuery;
-import com.ev.wordpress.client.domain.dto.query.WpTagQuery;
-import com.ev.wordpress.client.domain.dto.requests.WpCategoryCreateUpdateRequest;
-import com.ev.wordpress.client.domain.dto.requests.WpPostCreateUpdateRequest;
-import com.ev.wordpress.client.domain.dto.requests.WpTagCreateUpdateRequest;
-import com.ev.wordpress.client.domain.dto.responses.WpCategoryDeletionResponse;
-import com.ev.wordpress.client.domain.dto.responses.WpPostDeletionResponse;
-import com.ev.wordpress.client.domain.dto.responses.WpTagDeletionResponse;
+import com.ev.wordpress.client.domain.model.WpCategory;
+import com.ev.wordpress.client.domain.model.WpPagedResponse;
+import com.ev.wordpress.client.domain.model.WpPost;
+import com.ev.wordpress.client.domain.model.WpTag;
+import com.ev.wordpress.client.domain.model.enums.WpContext;
+import com.ev.wordpress.client.domain.model.query.WpCategoryQuery;
+import com.ev.wordpress.client.domain.model.query.WpPagingQuery;
+import com.ev.wordpress.client.domain.model.query.WpPostQuery;
+import com.ev.wordpress.client.domain.model.query.WpTagQuery;
+import com.ev.wordpress.client.domain.model.requests.WpCategoryCreateUpdateRequest;
+import com.ev.wordpress.client.domain.model.requests.WpPostCreateUpdateRequest;
+import com.ev.wordpress.client.domain.model.requests.WpTagCreateUpdateRequest;
+import com.ev.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
+import com.ev.wordpress.client.domain.model.responses.WpPostDeletionResponse;
+import com.ev.wordpress.client.domain.model.responses.WpTagDeletionResponse;
 import lombok.NonNull;
 
 public interface WpRestClient {
