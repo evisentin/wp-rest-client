@@ -1,0 +1,73 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build with Maven
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Step 2: Setup JDK + enable Maven cache
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: maven
+
+      # Step 3: Build + run tests
+      - name: Build and test
+        run: mvn -B clean verify
+
+      # =========================================================
+      # FUTURE EXTENSIONS (placeholders)
+      # =========================================================
+
+      # Static analysis (e.g. SpotBugs, Checkstyle, Sonar)
+      # - name: Run static analysis
+      #   run: mvn verify -Panalysis
+
+      # Code coverage (e.g. JaCoCo report upload)
+      # - name: Upload coverage
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: coverage-report
+      #     path: target/site/jacoco/
+
+      # Build artifacts (JARs) and store them
+      # - name: Upload build artifacts
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: jars
+      #     path: |
+      #       **/target/*.jar
+
+      # Integration tests (if you add them later)
+      # - name: Run integration tests
+      #   run: mvn verify -Pintegration-tests
+
+      # Publish to Maven repository (disabled for now)
+      # - name: Deploy to Maven Central / Nexus
+      #   if: github.ref == 'refs/heads/main'
+      #   run: mvn deploy
+      #   env:
+      #     MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+      #     MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+
+      # Release step (GitHub Releases, tagging, etc.)
+      # - name: Create release
+      #   uses: softprops/action-gh-release@v2
+      #   if: startsWith(github.ref, 'refs/tags/')
