@@ -292,6 +292,25 @@
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
           <version>${maven.jar.plugin.version}</version>
+          <executions>
+            <execution>
+              <id>default-jar</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+            </execution>
+
+            <execution>
+              <id>jdk-classified-jar</id>
+              <phase>package</phase>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+              <configuration>
+                <classifier>jdk${java.version}</classifier>
+              </configuration>
+            </execution>
+          </executions>
         </plugin>
         <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
         <!--
@@ -595,4 +614,22 @@
       </snapshotRepository>
   </distributionManagement>
   -->
+  <profiles>
+    <profile>
+      <id>java-21</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <properties>
+        <java.version>21</java.version>
+      </properties>
+    </profile>
+
+    <profile>
+      <id>java-17</id>
+      <properties>
+        <java.version>17</java.version>
+      </properties>
+    </profile>
+  </profiles>
 </project>

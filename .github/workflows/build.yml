@@ -12,8 +12,17 @@ permissions:
 
 jobs:
   build:
-    name: Build with Maven
+    name: Build with Maven / Java ${{ matrix.java }}
     runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - java: 21
+            profile: java-21
+          - java: 17
+            profile: java-17
 
     steps:
       # Step 1: Checkout repository
@@ -21,16 +30,16 @@ jobs:
         uses: actions/checkout@v4
 
       # Step 2: Setup JDK + enable Maven cache
-      - name: Set up Java
+      - name: Set up Java ${{ matrix.java }}
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: 21
+          java-version: ${{ matrix.java }}
           cache: maven
 
       # Step 3: Build + run tests
-      - name: Build and test
-        run: mvn -B clean verify
+      - name: Build and test with profile ${{ matrix.profile }}
+        run: mvn -B clean verify -P${{ matrix.profile }}
 
       # =========================================================
       # FUTURE EXTENSIONS (placeholders)

@@ -20,7 +20,7 @@
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <properties>
     <mysql-connector-j.version>9.6.0</mysql-connector-j.version>
-    <testcontainers-bom.version>2.0.4</testcontainers-bom.version>
+    <testcontainers-bom.version>2.0.5</testcontainers-bom.version>
 
     <!-- tests are being run just on `integration-tests` profile -->
     <skip.module.tests>true</skip.module.tests>
