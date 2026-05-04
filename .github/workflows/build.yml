@@ -32,7 +32,6 @@ jobs:
       - name: Build and test
         run: mvn -B clean verify
 
-
       # =========================================================
       # FUTURE EXTENSIONS (placeholders)
       # =========================================================
