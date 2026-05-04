@@ -27,7 +27,7 @@ jobs:
     steps:
       # Step 1: Checkout repository
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # Step 2: Setup JDK + enable Maven cache
       - name: Set up Java ${{ matrix.java }}
