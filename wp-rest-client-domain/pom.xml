@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <parent>
-    <groupId>com.ev.wordpress</groupId>
+    <groupId>io.github.evisentin</groupId>
     <artifactId>wp-rest-client</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>

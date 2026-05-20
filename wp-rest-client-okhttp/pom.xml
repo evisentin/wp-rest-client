@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <parent>
-    <groupId>com.ev.wordpress</groupId>
+    <groupId>io.github.evisentin</groupId>
     <artifactId>wp-rest-client</artifactId>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
@@ -17,13 +17,13 @@
 
     <!-- [PROJECT MODULES] -->
     <dependency>
-      <groupId>com.ev.wordpress</groupId>
+      <groupId>io.github.evisentin</groupId>
       <artifactId>wp-rest-client-domain</artifactId>
       <version>${project.version}</version>
     </dependency>
 
     <dependency>
-      <groupId>com.ev.wordpress</groupId>
+      <groupId>io.github.evisentin</groupId>
       <artifactId>wp-rest-client-test-support</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
@@ -109,9 +109,9 @@
         <configuration>
           <includeDependencySources>true</includeDependencySources>
           <dependencySourceIncludes>
-            <dependencySourceInclude>com.ev.wordpress:*</dependencySourceInclude>
+            <dependencySourceInclude>io.github.evisentin.wordpress:*</dependencySourceInclude>
           </dependencySourceIncludes>
-          <subpackages>com.ev.wordpress.client.adapter.okhttp</subpackages>
+          <subpackages>io.github.evisentin.wordpress.client.adapter.okhttp</subpackages>
         </configuration>
       </plugin>
       <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
