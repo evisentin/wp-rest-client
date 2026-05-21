@@ -30,7 +30,11 @@ jobs:
 
       - name: Publish to Maven Central
         run: |
-          mvn -B clean deploy \
+          mvn -B clean install \
+            -Prelease,java-21 \
+            -DskipTests
+
+          mvn -B deploy \
             -Prelease,java-21 \
             -pl wp-rest-client-domain,wp-rest-client-okhttp,wp-rest-client-apache \
             -DskipTests
