@@ -1,0 +1,59 @@
+[
+    {
+        "httpRequest": {
+            "method": "POST",
+            "path": "/wp-json/wp/v2/tags/2",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "description": "Tag #1_updated",
+                    "name": "tag1_updated",
+                    "slug": "tag-1updated",
+                    "meta": {}
+                }
+            }
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json; charset=UTF-8"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "id": 2,
+                    "count": 0,
+                    "description": "Tag #1_updated",
+                    "link": "https:\/\/localhost:65342\/tag\/tag-1updated\/",
+                    "name": "tag1_updated",
+                    "slug": "tag-1updated",
+                    "taxonomy": "post_tag",
+                    "meta": [],
+                    "_links": {
+                    }
+                }
+            }
+        }
+    }
+]

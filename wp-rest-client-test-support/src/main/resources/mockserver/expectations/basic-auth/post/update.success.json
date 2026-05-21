@@ -1,0 +1,104 @@
+[
+    {
+        "httpRequest": {
+            "method": "POST",
+            "path": "/wp-json/wp/v2/posts/4",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "status": "draft",
+                    "title": "My post UPDATED",
+                    "content": "My Content UPDATED",
+                    "excerpt": "My Content UPDATED",
+                    "sticky": false
+                }
+            }
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json; charset=UTF-8"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "id": 4,
+                    "date": "2026-04-15T10:31:09",
+                    "date_gmt": "2026-04-15T10:31:09",
+                    "guid": {
+                        "rendered": "https:\/\/localhost:60445\/my-post\/",
+                        "raw": "https:\/\/localhost:60445\/my-post\/"
+                    },
+                    "modified": "2026-04-15T10:31:09",
+                    "modified_gmt": "2026-04-15T10:31:09",
+                    "password": "",
+                    "slug": "my-post",
+                    "status": "draft",
+                    "type": "post",
+                    "link": "https:\/\/localhost:60445\/?p=4",
+                    "title": {
+                        "raw": "My post UPDATED",
+                        "rendered": "My post UPDATED"
+                    },
+                    "content": {
+                        "raw": "My Content UPDATED",
+                        "rendered": "<p>My Content UPDATED<\/p>\n",
+                        "protected": false,
+                        "block_version": 0
+                    },
+                    "excerpt": {
+                        "raw": "My Content UPDATED",
+                        "rendered": "<p>My Content UPDATED<\/p>\n",
+                        "protected": false
+                    },
+                    "author": 1,
+                    "featured_media": 0,
+                    "comment_status": "open",
+                    "ping_status": "open",
+                    "sticky": false,
+                    "template": "",
+                    "format": "standard",
+                    "meta": {
+                        "footnotes": ""
+                    },
+                    "categories": [
+                        1
+                    ],
+                    "tags": [],
+                    "permalink_template": "https:\/\/localhost:60445\/%postname%\/",
+                    "generated_slug": "my-post-updated",
+                    "class_list": [
+                        "post-4",
+                        "post",
+                        "type-post",
+                        "status-draft",
+                        "format-standard",
+                        "hentry",
+                        "category-uncategorized"
+                    ]
+                }
+            }
+        }
+    }
+]

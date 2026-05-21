@@ -1,0 +1,171 @@
+[
+    {
+        "httpRequest": {
+            "method": "GET",
+            "path": "/wp-json/wp/v2/posts",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ],
+            "queryStringParameters": {
+                "status": [
+                    "draft,private"
+                ],
+                "per_page": [
+                    "10"
+                ],
+                "page": [
+                    "1"
+                ],
+                "order_by": [
+                    "id"
+                ],
+                "order": [
+                    "asc"
+                ],
+                "context": [
+                    "view"
+                ]
+            }
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "X-WP-Total",
+                    "values": [
+                        "2"
+                    ]
+                },
+                {
+                    "name": "X-WP-TotalPages",
+                    "values": [
+                        "1"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": [
+                    {
+                        "id": 4,
+                        "date": "2026-04-15T10:53:49",
+                        "date_gmt": "2026-04-15T10:53:49",
+                        "guid": {
+                            "rendered": "https:\/\/localhost:62355\/?p=4"
+                        },
+                        "modified": "2026-04-15T10:53:49",
+                        "modified_gmt": "2026-04-15T10:53:49",
+                        "slug": "",
+                        "status": "draft",
+                        "type": "post",
+                        "link": "https:\/\/localhost:62355\/?p=4",
+                        "title": {
+                            "rendered": "My draft post"
+                        },
+                        "content": {
+                            "rendered": "",
+                            "protected": false
+                        },
+                        "excerpt": {
+                            "rendered": "",
+                            "protected": false
+                        },
+                        "author": 1,
+                        "featured_media": 0,
+                        "comment_status": "open",
+                        "ping_status": "open",
+                        "sticky": false,
+                        "template": "",
+                        "format": "standard",
+                        "meta": {
+                            "footnotes": ""
+                        },
+                        "categories": [
+                            1
+                        ],
+                        "tags": [],
+                        "class_list": [
+                            "post-4",
+                            "post",
+                            "type-post",
+                            "status-draft",
+                            "format-standard",
+                            "hentry",
+                            "category-uncategorized"
+                        ],
+                        "_links": {
+                        }
+                    },
+                    {
+                        "id": 5,
+                        "date": "2026-04-15T10:53:49",
+                        "date_gmt": "2026-04-15T10:53:49",
+                        "guid": {
+                            "rendered": "https:\/\/localhost:62355\/my-private-post\/"
+                        },
+                        "modified": "2026-04-15T10:53:49",
+                        "modified_gmt": "2026-04-15T10:53:49",
+                        "slug": "my-private-post",
+                        "status": "private",
+                        "type": "post",
+                        "link": "https:\/\/localhost:62355\/my-private-post\/",
+                        "title": {
+                            "rendered": "My private post"
+                        },
+                        "content": {
+                            "rendered": "",
+                            "protected": false
+                        },
+                        "excerpt": {
+                            "rendered": "",
+                            "protected": false
+                        },
+                        "author": 1,
+                        "featured_media": 0,
+                        "comment_status": "open",
+                        "ping_status": "open",
+                        "sticky": false,
+                        "template": "",
+                        "format": "standard",
+                        "meta": {
+                            "footnotes": ""
+                        },
+                        "categories": [
+                            1
+                        ],
+                        "tags": [],
+                        "class_list": [
+                            "post-5",
+                            "post",
+                            "type-post",
+                            "status-private",
+                            "format-standard",
+                            "hentry",
+                            "category-uncategorized"
+                        ],
+                        "_links": {
+                        }
+                    }
+                ]
+            }
+        }
+    }
+]

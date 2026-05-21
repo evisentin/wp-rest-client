@@ -1,0 +1,113 @@
+[
+    {
+        "httpRequest": {
+            "method": "POST",
+            "path": "/wp-json/wp/v2/posts",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "title": "My post",
+                    "content": "My Content",
+                    "sticky": false,
+                    "categories": [
+                        3
+                    ],
+                    "tags": [
+                        2
+                    ]
+                }
+            }
+        },
+        "httpResponse": {
+            "statusCode": 201,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json; charset=UTF-8"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "id": 4,
+                    "date": "2026-04-15T10:15:21",
+                    "date_gmt": "2026-04-15T10:15:21",
+                    "guid": {
+                        "rendered": "https:\/\/localhost:59048\/?p=4",
+                        "raw": "https:\/\/localhost:59048\/?p=4"
+                    },
+                    "modified": "2026-04-15T10:15:21",
+                    "modified_gmt": "2026-04-15T10:15:21",
+                    "password": "",
+                    "slug": "",
+                    "status": "draft",
+                    "type": "post",
+                    "link": "https:\/\/localhost:59048\/?p=4",
+                    "title": {
+                        "raw": "My post",
+                        "rendered": "My post"
+                    },
+                    "content": {
+                        "raw": "My Content",
+                        "rendered": "<p>My Content<\/p>\n",
+                        "protected": false,
+                        "block_version": 0
+                    },
+                    "excerpt": {
+                        "raw": "",
+                        "rendered": "<p>My Content<\/p>\n",
+                        "protected": false
+                    },
+                    "author": 1,
+                    "featured_media": 0,
+                    "comment_status": "open",
+                    "ping_status": "open",
+                    "sticky": false,
+                    "template": "",
+                    "format": "standard",
+                    "meta": {
+                        "footnotes": ""
+                    },
+                    "categories": [
+                        3
+                    ],
+                    "tags": [
+                        2
+                    ],
+                    "permalink_template": "https:\/\/localhost:59048\/%postname%\/",
+                    "generated_slug": "my-post",
+                    "class_list": [
+                        "post-4",
+                        "post",
+                        "type-post",
+                        "status-draft",
+                        "format-standard",
+                        "hentry",
+                        "category-news",
+                        "tag-switzerland"
+                    ],
+                    "_links": {
+                    }
+                }
+            }
+        }
+    }
+]

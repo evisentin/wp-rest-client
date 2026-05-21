@@ -1,0 +1,55 @@
+[
+    {
+        "httpRequest": {
+            "method": "DELETE",
+            "path": "/wp-json/wp/v2/categories/1005",
+            "queryStringParameters": {
+                "force": [
+                    "true"
+                ]
+            },
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ]
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "deleted": true,
+                    "previous": {
+                        "id": 1005,
+                        "count": 0,
+                        "description": "my category description",
+                        "name": "my category",
+                        "slug": "my-category",
+                        "link": "https:\/\/localhost:50855\/category\/slug-1\/",
+                        "taxonomy": "category",
+                        "meta": []
+                    }
+                }
+            }
+        }
+    }
+]
