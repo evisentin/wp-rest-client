@@ -1,0 +1,57 @@
+[
+    {
+        "httpRequest": {
+            "method": "GET",
+            "path": "/wp-json/wp/v2/tags/4",
+            "queryStringParameters": [
+                {
+                    "name": "context",
+                    "values": [
+                        "edit"
+                    ]
+                }
+            ],
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ]
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json; charset=UTF-8"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "id": 4,
+                    "count": 0,
+                    "description": "Tag #1",
+                    "link": "http:\/\/localhost:58033\/tag\/tag-1\/",
+                    "name": "tag1",
+                    "slug": "tag-1",
+                    "taxonomy": "post_tag",
+                    "meta": [],
+                    "_links": {
+                    }
+                }
+            }
+        }
+    }
+]

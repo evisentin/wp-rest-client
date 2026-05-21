@@ -1,0 +1,92 @@
+[
+    {
+        "httpRequest": {
+            "method": "DELETE",
+            "path": "/wp-json/wp/v2/posts/1005",
+            "queryStringParameters": {
+                "force": [
+                    "false"
+                ]
+            },
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ]
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "id": 4,
+                    "date": "2026-04-15T09:49:27",
+                    "date_gmt": "2026-04-15T09:49:27",
+                    "guid": {
+                        "rendered": "https:\/\/localhost:56067\/my-post\/"
+                    },
+                    "modified": "2026-04-15T09:49:27",
+                    "modified_gmt": "2026-04-15T09:49:27",
+                    "slug": "my-post__trashed",
+                    "status": "trash",
+                    "type": "post",
+                    "link": "https:\/\/localhost:56067\/?p=4",
+                    "title": {
+                        "rendered": "My post"
+                    },
+                    "content": {
+                        "rendered": "<p>My Content<\/p>\n",
+                        "protected": false
+                    },
+                    "excerpt": {
+                        "rendered": "<p>My Content<\/p>\n",
+                        "protected": false
+                    },
+                    "author": 1,
+                    "featured_media": 0,
+                    "comment_status": "open",
+                    "ping_status": "open",
+                    "sticky": false,
+                    "template": "",
+                    "format": "standard",
+                    "meta": {
+                        "footnotes": ""
+                    },
+                    "categories": [
+                        1
+                    ],
+                    "tags": [],
+                    "class_list": [
+                        "post-4",
+                        "post",
+                        "type-post",
+                        "status-trash",
+                        "format-standard",
+                        "hentry",
+                        "category-uncategorized"
+                    ],
+                    "_links": {
+                    }
+                }
+            }
+        }
+    }
+]
