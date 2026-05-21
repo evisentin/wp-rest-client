@@ -10,7 +10,7 @@
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <name>WP REST Client</name>
   <description>Multi-module WordPress REST client with pluggable HTTP adapters</description>
-  <url>https://github.com/evisentin/wp-rest-clien</url>
+  <url>https://github.com/evisentin/wp-rest-client</url>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <modules>
     <module>wp-rest-client-domain</module>
@@ -36,6 +36,7 @@
     <maven.compiler.plugin.version>3.15.0</maven.compiler.plugin.version>
     <maven-enforcer-plugin.version>3.6.2</maven-enforcer-plugin.version>
     <maven.failsafe.plugin.version>3.5.5</maven.failsafe.plugin.version>
+    <maven.gpg.plugin.version>3.2.8</maven.gpg.plugin.version>
     <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
     <maven.jar.plugin.version>3.5.0</maven.jar.plugin.version>
     <maven.source.plugin.version>3.4.0</maven.source.plugin.version>
@@ -580,22 +581,24 @@
         - Configure GPG signing key
         - Ensure each published module generates sources and javadocs
         =========================================================================
-
-          <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-gpg-plugin</artifactId>
-              <version>${maven.gpg.plugin.version}</version>
-              <executions>
-                  <execution>
-                      <id>sign-artifacts</id>
-                      <phase>verify</phase>
-                      <goals>
-                          <goal>sign</goal>
-                      </goals>
-                  </execution>
-              </executions>
-          </plugin>
       -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>${maven.gpg.plugin.version}</version>
+        <configuration>
+          <bestPractices>true</bestPractices>
+        </configuration>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
