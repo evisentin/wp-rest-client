@@ -641,5 +641,14 @@
         </plugins>
       </build>
     </profile>
+
+    <profile>
+      <id>publish</id>
+      <modules>
+        <module>wp-rest-client-domain</module>
+        <module>wp-rest-client-okhttp</module>
+        <module>wp-rest-client-apache</module>
+      </modules>
+    </profile>
   </profiles>
 </project>
