@@ -6,15 +6,15 @@
 
 - [Overview](#overview)
 - [Modules](#modules)
-  * [Module `wp-rest-client-domain`](#module-wp-rest-client-domain)
-  * [Module `wp-rest-client-apache`](#module-wp-rest-client-apache)
-  * [Module `wp-rest-client-okhttp`](#module-wp-rest-client-okhttp)
-  * [Module `wp-rest-client-test-support`](#module-wp-rest-client-test-support)
-  * [Module `wp-rest-client-test-integration`](#module-wp-rest-client-test-integration)
-  * [Module `wp-rest-client-test-report`](#module-wp-rest-client-test-report)
+    * [Module `wp-rest-client-domain`](#module-wp-rest-client-domain)
+    * [Module `wp-rest-client-apache`](#module-wp-rest-client-apache)
+    * [Module `wp-rest-client-okhttp`](#module-wp-rest-client-okhttp)
+    * [Module `wp-rest-client-test-support`](#module-wp-rest-client-test-support)
+    * [Module `wp-rest-client-test-integration`](#module-wp-rest-client-test-integration)
+    * [Module `wp-rest-client-test-report`](#module-wp-rest-client-test-report)
 - [Key Concept: Contract Testing](#key-concept-contract-testing)
-  * [Why this matters](#why-this-matters)
-  * [How it works](#how-it-works)
+    * [Why this matters](#why-this-matters)
+    * [How it works](#how-it-works)
 - [Adding a New Implementation](#adding-a-new-implementation)
 - [Design Goals](#design-goals)
 - [Usage](#usage)
@@ -94,7 +94,6 @@ Responsibilities:
 - HTTP communication using OkHttp
 - Serialization/deserialization
 - Mapping responses to domain DTOs
-
 
 ---
 
@@ -195,9 +194,31 @@ That’s it — no need to rewrite test logic.
 
 ---
 
-## Maven (coming soon)
+## Maven Central
 
-> ⚠️ TODO: Maven Central coordinates will be published soon.
+Artifacts are available on Maven Central:
+
+- `io.github.evisentin:wp-rest-client-domain`
+- `io.github.evisentin:wp-rest-client-apache`
+- `io.github.evisentin:wp-rest-client-okhttp`
+
+### Example
+
+```xml
+
+<dependency>
+    <groupId>io.github.evisentin</groupId>
+    <artifactId>wp-rest-client-domain</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+### Maven Central
+
+- https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client
+- https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client-domain
+- https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client-apache
+- https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client-okhttp
 
 ---
 
