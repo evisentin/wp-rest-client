@@ -32,12 +32,12 @@ jobs:
         run: |
           mvn -B clean install \
             -Prelease,java-21 \
-            -DskipTests
+            -Dmaven.test.skip=true
 
           mvn -B deploy \
             -Prelease,java-21 \
             -pl wp-rest-client-domain,wp-rest-client-okhttp,wp-rest-client-apache \
-            -DskipTests
+            -Dmaven.test.skip=true
         env:
           CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
           CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
