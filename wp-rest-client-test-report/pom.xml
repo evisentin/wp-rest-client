@@ -14,10 +14,6 @@
   <packaging>pom</packaging>
   <name>WP REST Client - Test Report Aggregation</name>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-  <properties>
-    <maven.deploy.skip>true</maven.deploy.skip>
-  </properties>
-  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <dependencies>
     <!-- [PROJECT MODULES] -->
     <dependency>
