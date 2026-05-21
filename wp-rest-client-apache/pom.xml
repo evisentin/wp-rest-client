@@ -22,12 +22,6 @@
       <artifactId>wp-rest-client-domain</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>io.github.evisentin</groupId>
-      <artifactId>wp-rest-client-test-support</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
 
     <!-- [APACHE COMMONS] -->
     <dependency>
@@ -116,4 +110,18 @@
     </plugins>
   </build>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+  <profiles>
+    <profile>
+      <id>internal-tests</id>
+
+      <dependencies>
+        <dependency>
+          <groupId>io.github.evisentin</groupId>
+          <artifactId>wp-rest-client-test-support</artifactId>
+          <version>${project.version}</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+  </profiles>
 </project>
