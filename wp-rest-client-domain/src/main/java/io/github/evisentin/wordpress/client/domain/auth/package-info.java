@@ -1,10 +1,15 @@
 /**
- * Authentication strategies for the WordPress REST client.
+ * Authentication domain model for the WordPress REST client.
  *
- * <p>This package provides abstractions and implementations for request
- * authentication, such as Basic Authentication.
+ * <p>This package provides authentication strategy abstractions, implementations, and related exceptions used to
+ * authenticate outgoing HTTP requests.</p>
  *
- * <p>Authentication strategies are used by client adapters to sign outgoing
- * HTTP requests.
+ * <p>Supported authentication mechanisms include:</p>
+ * <ul>
+ *   <li>HTTP Basic Authentication</li>
+ *   <li>JWT bearer token authentication</li>
+ * </ul>
+ *
+ * <p>Authentication strategies are consumed by client adapters and authorization header providers.</p>
  */
 package io.github.evisentin.wordpress.client.domain.auth;
