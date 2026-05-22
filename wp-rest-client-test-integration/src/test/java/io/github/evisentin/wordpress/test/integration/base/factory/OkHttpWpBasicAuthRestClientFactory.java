@@ -4,6 +4,7 @@ import io.github.evisentin.wordpress.client.adapter.okhttp.OkHttpWpRestClient;
 import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
 import io.github.evisentin.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
 import io.github.evisentin.wordpress.client.domain.configuration.SslConfiguration;
+import org.testcontainers.shaded.org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * {@link WpBasicAuthRestClientFactory} implementation based on OkHttp.
@@ -34,12 +35,14 @@ public final class OkHttpWpBasicAuthRestClientFactory implements WpBasicAuthRest
 
     private final SslConfiguration sslConfiguration;
 
-    public OkHttpWpBasicAuthRestClientFactory(SslConfiguration sslConfiguration) {
+    public OkHttpWpBasicAuthRestClientFactory(final @NonNull SslConfiguration sslConfiguration) {
         this.sslConfiguration = sslConfiguration;
     }
 
     @Override
-    public WpRestClient create(String baseUrl, String username, String password) {
+    public WpRestClient create(final @NonNull String baseUrl,
+                               final @NonNull String username,
+                               final @NonNull String password) {
         return new OkHttpWpRestClient(
                 baseUrl,
                 new WpBasicAuthenticationStrategy(username, password),

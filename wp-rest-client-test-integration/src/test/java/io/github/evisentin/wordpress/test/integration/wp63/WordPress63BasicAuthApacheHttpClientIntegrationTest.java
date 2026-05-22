@@ -1,4 +1,4 @@
-package io.github.evisentin.wordpress.test.integration.wp65;
+package io.github.evisentin.wordpress.test.integration.wp63;
 
 import io.github.evisentin.wordpress.test.integration.base.BasicAuthWordPressIntegrationTest;
 import io.github.evisentin.wordpress.test.integration.base.factory.ApacheWpBasicAuthRestClientFactory;
@@ -6,12 +6,13 @@ import io.github.evisentin.wordpress.test.integration.base.factory.WpBasicAuthRe
 
 import static io.github.evisentin.wordpress.test.integration.base.factory.TestSslConfigurations.insecureForApache;
 
-public class WordPress65BasicAuthApacheHttpClientIntegrationTest extends BasicAuthWordPressIntegrationTest {
+public class WordPress63BasicAuthApacheHttpClientIntegrationTest extends BasicAuthWordPressIntegrationTest {
+
     private static final WpBasicAuthRestClientFactory FACTORY = new ApacheWpBasicAuthRestClientFactory(insecureForApache());
 
     @Override
     public String getWordPressVersion() {
-        return "6.5";
+        return "6.3";
     }
 
     @Override

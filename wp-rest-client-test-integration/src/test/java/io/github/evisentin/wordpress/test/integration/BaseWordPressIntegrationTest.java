@@ -105,7 +105,7 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
 
     private final MySQLContainer database = createDatabaseContainer();
     private final GenericContainer<?> wordpress = createWordPressContainer();
-    protected final GenericContainer<?> wpcli = createWordPressCli();
+    protected final GenericContainer<?> wpCli = createWordPressCli();
 
     protected String adminApplicationPassword = "";
     protected String standardUserApplicationPassword = "";
@@ -114,21 +114,21 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
 
     @AfterAll
     void cleanUp() {
-        if (wpcli != null) {
-            wpcli.stop();
-        }
-        if (wordpress != null) {
-            wordpress.stop();
-        }
-        if (database != null) {
-            database.stop();
-        }
+        if (wpCli != null) wpCli.close();
+
+        if (wordpress != null) wordpress.close();
+
+        if (database != null) database.close();
+
+        if (network != null) network.close();
+
         deleteIfExists(wpFilesDir);
     }
 
     @BeforeAll
     void startEnvironment() {
-        Startables.deepStart(database, wordpress, wpcli).join();
+        Startables.deepStart(database, wordpress, wpCli)
+                  .join();
     }
 
     protected String getHttpsBaseUrl() {
@@ -148,8 +148,8 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
      */
     @SneakyThrows
     protected void wpActivatePermalinks() {
-        wpcli.execInContainer("wp", "--allow-root", "rewrite", "structure", "/%postname%/");
-        wpcli.execInContainer("wp", "--allow-root", "rewrite", "flush");
+        wpCli.execInContainer("wp", "--allow-root", "rewrite", "structure", "/%postname%/");
+        wpCli.execInContainer("wp", "--allow-root", "rewrite", "flush");
     }
 
     /**
@@ -175,13 +175,13 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
      */
     @SneakyThrows
     protected void wpCleanDefaultData() {
-        wpcli.execInContainer("sh", "-c",
+        wpCli.execInContainer("sh", "-c",
                 "wp --allow-root --path=/var/www/html post delete $(wp post list --format=ids) --force");
 
-        wpcli.execInContainer("sh", "-c",
+        wpCli.execInContainer("sh", "-c",
                 "wp --allow-root --path=/var/www/html term delete category $(wp term list category --field=term_id --exclude=1)");
 
-        wpcli.execInContainer("sh", "-c",
+        wpCli.execInContainer("sh", "-c",
                 "wp --allow-root --path=/var/www/html term delete post_tag $(wp term list post_tag --field=term_id)");
     }
 
@@ -232,7 +232,7 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
     protected Long wpCreateCategory(final @NonNull String name,
                                     final @NonNull String description,
                                     final @NonNull String slug) {
-        val execResult = wpcli.execInContainer(
+        val execResult = wpCli.execInContainer(
                 "wp", "--allow-root", "--path=/var/www/html",
                 "term", "create", "category", name,
                 "--slug=" + slug,
@@ -272,7 +272,7 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
     protected Long wpCreateTag(final @NonNull String name,
                                final @NonNull String description,
                                final @NonNull String slug) {
-        val execResult = wpcli.execInContainer(
+        val execResult = wpCli.execInContainer(
                 "wp", "--allow-root", "--path=/var/www/html",
                 "term", "create", "post_tag", name,
                 "--slug=" + slug,
@@ -300,7 +300,7 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
      */
     @SneakyThrows
     protected void wpInitWordPress(final @NonNull String baseUrl) {
-        val installResult = wpcli.execInContainer(
+        val installResult = wpCli.execInContainer(
                 "wp", "--allow-root", "--path=/var/www/html",
                 "core", "install",
                 "--url=" + baseUrl,
@@ -335,18 +335,18 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
     @SneakyThrows
     protected void wpInstallAndActivateWpRestApiAuthenticationPlugin(boolean jwt) {
         // install + activate plugin
-        val pluginInstallResult = wpcli.execInContainer("wp", "--allow-root", "--path=/var/www/html", "plugin", "install", "wp-rest-api-authentication", "--activate");
+        val pluginInstallResult = wpCli.execInContainer("wp", "--allow-root", "--path=/var/www/html", "plugin", "install", "wp-rest-api-authentication", "--activate");
 
         failOnError(pluginInstallResult, "wp-rest-api-authentication install failed");
 
         final String authMethod = jwt ? "jwt_auth" : "basic_auth";
 
-        wpcli.execInContainer("wp", "--allow-root", "--path=/var/www/html", "option", "update", "mo_api_authentication_selected_authentication_method", authMethod);
+        wpCli.execInContainer("wp", "--allow-root", "--path=/var/www/html", "option", "update", "mo_api_authentication_selected_authentication_method", authMethod);
 
         if (jwt) {
-            wpcli.execInContainer("wp", "--allow-root", "--path=/var/www/html", "option", "update", "mo_api_authentication_enable_jwt", "1");
-            wpcli.execInContainer("wp", "--allow-root", "--path=/var/www/html", "option", "update", "mo_api_authentication_jwt_client_secret", WP_JWT_SECRET);
-            wpcli.execInContainer("wp", "--allow-root", "--path=/var/www/html", "option", "update", "mo_api_authentication_jwt_signing_algorithm", "HS256");
+            wpCli.execInContainer("wp", "--allow-root", "--path=/var/www/html", "option", "update", "mo_api_authentication_enable_jwt", "1");
+            wpCli.execInContainer("wp", "--allow-root", "--path=/var/www/html", "option", "update", "mo_api_authentication_jwt_client_secret", WP_JWT_SECRET);
+            wpCli.execInContainer("wp", "--allow-root", "--path=/var/www/html", "option", "update", "mo_api_authentication_jwt_signing_algorithm", "HS256");
         }
     }
 
@@ -367,13 +367,13 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
      */
     @SneakyThrows
     protected boolean wpIsWordPressInstalled() {
-        val execResult = wpcli.execInContainer("wp", "--allow-root", "--path=/var/www/html", "core", "is-installed");
+        val execResult = wpCli.execInContainer("wp", "--allow-root", "--path=/var/www/html", "core", "is-installed");
         return execResult.getExitCode() == 0;
     }
 
     @SneakyThrows
     private void createAdminApplicationPassword() {
-        val applicationPasswordCreationResult = wpcli.execInContainer("wp", "user", "application-password", "create", "admin", "my-app", "--porcelain");
+        val applicationPasswordCreationResult = wpCli.execInContainer("wp", "user", "application-password", "create", "admin", "my-app", "--porcelain");
 
         failOnError(applicationPasswordCreationResult, "application password creation failed");
 
@@ -387,20 +387,19 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
                 .withUsername(VAL_DB_USER_NAME)
                 .withPassword(VAL_DB_PASSWORD)
                 .withNetwork(network)
-                .withNetwork(network)
                 .withNetworkAliases("db_host"); // important for VAL_DB_HOST
     }
 
     @SneakyThrows
     private void createStandardUser() {
 
-        val standardUserCreationResult = wpcli.execInContainer(
+        val standardUserCreationResult = wpCli.execInContainer(
                 "wp", "user", "create", "username", WP_STANDARD_USER_NAME, "--role=subscriber", "--user_pass=" + WP_STANDARD_USER_PASSWORD
         );
 
         failOnError(standardUserCreationResult, "standard user creation failed");
 
-        val applicationPasswordCreationResult = wpcli.execInContainer(
+        val applicationPasswordCreationResult = wpCli.execInContainer(
                 "wp", "user", "application-password", "create", WP_STANDARD_USER_NAME, "my-user-app", "--porcelain"
         );
 
@@ -463,7 +462,7 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
     private static ImageFromDockerfile wordpressHttpsImage(final String version) {
         log.info(">>>> Building WordPress test image from base image wordpress:{}", version);
 
-        return new ImageFromDockerfile("wordpress-https-test", false)
+        return new ImageFromDockerfile("wordpress-https-test:" + version, false)
                 .withFileFromClasspath("Dockerfile", "docker/wordpress-https/Dockerfile")
                 .withFileFromClasspath("wordpress-ssl.conf", "docker/wordpress-https/wordpress-ssl.conf")
                 .withBuildArg("WORDPRESS_VERSION", version);

@@ -4,17 +4,21 @@ import io.github.evisentin.wordpress.client.adapter.apache.ApacheWpRestClient;
 import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
 import io.github.evisentin.wordpress.client.domain.auth.WpJwtAuthenticationStrategy;
 import io.github.evisentin.wordpress.client.domain.configuration.SslConfiguration;
+import org.testcontainers.shaded.org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class ApacheWpJwtAuthRestClientFactory implements WpJwtAuthRestClientFactory {
 
     private final SslConfiguration sslConfiguration;
 
-    public ApacheWpJwtAuthRestClientFactory(SslConfiguration sslConfiguration) {
+    public ApacheWpJwtAuthRestClientFactory(final @NonNull SslConfiguration sslConfiguration) {
         this.sslConfiguration = sslConfiguration;
     }
 
     @Override
-    public WpRestClient create(String baseUrl, String jwtTokenUrl, String username, String password) {
+    public WpRestClient create(final @NonNull String baseUrl,
+                               final @NonNull String jwtTokenUrl,
+                               final @NonNull String username,
+                               final @NonNull String password) {
         return new ApacheWpRestClient(
                 baseUrl,
                 new WpJwtAuthenticationStrategy(username, password, jwtTokenUrl),
