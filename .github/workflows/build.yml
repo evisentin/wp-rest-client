@@ -20,9 +20,6 @@ jobs:
       matrix:
         include:
           - java: 21
-            profile: java-21
-          - java: 17
-            profile: java-17
 
     steps:
       # Step 1: Checkout repository
@@ -38,8 +35,8 @@ jobs:
           cache: maven
 
       # Step 3: Build + run tests
-      - name: Build and test with profile ${{ matrix.profile }}
-        run: mvn -B clean verify -P${{ matrix.profile }},developer
+      - name: Build and test with JDK ${{ matrix.java }}
+        run: mvn -B clean verify -Pdeveloper
 
       # =========================================================
       # FUTURE EXTENSIONS (placeholders)

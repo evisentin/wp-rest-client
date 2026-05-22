@@ -12,6 +12,7 @@
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <artifactId>wp-rest-client-test-support</artifactId>
   <name>WP REST Client - Test Support</name>
+  <description>Reusable JUnit, MockServer, and assertion utilities for WP REST Client testing</description>
   <packaging>jar</packaging>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <dependencies>

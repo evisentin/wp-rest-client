@@ -1,27 +1,30 @@
 # WP-REST-CLIENT
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.evisentin/wp-rest-client)](https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client) [![Javadocs](https://javadoc.io/badge2/io.github.evisentin/wp-rest-client/javadoc.svg)](https://javadoc.io/doc/io.github.evisentin/wp-rest-client) [![License](https://img.shields.io/github/license/evisentin/wp-rest-client)](https://github.com/evisentin/wp-rest-client/blob/main/LICENSE)
+
+![Java](https://img.shields.io/badge/Java-21-green)
+![Java](https://img.shields.io/badge/Java-25-red)
 ----
 
 <!-- toc -->
 
 - [Overview](#overview)
 - [Modules](#modules)
-  * [Module `wp-rest-client-domain`](#module-wp-rest-client-domain)
-  * [Module `wp-rest-client-apache`](#module-wp-rest-client-apache)
-  * [Module `wp-rest-client-okhttp`](#module-wp-rest-client-okhttp)
-  * [Module `wp-rest-client-test-support`](#module-wp-rest-client-test-support)
-  * [Module `wp-rest-client-test-integration`](#module-wp-rest-client-test-integration)
-  * [Module `wp-rest-client-test-report`](#module-wp-rest-client-test-report)
+    * [Module `wp-rest-client-domain`](#module-wp-rest-client-domain)
+    * [Module `wp-rest-client-apache`](#module-wp-rest-client-apache)
+    * [Module `wp-rest-client-okhttp`](#module-wp-rest-client-okhttp)
+    * [Module `wp-rest-client-test-support`](#module-wp-rest-client-test-support)
+    * [Module `wp-rest-client-test-integration`](#module-wp-rest-client-test-integration)
+    * [Module `wp-rest-client-test-report`](#module-wp-rest-client-test-report)
 - [Key Concept: Contract Testing](#key-concept-contract-testing)
-  * [Why this matters](#why-this-matters)
-  * [How it works](#how-it-works)
+    * [Why this matters](#why-this-matters)
+    * [How it works](#how-it-works)
 - [Adding a New Implementation](#adding-a-new-implementation)
 - [Design Goals](#design-goals)
 - [Usage](#usage)
 - [Maven Central](#maven-central)
-  * [Example](#example)
-  * [Maven Central](#maven-central-1)
+    * [Example](#example)
+    * [Maven Central](#maven-central-1)
 - [License](#license)
 
 <!-- tocstop -->
