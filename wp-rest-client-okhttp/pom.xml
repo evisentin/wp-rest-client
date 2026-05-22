@@ -119,7 +119,7 @@
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <profiles>
     <profile>
-      <id>internal-tests</id>
+      <id>developer</id>
 
       <dependencies>
         <dependency>

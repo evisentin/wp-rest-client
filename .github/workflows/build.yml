@@ -39,7 +39,7 @@ jobs:
 
       # Step 3: Build + run tests
       - name: Build and test with profile ${{ matrix.profile }}
-        run: mvn -B clean verify -P${{ matrix.profile }},internal-tests
+        run: mvn -B clean verify -P${{ matrix.profile }},developer
 
       # =========================================================
       # FUTURE EXTENSIONS (placeholders)
