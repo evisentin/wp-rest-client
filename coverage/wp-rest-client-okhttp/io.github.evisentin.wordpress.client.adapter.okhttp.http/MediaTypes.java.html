@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>MediaTypes.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">WP REST Client - Test Report Aggregation</a> &gt; <a href="../index.html" class="el_bundle">wp-rest-client-okhttp</a> &gt; <a href="index.source.html" class="el_package">io.github.evisentin.wordpress.client.adapter.okhttp.http</a> &gt; <span class="el_source">MediaTypes.java</span></div><h1>MediaTypes.java</h1><pre class="source lang-java linenums">package io.github.evisentin.wordpress.client.adapter.okhttp.http;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import okhttp3.MediaType;
+
+import static io.github.evisentin.wordpress.client.adapter.okhttp.http.MimeTypes.APPLICATION_JSON;
+import static io.github.evisentin.wordpress.client.adapter.okhttp.http.MimeTypes.APPLICATION_JSON_CHARSET_UTF_8;
+import static java.util.Objects.requireNonNull;
+import static okhttp3.MediaType.parse;
+
+/**
+ * A utility class providing predefined {@link MediaType} instances for common MIME types.
+ * &lt;p&gt;
+ * These http are useful when building HTTP requests with specific content types using OkHttp.
+ * &lt;/p&gt;
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class MediaTypes {
+
+    /**
+     * {@code application/json} media type.
+     */
+<span class="fc" id="L24">    public static final MediaType MEDIA_TYPE_APPLICATION_JSON = requireNonNull(parse(APPLICATION_JSON));</span>
+
+    /**
+     * {@code application/json; charset=utf-8} media type.
+     */
+<span class="fc" id="L29">    public static final MediaType MEDIA_TYPE_APPLICATION_JSON_CHARSET_UTF_8 = requireNonNull(parse(APPLICATION_JSON_CHARSET_UTF_8));</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

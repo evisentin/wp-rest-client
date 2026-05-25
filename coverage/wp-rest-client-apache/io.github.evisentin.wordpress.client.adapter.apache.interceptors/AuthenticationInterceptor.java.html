@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>AuthenticationInterceptor.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">WP REST Client - Test Report Aggregation</a> &gt; <a href="../index.html" class="el_bundle">wp-rest-client-apache</a> &gt; <a href="index.source.html" class="el_package">io.github.evisentin.wordpress.client.adapter.apache.interceptors</a> &gt; <span class="el_source">AuthenticationInterceptor.java</span></div><h1>AuthenticationInterceptor.java</h1><pre class="source lang-java linenums">package io.github.evisentin.wordpress.client.adapter.apache.interceptors;
+
+import io.github.evisentin.wordpress.client.adapter.apache.auth.ApacheAuthenticationStrategyHandlerRegistry;
+import io.github.evisentin.wordpress.client.domain.auth.WpAuthenticationStrategy;
+import lombok.NonNull;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.core5.http.EntityDetails;
+import org.apache.hc.core5.http.HttpRequest;
+import org.apache.hc.core5.http.HttpRequestInterceptor;
+import org.apache.hc.core5.http.protocol.HttpContext;
+
+import static org.apache.hc.core5.http.HttpHeaders.AUTHORIZATION;
+
+public class AuthenticationInterceptor implements HttpRequestInterceptor {
+
+    private final WpAuthenticationStrategy strategy;
+    private final ApacheAuthenticationStrategyHandlerRegistry registry;
+
+<span class="fc bfc" id="L19" title="All 2 branches covered.">    public AuthenticationInterceptor(final @NonNull WpAuthenticationStrategy strategy,</span>
+<span class="fc bfc" id="L20" title="All 2 branches covered.">                                     final @NonNull CloseableHttpClient authHttpClient) {</span>
+<span class="fc" id="L21">        this.strategy = strategy;</span>
+<span class="fc" id="L22">        registry = new ApacheAuthenticationStrategyHandlerRegistry(authHttpClient);</span>
+<span class="fc" id="L23">    }</span>
+
+    @Override
+    public void process(final HttpRequest request,
+                        final EntityDetails entity,
+                        final HttpContext context) {
+
+<span class="fc" id="L30">        final String value = registry.getHandler(strategy).authenticate(strategy);</span>
+
+<span class="fc" id="L32">        request.addHeader(AUTHORIZATION, value);</span>
+<span class="fc" id="L33">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

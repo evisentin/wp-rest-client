@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>TagQueryParamMapper.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">WP REST Client - Test Report Aggregation</a> &gt; <a href="../index.html" class="el_bundle">wp-rest-client-okhttp</a> &gt; <a href="index.source.html" class="el_package">io.github.evisentin.wordpress.client.adapter.okhttp.query.mappers</a> &gt; <span class="el_source">TagQueryParamMapper.java</span></div><h1>TagQueryParamMapper.java</h1><pre class="source lang-java linenums">package io.github.evisentin.wordpress.client.adapter.okhttp.query.mappers;
+
+import io.github.evisentin.wordpress.client.domain.model.query.WpTagQuery;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import lombok.NonNull;
+import okhttp3.HttpUrl;
+
+import static io.github.evisentin.wordpress.client.domain.model.parameters.WpQueryParameters.*;
+
+/**
+ * Maps {@link WpTagQuery} into HTTP query parameters for tag-related WordPress endpoints.
+ *
+ * &lt;p&gt;This class translates query object fields into the corresponding
+ * parameters expected by the WordPress REST API.
+ *
+ * &lt;p&gt;Null values are ignored and not added to the request.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public class TagQueryParamMapper extends AbstractQueryParamMapper {
+
+    /**
+     * Maps the given {@link WpTagQuery} into query parameters and adds them to the provided {@link HttpUrl.Builder}.
+     *
+     * &lt;p&gt;If the query is {@code null}, no parameters are added.
+     *
+     * @param builder
+     *         the HTTP URL builder to which query parameters are added
+     * @param query
+     *         the tag query object containing filter criteria
+     */
+<span class="fc bfc" id="L32" title="All 2 branches covered.">    public static void map(final @NonNull HttpUrl.Builder builder, final WpTagQuery query) {</span>
+
+<span class="fc bfc" id="L34" title="All 2 branches covered.">        if (query == null) return;</span>
+
+<span class="fc" id="L36">        addEnum(builder, CONTEXT, query.getContext());</span>
+<span class="fc" id="L37">        addSetOfLong(builder, EXCLUDE, query.getExcludeIds());</span>
+<span class="fc" id="L38">        addBoolean(builder, HIDE_EMPTY, query.getHideEmpty());</span>
+<span class="fc" id="L39">        addSetOfLong(builder, INCLUDE, query.getIncludeIds());</span>
+<span class="fc" id="L40">        addInteger(builder, OFFSET, query.getOffset());</span>
+<span class="fc" id="L41">        addEnum(builder, ORDER, query.getOrder());</span>
+<span class="fc" id="L42">        addEnum(builder, ORDER_BY, query.getOrderBy());</span>
+<span class="fc" id="L43">        addString(builder, SEARCH, query.getSearch());</span>
+<span class="fc" id="L44">        addString(builder, SLUG, query.getSlug());</span>
+<span class="fc" id="L45">        addLong(builder, POST, query.getPostId());</span>
+<span class="fc" id="L46">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

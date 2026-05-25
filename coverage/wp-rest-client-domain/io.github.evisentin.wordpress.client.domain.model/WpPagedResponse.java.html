@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>WpPagedResponse.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">WP REST Client - Test Report Aggregation</a> &gt; <a href="../index.html" class="el_bundle">wp-rest-client-domain</a> &gt; <a href="index.source.html" class="el_package">io.github.evisentin.wordpress.client.domain.model</a> &gt; <span class="el_source">WpPagedResponse.java</span></div><h1>WpPagedResponse.java</h1><pre class="source lang-java linenums">package io.github.evisentin.wordpress.client.domain.model;
+
+import lombok.Getter;
+
+import java.util.List;
+
+import static java.util.Collections.emptyList;
+import static java.util.Optional.ofNullable;
+
+/**
+ * Generic wrapper representing a paginated response from the WordPress REST API.
+ *
+ * &lt;p&gt;This class contains the retrieved items along with pagination metadata
+ * such as total number of items, total pages, and the current page index.&lt;/p&gt;
+ *
+ * @param &lt;T&gt;
+ *         the type of items contained in the response
+ */
+@Getter
+public class WpPagedResponse&lt;T&gt; {
+
+    /**
+     * List of items returned for the current page.
+     */
+    private final List&lt;T&gt; items;
+
+    /**
+     * Number of items requested per page.
+     */
+    private final int itemsPerPage;
+
+    /**
+     * Total number of items available across all pages.
+     */
+    private final int totalItems;
+
+    /**
+     * Total number of pages available.
+     */
+    private final int totalPages;
+
+    /**
+     * Current page number (1-based index).
+     */
+    private final int pageNumber;
+
+    /**
+     * Creates a new paged response wrapper.
+     *
+     * @param items
+     *         items returned for the current page; {@code null} is treated as an empty list
+     * @param itemsPerPage
+     *         number of items requested per page; must be at least 1
+     * @param totalItems
+     *         total number of items available; must be at least 0
+     * @param totalPages
+     *         total number of pages available; must be at least 0
+     * @param pageNumber
+     *         current page number; must be at least 1
+     *
+     * @throws IllegalArgumentException
+     *         if any numeric argument is outside its valid range
+     */
+    public WpPagedResponse(final List&lt;T&gt; items,
+                           final int itemsPerPage,
+                           final int totalItems,
+                           final int totalPages,
+<span class="fc" id="L68">                           final int pageNumber) {</span>
+
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        if (itemsPerPage &lt; 1) throw new IllegalArgumentException(&quot;itemsPerPage must be &gt;= 1&quot;);</span>
+<span class="fc bfc" id="L71" title="All 2 branches covered.">        if (totalItems &lt; 0) throw new IllegalArgumentException(&quot;totalItems must be &gt;= 0&quot;);</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        if (totalPages &lt; 0) throw new IllegalArgumentException(&quot;totalPages must be &gt;= 0&quot;);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (pageNumber &lt; 1) throw new IllegalArgumentException(&quot;pageNumber must be &gt;= 1&quot;);</span>
+
+<span class="fc" id="L75">        this.items = ofNullable(items).orElse(emptyList());</span>
+<span class="fc" id="L76">        this.itemsPerPage = itemsPerPage;</span>
+<span class="fc" id="L77">        this.totalItems = totalItems;</span>
+<span class="fc" id="L78">        this.totalPages = totalPages;</span>
+<span class="fc" id="L79">        this.pageNumber = pageNumber;</span>
+<span class="fc" id="L80">    }</span>
+
+    /**
+     * Indicates whether another page of results is available.
+     *
+     * @return {@code true} if there is a next page, {@code false} otherwise
+     */
+    public boolean hasNextPage() {
+<span class="fc bfc" id="L88" title="All 2 branches covered.">        return pageNumber &lt; totalPages;</span>
+    }
+
+    /**
+     * Indicates whether the current page contains no items.
+     *
+     * @return {@code true} if the item list is empty, {@code false} otherwise
+     */
+    public boolean isEmpty() {
+<span class="fc" id="L97">        return items.isEmpty();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

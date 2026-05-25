@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>ApacheJwtTokenClient.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">WP REST Client - Test Report Aggregation</a> &gt; <a href="../index.html" class="el_bundle">wp-rest-client-apache</a> &gt; <a href="index.source.html" class="el_package">io.github.evisentin.wordpress.client.adapter.apache.auth.jwt</a> &gt; <span class="el_source">ApacheJwtTokenClient.java</span></div><h1>ApacheJwtTokenClient.java</h1><pre class="source lang-java linenums">package io.github.evisentin.wordpress.client.adapter.apache.auth.jwt;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.evisentin.wordpress.client.domain.auth.WpAuthException;
+import io.github.evisentin.wordpress.client.domain.auth.WpJwtAuthenticationStrategy;
+import io.github.evisentin.wordpress.client.domain.auth.jwt.JwtResponse;
+import io.github.evisentin.wordpress.client.domain.auth.jwt.JwtTokenClient;
+import lombok.NonNull;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
+
+import java.io.IOException;
+import java.util.List;
+
+import static org.apache.hc.core5.http.HttpHeaders.ACCEPT;
+import static org.apache.hc.core5.http.HttpHeaders.CONTENT_TYPE;
+
+public class ApacheJwtTokenClient implements JwtTokenClient {
+
+    private final CloseableHttpClient authHttpClient;
+    private final ObjectMapper mapper;
+
+<span class="pc bpc" id="L26" title="1 of 2 branches missed.">    public ApacheJwtTokenClient(final @NonNull CloseableHttpClient authHttpClient) {</span>
+<span class="fc" id="L27">        this(authHttpClient, new ObjectMapper());</span>
+<span class="fc" id="L28">    }</span>
+
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">    public ApacheJwtTokenClient(final @NonNull CloseableHttpClient authHttpClient,</span>
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">                                final @NonNull ObjectMapper mapper) {</span>
+<span class="fc" id="L32">        this.authHttpClient = authHttpClient;</span>
+<span class="fc" id="L33">        this.mapper = mapper;</span>
+<span class="fc" id="L34">    }</span>
+
+    @Override
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">    public JwtResponse fetchToken(final @NonNull WpJwtAuthenticationStrategy strategy) {</span>
+<span class="fc" id="L38">        HttpPost request = new HttpPost(strategy.jwtTokenUrl());</span>
+
+<span class="fc" id="L40">        request.addHeader(ACCEPT, &quot;application/json&quot;);</span>
+<span class="fc" id="L41">        request.setHeader(CONTENT_TYPE, &quot;application/x-www-form-urlencoded&quot;);</span>
+
+<span class="fc" id="L43">        request.setEntity(new UrlEncodedFormEntity(List.of(</span>
+<span class="fc" id="L44">                new BasicNameValuePair(&quot;username&quot;, strategy.username()),</span>
+<span class="fc" id="L45">                new BasicNameValuePair(&quot;password&quot;, strategy.password())</span>
+        )));
+
+        try {
+<span class="fc" id="L49">            return authHttpClient.execute(request, response -&gt; {</span>
+<span class="fc" id="L50">                int statusCode = response.getCode();</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">                String body = response.getEntity() == null</span>
+<span class="nc" id="L52">                        ? &quot;&quot;</span>
+<span class="fc" id="L53">                        : EntityUtils.toString(response.getEntity());</span>
+
+<span class="pc bpc" id="L55" title="2 of 4 branches missed.">                if (statusCode &lt; 200 || statusCode &gt;= 300) {</span>
+<span class="nc" id="L56">                    throw new WpAuthException(&quot;Failed to fetch JWT token. HTTP &quot; + statusCode + &quot;: &quot; + body);</span>
+                }
+
+<span class="fc" id="L59">                return mapper.readValue(body, JwtResponse.class);</span>
+            });
+<span class="nc" id="L61">        } catch (IOException e) {</span>
+<span class="nc" id="L62">            throw new WpAuthException(&quot;Failed to fetch JWT token&quot;, e);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

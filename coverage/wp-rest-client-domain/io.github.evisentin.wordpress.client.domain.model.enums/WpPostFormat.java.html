@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>WpPostFormat.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">WP REST Client - Test Report Aggregation</a> &gt; <a href="../index.html" class="el_bundle">wp-rest-client-domain</a> &gt; <a href="index.source.html" class="el_package">io.github.evisentin.wordpress.client.domain.model.enums</a> &gt; <span class="el_source">WpPostFormat.java</span></div><h1>WpPostFormat.java</h1><pre class="source lang-java linenums">package io.github.evisentin.wordpress.client.domain.model.enums;
+
+import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * Enumeration of post formats supported by the WordPress REST API.
+ *
+ * &lt;p&gt;
+ * Post formats describe the presentation style of a post, such as standard content, images, quotes, or video.
+ * &lt;/p&gt;
+ *
+ * &lt;p&gt;
+ * Each enum constant maps to the corresponding API value stored in {@link #value}, which is used during JSON
+ * serialization via the {@link JsonValue} annotation.
+ * &lt;/p&gt;
+ */
+<span class="fc" id="L19">@Getter</span>
+@RequiredArgsConstructor
+public enum WpPostFormat implements WpHasValueEnum {
+
+    /**
+     * Standard post format.
+     */
+<span class="fc" id="L26">    STANDARD(&quot;standard&quot;),</span>
+
+    /**
+     * Aside post format.
+     */
+<span class="fc" id="L31">    ASIDE(&quot;aside&quot;),</span>
+
+    /**
+     * Chat post format.
+     */
+<span class="fc" id="L36">    CHAT(&quot;chat&quot;),</span>
+
+    /**
+     * Gallery post format.
+     */
+<span class="fc" id="L41">    GALLERY(&quot;gallery&quot;),</span>
+
+    /**
+     * Link post format.
+     */
+<span class="fc" id="L46">    LINK(&quot;link&quot;),</span>
+
+    /**
+     * Image post format.
+     */
+<span class="fc" id="L51">    IMAGE(&quot;image&quot;),</span>
+
+    /**
+     * Quote post format.
+     */
+<span class="fc" id="L56">    QUOTE(&quot;quote&quot;),</span>
+
+    /**
+     * Status post format.
+     */
+<span class="fc" id="L61">    STATUS(&quot;status&quot;),</span>
+
+    /**
+     * Video post format.
+     */
+<span class="fc" id="L66">    VIDEO(&quot;video&quot;),</span>
+
+    /**
+     * Audio post format.
+     */
+<span class="fc" id="L71">    AUDIO(&quot;audio&quot;);</span>
+
+    /**
+     * The API value associated with the post format.
+     */
+    @JsonValue
+    private final String value;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

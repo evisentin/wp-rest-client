@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>LoggingInterceptor.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">WP REST Client - Test Report Aggregation</a> &gt; <a href="../index.html" class="el_bundle">wp-rest-client-okhttp</a> &gt; <a href="index.source.html" class="el_package">io.github.evisentin.wordpress.client.adapter.okhttp.interceptors</a> &gt; <span class="el_source">LoggingInterceptor.java</span></div><h1>LoggingInterceptor.java</h1><pre class="source lang-java linenums">package io.github.evisentin.wordpress.client.adapter.okhttp.interceptors;
+
+import lombok.extern.slf4j.Slf4j;
+import okhttp3.*;
+import okio.Buffer;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+
+<span class="fc" id="L10">@Slf4j</span>
+<span class="fc" id="L11">public class LoggingInterceptor implements Interceptor {</span>
+
+    private static final String REQUEST_PREFIX = &quot;&gt;&gt;&gt; &quot;;
+    private static final String RESPONSE_PREFIX = &quot;&lt;&lt;&lt; &quot;;
+
+    @Override
+    public Response intercept(Chain chain) throws IOException {
+
+<span class="fc" id="L19">        Request request = chain.request();</span>
+
+<span class="pc bpc" id="L21" title="1 of 2 branches missed.">        if (!log.isDebugEnabled()) {</span>
+<span class="fc" id="L22">            return chain.proceed(request);</span>
+        }
+
+<span class="nc" id="L25">        StringBuilder reqLog = new StringBuilder();</span>
+<span class="nc" id="L26">        reqLog.append(&quot;\n&quot;)</span>
+<span class="nc" id="L27">              .append(REQUEST_PREFIX)</span>
+<span class="nc" id="L28">              .append(&quot;&gt;&gt;&gt; HTTP REQUEST &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;\n&quot;);</span>
+
+<span class="nc" id="L30">        reqLog.append(REQUEST_PREFIX)</span>
+<span class="nc" id="L31">              .append(request.method())</span>
+<span class="nc" id="L32">              .append(&quot; &quot;)</span>
+<span class="nc" id="L33">              .append(request.url())</span>
+<span class="nc" id="L34">              .append(&quot;\n&quot;);</span>
+
+<span class="nc" id="L36">        Headers headers = request.headers();</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        for (int i = 0; i &lt; headers.size(); i++) {</span>
+<span class="nc" id="L38">            reqLog.append(REQUEST_PREFIX)</span>
+<span class="nc" id="L39">                  .append(&quot;[HEADER] &quot;)</span>
+<span class="nc" id="L40">                  .append(headers.name(i))</span>
+<span class="nc" id="L41">                  .append(&quot;: &quot;)</span>
+<span class="nc" id="L42">                  .append(headers.value(i))</span>
+<span class="nc" id="L43">                  .append(&quot;\n&quot;);</span>
+        }
+
+<span class="nc bnc" id="L46" title="All 4 branches missed.">        if (request.body() != null &amp;&amp; isPlaintext(request.body().contentType())) {</span>
+<span class="nc" id="L47">            Buffer buffer = new Buffer();</span>
+<span class="nc" id="L48">            request.body().writeTo(buffer);</span>
+<span class="nc" id="L49">            String body = buffer.readString(StandardCharsets.UTF_8);</span>
+
+<span class="nc" id="L51">            reqLog.append(REQUEST_PREFIX)</span>
+<span class="nc" id="L52">                  .append(&quot;Body: &quot;)</span>
+<span class="nc" id="L53">                  .append(body)</span>
+<span class="nc" id="L54">                  .append(&quot;\n&quot;);</span>
+        }
+
+<span class="nc" id="L57">        log.debug(reqLog.toString());</span>
+
+<span class="nc" id="L59">        Response response = chain.proceed(request);</span>
+
+<span class="nc" id="L61">        StringBuilder resLog = new StringBuilder();</span>
+<span class="nc" id="L62">        resLog.append(&quot;\n&quot;)</span>
+<span class="nc" id="L63">              .append(RESPONSE_PREFIX)</span>
+<span class="nc" id="L64">              .append(&quot;&lt;&lt;&lt; HTTP RESPONSE &lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;\n&quot;);</span>
+
+<span class="nc" id="L66">        resLog.append(RESPONSE_PREFIX)</span>
+<span class="nc" id="L67">              .append(&quot;Status: &quot;)</span>
+<span class="nc" id="L68">              .append(response.code())</span>
+<span class="nc" id="L69">              .append(&quot;\n&quot;);</span>
+
+<span class="nc" id="L71">        Headers resHeaders = response.headers();</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">        for (int i = 0; i &lt; resHeaders.size(); i++) {</span>
+<span class="nc" id="L73">            resLog.append(RESPONSE_PREFIX)</span>
+<span class="nc" id="L74">                  .append(&quot;[HEADER] &quot;)</span>
+<span class="nc" id="L75">                  .append(resHeaders.name(i))</span>
+<span class="nc" id="L76">                  .append(&quot;: &quot;)</span>
+<span class="nc" id="L77">                  .append(resHeaders.value(i))</span>
+<span class="nc" id="L78">                  .append(&quot;\n&quot;);</span>
+        }
+
+<span class="nc" id="L81">        ResponseBody responseBody = response.body();</span>
+<span class="nc bnc" id="L82" title="All 4 branches missed.">        if (responseBody != null &amp;&amp; isPlaintext(responseBody.contentType())) {</span>
+<span class="nc" id="L83">            MediaType contentType = responseBody.contentType();</span>
+<span class="nc" id="L84">            String bodyString = responseBody.string();</span>
+
+<span class="nc" id="L86">            resLog.append(RESPONSE_PREFIX)</span>
+<span class="nc" id="L87">                  .append(&quot;Body: &quot;)</span>
+<span class="nc" id="L88">                  .append(bodyString)</span>
+<span class="nc" id="L89">                  .append(&quot;\n&quot;);</span>
+
+<span class="nc" id="L91">            response = response.newBuilder()</span>
+<span class="nc" id="L92">                               .body(ResponseBody.create(bodyString, contentType))</span>
+<span class="nc" id="L93">                               .build();</span>
+        }
+
+<span class="nc" id="L96">        log.debug(resLog.toString());</span>
+
+<span class="nc" id="L98">        return response;</span>
+    }
+
+    private boolean isPlaintext(MediaType contentType) {
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        if (contentType == null) {</span>
+<span class="nc" id="L103">            return false;</span>
+        }
+
+<span class="nc" id="L106">        String subtype = contentType.subtype().toLowerCase();</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        return subtype.contains(&quot;json&quot;)</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">               || subtype.contains(&quot;xml&quot;)</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">               || subtype.contains(&quot;text&quot;)</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">               || subtype.contains(&quot;html&quot;)</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">               || subtype.contains(&quot;x-www-form-urlencoded&quot;);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>ApacheAuthenticationStrategyHandlerRegistry.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">WP REST Client - Test Report Aggregation</a> &gt; <a href="../index.html" class="el_bundle">wp-rest-client-apache</a> &gt; <a href="index.source.html" class="el_package">io.github.evisentin.wordpress.client.adapter.apache.auth</a> &gt; <span class="el_source">ApacheAuthenticationStrategyHandlerRegistry.java</span></div><h1>ApacheAuthenticationStrategyHandlerRegistry.java</h1><pre class="source lang-java linenums">package io.github.evisentin.wordpress.client.adapter.apache.auth;
+
+import io.github.evisentin.wordpress.client.adapter.apache.auth.basic.ApacheBasicAuthenticationStrategyHandler;
+import io.github.evisentin.wordpress.client.adapter.apache.auth.jwt.ApacheJwtAuthenticationStrategyHandler;
+import io.github.evisentin.wordpress.client.domain.auth.WpAuthenticationStrategy;
+import lombok.NonNull;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+
+import java.util.HashSet;
+import java.util.Set;
+
+public class ApacheAuthenticationStrategyHandlerRegistry {
+
+<span class="fc" id="L14">    private final Set&lt;ApacheAuthenticationStrategyHandler&lt;?&gt;&gt; handlers = new HashSet&lt;&gt;();</span>
+
+<span class="pc bpc" id="L16" title="1 of 2 branches missed.">    public ApacheAuthenticationStrategyHandlerRegistry(final @NonNull CloseableHttpClient authHttpClient) {</span>
+<span class="fc" id="L17">        handlers.add(new ApacheBasicAuthenticationStrategyHandler());</span>
+<span class="fc" id="L18">        handlers.add(new ApacheJwtAuthenticationStrategyHandler(authHttpClient));</span>
+<span class="fc" id="L19">    }</span>
+
+<span class="pc bpc" id="L21" title="1 of 2 branches missed.">    public ApacheAuthenticationStrategyHandler&lt;?&gt; getHandler(final @NonNull WpAuthenticationStrategy strategy) {</span>
+<span class="fc" id="L22">        return handlers.stream()</span>
+<span class="fc" id="L23">                       .filter(h -&gt; h.canHandle(strategy))</span>
+<span class="fc" id="L24">                       .findFirst()</span>
+<span class="pc" id="L25">                       .orElseThrow(() -&gt; new IllegalArgumentException(&quot;No handler found&quot;));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

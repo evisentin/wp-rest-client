@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>WpErrorInterceptor.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">WP REST Client - Test Report Aggregation</a> &gt; <a href="../index.html" class="el_bundle">wp-rest-client-okhttp</a> &gt; <a href="index.source.html" class="el_package">io.github.evisentin.wordpress.client.adapter.okhttp.interceptors</a> &gt; <span class="el_source">WpErrorInterceptor.java</span></div><h1>WpErrorInterceptor.java</h1><pre class="source lang-java linenums">package io.github.evisentin.wordpress.client.adapter.okhttp.interceptors;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.evisentin.wordpress.client.adapter.okhttp.http.HttpStatusCodes;
+import io.github.evisentin.wordpress.client.domain.exception.WpBadRequestException;
+import io.github.evisentin.wordpress.client.domain.exception.WpForbiddenException;
+import io.github.evisentin.wordpress.client.domain.exception.WpNotFoundException;
+import io.github.evisentin.wordpress.client.domain.exception.WpUnauthorizedException;
+import io.github.evisentin.wordpress.client.domain.model.WpError;
+import okhttp3.*;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
+/**
+ * OkHttp {@link Interceptor} that translates non-successful HTTP responses from the WordPress REST API into
+ * domain-specific exceptions.
+ *
+ * &lt;p&gt;This interceptor inspects the HTTP response returned by the server. If the
+ * response is not successful (i.e., not in the 2xx range), it attempts to parse the response body into a
+ * {@link WpError} object and maps the HTTP status code to a corresponding {@code WpException} subtype.
+ *
+ * &lt;p&gt;Supported mappings include:
+ * &lt;ul&gt;
+ *     &lt;li&gt;400 → {@link WpBadRequestException}&lt;/li&gt;
+ *     &lt;li&gt;401 → {@link WpUnauthorizedException}&lt;/li&gt;
+ *     &lt;li&gt;403 → {@link WpForbiddenException}&lt;/li&gt;
+ *     &lt;li&gt;404 → {@link WpNotFoundException}&lt;/li&gt;
+ * &lt;/ul&gt;
+ *
+ * &lt;p&gt;If the response body cannot be parsed or the status code is not explicitly
+ * handled, a generic {@link RuntimeException} is thrown.
+ *
+ * &lt;p&gt;This interceptor should typically be registered with the OkHttp client
+ * used by the WordPress client.
+ */
+<span class="fc" id="L39">public final class WpErrorInterceptor implements Interceptor {</span>
+
+<span class="fc" id="L41">    private static final ObjectMapper MAPPER = new ObjectMapper();</span>
+
+    /**
+     * Intercepts the HTTP request/response chain and converts error responses into domain-specific exceptions.
+     *
+     * &lt;p&gt;If the response is successful, it is returned unchanged. Otherwise,
+     * the response body is read and parsed into a {@link WpError} object (if possible), and an appropriate exception is
+     * thrown based on the HTTP status code.
+     *
+     * &lt;p&gt;&lt;strong&gt;Note:&lt;/strong&gt; The response body is consumed during processing,
+     * so it is rebuilt before throwing the exception to preserve the original content.
+     *
+     * @param chain
+     *         the OkHttp interceptor chain
+     *
+     * @return the original {@link Response} if successful
+     *
+     * @throws IOException
+     *         if an I/O error occurs during request execution
+     * @throws RuntimeException
+     *         mapped exception corresponding to the HTTP error response
+     */
+    @Override
+    @NotNull
+    public Response intercept(final Chain chain) throws IOException {
+<span class="fc" id="L66">        final Request request = chain.request();</span>
+<span class="fc" id="L67">        final Response response = chain.proceed(request);</span>
+
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        if (response.isSuccessful()) {</span>
+<span class="fc" id="L70">            return response;</span>
+        }
+
+<span class="fc" id="L73">        final ResponseBody originalBody = response.body();</span>
+<span class="fc" id="L74">        final MediaType contentType = originalBody.contentType();</span>
+<span class="fc" id="L75">        final String rawBody = originalBody.string();</span>
+
+<span class="fc" id="L77">        final WpError wpError = parseWpError(rawBody);</span>
+
+<span class="fc" id="L79">        final Response rebuiltResponse = response.newBuilder()</span>
+<span class="fc" id="L80">                                                 .body(ResponseBody.create(rawBody, contentType))</span>
+<span class="fc" id="L81">                                                 .build();</span>
+
+<span class="fc" id="L83">        throw mapException(rebuiltResponse, wpError, rawBody);</span>
+    }
+
+    private static String buildBodySuffix(final String rawBody) {
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        if (isBlank(rawBody))</span>
+<span class="fc" id="L88">            return &quot;&quot;;</span>
+
+<span class="fc" id="L90">        return &quot;, body=&quot; + rawBody;</span>
+    }
+
+    private static RuntimeException mapException(final Response response,
+                                                 final WpError wpError,
+                                                 final String rawBody) {
+<span class="fc bfc" id="L96" title="All 5 branches covered.">        return switch (response.code()) {</span>
+<span class="fc" id="L97">            case HttpStatusCodes.BAD_REQUEST -&gt; new WpBadRequestException(wpError);</span>
+<span class="fc" id="L98">            case HttpStatusCodes.NOT_FOUND -&gt; new WpNotFoundException(wpError);</span>
+<span class="fc" id="L99">            case HttpStatusCodes.UNAUTHORIZED -&gt; new WpUnauthorizedException(wpError);</span>
+<span class="fc" id="L100">            case HttpStatusCodes.FORBIDDEN -&gt; new WpForbiddenException(wpError);</span>
+<span class="fc" id="L101">            default -&gt; new RuntimeException(&quot;Unexpected HTTP status &quot; + response.code() + buildBodySuffix(rawBody));</span>
+        };
+    }
+
+    private static WpError parseWpError(final String rawBody) {
+<span class="fc bfc" id="L106" title="All 2 branches covered.">        if (isBlank(rawBody))</span>
+<span class="fc" id="L107">            return null;</span>
+
+        try {
+<span class="fc" id="L110">            return MAPPER.readValue(rawBody, WpError.class);</span>
+<span class="fc" id="L111">        } catch (Exception ignored) {</span>
+<span class="fc" id="L112">            return null;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

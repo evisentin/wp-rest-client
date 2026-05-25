@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>AuthenticationInterceptor.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">WP REST Client - Test Report Aggregation</a> &gt; <a href="../index.html" class="el_bundle">wp-rest-client-okhttp</a> &gt; <a href="index.source.html" class="el_package">io.github.evisentin.wordpress.client.adapter.okhttp.interceptors</a> &gt; <span class="el_source">AuthenticationInterceptor.java</span></div><h1>AuthenticationInterceptor.java</h1><pre class="source lang-java linenums">package io.github.evisentin.wordpress.client.adapter.okhttp.interceptors;
+
+import io.github.evisentin.wordpress.client.adapter.okhttp.auth.OkHttpAuthenticationStrategyHandlerRegistry;
+import io.github.evisentin.wordpress.client.domain.auth.WpAuthenticationStrategy;
+import lombok.NonNull;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
+
+import static io.github.evisentin.wordpress.client.adapter.okhttp.http.HttpHeaders.AUTHORIZATION;
+
+public class AuthenticationInterceptor implements Interceptor {
+
+    private final OkHttpAuthenticationStrategyHandlerRegistry registry;
+    private final WpAuthenticationStrategy strategy;
+
+<span class="fc bfc" id="L21" title="All 2 branches covered.">    public AuthenticationInterceptor(final @NonNull WpAuthenticationStrategy strategy,</span>
+<span class="fc bfc" id="L22" title="All 2 branches covered.">                                     final @NonNull OkHttpClient authHttpClient) {</span>
+
+<span class="fc" id="L24">        this.strategy = strategy;</span>
+<span class="fc" id="L25">        registry = new OkHttpAuthenticationStrategyHandlerRegistry(authHttpClient);</span>
+<span class="fc" id="L26">    }</span>
+
+    @NotNull
+    @Override
+<span class="fc bfc" id="L30" title="All 2 branches covered.">    public Response intercept(final @NonNull Chain chain) throws IOException {</span>
+<span class="fc" id="L31">        final Request original = chain.request();</span>
+
+<span class="fc" id="L33">        final String value = registry.getHandler(strategy).authenticate(strategy);</span>
+
+<span class="fc" id="L35">        return chain.proceed(original.newBuilder()</span>
+<span class="fc" id="L36">                                     .header(AUTHORIZATION, value)</span>
+<span class="fc" id="L37">                                     .method(original.method(), original.body())</span>
+<span class="fc" id="L38">                                     .build());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>OkHttpWpRestClient.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">WP REST Client - Test Report Aggregation</a> &gt; <a href="../index.html" class="el_bundle">wp-rest-client-okhttp</a> &gt; <a href="index.source.html" class="el_package">io.github.evisentin.wordpress.client.adapter.okhttp</a> &gt; <span class="el_source">OkHttpWpRestClient.java</span></div><h1>OkHttpWpRestClient.java</h1><pre class="source lang-java linenums">package io.github.evisentin.wordpress.client.adapter.okhttp;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.evisentin.wordpress.client.adapter.okhttp.interceptors.AuthenticationInterceptor;
+import io.github.evisentin.wordpress.client.adapter.okhttp.interceptors.LoggingInterceptor;
+import io.github.evisentin.wordpress.client.adapter.okhttp.interceptors.WpErrorInterceptor;
+import io.github.evisentin.wordpress.client.adapter.okhttp.query.mappers.CategoryQueryParamMapper;
+import io.github.evisentin.wordpress.client.adapter.okhttp.query.mappers.PostQueryParamMapper;
+import io.github.evisentin.wordpress.client.adapter.okhttp.query.mappers.TagQueryParamMapper;
+import io.github.evisentin.wordpress.client.domain.api.WpBaseRestClient;
+import io.github.evisentin.wordpress.client.domain.auth.WpAuthenticationStrategy;
+import io.github.evisentin.wordpress.client.domain.configuration.SslConfiguration;
+import io.github.evisentin.wordpress.client.domain.configuration.TimeoutConfiguration;
+import io.github.evisentin.wordpress.client.domain.model.WpCategory;
+import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
+import io.github.evisentin.wordpress.client.domain.model.WpPost;
+import io.github.evisentin.wordpress.client.domain.model.WpTag;
+import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
+import io.github.evisentin.wordpress.client.domain.model.query.WpCategoryQuery;
+import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.client.domain.model.query.WpPostQuery;
+import io.github.evisentin.wordpress.client.domain.model.query.WpTagQuery;
+import io.github.evisentin.wordpress.client.domain.model.requests.WpCategoryCreateUpdateRequest;
+import io.github.evisentin.wordpress.client.domain.model.requests.WpPostCreateUpdateRequest;
+import io.github.evisentin.wordpress.client.domain.model.requests.WpTagCreateUpdateRequest;
+import io.github.evisentin.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
+import io.github.evisentin.wordpress.client.domain.model.responses.WpPostDeletionResponse;
+import io.github.evisentin.wordpress.client.domain.model.responses.WpTagDeletionResponse;
+import lombok.NonNull;
+import lombok.SneakyThrows;
+import lombok.val;
+import okhttp3.*;
+import org.apache.commons.text.StringSubstitutor;
+
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import static io.github.evisentin.wordpress.client.adapter.okhttp.TypeReferences.*;
+import static io.github.evisentin.wordpress.client.adapter.okhttp.http.HttpHeaders.ACCEPT;
+import static io.github.evisentin.wordpress.client.adapter.okhttp.http.HttpHeaders.X_WP_TOTAL;
+import static io.github.evisentin.wordpress.client.adapter.okhttp.http.HttpHeaders.X_WP_TOTAL_PAGES;
+import static io.github.evisentin.wordpress.client.adapter.okhttp.http.MediaTypes.MEDIA_TYPE_APPLICATION_JSON;
+import static io.github.evisentin.wordpress.client.adapter.okhttp.http.MimeTypes.APPLICATION_JSON;
+import static io.github.evisentin.wordpress.client.domain.model.parameters.WpQueryParameters.CONTEXT;
+import static io.github.evisentin.wordpress.client.domain.model.parameters.WpQueryParameters.FORCE;
+import static io.github.evisentin.wordpress.client.domain.model.parameters.WpQueryParameters.PAGE;
+import static io.github.evisentin.wordpress.client.domain.model.parameters.WpQueryParameters.PER_PAGE;
+import static java.util.Objects.requireNonNull;
+import static java.util.Optional.ofNullable;
+import static org.apache.commons.lang3.ObjectUtils.anyNull;
+import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.apache.commons.lang3.StringUtils.isNotBlank;
+
+/**
+ * OkHttp-based implementation of {@link WpBaseRestClient}.
+ *
+ * &lt;p&gt;
+ * This client provides a synchronous wrapper around the WordPress REST API using {@link okhttp3.OkHttpClient} as the
+ * underlying HTTP transport.
+ *
+ * &lt;p&gt;
+ * It supports CRUD operations and paginated queries for core WordPress resources such as posts, categories, and tags.
+ *
+ * &lt;p&gt;
+ * The client is configured with an authentication strategy and automatically registers internal interceptors for:
+ * &lt;ul&gt;
+ *     &lt;li&gt;Authentication ({@link AuthenticationInterceptor})&lt;/li&gt;
+ *     &lt;li&gt;WordPress-specific error handling ({@link WpErrorInterceptor})&lt;/li&gt;
+ * &lt;/ul&gt;
+ *
+ * &lt;p&gt;
+ * Optional {@link SslConfiguration} and {@link TimeoutConfiguration} can be provided
+ * to customize TLS behaviour and request timeouts.
+ *
+ * &lt;b&gt;Thread Safety&lt;/b&gt;
+ *
+ * &lt;p&gt;
+ * Instances of this class are thread-safe and intended to be reused.
+ *
+ * @see WpBaseRestClient
+ * @see AuthenticationInterceptor
+ * @see WpErrorInterceptor
+ */
+public class OkHttpWpRestClient extends WpBaseRestClient {
+
+    public static final String BASE_URL = &quot;baseUrl&quot;;
+    private final OkHttpClient httpClient;
+    private final ObjectMapper mapper;
+
+    /**
+     * Creates a new {@code OkHttpWpRestClient}.
+     *
+     * &lt;p&gt;
+     * The client is initialized with the given base URL and authentication strategy, and backed by an
+     * {@link okhttp3.OkHttpClient} configured with internal authentication and error-handling interceptors.
+     *
+     * &lt;p&gt;
+     * If a {@link SslConfiguration} is provided, it is applied to the underlying HTTP client. If {@code null}, the
+     * default JVM SSL configuration is used.
+     *
+     * &lt;p&gt;
+     * If a {@link TimeoutConfiguration} is provided, it is applied to the HTTP client. If {@code null}, OkHttp defaults
+     * are used.
+     *
+     * @param baseUrl
+     *         the base URL of the WordPress instance (must not be {@code null})
+     * @param authenticationStrategy
+     *         the authentication strategy used to sign requests (must not be {@code null})
+     * @param sslConfiguration
+     *         optional SSL configuration; may be {@code null}
+     * @param timeoutConfiguration
+     *         optional timeout configuration; may be {@code null}
+     *
+     * @throws NullPointerException
+     *         if {@code baseUrl} or {@code authenticationStrategy} is {@code null}
+     * @throws IllegalStateException
+     *         if the provided {@link SslConfiguration} is invalid
+     */
+<span class="fc" id="L124">    @SneakyThrows</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">    public OkHttpWpRestClient(final @NonNull String baseUrl,</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">                              final @NonNull WpAuthenticationStrategy authenticationStrategy,</span>
+                              final SslConfiguration sslConfiguration,
+                              final TimeoutConfiguration timeoutConfiguration) {
+<span class="fc" id="L129">        super(baseUrl, authenticationStrategy);</span>
+<span class="fc" id="L130">        this.mapper = new ObjectMapper();</span>
+<span class="fc" id="L131">        mapper.findAndRegisterModules();</span>
+
+<span class="fc" id="L133">        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()</span>
+<span class="fc" id="L134">                .addInterceptor(new AuthenticationInterceptor(authenticationStrategy, buildAuthHttpClient(sslConfiguration, timeoutConfiguration)))</span>
+<span class="fc" id="L135">                .addInterceptor(new WpErrorInterceptor())</span>
+<span class="fc" id="L136">                .addInterceptor(new LoggingInterceptor());</span>
+
+<span class="fc" id="L138">        applySslConfigurationIfPresent(clientBuilder, sslConfiguration);</span>
+<span class="fc" id="L139">        applyTimeoutConfigurationIfPresent(clientBuilder, timeoutConfiguration);</span>
+
+<span class="fc" id="L141">        this.httpClient = clientBuilder.build();</span>
+<span class="fc" id="L142">    }</span>
+
+    @Override
+<span class="fc" id="L145">    @SneakyThrows</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">    public WpCategory createCategory(final @NonNull WpCategoryCreateUpdateRequest creationRequest) {</span>
+<span class="fc bfc" id="L147" title="All 2 branches covered.">        if (isBlank(creationRequest.getName()))</span>
+<span class="fc" id="L148">            throw new IllegalArgumentException(&quot;name cannot be blank&quot;);</span>
+
+<span class="fc" id="L150">        final HttpUrl.Builder builder = urlBuilder(&quot;${baseUrl}/wp-json/wp/v2/categories&quot;,</span>
+<span class="fc" id="L151">                Map.of(BASE_URL, baseUrl));</span>
+
+<span class="fc" id="L153">        return performPostWithBody(builder, creationRequest, WP_CATEGORY_TYPE);</span>
+    }
+
+    @Override
+<span class="fc" id="L157">    @SneakyThrows</span>
+<span class="fc bfc" id="L158" title="All 2 branches covered.">    public WpPost createPost(final @NonNull WpPostCreateUpdateRequest creationRequest) {</span>
+<span class="fc" id="L159">        final HttpUrl.Builder builder = urlBuilder(&quot;${baseUrl}/wp-json/wp/v2/posts&quot;,</span>
+<span class="fc" id="L160">                Map.of(BASE_URL, baseUrl));</span>
+
+<span class="fc" id="L162">        return performPostWithBody(builder, creationRequest, WP_POST_TYPE);</span>
+    }
+
+    @Override
+<span class="fc" id="L166">    @SneakyThrows</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">    public WpTag createTag(final @NonNull WpTagCreateUpdateRequest creationRequest) {</span>
+
+<span class="fc bfc" id="L169" title="All 2 branches covered.">        if (isBlank(creationRequest.getName()))</span>
+<span class="fc" id="L170">            throw new IllegalArgumentException(&quot;name cannot be blank&quot;);</span>
+
+<span class="fc" id="L172">        final HttpUrl.Builder builder = urlBuilder(&quot;${baseUrl}/wp-json/wp/v2/tags&quot;,</span>
+<span class="fc" id="L173">                Map.of(BASE_URL, baseUrl));</span>
+
+<span class="fc" id="L175">        return performPostWithBody(builder, creationRequest, WP_TAG_TYPE);</span>
+    }
+
+    @Override
+<span class="fc" id="L179">    @SneakyThrows</span>
+<span class="fc bfc" id="L180" title="All 2 branches covered.">    public WpCategoryDeletionResponse deleteCategory(final @NonNull Long id) {</span>
+<span class="fc" id="L181">        final HttpUrl.Builder builder = urlBuilder(&quot;${baseUrl}/wp-json/wp/v2/categories/${id}&quot;,</span>
+<span class="fc" id="L182">                Map.of(BASE_URL, baseUrl, &quot;id&quot;, id));</span>
+
+        // For tags/terms, WordPress does not support trashing, and the REST API explicitly
+        // requires force to be true for delete.
+<span class="fc" id="L186">        builder.addQueryParameter(FORCE, Boolean.TRUE.toString());</span>
+
+<span class="fc" id="L188">        return performDeleteRequest(builder, WP_CATEGORY_DELETION_RESPONSE_TYPE);</span>
+    }
+
+    @Override
+<span class="fc" id="L192">    @SneakyThrows</span>
+<span class="fc bfc" id="L193" title="All 2 branches covered.">    public WpPostDeletionResponse deletePost(@NonNull Long id) {</span>
+<span class="fc" id="L194">        final HttpUrl.Builder builder = urlBuilder(&quot;${baseUrl}/wp-json/wp/v2/posts/${id}&quot;,</span>
+<span class="fc" id="L195">                Map.of(BASE_URL, baseUrl, &quot;id&quot;, id));</span>
+
+<span class="fc" id="L197">        builder.addQueryParameter(FORCE, Boolean.TRUE.toString());</span>
+
+<span class="fc" id="L199">        return performDeleteRequest(builder, WP_POST_DELETION_RESPONSE_TYPE);</span>
+    }
+
+    @Override
+<span class="fc" id="L203">    @SneakyThrows</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">    public WpTagDeletionResponse deleteTag(final @NonNull Long id) {</span>
+<span class="fc" id="L205">        final HttpUrl.Builder builder = urlBuilder(&quot;${baseUrl}/wp-json/wp/v2/tags/${id}&quot;,</span>
+<span class="fc" id="L206">                Map.of(BASE_URL, baseUrl, &quot;id&quot;, id));</span>
+
+        // For tags/terms, WordPress does not support trashing, and the REST API explicitly
+        // requires force to be true for delete.
+<span class="fc" id="L210">        builder.addQueryParameter(FORCE, Boolean.TRUE.toString());</span>
+
+<span class="fc" id="L212">        return performDeleteRequest(builder, WP_TAG_DELETION_RESPONSE_TYPE);</span>
+    }
+
+<span class="fc" id="L215">    @SneakyThrows</span>
+    @Override
+<span class="fc bfc" id="L217" title="All 2 branches covered.">    public WpCategory getCategory(final @NonNull Long id, final WpContext context) {</span>
+<span class="fc" id="L218">        final HttpUrl.Builder builder = urlBuilder(&quot;${baseUrl}/wp-json/wp/v2/categories/${id}&quot;,</span>
+<span class="fc" id="L219">                Map.of(BASE_URL, baseUrl, &quot;id&quot;, id));</span>
+
+<span class="fc" id="L221">        builder.addQueryParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());</span>
+
+<span class="fc" id="L223">        return performGetRequest(builder, WP_CATEGORY_TYPE);</span>
+    }
+
+    @Override
+<span class="fc bfc" id="L227" title="All 2 branches covered.">    public WpPost getPost(final @NonNull Long id, final WpContext context) {</span>
+<span class="fc" id="L228">        return getPost(id, context, null);</span>
+    }
+
+<span class="fc" id="L231">    @SneakyThrows</span>
+    @Override
+<span class="fc bfc" id="L233" title="All 2 branches covered.">    public WpPost getPost(final @NonNull Long id, final WpContext context, final String password) {</span>
+<span class="fc" id="L234">        final HttpUrl.Builder builder = urlBuilder(&quot;${baseUrl}/wp-json/wp/v2/posts/${id}&quot;,</span>
+<span class="fc" id="L235">                Map.of(BASE_URL, baseUrl, &quot;id&quot;, id));</span>
+
+<span class="fc" id="L237">        builder.addQueryParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());</span>
+
+<span class="fc bfc" id="L239" title="All 2 branches covered.">        if (isNotBlank(password))</span>
+<span class="fc" id="L240">            builder.addQueryParameter(&quot;password&quot;, password);</span>
+
+<span class="fc" id="L242">        return performGetRequest(builder, WP_POST_TYPE);</span>
+    }
+
+<span class="fc" id="L245">    @SneakyThrows</span>
+    @Override
+<span class="fc bfc" id="L247" title="All 2 branches covered.">    public WpTag getTag(@NonNull final Long id, final WpContext context) {</span>
+
+<span class="fc" id="L249">        final HttpUrl.Builder builder = urlBuilder(&quot;${baseUrl}/wp-json/wp/v2/tags/${id}&quot;,</span>
+<span class="fc" id="L250">                Map.of(BASE_URL, baseUrl, &quot;id&quot;, id));</span>
+
+<span class="fc" id="L252">        builder.addQueryParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());</span>
+
+<span class="fc" id="L254">        return performGetRequest(builder, WP_TAG_TYPE);</span>
+    }
+
+    @Override
+<span class="fc" id="L258">    @SneakyThrows</span>
+<span class="fc bfc" id="L259" title="All 2 branches covered.">    public WpPagedResponse&lt;WpCategory&gt; listCategories(final @NonNull WpPagingQuery pageQuery,</span>
+                                                      final WpCategoryQuery categoryQuery) {
+<span class="fc" id="L261">        final HttpUrl.Builder builder = urlBuilder(&quot;${baseUrl}/wp-json/wp/v2/categories&quot;, Map.of(BASE_URL, baseUrl));</span>
+
+<span class="fc" id="L263">        builder.addQueryParameter(PAGE, Integer.toString(pageQuery.getPageNumber()))</span>
+<span class="fc" id="L264">               .addQueryParameter(PER_PAGE, Integer.toString(pageQuery.getPageSize()));</span>
+
+<span class="fc" id="L266">        CategoryQueryParamMapper.map(builder, categoryQuery);</span>
+
+<span class="fc" id="L268">        return performPagingRequest(builder, pageQuery, WP_CATEGORY_LIST_TYPE);</span>
+    }
+
+    @Override
+<span class="fc" id="L272">    @SneakyThrows</span>
+<span class="fc bfc" id="L273" title="All 2 branches covered.">    public WpPagedResponse&lt;WpPost&gt; listPosts(final @NonNull WpPagingQuery pageQuery, final WpPostQuery postQuery) {</span>
+<span class="fc" id="L274">        final HttpUrl.Builder builder = urlBuilder(&quot;${baseUrl}/wp-json/wp/v2/posts&quot;, Map.of(BASE_URL, baseUrl));</span>
+
+<span class="fc" id="L276">        builder.addQueryParameter(PAGE, Integer.toString(pageQuery.getPageNumber()))</span>
+<span class="fc" id="L277">               .addQueryParameter(PER_PAGE, Integer.toString(pageQuery.getPageSize()));</span>
+
+<span class="fc" id="L279">        PostQueryParamMapper.map(builder, postQuery);</span>
+
+<span class="fc" id="L281">        return performPagingRequest(builder, pageQuery, WP_POST_LIST_TYPE);</span>
+    }
+
+    @Override
+<span class="fc" id="L285">    @SneakyThrows</span>
+<span class="fc bfc" id="L286" title="All 2 branches covered.">    public WpPagedResponse&lt;WpTag&gt; listTags(final @NonNull WpPagingQuery pageQuery, final WpTagQuery tagQuery) {</span>
+
+<span class="fc" id="L288">        final HttpUrl.Builder builder = urlBuilder(&quot;${baseUrl}/wp-json/wp/v2/tags&quot;, Map.of(BASE_URL, baseUrl));</span>
+
+<span class="fc" id="L290">        builder.addQueryParameter(PAGE, Integer.toString(pageQuery.getPageNumber()))</span>
+<span class="fc" id="L291">               .addQueryParameter(PER_PAGE, Integer.toString(pageQuery.getPageSize()));</span>
+
+<span class="fc" id="L293">        TagQueryParamMapper.map(builder, tagQuery);</span>
+
+<span class="fc" id="L295">        return performPagingRequest(builder, pageQuery, WP_TAG_LIST_TYPE);</span>
+    }
+
+    @Override
+<span class="fc" id="L299">    @SneakyThrows</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">    public WpPost trashPost(@NonNull Long id) {</span>
+<span class="fc" id="L301">        final HttpUrl.Builder builder = urlBuilder(&quot;${baseUrl}/wp-json/wp/v2/posts/${id}&quot;,</span>
+<span class="fc" id="L302">                Map.of(BASE_URL, baseUrl, &quot;id&quot;, id));</span>
+
+<span class="fc" id="L304">        builder.addQueryParameter(FORCE, Boolean.FALSE.toString());</span>
+
+<span class="fc" id="L306">        return performDeleteRequest(builder, WP_POST_TYPE);</span>
+    }
+
+    @Override
+<span class="fc" id="L310">    @SneakyThrows</span>
+<span class="fc bfc" id="L311" title="All 2 branches covered.">    public WpCategory updateCategory(final @NonNull Long id,</span>
+<span class="fc bfc" id="L312" title="All 2 branches covered.">                                     final @NonNull WpCategoryCreateUpdateRequest updateRequest) {</span>
+<span class="fc" id="L313">        final HttpUrl.Builder builder = urlBuilder(&quot;${baseUrl}/wp-json/wp/v2/categories/${id}&quot;,</span>
+<span class="fc" id="L314">                Map.of(BASE_URL, baseUrl,</span>
+                        &quot;id&quot;, id));
+
+<span class="fc" id="L317">        return performPostWithBody(builder, updateRequest, WP_CATEGORY_TYPE);</span>
+    }
+
+    @Override
+<span class="fc" id="L321">    @SneakyThrows</span>
+<span class="fc bfc" id="L322" title="All 2 branches covered.">    public WpPost updatePost(final @NonNull Long id,</span>
+<span class="fc bfc" id="L323" title="All 2 branches covered.">                             final @NonNull WpPostCreateUpdateRequest updateRequest) {</span>
+<span class="fc" id="L324">        final HttpUrl.Builder builder = urlBuilder(&quot;${baseUrl}/wp-json/wp/v2/posts/${id}&quot;,</span>
+<span class="fc" id="L325">                Map.of(BASE_URL, baseUrl,</span>
+                        &quot;id&quot;, id));
+
+<span class="fc" id="L328">        return performPostWithBody(builder, updateRequest, WP_POST_TYPE);</span>
+    }
+
+    @Override
+<span class="fc" id="L332">    @SneakyThrows</span>
+<span class="fc bfc" id="L333" title="All 2 branches covered.">    public WpTag updateTag(final @NonNull Long id,</span>
+<span class="fc bfc" id="L334" title="All 2 branches covered.">                           final @NonNull WpTagCreateUpdateRequest updateRequest) {</span>
+
+<span class="fc" id="L336">        final HttpUrl.Builder builder = urlBuilder(&quot;${baseUrl}/wp-json/wp/v2/tags/${id}&quot;,</span>
+<span class="fc" id="L337">                Map.of(BASE_URL, baseUrl,</span>
+                        &quot;id&quot;, id));
+
+<span class="fc" id="L340">        return performPostWithBody(builder, updateRequest, WP_TAG_TYPE);</span>
+    }
+
+    private void applyTimeoutConfigurationIfPresent(OkHttpClient.Builder clientBuilder, TimeoutConfiguration config) {
+<span class="pc bpc" id="L344" title="1 of 2 branches missed.">        if (config != null) {</span>
+<span class="nc" id="L345">            clientBuilder.connectTimeout(config.getConnectTimeout())</span>
+<span class="nc" id="L346">                         .readTimeout(config.getReadTimeout())</span>
+<span class="nc" id="L347">                         .writeTimeout(config.getWriteTimeout())</span>
+<span class="nc" id="L348">                         .callTimeout(config.getCallTimeout());</span>
+        }
+<span class="fc" id="L350">    }</span>
+
+    private OkHttpClient buildAuthHttpClient(SslConfiguration sslConfiguration, TimeoutConfiguration timeoutConfiguration) {
+<span class="fc" id="L353">        OkHttpClient.Builder authClientBuilder = new OkHttpClient.Builder();</span>
+<span class="fc" id="L354">        applySslConfigurationIfPresent(authClientBuilder, sslConfiguration);</span>
+<span class="fc" id="L355">        applyTimeoutConfigurationIfPresent(authClientBuilder, timeoutConfiguration);</span>
+
+<span class="fc" id="L357">        return authClientBuilder.build();</span>
+    }
+
+    private &lt;T&gt; T performDeleteRequest(final HttpUrl.Builder urlBuilder,
+                                       final TypeReference&lt;T&gt; responseType) throws IOException {
+<span class="fc" id="L362">        final Request request = new Request.Builder()</span>
+<span class="fc" id="L363">                .url(urlBuilder.build())</span>
+<span class="fc" id="L364">                .header(ACCEPT, APPLICATION_JSON)</span>
+<span class="fc" id="L365">                .delete()</span>
+<span class="fc" id="L366">                .build();</span>
+
+<span class="fc" id="L368">        try (Response response = httpClient.newCall(request).execute()) {</span>
+<span class="fc" id="L369">            final ResponseBody body = response.body();</span>
+
+<span class="fc" id="L371">            return mapper.readValue(body.string(), responseType);</span>
+        }
+    }
+
+    private &lt;T&gt; T performGetRequest(final HttpUrl.Builder urlBuilder,
+                                    final TypeReference&lt;T&gt; responseType) throws IOException {
+<span class="fc" id="L377">        final Request request = new Request.Builder()</span>
+<span class="fc" id="L378">                .url(urlBuilder.build())</span>
+<span class="fc" id="L379">                .header(ACCEPT, APPLICATION_JSON)</span>
+<span class="fc" id="L380">                .get()</span>
+<span class="fc" id="L381">                .build();</span>
+
+<span class="fc" id="L383">        try (Response response = httpClient.newCall(request).execute()) {</span>
+<span class="fc" id="L384">            final ResponseBody body = response.body();</span>
+
+<span class="fc" id="L386">            return mapper.readValue(body.string(), responseType);</span>
+        }
+    }
+
+    private &lt;T&gt; WpPagedResponse&lt;T&gt; performPagingRequest(final HttpUrl.Builder urlBuilder,
+                                                        final WpPagingQuery pageQuery,
+                                                        final TypeReference&lt;List&lt;T&gt;&gt; responseType) throws IOException {
+<span class="fc" id="L393">        final Request request = new Request.Builder()</span>
+<span class="fc" id="L394">                .url(urlBuilder.build())</span>
+<span class="fc" id="L395">                .header(ACCEPT, APPLICATION_JSON)</span>
+<span class="fc" id="L396">                .get()</span>
+<span class="fc" id="L397">                .build();</span>
+
+<span class="fc" id="L399">        try (Response response = httpClient.newCall(request).execute()) {</span>
+<span class="fc" id="L400">            final int totalItems = Integer.parseInt(requireNonNull(response.header(X_WP_TOTAL, &quot;0&quot;)));</span>
+<span class="fc" id="L401">            final int totalPages = Integer.parseInt(requireNonNull(response.header(X_WP_TOTAL_PAGES, &quot;0&quot;)));</span>
+<span class="fc" id="L402">            final String json = response.body().string();</span>
+
+<span class="fc" id="L404">            final List&lt;T&gt; items = mapper.readValue(json, responseType);</span>
+
+<span class="fc" id="L406">            return new WpPagedResponse&lt;&gt;(</span>
+                    items,
+<span class="fc" id="L408">                    pageQuery.getPageSize(),</span>
+                    totalItems,
+                    totalPages,
+<span class="fc" id="L411">                    pageQuery.getPageNumber()</span>
+            );
+        }
+    }
+
+    private &lt;T&gt; T performPostWithBody(final HttpUrl.Builder urlBuilder,
+                                      final Object requestBody,
+                                      final TypeReference&lt;T&gt; responseType) throws IOException {
+<span class="fc" id="L419">        Request request = new Request.Builder()</span>
+<span class="fc" id="L420">                .url(urlBuilder.build())</span>
+<span class="fc" id="L421">                .header(ACCEPT, APPLICATION_JSON)</span>
+<span class="fc" id="L422">                .post(RequestBody.create(toJson(requestBody), MEDIA_TYPE_APPLICATION_JSON))</span>
+<span class="fc" id="L423">                .build();</span>
+
+<span class="fc" id="L425">        try (Response response = httpClient.newCall(request).execute()) {</span>
+<span class="fc" id="L426">            val json = response.body().string();</span>
+<span class="fc" id="L427">            return mapper.readValue(json, responseType);</span>
+        }
+    }
+
+    private String toJson(final Object object) throws JsonProcessingException {
+<span class="fc" id="L432">        return mapper.writeValueAsString(object);</span>
+    }
+
+    private HttpUrl.Builder urlBuilder(final String path, final Map&lt;String, Object&gt; pathParams) {
+<span class="fc" id="L436">        final String substituted = new StringSubstitutor(emptyIfNull(pathParams)).replace(path);</span>
+<span class="fc" id="L437">        return Objects.requireNonNull(HttpUrl.parse(substituted)).newBuilder();</span>
+    }
+
+    private static void applySslConfigurationIfPresent(final OkHttpClient.Builder clientBuilder,
+                                                       final SslConfiguration sslConfiguration) {
+<span class="fc bfc" id="L442" title="All 2 branches covered.">        if (sslConfiguration != null) {</span>
+<span class="fc" id="L443">            failOnInvalidConfiguration(sslConfiguration);</span>
+<span class="fc" id="L444">            clientBuilder.sslSocketFactory(sslConfiguration.getSslSocketFactory(), sslConfiguration.getTrustManager());</span>
+
+<span class="fc bfc" id="L446" title="All 2 branches covered.">            if (sslConfiguration.getHostnameVerifier() != null) {</span>
+<span class="fc" id="L447">                clientBuilder.hostnameVerifier(sslConfiguration.getHostnameVerifier());</span>
+            }
+        }
+<span class="fc" id="L450">    }</span>
+
+    private static Map&lt;String, Object&gt; emptyIfNull(final Map&lt;String, Object&gt; map) {
+<span class="fc" id="L453">        return ofNullable(map).orElseGet(Collections::emptyMap);</span>
+    }
+
+    private static void failOnInvalidConfiguration(final SslConfiguration sslConfiguration) {
+<span class="fc bfc" id="L457" title="All 2 branches covered.">        if (anyNull(sslConfiguration.getSslSocketFactory(), sslConfiguration.getTrustManager())) {</span>
+<span class="fc" id="L458">            throw new IllegalStateException(&quot;SSL configuration requires both sslSocketFactory and trustManager&quot;);</span>
+        }
+<span class="fc" id="L460">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

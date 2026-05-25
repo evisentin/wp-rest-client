@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>WpTagOrderFields.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">WP REST Client - Test Report Aggregation</a> &gt; <a href="../index.html" class="el_bundle">wp-rest-client-domain</a> &gt; <a href="index.source.html" class="el_package">io.github.evisentin.wordpress.client.domain.model.enums</a> &gt; <span class="el_source">WpTagOrderFields.java</span></div><h1>WpTagOrderFields.java</h1><pre class="source lang-java linenums">package io.github.evisentin.wordpress.client.domain.model.enums;
+
+import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * Enumeration of fields that can be used to order WordPress tag queries.
+ * &lt;p&gt;
+ * These values correspond to the supported ordering parameters in the WordPress REST API for tags.
+ * &lt;/p&gt;
+ *
+ * &lt;p&gt;
+ * Each enum constant maps to the corresponding API value stored in {@link #value}, which is used during JSON
+ * serialization via the {@link JsonValue} annotation.
+ * &lt;/p&gt;
+ *
+ * &lt;p&gt;&lt;b&gt;Example usage:&lt;/b&gt;&lt;/p&gt;
+ * &lt;pre&gt;
+ *     WpTagOrderFields field = WpTagOrderFields.NAME;
+ *     String apiValue = field.getValue(); // &quot;name&quot;
+ * &lt;/pre&gt;
+ */
+<span class="fc" id="L24">@Getter</span>
+@RequiredArgsConstructor
+public enum WpTagOrderFields implements WpHasValueEnum {
+
+    /**
+     * Order by tag ID.
+     */
+<span class="fc" id="L31">    ID(&quot;id&quot;),</span>
+
+    /**
+     * Order by included IDs.
+     */
+<span class="fc" id="L36">    INCLUDE(&quot;include&quot;),</span>
+
+    /**
+     * Order by tag name.
+     */
+<span class="fc" id="L41">    NAME(&quot;name&quot;),</span>
+
+    /**
+     * Order by tag slug.
+     */
+<span class="fc" id="L46">    SLUG(&quot;slug&quot;),</span>
+
+    /**
+     * Order by included slugs.
+     */
+<span class="fc" id="L51">    INCLUDE_SLUGS(&quot;include_slugs&quot;),</span>
+
+    /**
+     * Order by term group.
+     */
+<span class="fc" id="L56">    TERM_GROUP(&quot;term_group&quot;),</span>
+
+    /**
+     * Order by tag description.
+     */
+<span class="fc" id="L61">    DESCRIPTION(&quot;description&quot;),</span>
+
+    /**
+     * Order by usage count.
+     */
+<span class="fc" id="L66">    COUNT(&quot;count&quot;);</span>
+
+    /**
+     * The API value associated with the enum constant.
+     * &lt;p&gt;
+     * This value is used for JSON serialization when interacting with the WordPress REST API.
+     * &lt;/p&gt;
+     */
+    @JsonValue
+    private final String value;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

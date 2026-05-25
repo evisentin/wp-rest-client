@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>JwtAuthenticationHeaderProvider.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">WP REST Client - Test Report Aggregation</a> &gt; <a href="../index.html" class="el_bundle">wp-rest-client-domain</a> &gt; <a href="index.source.html" class="el_package">io.github.evisentin.wordpress.client.domain.auth.header</a> &gt; <span class="el_source">JwtAuthenticationHeaderProvider.java</span></div><h1>JwtAuthenticationHeaderProvider.java</h1><pre class="source lang-java linenums">package io.github.evisentin.wordpress.client.domain.auth.header;
+
+import io.github.evisentin.wordpress.client.domain.auth.WpJwtAuthenticationStrategy;
+import io.github.evisentin.wordpress.client.domain.auth.jwt.JwtResponse;
+import io.github.evisentin.wordpress.client.domain.auth.jwt.JwtTokenClient;
+import io.github.evisentin.wordpress.client.domain.auth.jwt.TokenUtils;
+import lombok.NonNull;
+
+import java.time.Instant;
+
+public final class JwtAuthenticationHeaderProvider
+        implements AuthenticationHeaderProvider&lt;WpJwtAuthenticationStrategy&gt; {
+
+    private final JwtTokenClient tokenClient;
+<span class="fc" id="L15">    private final Object lock = new Object();</span>
+
+    private volatile String token;
+    private volatile Instant expiresAt;
+
+<span class="fc bfc" id="L20" title="All 2 branches covered.">    public JwtAuthenticationHeaderProvider(final @NonNull JwtTokenClient tokenClient) {</span>
+<span class="fc" id="L21">        this.tokenClient = tokenClient;</span>
+<span class="fc" id="L22">    }</span>
+
+    @Override
+<span class="fc bfc" id="L25" title="All 2 branches covered.">    public String createAuthorizationHeader(final @NonNull WpJwtAuthenticationStrategy strategy) {</span>
+
+        // Fast path: if we already have a valid (non-expired) token,
+        // return it immediately without acquiring a lock.
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        if (hasValidToken()) {</span>
+<span class="fc" id="L30">            return bearerToken();</span>
+        }
+
+<span class="fc" id="L33">        synchronized (lock) {</span>
+            // Double-check after acquiring the lock to avoid duplicate token fetches.
+            // Another thread may have refreshed the token while we were waiting.
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">            if (hasValidToken()) {</span>
+<span class="nc" id="L37">                return bearerToken();</span>
+            }
+
+<span class="fc" id="L40">            JwtResponse response = tokenClient.fetchToken(strategy);</span>
+
+<span class="fc" id="L42">            token = response.getJwtToken();</span>
+<span class="fc" id="L43">            expiresAt = TokenUtils.resolveExpiration(response.getExpiresIn(), response.getIat());</span>
+
+<span class="fc" id="L45">            return bearerToken();</span>
+        }
+    }
+
+    private String bearerToken() {
+<span class="fc" id="L50">        return &quot;Bearer &quot; + token;</span>
+    }
+
+    private boolean hasValidToken() {
+<span class="pc bpc" id="L54" title="2 of 6 branches missed.">        return token != null &amp;&amp; expiresAt != null &amp;&amp; !TokenUtils.isExpired(expiresAt);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

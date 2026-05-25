@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>WpPagingQuery.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">WP REST Client - Test Report Aggregation</a> &gt; <a href="../index.html" class="el_bundle">wp-rest-client-domain</a> &gt; <a href="index.source.html" class="el_package">io.github.evisentin.wordpress.client.domain.model.query</a> &gt; <span class="el_source">WpPagingQuery.java</span></div><h1>WpPagingQuery.java</h1><pre class="source lang-java linenums">package io.github.evisentin.wordpress.client.domain.model.query;
+
+import lombok.Data;
+
+/**
+ * Represents pagination parameters with a page number and page size.
+ *
+ * &lt;p&gt;This class is immutable and validates that both {@code pageNumber}
+ * and {@code pageSize} are greater than zero.
+ */
+@Data
+public class WpPagingQuery {
+
+    /**
+     * The page number to retrieve (1-based index).
+     */
+    private final int pageNumber;
+
+    /**
+     * The number of items per page.
+     */
+    private final int pageSize;
+
+    /**
+     * Creates a new {@code PageQuery} instance.
+     *
+     * @param pageNumber
+     *         the page number (must be greater than 0)
+     * @param pageSize
+     *         the number of items per page (must be greater than 0)
+     *
+     * @throws IllegalArgumentException
+     *         if {@code pageNumber &lt; 1} or {@code pageSize &lt; 1}
+     */
+<span class="fc" id="L35">    public WpPagingQuery(int pageNumber, int pageSize) {</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        if (pageNumber &lt; 1)</span>
+<span class="fc" id="L37">            throw new IllegalArgumentException(&quot;Page number must be greater than 0&quot;);</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">        if (pageSize &lt; 1)</span>
+<span class="fc" id="L39">            throw new IllegalArgumentException(&quot;Page size must be greater than 0&quot;);</span>
+
+<span class="fc" id="L41">        this.pageNumber = pageNumber;</span>
+<span class="fc" id="L42">        this.pageSize = pageSize;</span>
+<span class="fc" id="L43">    }</span>
+
+    /**
+     * Creates a new {@code PageQuery} instance.
+     *
+     * @param pageNumber
+     *         the page number (must be greater than 0)
+     * @param pageSize
+     *         the number of items per page (must be greater than 0)
+     *
+     * @return a new {@code PageQuery} instance
+     */
+    public static WpPagingQuery of(int pageNumber, int pageSize) {
+<span class="fc" id="L56">        return new WpPagingQuery(pageNumber, pageSize);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
