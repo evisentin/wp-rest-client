@@ -1,21 +1,11 @@
 package io.github.evisentin.wordpress.test.integration.wp68;
 
-import io.github.evisentin.wordpress.test.integration.base.JwtAuthWordPressIntegrationTest;
-import io.github.evisentin.wordpress.test.integration.base.factory.ApacheWpJwtAuthRestClientFactory;
-import io.github.evisentin.wordpress.test.integration.base.factory.WpJwtAuthRestClientFactory;
+import io.github.evisentin.wordpress.test.integration.base.apache.JwtAuthApacheIntegrationTest;
 
-import static io.github.evisentin.wordpress.test.integration.base.factory.TestSslConfigurations.insecureForApache;
-
-public class WordPress68JwtAuthApacheIntegrationTest extends JwtAuthWordPressIntegrationTest {
-    private static final WpJwtAuthRestClientFactory FACTORY = new ApacheWpJwtAuthRestClientFactory(insecureForApache());
+public class WordPress68JwtAuthApacheIntegrationTest extends JwtAuthApacheIntegrationTest {
 
     @Override
     public String getWordPressVersion() {
         return "6.8";
-    }
-
-    @Override
-    protected WpJwtAuthRestClientFactory clientFactory() {
-        return FACTORY;
     }
 }
