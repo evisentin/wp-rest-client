@@ -1,6 +1,8 @@
 # WP-REST-CLIENT
 
-[![Maven Central](https://img.shields.io/maven-central/v/io.github.evisentin/wp-rest-client)](https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client) [![Javadocs](https://javadoc.io/badge2/io.github.evisentin/wp-rest-client/javadoc.svg)](https://javadoc.io/doc/io.github.evisentin/wp-rest-client) [![License](https://img.shields.io/github/license/evisentin/wp-rest-client)](https://github.com/evisentin/wp-rest-client/blob/main/LICENSE)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.evisentin/wp-rest-client)](https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client)
+[![Javadocs](https://javadoc.io/badge2/io.github.evisentin/wp-rest-client/javadoc.svg)](https://javadoc.io/doc/io.github.evisentin/wp-rest-client)
+[![License](https://img.shields.io/github/license/evisentin/wp-rest-client)](https://github.com/evisentin/wp-rest-client/blob/main/LICENSE)
 
 ![Java](https://img.shields.io/badge/Java-21-green)
 ![Java](https://img.shields.io/badge/Java-25-red)
@@ -200,6 +202,7 @@ That’s it — no need to rewrite test logic.
 - Easy extensibility
 
 ---
+
 ## Supported REST APIs
 
 This page documents the WordPress REST API endpoints supported by this client.
