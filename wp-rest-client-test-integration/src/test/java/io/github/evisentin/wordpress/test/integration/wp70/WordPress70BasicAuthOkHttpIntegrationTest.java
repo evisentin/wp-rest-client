@@ -1,4 +1,4 @@
-package io.github.evisentin.wordpress.test.integration.wp65;
+package io.github.evisentin.wordpress.test.integration.wp70;
 
 import io.github.evisentin.wordpress.test.integration.base.BasicAuthWordPressIntegrationTest;
 import io.github.evisentin.wordpress.test.integration.base.factory.OkHttpWpBasicAuthRestClientFactory;
@@ -6,12 +6,12 @@ import io.github.evisentin.wordpress.test.integration.base.factory.WpBasicAuthRe
 
 import static io.github.evisentin.wordpress.test.integration.base.factory.TestSslConfigurations.insecureForOkHttp;
 
-public class WordPress65BasicAuthOkHttpIntegrationTest extends BasicAuthWordPressIntegrationTest {
+public class WordPress70BasicAuthOkHttpIntegrationTest extends BasicAuthWordPressIntegrationTest {
     private static final WpBasicAuthRestClientFactory FACTORY = new OkHttpWpBasicAuthRestClientFactory(insecureForOkHttp());
 
     @Override
     public String getWordPressVersion() {
-        return "6.5";
+        return "7.0";
     }
 
     @Override

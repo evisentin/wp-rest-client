@@ -92,18 +92,18 @@ cd your-project-directory
 Using the Maven wrapper:
 
 ```bash
-./mvnw clean install -Pinternal-tests
+./mvnw clean install -Pdeveloper
 ```
 
 or 
 ```shell
-./mvnw clean install -Pinternal-tests,integration-tests
+./mvnw clean install -Pdeveloper,integration-tests
 ```
 
 Or with a global Maven installation:
 
 ```bash
-mvn clean install -Pinternal-tests
+mvn clean install -Pdeveloper
 ```
 
 

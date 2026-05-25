@@ -31,11 +31,11 @@ jobs:
       - name: Publish to Maven Central
         run: |
           mvn -B clean install \
-            -Prelease,java-21 \
+            -Prelease \
             -Dmaven.test.skip=true
 
           mvn -B deploy \
-            -Prelease,java-21 \
+            -Prelease \
             -pl .,wp-rest-client-domain,wp-rest-client-okhttp,wp-rest-client-apache \
             -Dmaven.test.skip=true
         env:

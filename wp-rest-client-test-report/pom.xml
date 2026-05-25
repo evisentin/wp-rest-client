@@ -14,6 +14,7 @@
   <artifactId>wp-rest-client-test-report</artifactId>
   <packaging>pom</packaging>
   <name>WP REST Client - Test Report Aggregation</name>
+  <description>Aggregated test coverage and reporting module for WP REST Client</description>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <dependencies>
     <!-- [PROJECT MODULES] -->

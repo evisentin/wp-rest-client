@@ -6,6 +6,7 @@ import io.github.evisentin.wordpress.client.domain.auth.WpBasicAuthenticationStr
 import io.github.evisentin.wordpress.client.domain.configuration.SslConfiguration;
 import io.github.evisentin.wordpress.test.integration.BaseWordPressIntegrationTest;
 import io.github.evisentin.wordpress.test.integration.base.BasicAuthWordPressIntegrationTest;
+import org.testcontainers.shaded.org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * Base integration test class for WordPress REST API scenarios using Basic Authentication.
@@ -67,12 +68,14 @@ public final class ApacheWpBasicAuthRestClientFactory implements WpBasicAuthRest
 
     private final SslConfiguration sslConfiguration;
 
-    public ApacheWpBasicAuthRestClientFactory(SslConfiguration sslConfiguration) {
+    public ApacheWpBasicAuthRestClientFactory(final @NonNull SslConfiguration sslConfiguration) {
         this.sslConfiguration = sslConfiguration;
     }
 
     @Override
-    public WpRestClient create(String baseUrl, String username, String password) {
+    public WpRestClient create(final @NonNull String baseUrl,
+                               final @NonNull String username,
+                               final @NonNull String password) {
         return new ApacheWpRestClient(
                 baseUrl,
                 new WpBasicAuthenticationStrategy(username, password),
