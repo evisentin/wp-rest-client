@@ -2,6 +2,7 @@
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.evisentin/wp-rest-client)](https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client)
 [![Javadocs](https://javadoc.io/badge2/io.github.evisentin/wp-rest-client/javadoc.svg)](https://javadoc.io/doc/io.github.evisentin/wp-rest-client)
+[![Coverage Report](https://img.shields.io/badge/coverage-report-blue)](https://evisentin.github.io/wp-rest-client/coverage/)
 [![License](https://img.shields.io/github/license/evisentin/wp-rest-client)](https://github.com/evisentin/wp-rest-client/blob/main/LICENSE)
 
 ![Java](https://img.shields.io/badge/Java-21-green)
