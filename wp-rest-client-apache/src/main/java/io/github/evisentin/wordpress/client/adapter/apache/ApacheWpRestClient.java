@@ -13,10 +13,7 @@ import io.github.evisentin.wordpress.client.domain.api.WpBaseRestClient;
 import io.github.evisentin.wordpress.client.domain.auth.WpAuthenticationStrategy;
 import io.github.evisentin.wordpress.client.domain.configuration.SslConfiguration;
 import io.github.evisentin.wordpress.client.domain.configuration.TimeoutConfiguration;
-import io.github.evisentin.wordpress.client.domain.model.WpCategory;
-import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
-import io.github.evisentin.wordpress.client.domain.model.WpPost;
-import io.github.evisentin.wordpress.client.domain.model.WpTag;
+import io.github.evisentin.wordpress.client.domain.model.*;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.client.domain.model.query.WpCategoryQuery;
 import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
@@ -36,6 +33,7 @@ import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
@@ -43,6 +41,7 @@ import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.ssl.ClientTlsStrategyBuilder;
 import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
@@ -50,6 +49,7 @@ import org.apache.hc.core5.net.URIBuilder;
 import org.apache.hc.core5.util.Timeout;
 
 import javax.net.ssl.SSLContext;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -167,6 +167,20 @@ public class ApacheWpRestClient extends WpBaseRestClient {
                 Map.of(BASE_URL, baseUrl));
 
         return performPostWithBody(builder, creationRequest, WP_CATEGORY_TYPE);
+    }
+
+    @Override
+    @SneakyThrows
+    public WpMedia createMedia(final @NonNull File file,
+                               final @NonNull String fileName,
+                               final @NonNull String mimeType) {
+
+        if (isBlank(fileName)) throw new IllegalArgumentException("fileName cannot be blank");
+        if (isBlank(mimeType)) throw new IllegalArgumentException("mimeType cannot be blank");
+
+        final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/media",
+                Map.of(BASE_URL, baseUrl));
+        return performPostWithFileUpload(builder, file, fileName, mimeType, WP_MEDIA_TYPE);
     }
 
     @SneakyThrows
@@ -428,6 +442,38 @@ public class ApacheWpRestClient extends WpBaseRestClient {
 
         String jsonBody = mapper.writeValueAsString(requestBody);
         request.setEntity(new StringEntity(jsonBody, StandardCharsets.UTF_8));
+
+        return httpClient.execute(request, response -> {
+            failOnEmptyResponseBody(response);
+
+            String json = EntityUtils.toString(response.getEntity());
+            return mapper.readValue(json, responseType);
+        });
+    }
+
+    @SneakyThrows
+    private <T> T performPostWithFileUpload(final URIBuilder uriBuilder,
+                                            final File file,
+                                            final String fileName,
+                                            final String mimeType,
+                                            final TypeReference<T> responseType) throws IOException {
+
+        URI uri = uriBuilder.build();
+
+        HttpPost request = new HttpPost(uri);
+        request.setHeader(ACCEPT, "application/json");
+
+        request.setEntity(
+                MultipartEntityBuilder.create()
+                                      .addBinaryBody(
+                                              "file",
+                                              file,
+                                              ContentType.parse(mimeType),
+                                              fileName
+                                      )
+
+                                      .build()
+        );
 
         return httpClient.execute(request, response -> {
             failOnEmptyResponseBody(response);

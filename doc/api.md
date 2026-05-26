@@ -51,7 +51,7 @@ Legend:
 | Endpoint                   | Description           | Status |
 |----------------------------|-----------------------|--------|
 | `GET /wp/v2/media`         | List Media            | ⬜      |
-| `POST /wp/v2/media`        | Create a Media item   | ⬜      |
+| `POST /wp/v2/media`        | Create a Media item   | ✅      |
 | `GET /wp/v2/media/<id>`    | Retrieve a Media item | ⬜      |
 | `POST /wp/v2/media/<id>`   | Update a Media item   | ⬜      |
 | `DELETE /wp/v2/media/<id>` | Delete a Media  item  | ⬜      |

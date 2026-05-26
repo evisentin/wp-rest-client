@@ -1,9 +1,6 @@
 package io.github.evisentin.wordpress.client.domain.api;
 
-import io.github.evisentin.wordpress.client.domain.model.WpCategory;
-import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
-import io.github.evisentin.wordpress.client.domain.model.WpPost;
-import io.github.evisentin.wordpress.client.domain.model.WpTag;
+import io.github.evisentin.wordpress.client.domain.model.*;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.client.domain.model.query.WpCategoryQuery;
 import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
@@ -16,6 +13,8 @@ import io.github.evisentin.wordpress.client.domain.model.responses.WpCategoryDel
 import io.github.evisentin.wordpress.client.domain.model.responses.WpPostDeletionResponse;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpTagDeletionResponse;
 import lombok.NonNull;
+
+import java.io.File;
 
 public interface WpRestClient {
 
@@ -30,6 +29,9 @@ public interface WpRestClient {
      * @return the created {@link WpCategory}
      */
     WpCategory createCategory(@NonNull WpCategoryCreateUpdateRequest creationRequest);
+
+    // TODO: javadoc
+    WpMedia createMedia(@NonNull File file, @NonNull String fileName, @NonNull String mimeType);
 
     /**
      * Creates a new post.

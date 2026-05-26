@@ -13,10 +13,7 @@ import io.github.evisentin.wordpress.client.domain.api.WpBaseRestClient;
 import io.github.evisentin.wordpress.client.domain.auth.WpAuthenticationStrategy;
 import io.github.evisentin.wordpress.client.domain.configuration.SslConfiguration;
 import io.github.evisentin.wordpress.client.domain.configuration.TimeoutConfiguration;
-import io.github.evisentin.wordpress.client.domain.model.WpCategory;
-import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
-import io.github.evisentin.wordpress.client.domain.model.WpPost;
-import io.github.evisentin.wordpress.client.domain.model.WpTag;
+import io.github.evisentin.wordpress.client.domain.model.*;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.client.domain.model.query.WpCategoryQuery;
 import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
@@ -34,6 +31,7 @@ import lombok.val;
 import okhttp3.*;
 import org.apache.commons.text.StringSubstitutor;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -52,6 +50,7 @@ import static io.github.evisentin.wordpress.client.domain.model.parameters.WpQue
 import static io.github.evisentin.wordpress.client.domain.model.parameters.WpQueryParameters.PER_PAGE;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
+import static okhttp3.MultipartBody.FORM;
 import static org.apache.commons.lang3.ObjectUtils.anyNull;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.apache.commons.lang3.StringUtils.isNotBlank;
@@ -151,6 +150,28 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
                 Map.of(BASE_URL, baseUrl));
 
         return performPostWithBody(builder, creationRequest, WP_CATEGORY_TYPE);
+    }
+
+    @Override
+    @SneakyThrows
+    public WpMedia createMedia(final @NonNull File file,
+                               final @NonNull String fileName,
+                               final @NonNull String mimeType) {
+
+        if (isBlank(fileName)) throw new IllegalArgumentException("fileName cannot be blank");
+        if (isBlank(mimeType)) throw new IllegalArgumentException("mimeType cannot be blank");
+
+        RequestBody fileBody = RequestBody.create(file, MediaType.parse(mimeType));
+
+        MultipartBody requestBody = new MultipartBody.Builder()
+                .setType(FORM)
+                .addFormDataPart("file", file.getName(), fileBody)
+                .build();
+
+        final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/media",
+                Map.of(BASE_URL, baseUrl));
+
+        return performPostWithMultiPartBody(builder, requestBody, WP_MEDIA_TYPE);
     }
 
     @Override
@@ -420,6 +441,21 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
                 .url(urlBuilder.build())
                 .header(ACCEPT, APPLICATION_JSON)
                 .post(RequestBody.create(toJson(requestBody), MEDIA_TYPE_APPLICATION_JSON))
+                .build();
+
+        try (Response response = httpClient.newCall(request).execute()) {
+            val json = response.body().string();
+            return mapper.readValue(json, responseType);
+        }
+    }
+
+    private <T> T performPostWithMultiPartBody(final HttpUrl.Builder urlBuilder,
+                                               final MultipartBody requestBody,
+                                               final TypeReference<T> responseType) throws IOException {
+        Request request = new Request.Builder()
+                .url(urlBuilder.build())
+                .header(ACCEPT, APPLICATION_JSON)
+                .post(requestBody)
                 .build();
 
         try (Response response = httpClient.newCall(request).execute()) {

@@ -31,6 +31,10 @@ public final class WordPressAssertions {
         return new WpPostAssert(actual);
     }
 
+    public static WpMediaAssert assertThat(final WpMedia actual) {
+        return new WpMediaAssert(actual);
+    }
+
     public static <T> WpPagedResponseAssert<T> assertThat(final WpPagedResponse<T> actual) {
         return new WpPagedResponseAssert<>(actual);
     }

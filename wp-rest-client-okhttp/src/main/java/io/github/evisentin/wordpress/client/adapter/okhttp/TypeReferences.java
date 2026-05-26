@@ -2,6 +2,7 @@ package io.github.evisentin.wordpress.client.adapter.okhttp;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.github.evisentin.wordpress.client.domain.model.WpCategory;
+import io.github.evisentin.wordpress.client.domain.model.WpMedia;
 import io.github.evisentin.wordpress.client.domain.model.WpPost;
 import io.github.evisentin.wordpress.client.domain.model.WpTag;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
@@ -13,6 +14,7 @@ import java.util.List;
 interface TypeReferences {
     TypeReference<WpCategory> WP_CATEGORY_TYPE = new TypeReference<>() {};
     TypeReference<WpPost> WP_POST_TYPE = new TypeReference<>() {};
+    TypeReference<WpMedia> WP_MEDIA_TYPE = new TypeReference<>() {};
     TypeReference<WpTag> WP_TAG_TYPE = new TypeReference<>() {};
 
     TypeReference<WpCategoryDeletionResponse> WP_CATEGORY_DELETION_RESPONSE_TYPE = new TypeReference<>() {};

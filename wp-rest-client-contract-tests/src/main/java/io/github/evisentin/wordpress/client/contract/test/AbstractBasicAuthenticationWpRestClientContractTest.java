@@ -3,11 +3,9 @@ package io.github.evisentin.wordpress.client.contract.test;
 import io.github.evisentin.wordpress.client.domain.api.WpBaseRestClient;
 import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
 import io.github.evisentin.wordpress.client.domain.assertions.WordPressAssertions;
-import io.github.evisentin.wordpress.client.domain.model.WpCategory;
-import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
-import io.github.evisentin.wordpress.client.domain.model.WpPost;
-import io.github.evisentin.wordpress.client.domain.model.WpTag;
+import io.github.evisentin.wordpress.client.domain.model.*;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
+import io.github.evisentin.wordpress.client.domain.model.enums.WpOpenClosed;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpTagOrderFields;
 import io.github.evisentin.wordpress.client.domain.model.query.WpCategoryQuery;
 import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
@@ -20,12 +18,18 @@ import io.github.evisentin.wordpress.client.domain.model.responses.WpCategoryDel
 import io.github.evisentin.wordpress.client.domain.model.responses.WpPostDeletionResponse;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpTagDeletionResponse;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Set;
 
 import static io.github.evisentin.wordpress.client.contract.test.SlugUtils.toWordPressSlug;
@@ -55,6 +59,74 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
     private static String toBlock(final @NonNull String text) {
         return String.format("<p>%s</p>\n", text);
+    }
+
+    @DisplayName("'MEDIA' Operations")
+    @Nested
+    class MediaTests {
+
+        @DisplayName("'CREATE' works")
+        @Test
+        @SneakyThrows
+        void createWorks() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/create.success.json");
+
+            InputStream is = getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("files/sample.png");
+
+            Path tempFile = Files.createTempFile("sample", ".png");
+
+            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            File file = tempFile.toFile();
+
+            // WHEN
+            final WpMedia media = client.createMedia(file, "sample.png", "image/png");
+
+            // THEN
+            WordPressAssertions.assertThat(media)
+                               .isNotNull()
+                               .hasId(9L)
+                               .hasStatus("inherit")
+                               .hasSlug("sample-1")
+                               .hasType("attachment")
+                               .hasTitleSatisfying(t ->
+                                       t.hasRaw("sample-1")
+                                        .hasRendered("sample-1"))
+                               .hasAuthorId(1L)
+                               .hasCommentStatus(WpOpenClosed.OPEN)
+                               .hasPingStatus(WpOpenClosed.CLOSED)
+                               .hasMediaType("image")
+                               .hasMimeType("image/png");
+        }
+
+        @DisplayName("'CREATE' fails on null or blank parameters")
+        @Test
+        @SneakyThrows
+        void createFailsOnNullParameters() {
+            assertThatThrownBy(() -> client.createMedia(null, null, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("file is marked non-null but is null");
+
+            assertThatThrownBy(() -> client.createMedia(new File(""), null, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("fileName is marked non-null but is null");
+
+            assertThatThrownBy(() -> client.createMedia(new File(""), "some name", null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("mimeType is marked non-null but is null");
+
+            assertThatThrownBy(() -> client.createMedia(new File(""), " ", " "))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("fileName cannot be blank");
+
+            assertThatThrownBy(() -> client.createMedia(new File(""), "some name", " "))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage( "mimeType cannot be blank");
+        }
     }
 
     @DisplayName("'CATEGORY' Operations")
