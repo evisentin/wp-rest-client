@@ -8,10 +8,7 @@ import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpMediaStatus;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpOpenClosed;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpTagOrderFields;
-import io.github.evisentin.wordpress.client.domain.model.query.WpCategoryQuery;
-import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
-import io.github.evisentin.wordpress.client.domain.model.query.WpPostQuery;
-import io.github.evisentin.wordpress.client.domain.model.query.WpTagQuery;
+import io.github.evisentin.wordpress.client.domain.model.query.*;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpCategoryCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpPostCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpTagCreateUpdateRequest;
@@ -51,6 +48,45 @@ import static java.util.Collections.emptySet;
 public abstract class AbstractBasicAuthenticationWpRestClientContractTest extends AbstractMockServerTest {
     private WpRestClient client;
 
+    @DisplayName("'LIST' works with paging and query")
+    @Test
+    void listWorksWithPagingAndQuery() {
+
+        // GIVEN
+        final String NAME_2 = "category2";
+        final String DESCRIPTION_2 = "Category #2";
+        final String SLUG_2 = "category-2";
+
+        givenExpectationFromFile("basic-auth/media/list.success.paging-and-query.json");
+
+        final WpMediaQuery mediaQuery = WpMediaQuery.builder()
+                                                    .withSlugs(Set.of("slug-1"))
+                                                    .build();
+
+        // WHEN
+        final WpPagedResponse<WpMedia> response = client.listMedia(WpPagingQuery.of(1, 10), mediaQuery);
+
+        // THEN
+        WordPressAssertions.assertThat(response)
+                           .isNotNull()
+                           .hasPageNumber(1)
+                           .hasItemsPerPage(10)
+                           .hasTotalPages(1)
+                           .hasTotalItems(1)
+                           .doesNotHaveNextPage()
+                           .satisfies(r ->
+                                   assertThat(r.getItems())
+                                           .hasSize(1)
+                                           .satisfiesExactly(
+                                                   media ->
+                                                           WordPressAssertions.assertThat(media)
+                                                                              .isNotNull()
+                                                                              .hasId(9L)
+                                                                              .hasTitleSatisfying(title -> title.hasRaw("sample-1")
+                                                                                                                .hasRendered("sample-1"))
+                                           ));
+    }
+
     @BeforeEach
     void setUp() {
         this.client = client();
@@ -65,6 +101,31 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
     @DisplayName("'MEDIA' Operations")
     @Nested
     class MediaTests {
+
+        @DisplayName("'CREATE' fails on null or blank parameters")
+        @Test
+        @SneakyThrows
+        void createFailsOnNullParameters() {
+            assertThatThrownBy(() -> client.createMedia(null, null, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("file is marked non-null but is null");
+
+            assertThatThrownBy(() -> client.createMedia(new File(""), null, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("fileName is marked non-null but is null");
+
+            assertThatThrownBy(() -> client.createMedia(new File(""), "some name", null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("mimeType is marked non-null but is null");
+
+            assertThatThrownBy(() -> client.createMedia(new File(""), " ", " "))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("fileName cannot be blank");
+
+            assertThatThrownBy(() -> client.createMedia(new File(""), "some name", " "))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("mimeType cannot be blank");
+        }
 
         @DisplayName("'CREATE' works")
         @Test
@@ -104,29 +165,66 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasMimeType("image/png");
         }
 
-        @DisplayName("'CREATE' fails on null or blank parameters")
+        @DisplayName("'LIST' fails on HTTP FORBIDDEN")
         @Test
-        @SneakyThrows
-        void createFailsOnNullParameters() {
-            assertThatThrownBy(() -> client.createMedia(null, null, null))
+        void listFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/list.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.listMedia(WpPagingQuery.of(1, 10), null));
+        }
+
+        @DisplayName("'LIST' fails on null pageQuery")
+        @Test
+        void listFailsOnNullPaging() {
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.listMedia(null, null))
                     .isInstanceOf(NullPointerException.class)
-                    .hasMessage("file is marked non-null but is null");
+                    .hasMessage("pageQuery is marked non-null but is null");
+        }
 
-            assertThatThrownBy(() -> client.createMedia(new File(""), null, null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("fileName is marked non-null but is null");
+        @DisplayName("'LIST' fails on HTTP UNAUTHORIZED")
+        @Test
+        void listFailsOnUnauthorized() {
 
-            assertThatThrownBy(() -> client.createMedia(new File(""), "some name", null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("mimeType is marked non-null but is null");
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/list.failure.unauthorized.json");
 
-            assertThatThrownBy(() -> client.createMedia(new File(""), " ", " "))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("fileName cannot be blank");
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.listMedia(WpPagingQuery.of(1, 10), null));
+        }
 
-            assertThatThrownBy(() -> client.createMedia(new File(""), "some name", " "))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage( "mimeType cannot be blank");
+        @DisplayName("'LIST' works with paging")
+        @Test
+        void listWorksWithJustPaging() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/list.success.just-paging.json");
+
+            // WHEN
+            final WpPagedResponse<WpMedia> response = client.listMedia(WpPagingQuery.of(1, 10), null);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(1)
+                               .doesNotHaveNextPage()
+                               .satisfies(r ->
+                                       assertThat(r.getItems())
+                                               .hasSize(1)
+                                               .satisfiesExactly(
+                                                       media ->
+                                                               WordPressAssertions.assertThat(media)
+                                                                                  .isNotNull()
+                                                                                  .hasId(9L)
+                                                                                  .hasTitleSatisfying(title -> title.hasRaw("sample-1")
+                                                                                                                    .hasRendered("sample-1"))
+                                               ));
         }
     }
 

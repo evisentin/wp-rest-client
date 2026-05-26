@@ -3,7 +3,6 @@ package io.github.evisentin.wordpress.client.domain.assertions;
 import io.github.evisentin.wordpress.client.domain.model.WpMedia;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpMediaStatus;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpOpenClosed;
-import io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus;
 import org.assertj.core.api.AbstractObjectAssert;
 
 import java.time.LocalDateTime;
@@ -108,6 +107,22 @@ public abstract class AbstractWpMediaAssert<S extends AbstractWpMediaAssert<S>>
         return myself;
     }
 
+    public S hasMediaType(final String expected) {
+        isNotNull();
+        if (!java.util.Objects.equals(actual.getMediaType(), expected)) {
+            failWithMessage("Expected media type to be <%s> but was <%s>", expected, actual.getStatus());
+        }
+        return myself;
+    }
+
+    public S hasMimeType(final String expected) {
+        isNotNull();
+        if (!java.util.Objects.equals(actual.getMimeType(), expected)) {
+            failWithMessage("Expected media mime type to be <%s> but was <%s>", expected, actual.getStatus());
+        }
+        return myself;
+    }
+
     public S hasModified(final LocalDateTime expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getModified(), expected)) {
@@ -152,21 +167,6 @@ public abstract class AbstractWpMediaAssert<S extends AbstractWpMediaAssert<S>>
         isNotNull();
         if (!java.util.Objects.equals(actual.getStatus(), expected)) {
             failWithMessage("Expected media status to be <%s> but was <%s>", expected, actual.getStatus());
-        }
-        return myself;
-    }
-    public S hasMediaType(final String expected) {
-        isNotNull();
-        if (!java.util.Objects.equals(actual.getMediaType(), expected)) {
-            failWithMessage("Expected media type to be <%s> but was <%s>", expected, actual.getStatus());
-        }
-        return myself;
-    }
-
-    public S hasMimeType(final String expected) {
-        isNotNull();
-        if (!java.util.Objects.equals(actual.getMimeType(), expected)) {
-            failWithMessage("Expected media mime type to be <%s> but was <%s>", expected, actual.getStatus());
         }
         return myself;
     }

@@ -1,6 +1,9 @@
 package io.github.evisentin.wordpress.client.domain.api;
 
 import io.github.evisentin.wordpress.client.domain.model.WpMedia;
+import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
+import io.github.evisentin.wordpress.client.domain.model.query.WpMediaQuery;
+import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
 import lombok.NonNull;
 
 import java.io.File;
@@ -37,4 +40,19 @@ public interface MediaOperations {
      * @return the created {@link WpMedia}
      */
     WpMedia createMedia(@NonNull File file, @NonNull String fileName, @NonNull String mimeType);
+
+    /**
+     * Retrieves a paginated list of media items using optional filtering and sorting criteria.
+     *
+     * <p>The result set can be refined using {@link WpMediaQuery}, for example by filtering on parent,
+     * search term, include or exclude lists, or sort order.</p>
+     *
+     * @param pageQuery
+     *         the pagination settings, including page number and page size; must not be {@code null}
+     * @param mediaQuery
+     *         additional category query parameters; may be {@code null} when no extra filtering is needed
+     *
+     * @return a paginated response containing {@link WpMedia} items
+     */
+    WpPagedResponse<WpMedia> listMedia(@NonNull WpPagingQuery pageQuery, WpMediaQuery mediaQuery);
 }

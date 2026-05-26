@@ -7,6 +7,7 @@ import io.github.evisentin.wordpress.client.adapter.okhttp.interceptors.Authenti
 import io.github.evisentin.wordpress.client.adapter.okhttp.interceptors.LoggingInterceptor;
 import io.github.evisentin.wordpress.client.adapter.okhttp.interceptors.WpErrorInterceptor;
 import io.github.evisentin.wordpress.client.adapter.okhttp.query.mappers.CategoryQueryParamMapper;
+import io.github.evisentin.wordpress.client.adapter.okhttp.query.mappers.MediaQueryParamMapper;
 import io.github.evisentin.wordpress.client.adapter.okhttp.query.mappers.PostQueryParamMapper;
 import io.github.evisentin.wordpress.client.adapter.okhttp.query.mappers.TagQueryParamMapper;
 import io.github.evisentin.wordpress.client.domain.api.WpBaseRestClient;
@@ -15,10 +16,7 @@ import io.github.evisentin.wordpress.client.domain.configuration.SslConfiguratio
 import io.github.evisentin.wordpress.client.domain.configuration.TimeoutConfiguration;
 import io.github.evisentin.wordpress.client.domain.model.*;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
-import io.github.evisentin.wordpress.client.domain.model.query.WpCategoryQuery;
-import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
-import io.github.evisentin.wordpress.client.domain.model.query.WpPostQuery;
-import io.github.evisentin.wordpress.client.domain.model.query.WpTagQuery;
+import io.github.evisentin.wordpress.client.domain.model.query.*;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpCategoryCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpPostCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpTagCreateUpdateRequest;
@@ -287,6 +285,20 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         CategoryQueryParamMapper.map(builder, categoryQuery);
 
         return performPagingRequest(builder, pageQuery, WP_CATEGORY_LIST_TYPE);
+    }
+
+    @Override
+    @SneakyThrows
+    public WpPagedResponse<WpMedia> listMedia(final @NonNull WpPagingQuery pageQuery,
+                                              final WpMediaQuery mediaQuery) {
+        final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/media", Map.of(BASE_URL, baseUrl));
+
+        builder.addQueryParameter(PAGE, Integer.toString(pageQuery.getPageNumber()))
+               .addQueryParameter(PER_PAGE, Integer.toString(pageQuery.getPageSize()));
+
+        MediaQueryParamMapper.map(builder, mediaQuery);
+
+        return performPagingRequest(builder, pageQuery, WP_MEDIA_LIST_TYPE);
     }
 
     @Override

@@ -22,6 +22,7 @@ interface TypeReferences {
     TypeReference<WpTagDeletionResponse> WP_TAG_DELETION_RESPONSE_TYPE = new TypeReference<>() {};
 
     TypeReference<List<WpCategory>> WP_CATEGORY_LIST_TYPE = new TypeReference<>() {};
+    TypeReference<List<WpMedia>> WP_MEDIA_LIST_TYPE = new TypeReference<>() {};
     TypeReference<List<WpPost>> WP_POST_LIST_TYPE = new TypeReference<>() {};
     TypeReference<List<WpTag>> WP_TAG_LIST_TYPE = new TypeReference<>() {};
 }

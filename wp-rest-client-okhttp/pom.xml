@@ -120,7 +120,7 @@
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <profiles>
     <profile>
-      <id>developer</id>
+      <id>developer</id><activation><activeByDefault>true</activeByDefault></activation>
       <dependencies>
         <dependency>
           <groupId>io.github.evisentin</groupId>
