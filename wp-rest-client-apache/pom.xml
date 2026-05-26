@@ -97,7 +97,7 @@
         <configuration>
           <includeDependencySources>true</includeDependencySources>
           <dependencySourceIncludes>
-            <dependencySourceInclude>io.github.evisentin.wordpress:*</dependencySourceInclude>
+            <dependencySourceInclude>io.github.evisentin:*</dependencySourceInclude>
           </dependencySourceIncludes>
           <subpackages>io.github.evisentin.wordpress.client.adapter.apache</subpackages>
         </configuration>
@@ -117,7 +117,7 @@
       <dependencies>
         <dependency>
           <groupId>io.github.evisentin</groupId>
-          <artifactId>wp-rest-client-test-support</artifactId>
+          <artifactId>wp-rest-client-contract-tests</artifactId>
           <version>${project.version}</version>
           <scope>test</scope>
         </dependency>

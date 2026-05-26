@@ -1,10 +1,9 @@
 package io.github.evisentin.wordpress.client.adapter.apache;
 
+import io.github.evisentin.wordpress.client.contract.test.AbstractBasicAuthenticationWpRestClientContractTest;
 import io.github.evisentin.wordpress.client.domain.api.WpBaseRestClient;
 import io.github.evisentin.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
 import io.github.evisentin.wordpress.client.domain.configuration.SslConfiguration;
-
-import io.github.evisentin.wordpress.client.test.support.AbstractBasicAuthenticationWpRestClientContractTest;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.X509TrustManager;

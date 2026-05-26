@@ -1,4 +1,4 @@
-package io.github.evisentin.wordpress.client.test.support;
+package io.github.evisentin.wordpress.client.contract.test;
 
 import io.github.evisentin.wordpress.client.domain.api.WpBaseRestClient;
 import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
