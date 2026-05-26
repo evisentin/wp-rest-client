@@ -3,8 +3,8 @@ package io.github.evisentin.wordpress.client.domain.model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.github.evisentin.wordpress.client.domain.model.enums.WpMediaStatus;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpOpenClosed;
-import io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +12,19 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+/**
+ * Represents a WordPress media item as returned by the WordPress REST API.
+ *
+ * <p>This model maps the JSON structure of a media object, including metadata
+ * such as identifiers, publication and modification dates, rendered fields, media metadata, attachment information,
+ * publication status, and additional configuration flags.</p>
+ *
+ * <p>Media items in WordPress are represented as {@code attachment} posts and
+ * expose information such as MIME type, file size, captions, descriptions, and source URLs.</p>
+ *
+ * <p>Unknown JSON properties are ignored during deserialization to ensure
+ * forward compatibility with the API.</p>
+ */
 @Getter
 @Setter
 @EqualsAndHashCode
@@ -20,7 +33,7 @@ import java.time.LocalDateTime;
 public class WpMedia {
 
     /**
-     * Unique identifier of the post.
+     * Unique identifier of the media item.
      */
     private Long id;
 
@@ -38,12 +51,12 @@ public class WpMedia {
     private LocalDateTime dateGMT;
 
     /**
-     * Globally unique identifier for the post.
+     * Globally unique identifier for the media item.
      */
     private WpRenderedField guid;
 
     /**
-     * Direct URL to the post.
+     * Direct URL to the media item.
      */
     private String link;
 
@@ -61,7 +74,7 @@ public class WpMedia {
     private LocalDateTime modifiedGMT;
 
     /**
-     * URL-friendly slug of the post.
+     * URL-friendly slug of the media item.
      */
     private String slug;
 
@@ -74,54 +87,83 @@ public class WpMedia {
     /**
      * Current publication status of the media item.
      */
-      private String status; //TODO: WpMediaStatus
+    private WpMediaStatus status;
 
     /**
-     * Type of the media
+     * Type of the media item, typically {@code attachment}.
      */
     private String type;
 
+    /**
+     * High-level media type, such as {@code image}, {@code video}, {@code audio}, or {@code file}.
+     */
     @JsonProperty("media_type")
     private String mediaType;
 
+    /**
+     * MIME type of the media file.
+     */
     @JsonProperty("mime_type")
     private String mimeType;
 
+    /**
+     * Original filename of the uploaded media file.
+     */
     @JsonProperty("filename")
     private String fileName;
 
+    /**
+     * Size of the media file in bytes.
+     */
     @JsonProperty("filesize")
     private Long fileSize;
 
+    /**
+     * Direct URL of the uploaded media file.
+     */
     @JsonProperty("source_url")
     private String sourceUrl;
 
+    /**
+     * Alternative text associated with the media item.
+     */
     @JsonProperty("alt_text")
     private String altText;
 
     /**
-     * Permalink template used to generate the post URL.
+     * Permalink template used to generate the media item URL.
      */
     @JsonProperty("permalink_template")
     private String permalinkTemplate;
 
+    /**
+     * Rendered title of the media item.
+     */
     private WpRenderedField title;
+
+    /**
+     * Rendered description of the media item.
+     */
     private WpRenderedField description;
+
+    /**
+     * Rendered caption of the media item.
+     */
     private WpRenderedField caption;
 
     /**
-     * Rendered excerpt of the post.
+     * Rendered excerpt of the media item.
      */
     private WpRenderedField excerpt;
 
     /**
-     * Identifier of the post author.
+     * Identifier of the media item author.
      */
     @JsonProperty("author")
     private Long authorId;
 
     /**
-     * The ID for the associated post of the attachment.
+     * Identifier of the parent post associated with the attachment.
      */
     @JsonProperty("post")
     private Long postId;
@@ -145,7 +187,7 @@ public class WpMedia {
     private WpOpenClosed pingStatus;
 
     /**
-     * Theme template assigned to the post.
+     * Theme template assigned to the media item.
      */
     private String template;
 }

@@ -5,6 +5,7 @@ import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
 import io.github.evisentin.wordpress.client.domain.assertions.WordPressAssertions;
 import io.github.evisentin.wordpress.client.domain.model.*;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
+import io.github.evisentin.wordpress.client.domain.model.enums.WpMediaStatus;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpOpenClosed;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpTagOrderFields;
 import io.github.evisentin.wordpress.client.domain.model.query.WpCategoryQuery;
@@ -90,7 +91,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             WordPressAssertions.assertThat(media)
                                .isNotNull()
                                .hasId(9L)
-                               .hasStatus("inherit")
+                               .hasStatus(WpMediaStatus.INHERIT)
                                .hasSlug("sample-1")
                                .hasType("attachment")
                                .hasTitleSatisfying(t ->

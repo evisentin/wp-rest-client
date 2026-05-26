@@ -1,6 +1,7 @@
 package io.github.evisentin.wordpress.client.domain.assertions;
 
 import io.github.evisentin.wordpress.client.domain.model.WpMedia;
+import io.github.evisentin.wordpress.client.domain.model.enums.WpMediaStatus;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpOpenClosed;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus;
 import org.assertj.core.api.AbstractObjectAssert;
@@ -147,7 +148,7 @@ public abstract class AbstractWpMediaAssert<S extends AbstractWpMediaAssert<S>>
         return myself;
     }
 
-    public S hasStatus(final String expected) {
+    public S hasStatus(final WpMediaStatus expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getStatus(), expected)) {
             failWithMessage("Expected media status to be <%s> but was <%s>", expected, actual.getStatus());
