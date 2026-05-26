@@ -7,45 +7,308 @@
 
 ![Java](https://img.shields.io/badge/Java-21-green)
 ![Java](https://img.shields.io/badge/Java-25-red)
+----
 
 <!-- toc -->
 
 - [Overview](#overview)
-- [Installation](#installation)
-  * [Domain API](#domain-api)
-  * [OkHttp implementation](#okhttp-implementation)
-  * [Apache HttpClient implementation](#apache-httpclient-implementation)
 - [Modules](#modules)
+  * [Module `wp-rest-client-domain`](#module-wp-rest-client-domain)
+  * [Module `wp-rest-client-apache`](#module-wp-rest-client-apache)
+  * [Module `wp-rest-client-okhttp`](#module-wp-rest-client-okhttp)
+  * [Module `wp-rest-client-contract-tests`](#module-wp-rest-client-contract-tests)
+  * [Module `wp-rest-client-test-integration`](#module-wp-rest-client-test-integration)
+  * [Module `wp-rest-client-test-report`](#module-wp-rest-client-test-report)
+- [Key Concept: Contract Testing](#key-concept-contract-testing)
+  * [Why this matters](#why-this-matters)
+  * [How it works](#how-it-works)
+- [Adding a New Implementation](#adding-a-new-implementation)
+- [Design Goals](#design-goals)
 - [Supported REST APIs](#supported-rest-apis)
+  * [Posts](#posts)
+  * [Pages](#pages)
+  * [Media](#media)
+  * [Categories](#categories)
+  * [Tags](#tags)
+  * [Comments](#comments)
 - [Usage](#usage)
-  * [Sample with Apache HttpClient 5](#sample-with-apache-httpclient-5)
-  * [Sample with OKHTTP](#sample-with-okhttp)
-- [Documentation](#documentation)
-- [Javadoc](#javadoc)
 - [Maven Central](#maven-central)
+  * [Example](#example)
+  * [Maven Central](#maven-central-1)
 - [License](#license)
 
 <!-- tocstop -->
 
-A modular Java client for interacting with the WordPress REST API.
+----
+
+A modular, extensible Java client for interacting with the WordPress REST API.
+
+This project provides a clean separation between API contracts, implementations, and testing, allowing multiple HTTP
+client implementations to coexist while guaranteeing consistent behaviour through shared contract tests.
 
 ## Overview
 
-WP REST Client provides a type-safe Java API for WordPress REST endpoints, with interchangeable HTTP client
-implementations.
+The goal of this project is to provide:
 
-Currently available implementations:
+- A **type-safe Java client** for the WordPress REST API
+- Multiple interchangeable HTTP client implementations
+- A **contract-driven architecture** to ensure consistency across implementations
+- A clean and modular Maven structure
 
-- OkHttp
-- Apache HttpClient
+Currently, the project includes two implementations:
 
-## Installation
+- **OkHttp-based client**
+- **Apache HttpClient-based client**
 
-Artifacts are available on Maven Central.
+## Modules
 
-### Domain API
+The project is organised as a Maven multi-module build:
 
-Use this module if you only want to depend on the public API and abstractions.
+- `wp-rest-client-domain`
+- `wp-rest-client-apache`
+- `wp-rest-client-okhttp`
+- `wp-rest-client-domain-assertions`  *(not deployed to Maven Central)*
+- `wp-rest-client-contract-tests` *(not deployed to Maven Central)*
+- `wp-rest-client-test-integration` *(not deployed to Maven Central)*
+- `wp-rest-client-test-report` *(not deployed to Maven Central)*
+
+### Module `wp-rest-client-domain`
+
+Contains:
+
+- Core interfaces
+- DTOs (Data Transfer Objects)
+- API contracts
+
+This module defines the **public API** of the client and is implementation-agnostic.
+
+**PLEASE NOTE:** If you only depend on abstractions, this is your entry point.
+
+---
+
+### Module `wp-rest-client-apache`
+
+Provides an implementation based on:
+
+- [Apache HttpClient](https://hc.apache.org/httpcomponents-client-4.5.x/index.html)
+
+Responsibilities:
+
+- HTTP communication using Apache HttpClient
+- Same contract as other implementations
+
+---
+
+### Module `wp-rest-client-okhttp`
+
+Provides an implementation based on:
+
+- [OkHttp](https://square.github.io/okhttp/)
+
+Responsibilities:
+
+- HTTP communication using OkHttp
+- Serialization/deserialization
+- Mapping responses to domain DTOs
+
+---
+
+### Module `wp-rest-client-contract-tests`
+
+This is one of the **most important modules** in the project.
+
+Contains:
+
+- Shared **contract tests**
+- Test utilities
+- Common test fixtures
+
+**PLEASE NOTE:** This module defines the **expected behaviour** of any compliant implementation.
+
+---
+
+### Module `wp-rest-client-test-integration`
+
+Contains:
+
+- Integration tests based on **Testcontainers**
+- Test suites executed against multiple WordPress versions
+
+Purpose:
+
+- Ensure **compatibility across different WordPress versions**
+
+**PLEASE NOTE:** This module is **not deployed to Maven Central**.
+
+---
+
+### Module `wp-rest-client-test-report`
+
+Contains:
+
+- Aggregated test reports
+- Cross-module test execution results
+
+Useful for:
+
+- Verifying consistency across implementations
+- CI/CD integration
+
+---
+
+## Key Concept: Contract Testing
+
+A central design principle of this project is **contract testing**.
+
+Instead of duplicating tests for each implementation, we define a **shared test suite** that all implementations must
+pass.
+
+### Why this matters
+
+- Guarantees **behavioural consistency**
+- Prevents divergence between implementations
+- Makes it easy to add new HTTP client implementations in the future
+
+### How it works
+
+1. Contract tests are defined in `wp-rest-client-contract-tests`
+2. Each implementation module:
+    - Reuses the same tests
+    - Provides its own configuration
+3. All implementations must pass the **same test suite**
+
+**PLEASE NOTE:** If a new implementation passes the contract tests, it is considered compliant.
+
+---
+
+## Adding a New Implementation
+
+To add a new HTTP client implementation:
+
+1. Create a new module (e.g. `wp-rest-client-xyz`)
+2. Implement the interfaces from `wp-rest-client-domain`
+3. Reuse the contract tests from `wp-rest-client-contract-tests`
+4. Ensure all tests pass
+
+That’s it — no need to rewrite test logic.
+
+---
+
+## Design Goals
+
+- Clean separation of concerns
+- Pluggable HTTP layer
+- Strongly typed API
+- Test-driven consistency
+- Easy extensibility
+
+---
+
+## Supported REST APIs
+
+This page documents the WordPress REST API endpoints supported by this client.
+
+The complete WordPress REST API reference is available in the official WordPress
+documentation: <https://developer.wordpress.org/rest-api/reference/>.
+
+| Resource   |      Endpoint | Read | Create | Update | Delete | Notes                              |
+|------------|--------------:|:----:|:------:|:------:|:------:|------------------------------------|
+| Posts      |      `/posts` |  ✅   |   ✅    |   ✅    |   ✅    | Blog posts and post content.       |
+| Pages      |      `/pages` |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Static site pages.                 |
+| Media      |      `/media` |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Images, files, and attachments.    |
+| Categories | `/categories` |  ✅   |   ✅    |   ✅    |   ✅    | Post categories.                   |
+| Tags       |       `/tags` |  ✅   |   ✅    |   ✅    |   ✅    | Post tags.                         |
+| Comments   |   `/comments` |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Comments and moderation workflows. |
+| Users      |      `/users` |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Usually requires authentication.   |
+| Search     |     `/search` |  ⬜   |  N/A   |  N/A   |  N/A   | Search across public content.      |
+| Taxonomies | `/taxonomies` |  ⬜   |  N/A   |  N/A   |  N/A   | Taxonomy metadata.                 |
+| Post Types |      `/types` |  ⬜   |  N/A   |  N/A   |  N/A   | Registered post type metadata.     |
+| Statuses   |   `/statuses` |  ⬜   |  N/A   |  N/A   |  N/A   | Registered post statuses.          |
+| Settings   |   `/settings` |  ⬜   |  N/A   |   ⬜    |  N/A   | Requires elevated permissions.     |
+
+Legend:
+
+- ✅ supported
+- ⬜ not implemented yet
+- N/A not applicable
+
+### Posts
+
+| Endpoint                   | Description     | Status |
+|----------------------------|-----------------|--------|
+| `GET /wp/v2/posts`         | List Posts      | ✅      |
+| `POST /wp/v2/posts`        | Create a Post   | ✅      |
+| `GET /wp/v2/posts/<id>`    | Retrieve a Post | ✅      |
+| `POST /wp/v2/posts/<id>`   | Update a Post   | ✅      |
+| `DELETE /wp/v2/posts/<id>` | Delete a Post   | ✅      |
+
+### Pages
+
+| Endpoint                   | Description     | Status |
+|----------------------------|-----------------|--------|
+| `GET /wp/v2/pages`         | List Pages      | ⬜      |
+| `POST /wp/v2/pages`        | Create a Page   | ⬜      |
+| `GET /wp/v2/pages/<id>`    | Retrieve a Page | ⬜      |
+| `POST /wp/v2/pages/<id>`   | Update a Page   | ⬜      |
+| `DELETE /wp/v2/pages/<id>` | Delete a Page   | ⬜      |
+
+### Media
+
+| Endpoint                   | Description           | Status |
+|----------------------------|-----------------------|--------|
+| `GET /wp/v2/media`         | List Media            | ⬜      |
+| `POST /wp/v2/media`        | Create a Media item   | ⬜      |
+| `GET /wp/v2/media/<id>`    | Retrieve a Media item | ⬜      |
+| `POST /wp/v2/media/<id>`   | Update a Media item   | ⬜      |
+| `DELETE /wp/v2/media/<id>` | Delete a Media  item  | ⬜      |
+
+### Categories
+
+| Endpoint                        | Description         | Status |
+|---------------------------------|---------------------|--------|
+| `GET /wp/v2/categories`         | List Categories     | ✅      |
+| `POST /wp/v2/categories`        | Create a Category   | ✅      |
+| `GET /wp/v2/categories/<id>`    | Retrieve a Category | ✅      |
+| `POST /wp/v2/categories/<id>`   | Update a Category   | ✅      |
+| `DELETE /wp/v2/categories/<id>` | Delete a Category   | ✅      |
+
+### Tags
+
+| Endpoint                  | Description    | Status |
+|---------------------------|----------------|--------|
+| `GET /wp/v2/tags`         | List Tags      | ✅      |
+| `POST /wp/v2/tags`        | Create a Tag   | ✅      |
+| `GET /wp/v2/tags/<id>`    | Retrieve a Tag | ✅      |
+| `POST /wp/v2/tags/<id>`   | Update a Tag   | ✅      |
+| `DELETE /wp/v2/tags/<id>` | Delete a Tag   | ✅      |
+
+### Comments
+
+| Endpoint                      | Description        | Status |
+|-------------------------------|--------------------|--------|
+| `GET /wp/v2/comments`         | List Comments      | ⬜      |
+| `POST /wp/v2/comments`        | Create a Comment   | ⬜      |
+| `GET /wp/v2/comments/<id>`    | Retrieve a Comment | ⬜      |
+| `POST /wp/v2/comments/<id>`   | Update a Comment   | ⬜      |
+| `DELETE /wp/v2/comments/<id>` | Delete a Comment   | ⬜      |
+
+---
+
+## Usage
+
+> ⚠️ TODO: Usage guide and examples will be added in a future release.
+
+---
+
+## Maven Central
+
+Artifacts are available on Maven Central:
+
+- `io.github.evisentin:wp-rest-client-domain`
+- `io.github.evisentin:wp-rest-client-apache`
+- `io.github.evisentin:wp-rest-client-okhttp`
+
+### Example
 
 ```xml
 
@@ -56,170 +319,27 @@ Use this module if you only want to depend on the public API and abstractions.
 </dependency>
 ```
 
-### OkHttp implementation
-
-```xml
-
-<dependency>
-    <groupId>io.github.evisentin</groupId>
-    <artifactId>wp-rest-client-okhttp</artifactId>
-    <version>1.0.0</version>
-</dependency>
-```
-
-### Apache HttpClient implementation
-
-```xml
-
-<dependency>
-    <groupId>io.github.evisentin</groupId>
-    <artifactId>wp-rest-client-apache</artifactId>
-    <version>1.0.0</version>
-</dependency>
-```
-
-## Modules
-
-| Module                  | Purpose                                     |
-|-------------------------|---------------------------------------------|
-| `wp-rest-client-domain` | Public API, interfaces, DTOs, and contracts |
-| `wp-rest-client-okhttp` | OkHttp-based implementation                 |
-| `wp-rest-client-apache` | Apache HttpClient-based implementation      |
-
-Internal testing and architecture modules are documented in [`docs/architecture.md`](doc/architecture.md).
-
-## Supported REST APIs
-
-See [Supported REST APIs](doc/api.md)
-
-## Usage
-
-### Sample with Apache HttpClient 5
-
-Import the right module
-
-```xml
-
-<dependencies>
-    <dependency>
-        <groupId>io.github.evisentin</groupId>
-        <artifactId>wp-rest-client-apache</artifactId>
-        <version>1.0.0</version>
-    </dependency>
-</dependencies>
-```
-
-List the posts
-
-```java
-import io.github.evisentin.wordpress.client.adapter.apache.ApacheWpRestClient;
-import io.github.evisentin.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
-import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
-import io.github.evisentin.wordpress.client.domain.model.WpPost;
-import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
-import io.github.evisentin.wordpress.client.domain.model.query.WpPostQuery;
-
-import java.util.List;
-import java.util.Set;
-
-import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.DRAFT;
-import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.PUBLISH;
-
-...
-
-// Initialize the client
-final WpBasicAuthenticationStrategy authenticationStrategy = new WpBasicAuthenticationStrategy("username", "password");
-        final ApacheWpRestClient restClient = new ApacheWpRestClient(
-                "http://localhost:8080", // baseUrl
-                authenticationStrategy,
-                null, // ssl configuration
-                null // timeout configuration
-        );
-
-        final WpPagingQuery pageQuery = WpPagingQuery.of(1, 10);
-        final WpPostQuery postQuery = WpPostQuery.builder()
-                .withStatuses(Set.of(DRAFT, PUBLISH))
-                .build();
-
-        final WpPagedResponse<WpPost> response = restClient.listPosts(pageQuery, postQuery);
-        final List<WpPost> posts = response.getItems();
-...
-```
-
-### Sample with OKHTTP
-
-Import the right module
-
-```xml
-
-<dependencies>
-    <dependency>
-        <groupId>io.github.evisentin</groupId>
-        <artifactId>wp-rest-client-okhttp</artifactId>
-        <version>1.0.0</version>
-    </dependency>
-</dependencies>
-```
-
-List the posts
-
-```java
-import io.github.evisentin.wordpress.client.adapter.okhttp.OkHttpWpRestClient;
-import io.github.evisentin.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
-import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
-import io.github.evisentin.wordpress.client.domain.model.WpPost;
-import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
-import io.github.evisentin.wordpress.client.domain.model.query.WpPostQuery;
-
-import java.util.List;
-import java.util.Set;
-
-import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.DRAFT;
-import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.PUBLISH;
-
-...
-
-// Initialize the client
-final WpBasicAuthenticationStrategy authenticationStrategy = new WpBasicAuthenticationStrategy("username", "password");
-        final OkHttpWpRestClient restClient = new OkHttpWpRestClient(
-                "http://localhost:8080", // baseUrl
-                authenticationStrategy,
-                null, // ssl configuration
-                null // timeout configuration
-        );
-
-        final WpPagingQuery pageQuery = WpPagingQuery.of(1, 10);
-        final WpPostQuery postQuery = WpPostQuery.builder()
-                .withStatuses(Set.of(DRAFT, PUBLISH))
-                .build();
-
-        final WpPagedResponse<WpPost> response = restClient.listPosts(pageQuery, postQuery);
-        final List<WpPost> posts = response.getItems();
-...
-```
-
-## Documentation
-
-- [Architecture](doc/architecture.md)
-- [Contributing](doc/contributing.md)
-- [Developer](doc/developer.md)
-
-## Javadoc
-
-- https://javadoc.io/doc/io.github.evisentin/wp-rest-client
-- https://javadoc.io/doc/io.github.evisentin/wp-rest-client-domain
-- https://javadoc.io/doc/io.github.evisentin/wp-rest-client-apache
-- https://javadoc.io/doc/io.github.evisentin/wp-rest-client-okhttp
-
-## Maven Central
+### Maven Central
 
 - https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client
 - https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client-domain
 - https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client-apache
 - https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client-okhttp
 
+---
+
 ## License
 
 This project is licensed under the Apache License 2.0.
 
-See the [LICENSE](LICENSE) file for details.
+You may obtain a copy of the License at:
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "
+AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+
+See the License for the specific language governing permissions and limitations under the License.
+
+
+
