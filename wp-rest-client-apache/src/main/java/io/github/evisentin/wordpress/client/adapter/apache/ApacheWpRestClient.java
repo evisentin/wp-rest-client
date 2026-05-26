@@ -21,6 +21,7 @@ import io.github.evisentin.wordpress.client.domain.model.requests.WpCategoryCrea
 import io.github.evisentin.wordpress.client.domain.model.requests.WpPostCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpTagCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
+import io.github.evisentin.wordpress.client.domain.model.responses.WpMediaDeletionResponse;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpPostDeletionResponse;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpTagDeletionResponse;
 import lombok.NonNull;
@@ -213,6 +214,19 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         builder.addParameter(FORCE, Boolean.TRUE.toString());
 
         return performDeleteRequest(builder, WP_CATEGORY_DELETION_RESPONSE_TYPE);
+    }
+
+    @Override
+    @SneakyThrows
+    public WpMediaDeletionResponse deleteMedia(final @NonNull Long id) {
+        final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/media/${id}",
+                Map.of(BASE_URL, baseUrl, "id", id));
+
+        // For tags/terms, WordPress does not support trashing, and the REST API explicitly
+        // requires force to be true for delete.
+        builder.addParameter(FORCE, Boolean.TRUE.toString());
+
+        return performDeleteRequest(builder, WP_MEDIA_DELETION_RESPONSE_TYPE);
     }
 
     @SneakyThrows

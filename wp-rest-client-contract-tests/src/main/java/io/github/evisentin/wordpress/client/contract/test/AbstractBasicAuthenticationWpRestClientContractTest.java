@@ -13,6 +13,7 @@ import io.github.evisentin.wordpress.client.domain.model.requests.WpCategoryCrea
 import io.github.evisentin.wordpress.client.domain.model.requests.WpPostCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpTagCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
+import io.github.evisentin.wordpress.client.domain.model.responses.WpMediaDeletionResponse;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpPostDeletionResponse;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpTagDeletionResponse;
 import lombok.NonNull;
@@ -163,6 +164,69 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasPingStatus(WpOpenClosed.CLOSED)
                                .hasMediaType("image")
                                .hasMimeType("image/png");
+        }
+
+        @DisplayName("'DELETE' fails on HTTP FORBIDDEN")
+        @Test
+        void deleteFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/delete.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.deleteMedia(9L));
+        }
+
+        @DisplayName("'DELETE' fails on HTTP NOT FOUND")
+        @Test
+        void deleteFailsOnNotFound() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/delete.failure.not-found.json");
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.deleteMedia(9L));
+        }
+
+        @DisplayName("'DELETE' fails on null ID")
+        @Test
+        void deleteFailsOnNullId() {
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.deleteMedia(null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("id is marked non-null but is null");
+        }
+
+        @DisplayName("'DELETE' fails on HTTP UNAUTHORIZED")
+        @Test
+        void deleteFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/delete.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.deleteMedia(9L));
+        }
+
+        @DisplayName("'DELETE' works")
+        @Test
+        void deleteWorks() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/delete.success.json");
+
+            // WHEN
+            final WpMediaDeletionResponse response = client.deleteMedia(9L);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .isDeleted()
+                               .hasPreviousSatisfying(summary ->
+                                       summary.isNotNull()
+                                              .hasId(9L)
+                               );
         }
 
         @DisplayName("'GET' fails on HTTP FORBIDDEN")

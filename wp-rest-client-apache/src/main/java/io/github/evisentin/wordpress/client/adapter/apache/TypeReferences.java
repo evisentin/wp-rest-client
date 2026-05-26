@@ -6,6 +6,7 @@ import io.github.evisentin.wordpress.client.domain.model.WpMedia;
 import io.github.evisentin.wordpress.client.domain.model.WpPost;
 import io.github.evisentin.wordpress.client.domain.model.WpTag;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
+import io.github.evisentin.wordpress.client.domain.model.responses.WpMediaDeletionResponse;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpPostDeletionResponse;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpTagDeletionResponse;
 
@@ -18,6 +19,7 @@ interface TypeReferences {
     TypeReference<WpTag> WP_TAG_TYPE = new TypeReference<>() {};
 
     TypeReference<WpCategoryDeletionResponse> WP_CATEGORY_DELETION_RESPONSE_TYPE = new TypeReference<>() {};
+    TypeReference<WpMediaDeletionResponse> WP_MEDIA_DELETION_RESPONSE_TYPE = new TypeReference<>() {};
     TypeReference<WpPostDeletionResponse> WP_POST_DELETION_RESPONSE_TYPE = new TypeReference<>() {};
     TypeReference<WpTagDeletionResponse> WP_TAG_DELETION_RESPONSE_TYPE = new TypeReference<>() {};
 

@@ -21,6 +21,7 @@ import io.github.evisentin.wordpress.client.domain.model.requests.WpCategoryCrea
 import io.github.evisentin.wordpress.client.domain.model.requests.WpPostCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpTagCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
+import io.github.evisentin.wordpress.client.domain.model.responses.WpMediaDeletionResponse;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpPostDeletionResponse;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpTagDeletionResponse;
 import lombok.NonNull;
@@ -174,17 +175,6 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
     @Override
     @SneakyThrows
-    public WpMedia getMedia(final @NonNull Long id,final WpContext context) {
-        final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/media/${id}",
-                Map.of(BASE_URL, baseUrl, "id", id));
-
-        builder.addQueryParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
-
-        return performGetRequest(builder, WP_MEDIA_TYPE);
-    }
-
-    @Override
-    @SneakyThrows
     public WpPost createPost(final @NonNull WpPostCreateUpdateRequest creationRequest) {
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts",
                 Map.of(BASE_URL, baseUrl));
@@ -220,6 +210,19 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
     @Override
     @SneakyThrows
+    public WpMediaDeletionResponse deleteMedia(final @NonNull Long id) {
+        final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/media/${id}",
+                Map.of(BASE_URL, baseUrl, "id", id));
+
+        // For tags/terms, WordPress does not support trashing, and the REST API explicitly
+        // requires force to be true for delete.
+        builder.addQueryParameter(FORCE, Boolean.TRUE.toString());
+
+        return performDeleteRequest(builder, WP_MEDIA_DELETION_RESPONSE_TYPE);
+    }
+
+    @Override
+    @SneakyThrows
     public WpPostDeletionResponse deletePost(@NonNull Long id) {
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts/${id}",
                 Map.of(BASE_URL, baseUrl, "id", id));
@@ -251,6 +254,17 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         builder.addQueryParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
 
         return performGetRequest(builder, WP_CATEGORY_TYPE);
+    }
+
+    @Override
+    @SneakyThrows
+    public WpMedia getMedia(final @NonNull Long id, final WpContext context) {
+        final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/media/${id}",
+                Map.of(BASE_URL, baseUrl, "id", id));
+
+        builder.addQueryParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
+
+        return performGetRequest(builder, WP_MEDIA_TYPE);
     }
 
     @Override

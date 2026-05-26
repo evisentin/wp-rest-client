@@ -1,10 +1,7 @@
 package io.github.evisentin.wordpress.client.domain.assertions;
 
 import io.github.evisentin.wordpress.client.domain.model.*;
-import io.github.evisentin.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
-import io.github.evisentin.wordpress.client.domain.model.responses.WpPostDeletionResponse;
-import io.github.evisentin.wordpress.client.domain.model.responses.WpTagDeletionResponse;
-import io.github.evisentin.wordpress.client.domain.model.responses.WpTermDeletionResponse;
+import io.github.evisentin.wordpress.client.domain.model.responses.*;
 
 public final class WordPressAssertions {
 
@@ -41,6 +38,10 @@ public final class WordPressAssertions {
 
     public static WpTermDeletionResponseAssert assertThat(final WpTermDeletionResponse actual) {
         return new WpTermDeletionResponseAssert(actual);
+    }
+
+    public static WpMediaDeletionResponseAssert assertThat(final WpMediaDeletionResponse actual) {
+        return new WpMediaDeletionResponseAssert(actual);
     }
 
     public static WpCategoryDeletionResponseAssert assertThat(final WpCategoryDeletionResponse actual) {

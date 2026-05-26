@@ -5,6 +5,7 @@ import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.client.domain.model.query.WpMediaQuery;
 import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.client.domain.model.responses.WpMediaDeletionResponse;
 import lombok.NonNull;
 
 import java.io.File;
@@ -45,6 +46,16 @@ public interface MediaOperations {
      * @return the created {@link WpMedia}
      */
     WpMedia createMedia(@NonNull File file, @NonNull String fileName, @NonNull String mimeType);
+
+    /**
+     * Deletes a media item by its unique identifier.
+     *
+     * @param id
+     *         the ID of the media item to delete; must not be {@code null}
+     *
+     * @return the media item deletion response
+     */
+    WpMediaDeletionResponse deleteMedia(@NonNull Long id);
 
     /**
      * Retrieves a media item by its unique identifier using the given context.
