@@ -1,0 +1,56 @@
+[
+    {
+        "httpRequest": {
+            "method": "POST",
+            "path": "/wp-json/wp/v2/media/9",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "caption": "Caption updated",
+                    "description": "Description updated",
+                    "title": "Title updated"
+                }
+            }
+        },
+        "httpResponse": {
+            "statusCode": 400,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "code": "rest_missing_callback_param",
+                    "message": "Missing parameter(s): param1",
+                    "data": {
+                        "status": 400,
+                        "params": {
+                            "title": "param1 is required."
+                        }
+                    }
+                }
+            }
+        }
+    }
+]

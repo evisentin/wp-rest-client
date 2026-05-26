@@ -10,6 +10,7 @@ import io.github.evisentin.wordpress.client.domain.model.enums.WpOpenClosed;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpTagOrderFields;
 import io.github.evisentin.wordpress.client.domain.model.query.*;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpCategoryCreateUpdateRequest;
+import io.github.evisentin.wordpress.client.domain.model.requests.WpMediaUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpPostCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpTagCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
@@ -368,6 +369,123 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                                                   .hasTitleSatisfying(title -> title.hasRaw("sample-1")
                                                                                                                     .hasRendered("sample-1"))
                                                ));
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP BAD REQUEST")
+        @Test
+        void updateFailsOnBadRequest() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/update.failure.bad-request.json");
+
+            final WpMediaUpdateRequest updateRequest =
+                    WpMediaUpdateRequest.builder()
+                                        .withCaption("Caption updated")
+                                        .withDescription("Description updated")
+                                        .withTitle("Title updated")
+                                        .build();
+
+            // WHEN/THEN
+            assertThrowsWpBadRequest(() -> client.updateMedia(9L, updateRequest));
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP FORBIDDEN")
+        @Test
+        void updateFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/update.failure.forbidden.json");
+
+            final WpMediaUpdateRequest updateRequest =
+                    WpMediaUpdateRequest.builder()
+                                        .withCaption("Caption updated")
+                                        .withDescription("Description updated")
+                                        .withTitle("Title updated")
+                                        .build();
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.updateMedia(9L, updateRequest));
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
+        @Test
+        void updateFailsOnNotFound() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/update.failure.not-found.json");
+
+            final WpMediaUpdateRequest updateRequest =
+                    WpMediaUpdateRequest.builder()
+                                        .withCaption("Caption updated")
+                                        .withDescription("Description updated")
+                                        .withTitle("Title updated")
+                                        .build();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.updateMedia(9L, updateRequest));
+        }
+
+        @DisplayName("'UPDATE' fails on null ID")
+        @Test
+        void updateFailsOnNullId() {
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.updateMedia(null, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("id is marked non-null but is null");
+        }
+
+        @DisplayName("'UPDATE' fails on null request")
+        @Test
+        void updateFailsOnNullRequest() {
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.updateMedia(1000L, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("updateRequest is marked non-null but is null");
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP UNAUTHORIZED")
+        @Test
+        void updateFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/update.failure.unauthorized.json");
+
+            final WpMediaUpdateRequest updateRequest =
+                    WpMediaUpdateRequest.builder()
+                                        .withCaption("Caption updated")
+                                        .withDescription("Description updated")
+                                        .withTitle("Title updated")
+                                        .build();
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.updateMedia(9L, updateRequest));
+        }
+
+        @DisplayName("UPDATE' works")
+        @Test
+        void updateWorks() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/update.success.json");
+
+            final WpMediaUpdateRequest updateRequest =
+                    WpMediaUpdateRequest.builder()
+                                        .withCaption("Caption updated")
+                                        .withDescription("Description updated")
+                                        .withTitle("Title updated")
+                                        .build();
+
+            // WHEN
+            final WpMedia media = client.updateMedia(9L, updateRequest);
+
+            WordPressAssertions.assertThat(media)
+                               .isNotNull()
+                               .hasId(9L)
+                               .hasCaptionSatisfying(caption -> caption.hasRaw("Caption updated").hasRendered("Caption updated"))
+                               .hasDescriptionSatisfying(description -> description.hasRaw("Description updated").hasRendered("Description updated"))
+                               .hasTitleSatisfying(title -> title.hasRaw("Title updated").hasRendered("Title updated"));
         }
     }
 

@@ -18,6 +18,7 @@ import io.github.evisentin.wordpress.client.domain.model.*;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.client.domain.model.query.*;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpCategoryCreateUpdateRequest;
+import io.github.evisentin.wordpress.client.domain.model.requests.WpMediaUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpPostCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpTagCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
@@ -373,6 +374,17 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
                         "id", id));
 
         return performPostWithBody(builder, updateRequest, WP_CATEGORY_TYPE);
+    }
+
+    @Override
+    @SneakyThrows
+    public WpMedia updateMedia(final @NonNull Long id,
+                               final @NonNull WpMediaUpdateRequest updateRequest) {
+        final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/media/${id}",
+                Map.of(BASE_URL, baseUrl,
+                        "id", id));
+
+        return performPostWithBody(builder, updateRequest, WP_MEDIA_TYPE);
     }
 
     @Override

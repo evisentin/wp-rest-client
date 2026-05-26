@@ -47,6 +47,25 @@ public abstract class AbstractWpMediaAssert<S extends AbstractWpMediaAssert<S>>
         return myself;
     }
 
+    public S hasCaptionSatisfying(final Consumer<WpRenderedFieldAssert> requirements) {
+        isNotNull();
+        if (actual.getCaption() == null) {
+            failWithMessage("Expected caption to be present but it was null");
+        }
+        requirements.accept(new WpRenderedFieldAssert(actual.getCaption()));
+        return myself;
+    }
+        public S hasDescriptionSatisfying(final Consumer<WpRenderedFieldAssert> requirements) {
+        isNotNull();
+        if (actual.getDescription() == null) {
+            failWithMessage("Expected description to be present but it was null");
+        }
+        requirements.accept(new WpRenderedFieldAssert(actual.getDescription()));
+        return myself;
+    }
+
+
+
     public S hasExcerptSatisfying(final Consumer<WpRenderedFieldAssert> requirements) {
         isNotNull();
         if (actual.getExcerpt() == null) {

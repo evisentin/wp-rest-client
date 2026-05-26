@@ -9,7 +9,7 @@ documentation: <https://developer.wordpress.org/rest-api/reference/>.
 |------------|--------------:|:----:|:------:|:------:|:------:|------------------------------------|
 | Posts      |      `/posts` |  ✅   |   ✅    |   ✅    |   ✅    | Blog posts and post content.       |
 | Pages      |      `/pages` |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Static site pages.                 |
-| Media      |      `/media` |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Images, files, and attachments.    |
+| Media      |      `/media` |  ✅   |   ✅    |   ✅    |   ✅    | Images, files, and attachments.    |
 | Categories | `/categories` |  ✅   |   ✅    |   ✅    |   ✅    | Post categories.                   |
 | Tags       |       `/tags` |  ✅   |   ✅    |   ✅    |   ✅    | Post tags.                         |
 | Comments   |   `/comments` |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Comments and moderation workflows. |
@@ -53,8 +53,8 @@ Legend:
 | `GET /wp/v2/media`         | List Media            | ✅      |
 | `POST /wp/v2/media`        | Create a Media item   | ✅      |
 | `GET /wp/v2/media/<id>`    | Retrieve a Media item | ✅      |
-| `POST /wp/v2/media/<id>`   | Update a Media item   | ⬜      |
-| `DELETE /wp/v2/media/<id>` | Delete a Media  item  | ⬜      |
+| `POST /wp/v2/media/<id>`   | Update a Media item   | ✅      |
+| `DELETE /wp/v2/media/<id>` | Delete a Media  item  | ✅      |
 
 ### Categories
 

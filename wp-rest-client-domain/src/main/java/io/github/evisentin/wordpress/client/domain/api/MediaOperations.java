@@ -5,6 +5,7 @@ import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.client.domain.model.query.WpMediaQuery;
 import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.client.domain.model.requests.WpMediaUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpMediaDeletionResponse;
 import lombok.NonNull;
 
@@ -86,4 +87,18 @@ public interface MediaOperations {
      * @return a paginated response containing {@link WpMedia} items
      */
     WpPagedResponse<WpMedia> listMedia(@NonNull WpPagingQuery pageQuery, WpMediaQuery mediaQuery);
+
+    /**
+     * Updates an existing media item.
+     *
+     * <p>Updates a media item in WordPress using the provided request payload.</p>
+     *
+     * @param id
+     *         the ID of the media item to update; must not be {@code null}
+     * @param updateRequest
+     *         the category update request; must not be {@code null}
+     *
+     * @return the updated {@link WpMedia}
+     */
+    WpMedia updateMedia(@NonNull Long id, @NonNull WpMediaUpdateRequest updateRequest);
 }
