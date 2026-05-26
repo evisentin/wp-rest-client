@@ -97,7 +97,7 @@
         <configuration>
           <includeDependencySources>true</includeDependencySources>
           <dependencySourceIncludes>
-            <dependencySourceInclude>io.github.evisentin.wordpress:*</dependencySourceInclude>
+            <dependencySourceInclude>io.github.evisentin:*</dependencySourceInclude>
           </dependencySourceIncludes>
           <subpackages>io.github.evisentin.wordpress.client.adapter.apache</subpackages>
         </configuration>
