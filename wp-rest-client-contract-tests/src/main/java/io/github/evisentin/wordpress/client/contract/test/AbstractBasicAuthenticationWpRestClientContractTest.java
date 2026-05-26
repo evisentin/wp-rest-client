@@ -165,6 +165,85 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasMimeType("image/png");
         }
 
+        @DisplayName("'GET' fails on HTTP FORBIDDEN")
+        @Test
+        void getFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/get.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.getMedia(9L, null));
+        }
+
+        @DisplayName("'GET' fails on HTTP NOT FOUND")
+        @Test
+        void getFailsOnNotFound() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/get.failure.not-found.json");
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.getMedia(9L, null));
+        }
+
+        @DisplayName("'GET' fails on null ID")
+        @Test
+        void getFailsOnNullId() {
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.getMedia(null, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("id is marked non-null but is null");
+        }
+
+        @DisplayName("'GET' fails on HTTP UNAUTHORIZED")
+        @Test
+        void getFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/get.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.getMedia(9L, null));
+        }
+
+        @DisplayName("'GET' works with context")
+        @Test
+        void getWorksWithContext() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/get.success.with-context.json");
+
+            final Long id = 9L;
+
+            // WHEN
+            final WpMedia media = client.getMedia(id, WpContext.VIEW);
+
+            // THEN
+            WordPressAssertions.assertThat(media)
+                               .isNotNull()
+                               .hasId(id);
+        }
+
+        @DisplayName("'GET' works without context")
+        @Test
+        void getWorksWithoutContext() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/get.success.without-context.json");
+
+            final Long id = 9L;
+
+            // WHEN
+            final WpMedia media = client.getMedia(id, null);
+
+            // THEN
+            WordPressAssertions.assertThat(media)
+                               .isNotNull()
+                               .hasId(id);
+        }
+
         @DisplayName("'LIST' fails on HTTP FORBIDDEN")
         @Test
         void listFailsOnForbidden() {

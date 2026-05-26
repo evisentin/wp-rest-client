@@ -174,6 +174,17 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
     @Override
     @SneakyThrows
+    public WpMedia getMedia(final @NonNull Long id,final WpContext context) {
+        final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/media/${id}",
+                Map.of(BASE_URL, baseUrl, "id", id));
+
+        builder.addQueryParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
+
+        return performGetRequest(builder, WP_MEDIA_TYPE);
+    }
+
+    @Override
+    @SneakyThrows
     public WpPost createPost(final @NonNull WpPostCreateUpdateRequest creationRequest) {
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts",
                 Map.of(BASE_URL, baseUrl));

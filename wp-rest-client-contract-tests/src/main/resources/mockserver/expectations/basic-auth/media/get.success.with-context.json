@@ -1,0 +1,213 @@
+[
+    {
+        "httpRequest": {
+            "method": "GET",
+            "path": "/wp-json/wp/v2/media/9",
+            "queryStringParameters": [
+                {
+                    "name": "context",
+                    "values": [
+                        "view"
+                    ]
+                }
+            ],
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ]
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json; charset=UTF-8"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "id": 9,
+                    "date": "2026-05-26T15:55:50",
+                    "date_gmt": "2026-05-26T15:55:50",
+                    "guid": {
+                        "rendered": "http://localhost:8080/wp-content/uploads/2026/05/sample-1.png",
+                        "raw": "http://localhost:8080/wp-content/uploads/2026/05/sample-1.png"
+                    },
+                    "modified": "2026-05-26T15:55:50",
+                    "modified_gmt": "2026-05-26T15:55:50",
+                    "slug": "sample-1",
+                    "status": "inherit",
+                    "type": "attachment",
+                    "link": "http://localhost:8080/sample-1/",
+                    "title": {
+                        "raw": "sample-1",
+                        "rendered": "sample-1"
+                    },
+                    "author": 1,
+                    "featured_media": 0,
+                    "comment_status": "open",
+                    "ping_status": "closed",
+                    "template": "",
+                    "meta": [],
+                    "permalink_template": "http://localhost:8080/?attachment_id=9",
+                    "generated_slug": "sample-1",
+                    "class_list": [
+                        "post-9",
+                        "attachment",
+                        "type-attachment",
+                        "status-inherit",
+                        "hentry"
+                    ],
+                    "description": {
+                        "raw": "",
+                        "rendered": "<p class=\"attachment\"><a href='http://localhost:8080/wp-content/uploads/2026/05/sample-1.png'><img loading=\"lazy\" decoding=\"async\" width=\"300\" height=\"300\" src=\"http://localhost:8080/wp-content/uploads/2026/05/sample-1-300x300.png\" class=\"attachment-medium size-medium\" alt=\"\" srcset=\"http://localhost:8080/wp-content/uploads/2026/05/sample-1-300x300.png 300w, http://localhost:8080/wp-content/uploads/2026/05/sample-1-1024x1024.png 1024w, http://localhost:8080/wp-content/uploads/2026/05/sample-1-150x150.png 150w, http://localhost:8080/wp-content/uploads/2026/05/sample-1-768x768.png 768w, http://localhost:8080/wp-content/uploads/2026/05/sample-1.png 1254w\" sizes=\"auto, (max-width: 300px) 100vw, 300px\" /></a></p>\n"
+                    },
+                    "caption": {
+                        "raw": "",
+                        "rendered": ""
+                    },
+                    "alt_text": "",
+                    "media_type": "image",
+                    "mime_type": "image/png",
+                    "media_details": {
+                        "width": 1254,
+                        "height": 1254,
+                        "file": "2026/05/sample-1.png",
+                        "filesize": 1020998,
+                        "sizes": {
+                            "medium": {
+                                "file": "sample-1-300x300.png",
+                                "width": 300,
+                                "height": 300,
+                                "filesize": 54179,
+                                "mime_type": "image/png",
+                                "source_url": "http://localhost:8080/wp-content/uploads/2026/05/sample-1-300x300.png"
+                            },
+                            "large": {
+                                "file": "sample-1-1024x1024.png",
+                                "width": 1024,
+                                "height": 1024,
+                                "filesize": 474189,
+                                "mime_type": "image/png",
+                                "source_url": "http://localhost:8080/wp-content/uploads/2026/05/sample-1-1024x1024.png"
+                            },
+                            "thumbnail": {
+                                "file": "sample-1-150x150.png",
+                                "width": 150,
+                                "height": 150,
+                                "filesize": 15654,
+                                "mime_type": "image/png",
+                                "source_url": "http://localhost:8080/wp-content/uploads/2026/05/sample-1-150x150.png"
+                            },
+                            "medium_large": {
+                                "file": "sample-1-768x768.png",
+                                "width": 768,
+                                "height": 768,
+                                "filesize": 281908,
+                                "mime_type": "image/png",
+                                "source_url": "http://localhost:8080/wp-content/uploads/2026/05/sample-1-768x768.png"
+                            },
+                            "full": {
+                                "file": "sample-1.png",
+                                "width": 1254,
+                                "height": 1254,
+                                "mime_type": "image/png",
+                                "source_url": "http://localhost:8080/wp-content/uploads/2026/05/sample-1.png"
+                            }
+                        },
+                        "image_meta": {
+                            "aperture": "0",
+                            "credit": "",
+                            "camera": "",
+                            "caption": "",
+                            "created_timestamp": "0",
+                            "copyright": "",
+                            "focal_length": "0",
+                            "iso": "0",
+                            "shutter_speed": "0",
+                            "title": "",
+                            "orientation": "0",
+                            "keywords": [],
+                            "alt": ""
+                        }
+                    },
+                    "post": null,
+                    "source_url": "http://localhost:8080/wp-content/uploads/2026/05/sample-1.png",
+                    "missing_image_sizes": [],
+                    "filename": "sample-1.png",
+                    "filesize": 1020998,
+                    "exif_orientation": 1,
+                    "_links": {
+                        "self": [
+                            {
+                                "href": "http://localhost:8080/wp-json/wp/v2/media/9",
+                                "targetHints": {
+                                    "allow": [
+                                        "GET",
+                                        "POST",
+                                        "PUT",
+                                        "PATCH",
+                                        "DELETE"
+                                    ]
+                                }
+                            }
+                        ],
+                        "collection": [
+                            {
+                                "href": "http://localhost:8080/wp-json/wp/v2/media"
+                            }
+                        ],
+                        "about": [
+                            {
+                                "href": "http://localhost:8080/wp-json/wp/v2/types/attachment"
+                            }
+                        ],
+                        "author": [
+                            {
+                                "embeddable": true,
+                                "href": "http://localhost:8080/wp-json/wp/v2/users/1"
+                            }
+                        ],
+                        "replies": [
+                            {
+                                "embeddable": true,
+                                "href": "http://localhost:8080/wp-json/wp/v2/comments?post=9"
+                            }
+                        ],
+                        "wp:action-unfiltered-html": [
+                            {
+                                "href": "http://localhost:8080/wp-json/wp/v2/media/9"
+                            }
+                        ],
+                        "wp:action-assign-author": [
+                            {
+                                "href": "http://localhost:8080/wp-json/wp/v2/media/9"
+                            }
+                        ],
+                        "curies": [
+                            {
+                                "name": "wp",
+                                "href": "https://api.w.org/{rel}",
+                                "templated": true
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+]

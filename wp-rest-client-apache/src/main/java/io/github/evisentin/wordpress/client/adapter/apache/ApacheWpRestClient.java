@@ -249,6 +249,16 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performGetRequest(builder, WP_CATEGORY_TYPE);
     }
 
+    @Override
+    @SneakyThrows
+    public WpMedia getMedia(final @NonNull Long id, final WpContext context) {
+        final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/media/${id}",
+                Map.of(BASE_URL, baseUrl, "id", id));
+        builder.addParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
+
+        return performGetRequest(builder, WP_MEDIA_TYPE);
+    }
+
     @SneakyThrows
     @Override
     public WpPost getPost(final @NonNull Long id, final WpContext context) {
