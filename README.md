@@ -18,7 +18,10 @@
 - [Modules](#modules)
 - [Supported REST APIs](#supported-rest-apis)
 - [Usage](#usage)
+  * [Sample with Apache HttpClient 5](#sample-with-apache-httpclient-5)
+  * [Sample with OKHTTP](#sample-with-okhttp)
 - [Documentation](#documentation)
+- [Javadoc](#javadoc)
 - [Maven Central](#maven-central)
 - [License](#license)
 
@@ -91,13 +94,122 @@ See [Supported REST APIs](doc/api.md)
 
 ## Usage
 
-> TODO: Usage guide and examples will be added in a future release.
+### Sample with Apache HttpClient 5
+
+Import the right module
+
+```xml
+
+<dependencies>
+    <dependency>
+        <groupId>io.github.evisentin</groupId>
+        <artifactId>wp-rest-client-apache</artifactId>
+        <version>1.0.0</version>
+    </dependency>
+</dependencies>
+```
+
+List the posts
+
+```java
+import io.github.evisentin.wordpress.client.adapter.apache.ApacheWpRestClient;
+import io.github.evisentin.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
+import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
+import io.github.evisentin.wordpress.client.domain.model.WpPost;
+import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.client.domain.model.query.WpPostQuery;
+
+import java.util.List;
+import java.util.Set;
+
+import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.DRAFT;
+import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.PUBLISH;
+
+...
+
+// Initialize the client
+final WpBasicAuthenticationStrategy authenticationStrategy = new WpBasicAuthenticationStrategy("username", "password");
+        final ApacheWpRestClient restClient = new ApacheWpRestClient(
+                "http://localhost:8080", // baseUrl
+                authenticationStrategy,
+                null, // ssl configuration
+                null // timeout configuration
+        );
+
+        final WpPagingQuery pageQuery = WpPagingQuery.of(1, 10);
+        final WpPostQuery postQuery = WpPostQuery.builder()
+                .withStatuses(Set.of(DRAFT, PUBLISH))
+                .build();
+
+        final WpPagedResponse<WpPost> response = restClient.listPosts(pageQuery, postQuery);
+        final List<WpPost> posts = response.getItems();
+...
+```
+
+### Sample with OKHTTP
+
+Import the right module
+
+```xml
+
+<dependencies>
+    <dependency>
+        <groupId>io.github.evisentin</groupId>
+        <artifactId>wp-rest-client-okhttp</artifactId>
+        <version>1.0.0</version>
+    </dependency>
+</dependencies>
+```
+
+List the posts
+
+```java
+import io.github.evisentin.wordpress.client.adapter.okhttp.OkHttpWpRestClient;
+import io.github.evisentin.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
+import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
+import io.github.evisentin.wordpress.client.domain.model.WpPost;
+import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.client.domain.model.query.WpPostQuery;
+
+import java.util.List;
+import java.util.Set;
+
+import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.DRAFT;
+import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.PUBLISH;
+
+...
+
+// Initialize the client
+final WpBasicAuthenticationStrategy authenticationStrategy = new WpBasicAuthenticationStrategy("username", "password");
+        final OkHttpWpRestClient restClient = new OkHttpWpRestClient(
+                "http://localhost:8080", // baseUrl
+                authenticationStrategy,
+                null, // ssl configuration
+                null // timeout configuration
+        );
+
+        final WpPagingQuery pageQuery = WpPagingQuery.of(1, 10);
+        final WpPostQuery postQuery = WpPostQuery.builder()
+                .withStatuses(Set.of(DRAFT, PUBLISH))
+                .build();
+
+        final WpPagedResponse<WpPost> response = restClient.listPosts(pageQuery, postQuery);
+        final List<WpPost> posts = response.getItems();
+...
+```
 
 ## Documentation
 
 - [Architecture](doc/architecture.md)
 - [Contributing](doc/contributing.md)
 - [Developer](doc/developer.md)
+
+## Javadoc
+
+- https://javadoc.io/doc/io.github.evisentin/wp-rest-client
+- https://javadoc.io/doc/io.github.evisentin/wp-rest-client-domain
+- https://javadoc.io/doc/io.github.evisentin/wp-rest-client-apache
+- https://javadoc.io/doc/io.github.evisentin/wp-rest-client-okhttp
 
 ## Maven Central
 
