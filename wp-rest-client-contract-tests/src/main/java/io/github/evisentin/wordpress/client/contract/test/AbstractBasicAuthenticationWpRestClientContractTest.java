@@ -1,4 +1,4 @@
-package io.github.evisentin.wordpress.client.test.support;
+package io.github.evisentin.wordpress.client.contract.test;
 
 import io.github.evisentin.wordpress.client.domain.api.WpBaseRestClient;
 import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
@@ -28,6 +28,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 
+import static io.github.evisentin.wordpress.client.contract.test.SlugUtils.toWordPressSlug;
+import static io.github.evisentin.wordpress.client.contract.test.WpAssertions.assertThrowsWpBadRequest;
+import static io.github.evisentin.wordpress.client.contract.test.WpAssertions.assertThrowsWpForbidden;
+import static io.github.evisentin.wordpress.client.contract.test.WpAssertions.assertThrowsWpNotFound;
+import static io.github.evisentin.wordpress.client.contract.test.WpAssertions.assertThrowsWpUnauthorized;
 import static io.github.evisentin.wordpress.client.domain.model.enums.WpContext.EDIT;
 import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.DRAFT;
 import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.PRIVATE;
@@ -36,11 +41,6 @@ import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStat
 import static io.github.evisentin.wordpress.client.domain.model.enums.WpSortDirection.ASC;
 import static io.github.evisentin.wordpress.client.domain.model.enums.WpTaxonomy.CATEGORY;
 import static io.github.evisentin.wordpress.client.domain.model.enums.WpTaxonomy.POST_TAG;
-import static io.github.evisentin.wordpress.client.test.support.SlugUtils.toWordPressSlug;
-import static io.github.evisentin.wordpress.client.test.support.WpAssertions.assertThrowsWpBadRequest;
-import static io.github.evisentin.wordpress.client.test.support.WpAssertions.assertThrowsWpForbidden;
-import static io.github.evisentin.wordpress.client.test.support.WpAssertions.assertThrowsWpNotFound;
-import static io.github.evisentin.wordpress.client.test.support.WpAssertions.assertThrowsWpUnauthorized;
 import static java.util.Collections.emptySet;
 
 public abstract class AbstractBasicAuthenticationWpRestClientContractTest extends AbstractMockServerTest {

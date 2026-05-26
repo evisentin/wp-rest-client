@@ -16,7 +16,7 @@
   * [Module `wp-rest-client-domain`](#module-wp-rest-client-domain)
   * [Module `wp-rest-client-apache`](#module-wp-rest-client-apache)
   * [Module `wp-rest-client-okhttp`](#module-wp-rest-client-okhttp)
-  * [Module `wp-rest-client-test-support`](#module-wp-rest-client-test-support)
+  * [Module `wp-rest-client-contract-tests`](#module-wp-rest-client-contract-tests)
   * [Module `wp-rest-client-test-integration`](#module-wp-rest-client-test-integration)
   * [Module `wp-rest-client-test-report`](#module-wp-rest-client-test-report)
 - [Key Concept: Contract Testing](#key-concept-contract-testing)
@@ -65,10 +65,10 @@ Currently, the project includes two implementations:
 The project is organised as a Maven multi-module build:
 
 - `wp-rest-client-domain`
-- `wp-rest-client-domain-assertions`  *(not deployed to Maven Central)*
 - `wp-rest-client-apache`
 - `wp-rest-client-okhttp`
-- `wp-rest-client-test-support` *(not deployed to Maven Central)*
+- `wp-rest-client-domain-assertions`  *(not deployed to Maven Central)*
+- `wp-rest-client-contract-tests` *(not deployed to Maven Central)*
 - `wp-rest-client-test-integration` *(not deployed to Maven Central)*
 - `wp-rest-client-test-report` *(not deployed to Maven Central)*
 
@@ -113,7 +113,7 @@ Responsibilities:
 
 ---
 
-### Module `wp-rest-client-test-support`
+### Module `wp-rest-client-contract-tests`
 
 This is one of the **most important modules** in the project.
 
@@ -171,7 +171,7 @@ pass.
 
 ### How it works
 
-1. Contract tests are defined in `wp-rest-client-test-support`
+1. Contract tests are defined in `wp-rest-client-contract-tests`
 2. Each implementation module:
     - Reuses the same tests
     - Provides its own configuration
@@ -187,7 +187,7 @@ To add a new HTTP client implementation:
 
 1. Create a new module (e.g. `wp-rest-client-xyz`)
 2. Implement the interfaces from `wp-rest-client-domain`
-3. Reuse the contract tests from `wp-rest-client-test-support`
+3. Reuse the contract tests from `wp-rest-client-contract-tests`
 4. Ensure all tests pass
 
 That’s it — no need to rewrite test logic.

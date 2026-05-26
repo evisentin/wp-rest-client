@@ -10,9 +10,9 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-  <artifactId>wp-rest-client-test-support</artifactId>
-  <name>WP REST Client - Test Support</name>
-  <description>Reusable JUnit, MockServer, and assertion utilities for WP REST Client testing</description>
+  <artifactId>wp-rest-client-contract-tests</artifactId>
+  <name>WP REST Client - Contract Tests</name>
+  <description>Reusable contract testing utilities for WP REST Client using JUnit and MockServer</description>
   <packaging>jar</packaging>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <dependencies>
