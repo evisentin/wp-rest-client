@@ -75,6 +75,17 @@ public abstract class AbstractWpMediaAssert<S extends AbstractWpMediaAssert<S>>
         return myself;
     }
 
+
+       public S hasNonZeroId() {
+        isNotNull();
+
+        if (actual.getId() == 0L) {
+            failWithMessage("Expected tag id to be non-zero but was <0>");
+        }
+
+        return myself;
+    }
+
     public S hasFeaturedMediaId(final Long expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getFeaturedMediaId(), expected)) {
