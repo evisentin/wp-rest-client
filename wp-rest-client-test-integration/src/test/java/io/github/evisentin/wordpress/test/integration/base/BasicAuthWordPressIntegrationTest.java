@@ -30,6 +30,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.Set;
 
@@ -43,7 +47,6 @@ import static io.github.evisentin.wordpress.client.domain.model.enums.WpSortDire
 import static io.github.evisentin.wordpress.client.domain.model.enums.WpTaxonomy.CATEGORY;
 import static io.github.evisentin.wordpress.client.domain.model.enums.WpTaxonomy.POST_TAG;
 import static io.github.evisentin.wordpress.test.integration.base.SlugUtils.toWordPressSlug;
-import static io.github.evisentin.wordpress.test.integration.base.TestUtils.testReourceAsTemporaryFile;
 import static io.github.evisentin.wordpress.test.integration.base.WpAssertions.assertThrowsWpBadRequest;
 import static io.github.evisentin.wordpress.test.integration.base.WpAssertions.assertThrowsWpNotFound;
 import static java.util.Collections.emptySet;
@@ -172,7 +175,15 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // GIVEN
             wpCleanDefaultData();
-            final File file = testReourceAsTemporaryFile("files/sample.png");
+            InputStream is = getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("files/sample.png");
+
+            Path tempFile = Files.createTempFile("sample", ".png");
+
+            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            File file = tempFile.toFile();
 
             // WHEN
             final WpMedia media = adminClient.createMedia(file, "sample.png", "image/png");
@@ -207,7 +218,15 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // GIVEN
             wpCleanDefaultData();
-            final File file = testReourceAsTemporaryFile("files/sample.png");
+            InputStream is = getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("files/sample.png");
+
+            Path tempFile = Files.createTempFile("sample", ".png");
+
+            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            File file = tempFile.toFile();
             final WpMedia existingMedia = adminClient.createMedia(file, "sample.png", "image/png");
 
             // WHEN
@@ -241,7 +260,15 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // GIVEN
             wpCleanDefaultData();
-            final File file = testReourceAsTemporaryFile("files/sample.png");
+            InputStream is = getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("files/sample.png");
+
+            Path tempFile = Files.createTempFile("sample", ".png");
+
+            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            File file = tempFile.toFile();
             final WpMedia existingMedia = adminClient.createMedia(file, "sample.png", "image/png");
 
             // WHEN
@@ -262,7 +289,15 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // GIVEN
             wpCleanDefaultData();
-            final File file = testReourceAsTemporaryFile("files/sample.png");
+            InputStream is = getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("files/sample.png");
+
+            Path tempFile = Files.createTempFile("sample", ".png");
+
+            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            File file = tempFile.toFile();
             final WpMedia existingMedia = adminClient.createMedia(file, "sample.png", "image/png");
 
             // WHEN
@@ -305,7 +340,15 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             // GIVEN
             wpCleanDefaultData();
 
-            final File file = testReourceAsTemporaryFile("files/sample.png");
+            InputStream is = getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("files/sample.png");
+
+            Path tempFile = Files.createTempFile("sample", ".png");
+
+            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            File file = tempFile.toFile();
             final WpMedia existingMedia = adminClient.createMedia(file, "sample.png", "image/png");
 
             // WHEN
