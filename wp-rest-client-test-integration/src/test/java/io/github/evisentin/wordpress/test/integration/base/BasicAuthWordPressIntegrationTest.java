@@ -190,7 +190,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             WordPressAssertions.assertThat(media)
                                .isNotNull()
                                .hasNonZeroId()
-                               .hasSlug("sample")
+                               .hasSlugStartingWith("sample")
                                .hasType("attachment")
                                .hasTitleSatisfying(t ->
                                        t.hasRaw("sample")

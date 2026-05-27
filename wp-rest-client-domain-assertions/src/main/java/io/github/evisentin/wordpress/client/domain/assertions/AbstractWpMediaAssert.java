@@ -23,6 +23,15 @@ public abstract class AbstractWpMediaAssert<S extends AbstractWpMediaAssert<S>>
         return myself;
     }
 
+    public S hasCaptionSatisfying(final Consumer<WpRenderedFieldAssert> requirements) {
+        isNotNull();
+        if (actual.getCaption() == null) {
+            failWithMessage("Expected caption to be present but it was null");
+        }
+        requirements.accept(new WpRenderedFieldAssert(actual.getCaption()));
+        return myself;
+    }
+
     public S hasCommentStatus(final WpOpenClosed expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getCommentStatus(), expected)) {
@@ -47,15 +56,7 @@ public abstract class AbstractWpMediaAssert<S extends AbstractWpMediaAssert<S>>
         return myself;
     }
 
-    public S hasCaptionSatisfying(final Consumer<WpRenderedFieldAssert> requirements) {
-        isNotNull();
-        if (actual.getCaption() == null) {
-            failWithMessage("Expected caption to be present but it was null");
-        }
-        requirements.accept(new WpRenderedFieldAssert(actual.getCaption()));
-        return myself;
-    }
-        public S hasDescriptionSatisfying(final Consumer<WpRenderedFieldAssert> requirements) {
+    public S hasDescriptionSatisfying(final Consumer<WpRenderedFieldAssert> requirements) {
         isNotNull();
         if (actual.getDescription() == null) {
             failWithMessage("Expected description to be present but it was null");
@@ -64,25 +65,12 @@ public abstract class AbstractWpMediaAssert<S extends AbstractWpMediaAssert<S>>
         return myself;
     }
 
-
-
     public S hasExcerptSatisfying(final Consumer<WpRenderedFieldAssert> requirements) {
         isNotNull();
         if (actual.getExcerpt() == null) {
             failWithMessage("Expected excerpt to be present but it was null");
         }
         requirements.accept(new WpRenderedFieldAssert(actual.getExcerpt()));
-        return myself;
-    }
-
-
-       public S hasNonZeroId() {
-        isNotNull();
-
-        if (actual.getId() == 0L) {
-            failWithMessage("Expected tag id to be non-zero but was <0>");
-        }
-
         return myself;
     }
 
@@ -169,6 +157,16 @@ public abstract class AbstractWpMediaAssert<S extends AbstractWpMediaAssert<S>>
         return myself;
     }
 
+    public S hasNonZeroId() {
+        isNotNull();
+
+        if (actual.getId() == 0L) {
+            failWithMessage("Expected tag id to be non-zero but was <0>");
+        }
+
+        return myself;
+    }
+
     public S hasPermalinkTemplate(final String expected) {
         isNotNull();
         if (!java.util.Objects.equals(actual.getPermalinkTemplate(), expected)) {
@@ -189,6 +187,14 @@ public abstract class AbstractWpMediaAssert<S extends AbstractWpMediaAssert<S>>
         isNotNull();
         if (!java.util.Objects.equals(actual.getSlug(), expected)) {
             failWithMessage("Expected madia slug to be <%s> but was <%s>", expected, actual.getSlug());
+        }
+        return myself;
+    }
+
+    public S hasSlugStartingWith(final String expected) {
+        isNotNull();
+        if (!actual.getSlug().startsWith(expected)) {
+            failWithMessage("Expected madia slug to wtart with <%s> but was <%s>", expected, actual.getSlug());
         }
         return myself;
     }
