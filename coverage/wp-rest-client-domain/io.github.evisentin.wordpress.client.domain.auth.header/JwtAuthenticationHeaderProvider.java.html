@@ -33,8 +33,8 @@ public final class JwtAuthenticationHeaderProvider
 <span class="fc" id="L33">        synchronized (lock) {</span>
             // Double-check after acquiring the lock to avoid duplicate token fetches.
             // Another thread may have refreshed the token while we were waiting.
-<span class="pc bpc" id="L36" title="1 of 2 branches missed.">            if (hasValidToken()) {</span>
-<span class="nc" id="L37">                return bearerToken();</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">            if (hasValidToken()) {</span>
+<span class="fc" id="L37">                return bearerToken();</span>
             }
 
 <span class="fc" id="L40">            JwtResponse response = tokenClient.fetchToken(strategy);</span>
@@ -47,11 +47,11 @@ public final class JwtAuthenticationHeaderProvider
     }
 
     private String bearerToken() {
-<span class="fc" id="L50">        return &quot;Bearer &quot; + token;</span>
+<span class="fc" id="L50">        return String.format(&quot;Bearer %s&quot;, token);</span>
     }
 
     private boolean hasValidToken() {
-<span class="pc bpc" id="L54" title="2 of 6 branches missed.">        return token != null &amp;&amp; expiresAt != null &amp;&amp; !TokenUtils.isExpired(expiresAt);</span>
+<span class="pc bpc" id="L54" title="1 of 4 branches missed.">        return token != null &amp;&amp; !TokenUtils.isExpired(expiresAt);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

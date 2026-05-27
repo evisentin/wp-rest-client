@@ -4,7 +4,7 @@ WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisent
 WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.auth,WpBasicAuthenticationStrategy,0,39,0,8,0,6,0,5,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.model.responses,WpTagDeletionResponse,0,3,0,0,0,1,0,1,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.model.responses,WpCategoryDeletionResponse,0,3,0,0,0,1,0,1,0,1
-WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.model.enums,WpMediaType,38,0,0,0,6,0,1,0,1,0
+WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.model.enums,WpMediaType,0,38,0,0,0,6,0,1,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.model.enums,WpTaxonomy,0,17,0,0,0,3,0,1,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.model.enums,WpSortDirection,0,17,0,0,0,3,0,1,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.model.enums,WpTagOrderFields,0,59,0,0,0,9,0,1,0,1
@@ -23,7 +23,7 @@ WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisent
 WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.model.query,WpPagingQuery,0,31,0,4,0,9,0,4,0,2
 WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.model,WpError,0,3,0,0,0,1,0,1,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.model,WpPagedResponse,0,65,0,10,0,13,0,8,0,3
-WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.auth.header,JwtAuthenticationHeaderProvider,5,80,3,11,1,15,3,8,0,4
+WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.auth.header,JwtAuthenticationHeaderProvider,0,88,1,11,0,16,1,9,0,4
 WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.auth.header,BasicAuthenticationHeaderProvider,0,16,0,0,0,4,0,2,0,2
 WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp.auth,OkHttpAuthenticationStrategyHandlerRegistry,15,42,2,2,0,10,3,3,1,3
 WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp.auth,OkHttpAuthenticationStrategyHandler,0,13,0,0,0,2,0,2,0,2
