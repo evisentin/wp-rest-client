@@ -47,10 +47,10 @@ public final class JwtAuthenticationHeaderProvider
     }
 
     private String bearerToken() {
-        return "Bearer " + token;
+        return String.format("Bearer %s", token);
     }
 
     private boolean hasValidToken() {
-        return token != null && expiresAt != null && !TokenUtils.isExpired(expiresAt);
+        return token != null && !TokenUtils.isExpired(expiresAt);
     }
 }

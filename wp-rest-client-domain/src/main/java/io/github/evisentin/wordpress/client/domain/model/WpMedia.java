@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpMediaStatus;
+import io.github.evisentin.wordpress.client.domain.model.enums.WpMediaType;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpOpenClosed;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -98,7 +99,7 @@ public class WpMedia {
      * High-level media type, such as {@code image}, {@code video}, {@code audio}, or {@code file}.
      */
     @JsonProperty("media_type")
-    private String mediaType;
+    private WpMediaType mediaType;
 
     /**
      * MIME type of the media file.
