@@ -1,7 +1,6 @@
 # WP-REST-CLIENT
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.evisentin/wp-rest-client)](https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client)
-[![Javadocs](https://javadoc.io/badge2/io.github.evisentin/wp-rest-client/javadoc.svg)](https://javadoc.io/doc/io.github.evisentin/wp-rest-client)
 [![Coverage Report](https://img.shields.io/badge/coverage-report-blue)](https://evisentin.github.io/wp-rest-client/coverage/)
 [![License](https://img.shields.io/github/license/evisentin/wp-rest-client)](https://github.com/evisentin/wp-rest-client/blob/main/LICENSE)
 
@@ -11,6 +10,8 @@
 <!-- toc -->
 
 - [Overview](#overview)
+- [Javadoc](#javadoc)
+- [Maven Central](#maven-central)
 - [Installation](#installation)
   * [Domain API](#domain-api)
   * [OkHttp implementation](#okhttp-implementation)
@@ -21,8 +22,6 @@
   * [Sample with Apache HttpClient 5](#sample-with-apache-httpclient-5)
   * [Sample with OKHTTP](#sample-with-okhttp)
 - [Documentation](#documentation)
-- [Javadoc](#javadoc)
-- [Maven Central](#maven-central)
 - [License](#license)
 
 <!-- tocstop -->
@@ -38,6 +37,20 @@ Currently available implementations:
 
 - [OkHttp](https://square.github.io/okhttp/)
 - [Apache HttpClient](https://hc.apache.org/httpcomponents-client-5.6.x/index.html)
+
+## Javadoc
+
+- https://javadoc.io/doc/io.github.evisentin/wp-rest-client
+- https://javadoc.io/doc/io.github.evisentin/wp-rest-client-domain
+- https://javadoc.io/doc/io.github.evisentin/wp-rest-client-apache
+- https://javadoc.io/doc/io.github.evisentin/wp-rest-client-okhttp
+
+## Maven Central
+
+- https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client
+- https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client-domain
+- https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client-apache
+- https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client-okhttp
 
 ## Installation
 
@@ -203,20 +216,6 @@ final WpBasicAuthenticationStrategy authenticationStrategy = new WpBasicAuthenti
 - [Architecture](doc/architecture.md)
 - [Contributing](doc/contributing.md)
 - [Developer](doc/developer.md)
-
-## Javadoc
-
-- https://javadoc.io/doc/io.github.evisentin/wp-rest-client
-- https://javadoc.io/doc/io.github.evisentin/wp-rest-client-domain
-- https://javadoc.io/doc/io.github.evisentin/wp-rest-client-apache
-- https://javadoc.io/doc/io.github.evisentin/wp-rest-client-okhttp
-
-## Maven Central
-
-- https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client
-- https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client-domain
-- https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client-apache
-- https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client-okhttp
 
 ## License
 
