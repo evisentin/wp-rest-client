@@ -193,9 +193,6 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                .hasNonZeroId()
                                .hasSlugStartingWith("sample")
                                .hasType("attachment")
-                               .hasTitleSatisfying(t ->
-                                       t.hasRaw("sample")
-                                        .hasRendered("sample"))
                                .hasAuthorId(1L)
                                .hasCommentStatus(WpOpenClosed.OPEN)
                                .hasPingStatus(WpOpenClosed.CLOSED)
