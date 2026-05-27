@@ -36,8 +36,8 @@ implementations.
 
 Currently available implementations:
 
-- OkHttp
-- Apache HttpClient
+- [OkHttp](https://square.github.io/okhttp/)
+- [Apache HttpClient](https://hc.apache.org/httpcomponents-client-5.6.x/index.html)
 
 ## Installation
 
@@ -52,7 +52,7 @@ Use this module if you only want to depend on the public API and abstractions.
 <dependency>
     <groupId>io.github.evisentin</groupId>
     <artifactId>wp-rest-client-domain</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
@@ -63,7 +63,7 @@ Use this module if you only want to depend on the public API and abstractions.
 <dependency>
     <groupId>io.github.evisentin</groupId>
     <artifactId>wp-rest-client-okhttp</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
@@ -74,7 +74,7 @@ Use this module if you only want to depend on the public API and abstractions.
 <dependency>
     <groupId>io.github.evisentin</groupId>
     <artifactId>wp-rest-client-apache</artifactId>
-    <version>1.0.0</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
@@ -104,7 +104,7 @@ Import the right module
     <dependency>
         <groupId>io.github.evisentin</groupId>
         <artifactId>wp-rest-client-apache</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
     </dependency>
 </dependencies>
 ```
@@ -156,7 +156,7 @@ Import the right module
     <dependency>
         <groupId>io.github.evisentin</groupId>
         <artifactId>wp-rest-client-okhttp</artifactId>
-        <version>1.0.0</version>
+        <version>1.1.0</version>
     </dependency>
 </dependencies>
 ```
