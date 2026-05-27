@@ -26,13 +26,10 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.Set;
 
 import static io.github.evisentin.wordpress.client.contract.test.SlugUtils.toWordPressSlug;
+import static io.github.evisentin.wordpress.client.contract.test.TestUtils.testReourceAsTemporaryFile;
 import static io.github.evisentin.wordpress.client.contract.test.WpAssertions.assertThrowsWpBadRequest;
 import static io.github.evisentin.wordpress.client.contract.test.WpAssertions.assertThrowsWpForbidden;
 import static io.github.evisentin.wordpress.client.contract.test.WpAssertions.assertThrowsWpNotFound;
@@ -137,15 +134,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             // GIVEN
             givenExpectationFromFile("basic-auth/media/create.success.json");
 
-            InputStream is = getClass()
-                    .getClassLoader()
-                    .getResourceAsStream("files/sample.png");
-
-            Path tempFile = Files.createTempFile("sample", ".png");
-
-            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
-
-            File file = tempFile.toFile();
+            final File file = testReourceAsTemporaryFile("files/sample.png");
 
             // WHEN
             final WpMedia media = client.createMedia(file, "sample.png", "image/png");
