@@ -24,6 +24,9 @@ public final class WpQueryParameters {
 
     public static final String INCLUDE = "include";
 
+    public static final String MEDIA_TYPE = "media_type";
+    public static final String MIME_TYPE = "mime_type";
+
     public static final String MODIFIED_AFTER = "modified_after";
     public static final String MODIFIED_BEFORE = "modified_before";
 
@@ -33,6 +36,8 @@ public final class WpQueryParameters {
 
     public static final String PAGE = "page";
     public static final String PARENT = "parent";
+    public static final String PARENT_EXCLUDE = "parent_exclude";
+
     public static final String PER_PAGE = "per_page";
     public static final String POST = "post";
 

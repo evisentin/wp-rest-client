@@ -175,14 +175,10 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
      */
     @SneakyThrows
     protected void wpCleanDefaultData() {
-        wpCli.execInContainer("sh", "-c",
-                "wp --allow-root --path=/var/www/html post delete $(wp post list --format=ids) --force");
-
-        wpCli.execInContainer("sh", "-c",
-                "wp --allow-root --path=/var/www/html term delete category $(wp term list category --field=term_id --exclude=1)");
-
-        wpCli.execInContainer("sh", "-c",
-                "wp --allow-root --path=/var/www/html term delete post_tag $(wp term list post_tag --field=term_id)");
+        wpCli.execInContainer("sh", "-c", "wp --allow-root --path=/var/www/html post delete $(wp post list --format=ids) --force");
+        wpCli.execInContainer("sh", "-c", "wp --allow-root --path=/var/www/html term delete category $(wp term list category --field=term_id --exclude=1)");
+        wpCli.execInContainer("sh", "-c", "wp --allow-root --path=/var/www/html term delete post_tag $(wp term list post_tag --field=term_id)");
+        wpCli.execInContainer("sh", "-c", "wp --allow-root --path=/var/www/html post delete $(wp post list --post_type=attachment --format=ids) --force");
     }
 
     /**

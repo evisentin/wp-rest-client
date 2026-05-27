@@ -7,25 +7,22 @@ import io.github.evisentin.wordpress.client.adapter.apache.interceptors.LoggingR
 import io.github.evisentin.wordpress.client.adapter.apache.interceptors.LoggingResponseInterceptor;
 import io.github.evisentin.wordpress.client.adapter.apache.interceptors.WpErrorInterceptor;
 import io.github.evisentin.wordpress.client.adapter.apache.query.mappers.CategoryQueryParamMapper;
+import io.github.evisentin.wordpress.client.adapter.apache.query.mappers.MediaQueryParamMapper;
 import io.github.evisentin.wordpress.client.adapter.apache.query.mappers.PostQueryParamMapper;
 import io.github.evisentin.wordpress.client.adapter.apache.query.mappers.TagQueryParamMapper;
 import io.github.evisentin.wordpress.client.domain.api.WpBaseRestClient;
 import io.github.evisentin.wordpress.client.domain.auth.WpAuthenticationStrategy;
 import io.github.evisentin.wordpress.client.domain.configuration.SslConfiguration;
 import io.github.evisentin.wordpress.client.domain.configuration.TimeoutConfiguration;
-import io.github.evisentin.wordpress.client.domain.model.WpCategory;
-import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
-import io.github.evisentin.wordpress.client.domain.model.WpPost;
-import io.github.evisentin.wordpress.client.domain.model.WpTag;
+import io.github.evisentin.wordpress.client.domain.model.*;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
-import io.github.evisentin.wordpress.client.domain.model.query.WpCategoryQuery;
-import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
-import io.github.evisentin.wordpress.client.domain.model.query.WpPostQuery;
-import io.github.evisentin.wordpress.client.domain.model.query.WpTagQuery;
+import io.github.evisentin.wordpress.client.domain.model.query.*;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpCategoryCreateUpdateRequest;
+import io.github.evisentin.wordpress.client.domain.model.requests.WpMediaUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpPostCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpTagCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
+import io.github.evisentin.wordpress.client.domain.model.responses.WpMediaDeletionResponse;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpPostDeletionResponse;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpTagDeletionResponse;
 import lombok.NonNull;
@@ -36,6 +33,7 @@ import org.apache.hc.client5.http.classic.methods.HttpGet;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.config.ConnectionConfig;
 import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.entity.mime.MultipartEntityBuilder;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
@@ -43,6 +41,7 @@ import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.ssl.ClientTlsStrategyBuilder;
 import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
 import org.apache.hc.core5.http.HttpHeaders;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
@@ -50,6 +49,7 @@ import org.apache.hc.core5.net.URIBuilder;
 import org.apache.hc.core5.util.Timeout;
 
 import javax.net.ssl.SSLContext;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -169,6 +169,20 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performPostWithBody(builder, creationRequest, WP_CATEGORY_TYPE);
     }
 
+    @Override
+    @SneakyThrows
+    public WpMedia createMedia(final @NonNull File file,
+                               final @NonNull String fileName,
+                               final @NonNull String mimeType) {
+
+        if (isBlank(fileName)) throw new IllegalArgumentException("fileName cannot be blank");
+        if (isBlank(mimeType)) throw new IllegalArgumentException("mimeType cannot be blank");
+
+        final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/media",
+                Map.of(BASE_URL, baseUrl));
+        return performPostWithFileUpload(builder, file, fileName, mimeType, WP_MEDIA_TYPE);
+    }
+
     @SneakyThrows
     @Override
     public WpPost createPost(final @NonNull WpPostCreateUpdateRequest creationRequest) {
@@ -203,6 +217,19 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performDeleteRequest(builder, WP_CATEGORY_DELETION_RESPONSE_TYPE);
     }
 
+    @Override
+    @SneakyThrows
+    public WpMediaDeletionResponse deleteMedia(final @NonNull Long id) {
+        final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/media/${id}",
+                Map.of(BASE_URL, baseUrl, "id", id));
+
+        // For tags/terms, WordPress does not support trashing, and the REST API explicitly
+        // requires force to be true for delete.
+        builder.addParameter(FORCE, Boolean.TRUE.toString());
+
+        return performDeleteRequest(builder, WP_MEDIA_DELETION_RESPONSE_TYPE);
+    }
+
     @SneakyThrows
     @Override
     public WpPostDeletionResponse deletePost(final @NonNull Long id) {
@@ -235,6 +262,16 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         builder.addParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
 
         return performGetRequest(builder, WP_CATEGORY_TYPE);
+    }
+
+    @Override
+    @SneakyThrows
+    public WpMedia getMedia(final @NonNull Long id, final WpContext context) {
+        final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/media/${id}",
+                Map.of(BASE_URL, baseUrl, "id", id));
+        builder.addParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
+
+        return performGetRequest(builder, WP_MEDIA_TYPE);
     }
 
     @SneakyThrows
@@ -278,6 +315,21 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         CategoryQueryParamMapper.map(builder, categoryQuery);
 
         return performPagingRequest(builder, pageQuery, WP_CATEGORY_LIST_TYPE);
+    }
+
+    @Override
+    @SneakyThrows
+    public WpPagedResponse<WpMedia> listMedia(final @NonNull WpPagingQuery pageQuery,
+                                              final WpMediaQuery mediaQuery) {
+        final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/media",
+                Map.of(BASE_URL, baseUrl));
+
+        builder.addParameter(PAGE, Integer.toString(pageQuery.getPageNumber()));
+        builder.addParameter(PER_PAGE, Integer.toString(pageQuery.getPageSize()));
+
+        MediaQueryParamMapper.map(builder, mediaQuery);
+
+        return performPagingRequest(builder, pageQuery, WP_MEDIA_LIST_TYPE);
     }
 
     @SneakyThrows
@@ -330,6 +382,16 @@ public class ApacheWpRestClient extends WpBaseRestClient {
                 Map.of(BASE_URL, baseUrl, "id", id));
 
         return performPostWithBody(builder, updateRequest, WP_CATEGORY_TYPE);
+    }
+
+    @Override
+    @SneakyThrows
+    public WpMedia updateMedia(final @NonNull Long id,
+                               final @NonNull WpMediaUpdateRequest updateRequest) {
+        final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/media/${id}",
+                Map.of(BASE_URL, baseUrl, "id", id));
+
+        return performPostWithBody(builder, updateRequest, WP_MEDIA_TYPE);
     }
 
     @SneakyThrows
@@ -428,6 +490,38 @@ public class ApacheWpRestClient extends WpBaseRestClient {
 
         String jsonBody = mapper.writeValueAsString(requestBody);
         request.setEntity(new StringEntity(jsonBody, StandardCharsets.UTF_8));
+
+        return httpClient.execute(request, response -> {
+            failOnEmptyResponseBody(response);
+
+            String json = EntityUtils.toString(response.getEntity());
+            return mapper.readValue(json, responseType);
+        });
+    }
+
+    @SneakyThrows
+    private <T> T performPostWithFileUpload(final URIBuilder uriBuilder,
+                                            final File file,
+                                            final String fileName,
+                                            final String mimeType,
+                                            final TypeReference<T> responseType) throws IOException {
+
+        URI uri = uriBuilder.build();
+
+        HttpPost request = new HttpPost(uri);
+        request.setHeader(ACCEPT, "application/json");
+
+        request.setEntity(
+                MultipartEntityBuilder.create()
+                                      .addBinaryBody(
+                                              "file",
+                                              file,
+                                              ContentType.parse(mimeType),
+                                              fileName
+                                      )
+
+                                      .build()
+        );
 
         return httpClient.execute(request, response -> {
             failOnEmptyResponseBody(response);

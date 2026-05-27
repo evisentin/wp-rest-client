@@ -3,29 +3,33 @@ package io.github.evisentin.wordpress.client.contract.test;
 import io.github.evisentin.wordpress.client.domain.api.WpBaseRestClient;
 import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
 import io.github.evisentin.wordpress.client.domain.assertions.WordPressAssertions;
-import io.github.evisentin.wordpress.client.domain.model.WpCategory;
-import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
-import io.github.evisentin.wordpress.client.domain.model.WpPost;
-import io.github.evisentin.wordpress.client.domain.model.WpTag;
+import io.github.evisentin.wordpress.client.domain.model.*;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
+import io.github.evisentin.wordpress.client.domain.model.enums.WpMediaStatus;
+import io.github.evisentin.wordpress.client.domain.model.enums.WpOpenClosed;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpTagOrderFields;
-import io.github.evisentin.wordpress.client.domain.model.query.WpCategoryQuery;
-import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
-import io.github.evisentin.wordpress.client.domain.model.query.WpPostQuery;
-import io.github.evisentin.wordpress.client.domain.model.query.WpTagQuery;
+import io.github.evisentin.wordpress.client.domain.model.query.*;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpCategoryCreateUpdateRequest;
+import io.github.evisentin.wordpress.client.domain.model.requests.WpMediaUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpPostCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpTagCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
+import io.github.evisentin.wordpress.client.domain.model.responses.WpMediaDeletionResponse;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpPostDeletionResponse;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpTagDeletionResponse;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import lombok.val;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Set;
 
 import static io.github.evisentin.wordpress.client.contract.test.SlugUtils.toWordPressSlug;
@@ -46,6 +50,45 @@ import static java.util.Collections.emptySet;
 public abstract class AbstractBasicAuthenticationWpRestClientContractTest extends AbstractMockServerTest {
     private WpRestClient client;
 
+    @DisplayName("'LIST' works with paging and query")
+    @Test
+    void listWorksWithPagingAndQuery() {
+
+        // GIVEN
+        final String NAME_2 = "category2";
+        final String DESCRIPTION_2 = "Category #2";
+        final String SLUG_2 = "category-2";
+
+        givenExpectationFromFile("basic-auth/media/list.success.paging-and-query.json");
+
+        final WpMediaQuery mediaQuery = WpMediaQuery.builder()
+                                                    .withSlugs(Set.of("slug-1"))
+                                                    .build();
+
+        // WHEN
+        final WpPagedResponse<WpMedia> response = client.listMedia(WpPagingQuery.of(1, 10), mediaQuery);
+
+        // THEN
+        WordPressAssertions.assertThat(response)
+                           .isNotNull()
+                           .hasPageNumber(1)
+                           .hasItemsPerPage(10)
+                           .hasTotalPages(1)
+                           .hasTotalItems(1)
+                           .doesNotHaveNextPage()
+                           .satisfies(r ->
+                                   assertThat(r.getItems())
+                                           .hasSize(1)
+                                           .satisfiesExactly(
+                                                   media ->
+                                                           WordPressAssertions.assertThat(media)
+                                                                              .isNotNull()
+                                                                              .hasId(9L)
+                                                                              .hasTitleSatisfying(title -> title.hasRaw("sample-1")
+                                                                                                                .hasRendered("sample-1"))
+                                           ));
+    }
+
     @BeforeEach
     void setUp() {
         this.client = client();
@@ -55,6 +98,395 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
     private static String toBlock(final @NonNull String text) {
         return String.format("<p>%s</p>\n", text);
+    }
+
+    @DisplayName("'MEDIA' Operations")
+    @Nested
+    class MediaTests {
+
+        @DisplayName("'CREATE' fails on null or blank parameters")
+        @Test
+        @SneakyThrows
+        void createFailsOnNullParameters() {
+            assertThatThrownBy(() -> client.createMedia(null, null, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("file is marked non-null but is null");
+
+            assertThatThrownBy(() -> client.createMedia(new File(""), null, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("fileName is marked non-null but is null");
+
+            assertThatThrownBy(() -> client.createMedia(new File(""), "some name", null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("mimeType is marked non-null but is null");
+
+            assertThatThrownBy(() -> client.createMedia(new File(""), " ", " "))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("fileName cannot be blank");
+
+            assertThatThrownBy(() -> client.createMedia(new File(""), "some name", " "))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("mimeType cannot be blank");
+        }
+
+        @DisplayName("'CREATE' works")
+        @Test
+        @SneakyThrows
+        void createWorks() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/create.success.json");
+
+            InputStream is = getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("files/sample.png");
+
+            Path tempFile = Files.createTempFile("sample", ".png");
+
+            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            File file = tempFile.toFile();
+
+            // WHEN
+            final WpMedia media = client.createMedia(file, "sample.png", "image/png");
+
+            // THEN
+            WordPressAssertions.assertThat(media)
+                               .isNotNull()
+                               .hasId(9L)
+                               .hasStatus(WpMediaStatus.INHERIT)
+                               .hasSlug("sample-1")
+                               .hasType("attachment")
+                               .hasTitleSatisfying(t ->
+                                       t.hasRaw("sample-1")
+                                        .hasRendered("sample-1"))
+                               .hasAuthorId(1L)
+                               .hasCommentStatus(WpOpenClosed.OPEN)
+                               .hasPingStatus(WpOpenClosed.CLOSED)
+                               .hasMediaType("image")
+                               .hasMimeType("image/png");
+        }
+
+        @DisplayName("'DELETE' fails on HTTP FORBIDDEN")
+        @Test
+        void deleteFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/delete.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.deleteMedia(9L));
+        }
+
+        @DisplayName("'DELETE' fails on HTTP NOT FOUND")
+        @Test
+        void deleteFailsOnNotFound() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/delete.failure.not-found.json");
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.deleteMedia(9L));
+        }
+
+        @DisplayName("'DELETE' fails on null ID")
+        @Test
+        void deleteFailsOnNullId() {
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.deleteMedia(null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("id is marked non-null but is null");
+        }
+
+        @DisplayName("'DELETE' fails on HTTP UNAUTHORIZED")
+        @Test
+        void deleteFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/delete.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.deleteMedia(9L));
+        }
+
+        @DisplayName("'DELETE' works")
+        @Test
+        void deleteWorks() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/delete.success.json");
+
+            // WHEN
+            final WpMediaDeletionResponse response = client.deleteMedia(9L);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .isDeleted()
+                               .hasPreviousSatisfying(summary ->
+                                       summary.isNotNull()
+                                              .hasId(9L)
+                               );
+        }
+
+        @DisplayName("'GET' fails on HTTP FORBIDDEN")
+        @Test
+        void getFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/get.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.getMedia(9L, null));
+        }
+
+        @DisplayName("'GET' fails on HTTP NOT FOUND")
+        @Test
+        void getFailsOnNotFound() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/get.failure.not-found.json");
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.getMedia(9L, null));
+        }
+
+        @DisplayName("'GET' fails on null ID")
+        @Test
+        void getFailsOnNullId() {
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.getMedia(null, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("id is marked non-null but is null");
+        }
+
+        @DisplayName("'GET' fails on HTTP UNAUTHORIZED")
+        @Test
+        void getFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/get.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.getMedia(9L, null));
+        }
+
+        @DisplayName("'GET' works with context")
+        @Test
+        void getWorksWithContext() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/get.success.with-context.json");
+
+            final Long id = 9L;
+
+            // WHEN
+            final WpMedia media = client.getMedia(id, WpContext.VIEW);
+
+            // THEN
+            WordPressAssertions.assertThat(media)
+                               .isNotNull()
+                               .hasId(id);
+        }
+
+        @DisplayName("'GET' works without context")
+        @Test
+        void getWorksWithoutContext() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/get.success.without-context.json");
+
+            final Long id = 9L;
+
+            // WHEN
+            final WpMedia media = client.getMedia(id, null);
+
+            // THEN
+            WordPressAssertions.assertThat(media)
+                               .isNotNull()
+                               .hasId(id);
+        }
+
+        @DisplayName("'LIST' fails on HTTP FORBIDDEN")
+        @Test
+        void listFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/list.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.listMedia(WpPagingQuery.of(1, 10), null));
+        }
+
+        @DisplayName("'LIST' fails on null pageQuery")
+        @Test
+        void listFailsOnNullPaging() {
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.listMedia(null, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("pageQuery is marked non-null but is null");
+        }
+
+        @DisplayName("'LIST' fails on HTTP UNAUTHORIZED")
+        @Test
+        void listFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/list.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.listMedia(WpPagingQuery.of(1, 10), null));
+        }
+
+        @DisplayName("'LIST' works with paging")
+        @Test
+        void listWorksWithJustPaging() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/list.success.just-paging.json");
+
+            // WHEN
+            final WpPagedResponse<WpMedia> response = client.listMedia(WpPagingQuery.of(1, 10), null);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(1)
+                               .doesNotHaveNextPage()
+                               .satisfies(r ->
+                                       assertThat(r.getItems())
+                                               .hasSize(1)
+                                               .satisfiesExactly(
+                                                       media ->
+                                                               WordPressAssertions.assertThat(media)
+                                                                                  .isNotNull()
+                                                                                  .hasId(9L)
+                                                                                  .hasTitleSatisfying(title -> title.hasRaw("sample-1")
+                                                                                                                    .hasRendered("sample-1"))
+                                               ));
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP BAD REQUEST")
+        @Test
+        void updateFailsOnBadRequest() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/update.failure.bad-request.json");
+
+            final WpMediaUpdateRequest updateRequest =
+                    WpMediaUpdateRequest.builder()
+                                        .withCaption("Caption updated")
+                                        .withDescription("Description updated")
+                                        .withTitle("Title updated")
+                                        .build();
+
+            // WHEN/THEN
+            assertThrowsWpBadRequest(() -> client.updateMedia(9L, updateRequest));
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP FORBIDDEN")
+        @Test
+        void updateFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/update.failure.forbidden.json");
+
+            final WpMediaUpdateRequest updateRequest =
+                    WpMediaUpdateRequest.builder()
+                                        .withCaption("Caption updated")
+                                        .withDescription("Description updated")
+                                        .withTitle("Title updated")
+                                        .build();
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.updateMedia(9L, updateRequest));
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
+        @Test
+        void updateFailsOnNotFound() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/update.failure.not-found.json");
+
+            final WpMediaUpdateRequest updateRequest =
+                    WpMediaUpdateRequest.builder()
+                                        .withCaption("Caption updated")
+                                        .withDescription("Description updated")
+                                        .withTitle("Title updated")
+                                        .build();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.updateMedia(9L, updateRequest));
+        }
+
+        @DisplayName("'UPDATE' fails on null ID")
+        @Test
+        void updateFailsOnNullId() {
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.updateMedia(null, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("id is marked non-null but is null");
+        }
+
+        @DisplayName("'UPDATE' fails on null request")
+        @Test
+        void updateFailsOnNullRequest() {
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.updateMedia(1000L, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("updateRequest is marked non-null but is null");
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP UNAUTHORIZED")
+        @Test
+        void updateFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/update.failure.unauthorized.json");
+
+            final WpMediaUpdateRequest updateRequest =
+                    WpMediaUpdateRequest.builder()
+                                        .withCaption("Caption updated")
+                                        .withDescription("Description updated")
+                                        .withTitle("Title updated")
+                                        .build();
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.updateMedia(9L, updateRequest));
+        }
+
+        @DisplayName("UPDATE' works")
+        @Test
+        void updateWorks() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/update.success.json");
+
+            final WpMediaUpdateRequest updateRequest =
+                    WpMediaUpdateRequest.builder()
+                                        .withCaption("Caption updated")
+                                        .withDescription("Description updated")
+                                        .withTitle("Title updated")
+                                        .build();
+
+            // WHEN
+            final WpMedia media = client.updateMedia(9L, updateRequest);
+
+            WordPressAssertions.assertThat(media)
+                               .isNotNull()
+                               .hasId(9L)
+                               .hasCaptionSatisfying(caption -> caption.hasRaw("Caption updated").hasRendered("Caption updated"))
+                               .hasDescriptionSatisfying(description -> description.hasRaw("Description updated").hasRendered("Description updated"))
+                               .hasTitleSatisfying(title -> title.hasRaw("Title updated").hasRendered("Title updated"));
+        }
     }
 
     @DisplayName("'CATEGORY' Operations")

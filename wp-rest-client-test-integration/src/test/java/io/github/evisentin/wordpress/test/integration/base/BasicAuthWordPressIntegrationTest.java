@@ -2,10 +2,7 @@ package io.github.evisentin.wordpress.test.integration.base;
 
 import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
 import io.github.evisentin.wordpress.client.domain.assertions.WordPressAssertions;
-import io.github.evisentin.wordpress.client.domain.model.WpCategory;
-import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
-import io.github.evisentin.wordpress.client.domain.model.WpPost;
-import io.github.evisentin.wordpress.client.domain.model.WpTag;
+import io.github.evisentin.wordpress.client.domain.model.*;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpOpenClosed;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpTagOrderFields;
@@ -15,20 +12,28 @@ import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
 import io.github.evisentin.wordpress.client.domain.model.query.WpPostQuery;
 import io.github.evisentin.wordpress.client.domain.model.query.WpTagQuery;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpCategoryCreateUpdateRequest;
+import io.github.evisentin.wordpress.client.domain.model.requests.WpMediaUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpPostCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpTagCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
+import io.github.evisentin.wordpress.client.domain.model.responses.WpMediaDeletionResponse;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpPostDeletionResponse;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpTagDeletionResponse;
 import io.github.evisentin.wordpress.test.integration.BaseWordPressIntegrationTest;
 import io.github.evisentin.wordpress.test.integration.base.factory.WpBasicAuthRestClientFactory;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.Set;
 
@@ -157,6 +162,213 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
     private static WpTagCreateUpdateRequest.WpTagCreateUpdateRequestBuilder tagCreateUpdateRequest() {
         return WpTagCreateUpdateRequest.builder();
+    }
+
+    @DisplayName("Media APIs - Integration Tests")
+    @Nested
+    class MediaTests {
+
+        @DisplayName("'CREATE' works")
+        @Test
+        @SneakyThrows
+        void create__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            InputStream is = getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("files/sample.png");
+
+            Path tempFile = Files.createTempFile("sample", ".png");
+
+            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            File file = tempFile.toFile();
+
+            // WHEN
+            final WpMedia media = adminClient.createMedia(file, "sample.png", "image/png");
+            // THEN
+            WordPressAssertions.assertThat(media)
+                               .isNotNull()
+                               .hasNonZeroId()
+                               .hasSlugStartingWith("sample")
+                               .hasType("attachment")
+                               .hasAuthorId(1L)
+                               .hasCommentStatus(WpOpenClosed.OPEN)
+                               .hasPingStatus(WpOpenClosed.CLOSED)
+                               .hasMediaType("image")
+                               .hasMimeType("image/png");
+        }
+
+        @DisplayName("'DELETE' fails on HTTP NOT FOUND")
+        @Test
+        void delete__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.deleteMedia(1000L), "rest_post_invalid_id", "Invalid post ID.");
+        }
+
+        @DisplayName("'DELETE' works")
+        @Test
+        @SneakyThrows
+        void delete__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            InputStream is = getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("files/sample.png");
+
+            Path tempFile = Files.createTempFile("sample", ".png");
+
+            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            File file = tempFile.toFile();
+            final WpMedia existingMedia = adminClient.createMedia(file, "sample.png", "image/png");
+
+            // WHEN
+            final WpMediaDeletionResponse deletionResponse = adminClient.deleteMedia(existingMedia.getId());
+
+            // THEN
+            WordPressAssertions.assertThat(deletionResponse)
+                               .isNotNull()
+                               .isDeleted()
+                               .hasPreviousSatisfying(summary ->
+                                       summary.isNotNull()
+                                              .hasId(existingMedia.getId())
+                               );
+        }
+
+        @DisplayName("'GET' fails on HTTP NOT FOUND")
+        @Test
+        void get__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.getMedia(10L, null), "rest_post_invalid_id", "Invalid post ID.");
+        }
+
+        @DisplayName("'GET' works with context")
+        @Test
+        @SneakyThrows
+        void get__works_with_context() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            InputStream is = getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("files/sample.png");
+
+            Path tempFile = Files.createTempFile("sample", ".png");
+
+            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            File file = tempFile.toFile();
+            final WpMedia existingMedia = adminClient.createMedia(file, "sample.png", "image/png");
+
+            // WHEN
+            final WpMedia media = adminClient.getMedia(existingMedia.getId(), WpContext.EDIT);
+
+            // THEN
+            WordPressAssertions.assertThat(media)
+                               .isNotNull();
+
+            assertThat(media).usingRecursiveComparison()
+                             .isEqualTo(existingMedia);
+        }
+
+        @DisplayName("'GET' works with no context")
+        @Test
+        @SneakyThrows
+        void get__works_with_no_context() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            InputStream is = getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("files/sample.png");
+
+            Path tempFile = Files.createTempFile("sample", ".png");
+
+            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            File file = tempFile.toFile();
+            final WpMedia existingMedia = adminClient.createMedia(file, "sample.png", "image/png");
+
+            // WHEN
+            final WpMedia media = adminClient.getMedia(existingMedia.getId(), null);
+
+            // THEN
+            WordPressAssertions.assertThat(media)
+                               .isNotNull();
+
+            // with context VIEW ( default if null ) some properties are set to null, we must adjust before comparison
+            existingMedia.getCaption().setRaw(null);
+            existingMedia.getDescription().setRaw(null);
+            existingMedia.getGuid().setRaw(null);
+            existingMedia.setGeneratedSlug(null);
+            existingMedia.setPermalinkTemplate(null);
+            existingMedia.getTitle().setRaw(null);
+
+            assertThat(media).usingRecursiveComparison()
+                             .isEqualTo(existingMedia);
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
+        @Test
+        void update__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            Long nonExistingMediaId = 9L;
+
+            // WHEN/THEN
+            final WpMediaUpdateRequest updateRequest = WpMediaUpdateRequest.builder().build();
+            assertThrowsWpNotFound(() -> adminClient.updateMedia(nonExistingMediaId, updateRequest), "rest_post_invalid_id", "Invalid post ID.");
+        }
+
+        @DisplayName("'UPDATE' works")
+        @Test
+        @SneakyThrows
+        void update__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            InputStream is = getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("files/sample.png");
+
+            Path tempFile = Files.createTempFile("sample", ".png");
+
+            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            File file = tempFile.toFile();
+            final WpMedia existingMedia = adminClient.createMedia(file, "sample.png", "image/png");
+
+            // WHEN
+            final WpMediaUpdateRequest updateRequest =
+                    WpMediaUpdateRequest.builder()
+                                        .withTitle("Title updated")
+                                        .withDescription("Description updated")
+                                        .withSlug("Slug updated")
+                                        .build();
+
+            final WpMedia media = adminClient.updateMedia(existingMedia.getId(), updateRequest);
+
+            // THEN
+            WordPressAssertions.assertThat(media)
+                               .isNotNull()
+                               .hasId(existingMedia.getId())
+                               .hasDescriptionSatisfying(t -> t.hasRaw("Description updated"))
+                               .hasTitleSatisfying(t -> t.hasRaw("Title updated"))
+                               .hasSlug("slug-updated");
+        }
     }
 
     @DisplayName("Category APIs - Integration Tests")
@@ -466,7 +678,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
         }
     }
 
-    @DisplayName("TAG APIs - Integration Tests")
+    @DisplayName("Tag APIs - Integration Tests")
     @Nested
     class TagTests {
 

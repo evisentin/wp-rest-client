@@ -23,6 +23,7 @@ public class LoggingRequestInterceptor implements HttpRequestInterceptor {
         }
 
         StringBuilder sb = new StringBuilder();
+
         sb.append("\n")
           .append(PREFIX)
           .append(">>> HTTP REQUEST >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>\n");
@@ -43,23 +44,52 @@ public class LoggingRequestInterceptor implements HttpRequestInterceptor {
         }
 
         if (request instanceof HttpEntityContainer container) {
+
             HttpEntity entityObj = container.getEntity();
+
             if (entityObj != null) {
-                String body = EntityUtils.toString(entityObj, StandardCharsets.UTF_8);
-                sb.append(PREFIX)
-                  .append("Body: ")
-                  .append(body)
-                  .append("\n");
 
                 ContentType contentType = null;
+
                 String rawContentType = entityObj.getContentType();
+
                 if (rawContentType != null) {
                     contentType = ContentType.parse(rawContentType);
                 }
 
-                container.setEntity(contentType != null
-                        ? new StringEntity(body, contentType)
-                        : new StringEntity(body, StandardCharsets.UTF_8));
+                boolean multipart =
+                        contentType != null
+                        && contentType.getMimeType().startsWith("multipart/");
+
+                if (multipart) {
+
+                    sb.append(PREFIX)
+                      .append("Body: <multipart upload omitted>")
+                      .append("\n");
+
+                    sb.append(PREFIX)
+                      .append("Content-Length: ")
+                      .append(entityObj.getContentLength())
+                      .append("\n");
+                } else {
+
+                    String body;
+
+                    try {
+                        body = EntityUtils.toString(entityObj, StandardCharsets.UTF_8);
+                    } catch (ContentTooLongException ex) {
+                        body = "<too long to render>";
+                    }
+
+                    sb.append(PREFIX)
+                      .append("Body: ")
+                      .append(body)
+                      .append("\n");
+
+                    container.setEntity(contentType != null
+                            ? new StringEntity(body, contentType)
+                            : new StringEntity(body, StandardCharsets.UTF_8));
+                }
             }
         }
 
