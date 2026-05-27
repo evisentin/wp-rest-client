@@ -12,6 +12,7 @@ import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
 import io.github.evisentin.wordpress.client.domain.model.query.WpPostQuery;
 import io.github.evisentin.wordpress.client.domain.model.query.WpTagQuery;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpCategoryCreateUpdateRequest;
+import io.github.evisentin.wordpress.client.domain.model.requests.WpMediaUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpPostCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpTagCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
@@ -319,6 +320,57 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             assertThat(media).usingRecursiveComparison()
                              .isEqualTo(existingMedia);
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
+        @Test
+        void update__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            Long nonExistingMediaId = 9L;
+
+            // WHEN/THEN
+            final WpMediaUpdateRequest updateRequest = WpMediaUpdateRequest.builder().build();
+            assertThrowsWpNotFound(() -> adminClient.updateMedia(nonExistingMediaId, updateRequest), "rest_post_invalid_id", "Invalid post ID.");
+        }
+
+        @DisplayName("'UPDATE' works")
+        @Test
+        @SneakyThrows
+        void update__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            InputStream is = getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("files/sample.png");
+
+            Path tempFile = Files.createTempFile("sample", ".png");
+
+            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            File file = tempFile.toFile();
+            final WpMedia existingMedia = adminClient.createMedia(file, "sample.png", "image/png");
+
+            // WHEN
+            final WpMediaUpdateRequest updateRequest =
+                    WpMediaUpdateRequest.builder()
+                                        .withTitle("Title updated")
+                                        .withDescription("Description updated")
+                                        .withSlug("Slug updated")
+                                        .build();
+
+            final WpMedia media = adminClient.updateMedia(existingMedia.getId(), updateRequest);
+
+            // THEN
+            WordPressAssertions.assertThat(media)
+                               .isNotNull()
+                               .hasId(existingMedia.getId())
+                               .hasDescriptionSatisfying(t -> t.hasRaw("Description updated"))
+                               .hasTitleSatisfying(t -> t.hasRaw("Title updated"))
+                               .hasSlug("slug-updated");
         }
     }
 
