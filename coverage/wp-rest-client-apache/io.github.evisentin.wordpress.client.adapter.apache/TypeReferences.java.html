@@ -2,25 +2,30 @@
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.github.evisentin.wordpress.client.domain.model.WpCategory;
+import io.github.evisentin.wordpress.client.domain.model.WpMedia;
 import io.github.evisentin.wordpress.client.domain.model.WpPost;
 import io.github.evisentin.wordpress.client.domain.model.WpTag;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
+import io.github.evisentin.wordpress.client.domain.model.responses.WpMediaDeletionResponse;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpPostDeletionResponse;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpTagDeletionResponse;
 
 import java.util.List;
 
 interface TypeReferences {
-<span class="fc" id="L14">    TypeReference&lt;WpCategory&gt; WP_CATEGORY_TYPE = new TypeReference&lt;&gt;() {};</span>
-<span class="fc" id="L15">    TypeReference&lt;WpPost&gt; WP_POST_TYPE = new TypeReference&lt;&gt;() {};</span>
-<span class="fc" id="L16">    TypeReference&lt;WpTag&gt; WP_TAG_TYPE = new TypeReference&lt;&gt;() {};</span>
+<span class="fc" id="L16">    TypeReference&lt;WpCategory&gt; WP_CATEGORY_TYPE = new TypeReference&lt;&gt;() {};</span>
+<span class="fc" id="L17">    TypeReference&lt;WpPost&gt; WP_POST_TYPE = new TypeReference&lt;&gt;() {};</span>
+<span class="fc" id="L18">    TypeReference&lt;WpMedia&gt; WP_MEDIA_TYPE = new TypeReference&lt;&gt;() {};</span>
+<span class="fc" id="L19">    TypeReference&lt;WpTag&gt; WP_TAG_TYPE = new TypeReference&lt;&gt;() {};</span>
 
-<span class="fc" id="L18">    TypeReference&lt;WpCategoryDeletionResponse&gt; WP_CATEGORY_DELETION_RESPONSE_TYPE = new TypeReference&lt;&gt;() {};</span>
-<span class="fc" id="L19">    TypeReference&lt;WpPostDeletionResponse&gt; WP_POST_DELETION_RESPONSE_TYPE = new TypeReference&lt;&gt;() {};</span>
-<span class="fc" id="L20">    TypeReference&lt;WpTagDeletionResponse&gt; WP_TAG_DELETION_RESPONSE_TYPE = new TypeReference&lt;&gt;() {};</span>
+<span class="fc" id="L21">    TypeReference&lt;WpCategoryDeletionResponse&gt; WP_CATEGORY_DELETION_RESPONSE_TYPE = new TypeReference&lt;&gt;() {};</span>
+<span class="fc" id="L22">    TypeReference&lt;WpMediaDeletionResponse&gt; WP_MEDIA_DELETION_RESPONSE_TYPE = new TypeReference&lt;&gt;() {};</span>
+<span class="fc" id="L23">    TypeReference&lt;WpPostDeletionResponse&gt; WP_POST_DELETION_RESPONSE_TYPE = new TypeReference&lt;&gt;() {};</span>
+<span class="fc" id="L24">    TypeReference&lt;WpTagDeletionResponse&gt; WP_TAG_DELETION_RESPONSE_TYPE = new TypeReference&lt;&gt;() {};</span>
 
-<span class="fc" id="L22">    TypeReference&lt;List&lt;WpCategory&gt;&gt; WP_CATEGORY_LIST_TYPE = new TypeReference&lt;&gt;() {};</span>
-<span class="fc" id="L23">    TypeReference&lt;List&lt;WpPost&gt;&gt; WP_POST_LIST_TYPE = new TypeReference&lt;&gt;() {};</span>
-<span class="fc" id="L24">    TypeReference&lt;List&lt;WpTag&gt;&gt; WP_TAG_LIST_TYPE = new TypeReference&lt;&gt;() {};</span>
+<span class="fc" id="L26">    TypeReference&lt;List&lt;WpCategory&gt;&gt; WP_CATEGORY_LIST_TYPE = new TypeReference&lt;&gt;() {};</span>
+<span class="fc" id="L27">    TypeReference&lt;List&lt;WpMedia&gt;&gt; WP_MEDIA_LIST_TYPE = new TypeReference&lt;&gt;() {};</span>
+<span class="fc" id="L28">    TypeReference&lt;List&lt;WpPost&gt;&gt; WP_POST_LIST_TYPE = new TypeReference&lt;&gt;() {};</span>
+<span class="fc" id="L29">    TypeReference&lt;List&lt;WpTag&gt;&gt; WP_TAG_LIST_TYPE = new TypeReference&lt;&gt;() {};</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

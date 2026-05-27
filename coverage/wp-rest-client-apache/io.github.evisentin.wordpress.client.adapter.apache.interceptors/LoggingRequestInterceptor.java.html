@@ -23,47 +23,77 @@ import java.nio.charset.StandardCharsets;
         }
 
 <span class="nc" id="L25">        StringBuilder sb = new StringBuilder();</span>
-<span class="nc" id="L26">        sb.append(&quot;\n&quot;)</span>
-<span class="nc" id="L27">          .append(PREFIX)</span>
-<span class="nc" id="L28">          .append(&quot;&gt;&gt;&gt; HTTP REQUEST &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;\n&quot;);</span>
 
-<span class="nc" id="L30">        sb.append(PREFIX)</span>
-<span class="nc" id="L31">          .append(request.getMethod())</span>
-<span class="nc" id="L32">          .append(&quot; &quot;)</span>
-<span class="nc" id="L33">          .append(request.getRequestUri())</span>
-<span class="nc" id="L34">          .append(&quot;\n&quot;);</span>
+<span class="nc" id="L27">        sb.append(&quot;\n&quot;)</span>
+<span class="nc" id="L28">          .append(PREFIX)</span>
+<span class="nc" id="L29">          .append(&quot;&gt;&gt;&gt; HTTP REQUEST &gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;&gt;\n&quot;);</span>
 
-<span class="nc bnc" id="L36" title="All 2 branches missed.">        for (Header header : request.getHeaders()) {</span>
-<span class="nc" id="L37">            sb.append(PREFIX)</span>
-<span class="nc" id="L38">              .append(&quot;[HEADER] &quot;)</span>
-<span class="nc" id="L39">              .append(header.getName())</span>
-<span class="nc" id="L40">              .append(&quot;: &quot;)</span>
-<span class="nc" id="L41">              .append(header.getValue())</span>
-<span class="nc" id="L42">              .append(&quot;\n&quot;);</span>
+<span class="nc" id="L31">        sb.append(PREFIX)</span>
+<span class="nc" id="L32">          .append(request.getMethod())</span>
+<span class="nc" id="L33">          .append(&quot; &quot;)</span>
+<span class="nc" id="L34">          .append(request.getRequestUri())</span>
+<span class="nc" id="L35">          .append(&quot;\n&quot;);</span>
+
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        for (Header header : request.getHeaders()) {</span>
+<span class="nc" id="L38">            sb.append(PREFIX)</span>
+<span class="nc" id="L39">              .append(&quot;[HEADER] &quot;)</span>
+<span class="nc" id="L40">              .append(header.getName())</span>
+<span class="nc" id="L41">              .append(&quot;: &quot;)</span>
+<span class="nc" id="L42">              .append(header.getValue())</span>
+<span class="nc" id="L43">              .append(&quot;\n&quot;);</span>
         }
 
-<span class="nc bnc" id="L45" title="All 2 branches missed.">        if (request instanceof HttpEntityContainer container) {</span>
-<span class="nc" id="L46">            HttpEntity entityObj = container.getEntity();</span>
-<span class="nc bnc" id="L47" title="All 2 branches missed.">            if (entityObj != null) {</span>
-<span class="nc" id="L48">                String body = EntityUtils.toString(entityObj, StandardCharsets.UTF_8);</span>
-<span class="nc" id="L49">                sb.append(PREFIX)</span>
-<span class="nc" id="L50">                  .append(&quot;Body: &quot;)</span>
-<span class="nc" id="L51">                  .append(body)</span>
-<span class="nc" id="L52">                  .append(&quot;\n&quot;);</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        if (request instanceof HttpEntityContainer container) {</span>
 
-<span class="nc" id="L54">                ContentType contentType = null;</span>
-<span class="nc" id="L55">                String rawContentType = entityObj.getContentType();</span>
+<span class="nc" id="L48">            HttpEntity entityObj = container.getEntity();</span>
+
+<span class="nc bnc" id="L50" title="All 2 branches missed.">            if (entityObj != null) {</span>
+
+<span class="nc" id="L52">                ContentType contentType = null;</span>
+
+<span class="nc" id="L54">                String rawContentType = entityObj.getContentType();</span>
+
 <span class="nc bnc" id="L56" title="All 2 branches missed.">                if (rawContentType != null) {</span>
 <span class="nc" id="L57">                    contentType = ContentType.parse(rawContentType);</span>
                 }
 
-<span class="nc bnc" id="L60" title="All 2 branches missed.">                container.setEntity(contentType != null</span>
-<span class="nc" id="L61">                        ? new StringEntity(body, contentType)</span>
-<span class="nc" id="L62">                        : new StringEntity(body, StandardCharsets.UTF_8));</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">                boolean multipart =</span>
+                        contentType != null
+<span class="nc bnc" id="L62" title="All 2 branches missed.">                        &amp;&amp; contentType.getMimeType().startsWith(&quot;multipart/&quot;);</span>
+
+<span class="nc bnc" id="L64" title="All 2 branches missed.">                if (multipart) {</span>
+
+<span class="nc" id="L66">                    sb.append(PREFIX)</span>
+<span class="nc" id="L67">                      .append(&quot;Body: &lt;multipart upload omitted&gt;&quot;)</span>
+<span class="nc" id="L68">                      .append(&quot;\n&quot;);</span>
+
+<span class="nc" id="L70">                    sb.append(PREFIX)</span>
+<span class="nc" id="L71">                      .append(&quot;Content-Length: &quot;)</span>
+<span class="nc" id="L72">                      .append(entityObj.getContentLength())</span>
+<span class="nc" id="L73">                      .append(&quot;\n&quot;);</span>
+                } else {
+
+                    String body;
+
+                    try {
+<span class="nc" id="L79">                        body = EntityUtils.toString(entityObj, StandardCharsets.UTF_8);</span>
+<span class="nc" id="L80">                    } catch (ContentTooLongException ex) {</span>
+<span class="nc" id="L81">                        body = &quot;&lt;too long to render&gt;&quot;;</span>
+<span class="nc" id="L82">                    }</span>
+
+<span class="nc" id="L84">                    sb.append(PREFIX)</span>
+<span class="nc" id="L85">                      .append(&quot;Body: &quot;)</span>
+<span class="nc" id="L86">                      .append(body)</span>
+<span class="nc" id="L87">                      .append(&quot;\n&quot;);</span>
+
+<span class="nc bnc" id="L89" title="All 2 branches missed.">                    container.setEntity(contentType != null</span>
+<span class="nc" id="L90">                            ? new StringEntity(body, contentType)</span>
+<span class="nc" id="L91">                            : new StringEntity(body, StandardCharsets.UTF_8));</span>
+                }
             }
         }
 
-<span class="nc" id="L66">        log.debug(sb.toString());</span>
-<span class="nc" id="L67">    }</span>
+<span class="nc" id="L96">        log.debug(sb.toString());</span>
+<span class="nc" id="L97">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

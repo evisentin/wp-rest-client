@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../../jacoco-resources/report.gif" type="image/gif"/><title>WpMediaStatus.java</title><link rel="stylesheet" href="../../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../../index.html" class="el_report">WP REST Client - Test Report Aggregation</a> &gt; <a href="../index.html" class="el_bundle">wp-rest-client-domain</a> &gt; <a href="index.source.html" class="el_package">io.github.evisentin.wordpress.client.domain.model.enums</a> &gt; <span class="el_source">WpMediaStatus.java</span></div><h1>WpMediaStatus.java</h1><pre class="source lang-java linenums">package io.github.evisentin.wordpress.client.domain.model.enums;
+
+import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+/**
+ * Enumeration of media item statuses supported by the WordPress REST API.
+ *
+ * &lt;p&gt;
+ * Media items in WordPress are represented as {@code attachment} posts and therefore use the standard WordPress post
+ * status system.
+ * &lt;/p&gt;
+ *
+ * &lt;p&gt;
+ * The most common status for uploaded media is {@link #INHERIT}, which indicates that the media item inherits its
+ * visibility and lifecycle from its parent post.
+ * &lt;/p&gt;
+ *
+ * &lt;p&gt;
+ * Each enum constant maps to the corresponding REST API value stored in {@link #value}. The value is serialized to JSON
+ * using {@link JsonValue}.
+ * &lt;/p&gt;
+ */
+<span class="fc" id="L25">@Getter</span>
+@RequiredArgsConstructor
+public enum WpMediaStatus implements WpHasValueEnum {
+
+    /**
+     * Media item inherits visibility and state from its parent post.
+     *
+     * &lt;p&gt;
+     * This is the default status for uploaded media attachments.
+     * &lt;/p&gt;
+     */
+<span class="fc" id="L36">    INHERIT(&quot;inherit&quot;),</span>
+
+    /**
+     * Private media item visible only to authorized users.
+     */
+<span class="fc" id="L41">    PRIVATE(&quot;private&quot;),</span>
+
+    /**
+     * Media item moved to trash.
+     */
+<span class="fc" id="L46">    TRASH(&quot;trash&quot;),</span>
+
+    /**
+     * Published media item.
+     */
+<span class="fc" id="L51">    PUBLISH(&quot;publish&quot;),</span>
+
+    /**
+     * Draft media item.
+     */
+<span class="fc" id="L56">    DRAFT(&quot;draft&quot;),</span>
+
+    /**
+     * Automatically created draft media item.
+     */
+<span class="fc" id="L61">    AUTO_DRAFT(&quot;auto-draft&quot;);</span>
+
+    /**
+     * REST API value associated with the media status.
+     */
+    @JsonValue
+    private final String value;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

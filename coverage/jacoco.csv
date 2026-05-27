@@ -4,10 +4,13 @@ WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisent
 WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.auth,WpBasicAuthenticationStrategy,0,39,0,8,0,6,0,5,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.model.responses,WpTagDeletionResponse,0,3,0,0,0,1,0,1,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.model.responses,WpCategoryDeletionResponse,0,3,0,0,0,1,0,1,0,1
+WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.model.enums,WpMediaType,38,0,0,0,6,0,1,0,1,0
 WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.model.enums,WpTaxonomy,0,17,0,0,0,3,0,1,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.model.enums,WpSortDirection,0,17,0,0,0,3,0,1,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.model.enums,WpTagOrderFields,0,59,0,0,0,9,0,1,0,1
+WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.model.enums,WpMediaOrderFields,0,73,0,0,0,11,0,1,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.model.enums,WpPostStatus,0,45,0,0,0,7,0,1,0,1
+WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.model.enums,WpMediaStatus,0,45,0,0,0,7,0,1,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.model.enums,WpPostFormat,0,73,0,0,0,11,0,1,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.model.enums,WpContext,0,24,0,0,0,4,0,1,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-domain,io.github.evisentin.wordpress.client.domain.model.enums,WpOpenClosed,0,17,0,0,0,3,0,1,0,1
@@ -28,7 +31,7 @@ WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisent
 WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp.auth.jwt,OkHttpJwtTokenClient,45,76,8,6,5,22,7,3,0,3
 WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp.auth.basic,OkHttpBasicAuthenticationStrategyHandler,5,17,1,1,0,5,1,3,0,3
 WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp.http,MediaTypes,0,11,0,0,0,2,0,1,0,1
-WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp,TypeReferences,0,37,0,0,0,9,0,1,0,1
+WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp,TypeReferences,0,49,0,0,0,12,0,1,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
@@ -38,7 +41,10 @@ WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisent
 WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
-WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp,OkHttpWpRestClient,14,868,1,57,4,174,1,57,0,29
+WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
+WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
+WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
+WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp,OkHttpWpRestClient,14,1112,1,77,4,221,1,73,0,35
 WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp.interceptors,AuthenticationInterceptor,0,59,0,6,0,12,0,5,0,2
 WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp.interceptors,LoggingInterceptor,218,17,25,1,64,5,14,3,1,3
 WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp.interceptors,WpErrorInterceptor,0,99,0,11,0,28,0,13,0,6
@@ -46,27 +52,32 @@ WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisent
 WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp.query.mappers,AbstractQueryParamMapper,0,156,0,6,0,44,0,19,0,16
 WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp.query.mappers,TagQueryParamMapper,0,61,0,4,0,13,0,3,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp.query.mappers,PostQueryParamMapper,0,111,0,4,0,23,0,3,0,1
+WP REST Client - Test Report Aggregation/wp-rest-client-okhttp,io.github.evisentin.wordpress.client.adapter.okhttp.query.mappers,MediaQueryParamMapper,0,106,0,4,0,22,0,3,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache.auth.basic,ApacheBasicAuthenticationStrategyHandler,5,17,1,1,0,5,1,3,0,3
-WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,TypeReferences,0,37,0,0,0,9,0,1,0,1
-WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
-WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
-WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
-WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
-WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,ApacheWpRestClient,84,923,7,53,25,194,9,59,2,36
-WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
-WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
-WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
-WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
-WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
-WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache.auth.jwt,ApacheJwtTokenClient,36,87,7,7,4,21,7,4,0,4
 WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache.auth.jwt,ApacheJwtAuthenticationStrategyHandler,10,23,2,2,0,6,2,3,0,3
+WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache.auth.jwt,ApacheJwtTokenClient,36,87,7,7,4,21,7,4,0,4
+WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
+WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,ApacheWpRestClient,87,1165,7,73,26,241,9,76,2,43
+WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,TypeReferences,0,49,0,0,0,12,0,1,0,1
+WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
+WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
+WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
+WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
+WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
+WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
+WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
+WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
+WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
+WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
+WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache,TypeReferences.new TypeReference() {...},0,3,0,0,0,1,0,1,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache.query.mappers,AbstractQueryParamMapper,0,156,0,6,0,44,0,19,0,16
 WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache.query.mappers,CategoryQueryParamMapper,0,61,0,4,0,13,0,3,0,1
+WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache.query.mappers,MediaQueryParamMapper,0,106,0,4,0,22,0,3,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache.query.mappers,PostQueryParamMapper,0,111,0,4,0,23,0,3,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache.query.mappers,TagQueryParamMapper,0,61,0,4,0,13,0,3,0,1
 WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache.auth,ApacheAuthenticationStrategyHandlerRegistry,15,42,2,2,0,10,3,3,1,3
 WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache.auth,ApacheAuthenticationStrategyHandler,0,13,0,0,0,2,0,2,0,2
 WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache.interceptors,WpErrorInterceptor,0,112,1,20,0,26,1,17,0,6
-WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache.interceptors,LoggingResponseInterceptor,117,11,11,1,32,4,6,3,0,3
-WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache.interceptors,LoggingRequestInterceptor,114,11,11,1,33,4,6,3,0,3
+WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache.interceptors,LoggingRequestInterceptor,151,11,17,1,46,4,9,3,0,3
 WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache.interceptors,AuthenticationInterceptor,0,40,0,4,0,8,0,4,0,2
+WP REST Client - Test Report Aggregation/wp-rest-client-apache,io.github.evisentin.wordpress.client.adapter.apache.interceptors,LoggingResponseInterceptor,117,11,11,1,32,4,6,3,0,3
