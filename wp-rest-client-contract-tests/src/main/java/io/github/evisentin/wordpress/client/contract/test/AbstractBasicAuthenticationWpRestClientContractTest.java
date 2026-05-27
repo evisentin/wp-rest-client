@@ -4,10 +4,7 @@ import io.github.evisentin.wordpress.client.domain.api.WpBaseRestClient;
 import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
 import io.github.evisentin.wordpress.client.domain.assertions.WordPressAssertions;
 import io.github.evisentin.wordpress.client.domain.model.*;
-import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
-import io.github.evisentin.wordpress.client.domain.model.enums.WpMediaStatus;
-import io.github.evisentin.wordpress.client.domain.model.enums.WpOpenClosed;
-import io.github.evisentin.wordpress.client.domain.model.enums.WpTagOrderFields;
+import io.github.evisentin.wordpress.client.domain.model.enums.*;
 import io.github.evisentin.wordpress.client.domain.model.query.*;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpCategoryCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpMediaUpdateRequest;
@@ -163,7 +160,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasAuthorId(1L)
                                .hasCommentStatus(WpOpenClosed.OPEN)
                                .hasPingStatus(WpOpenClosed.CLOSED)
-                               .hasMediaType("image")
+                               .hasMediaType(WpMediaType.IMAGE)
                                .hasMimeType("image/png");
         }
 
