@@ -2,7 +2,6 @@ package io.github.evisentin.wordpress.client.adapter.apache;
 
 import io.github.evisentin.wordpress.client.contract.test.AbstractBasicAuthenticationWpRestClientContractTest;
 import io.github.evisentin.wordpress.client.domain.api.WpBaseRestClient;
-import io.github.evisentin.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
 import io.github.evisentin.wordpress.client.domain.configuration.SslConfiguration;
 
 import javax.net.ssl.HostnameVerifier;
@@ -13,9 +12,10 @@ class ApacheWpRestClientBasicAuthTest extends AbstractBasicAuthenticationWpRestC
 
     @Override
     protected WpBaseRestClient client() {
-        final WpBasicAuthenticationStrategy authenticationStrategy = new WpBasicAuthenticationStrategy("user", "password");
 
-        return new ApacheWpRestClient(mockServerUrl(), authenticationStrategy, insecure(), null);
+        return ApacheWpRestClientBuilder.basicAuthentication(mockServerUrl(), "user", "password")
+                                        .withSslConfiguration(insecure())
+                                        .build();
     }
 
     private SslConfiguration insecure() {

@@ -19,13 +19,8 @@ public class OkHttpJwtTokenClient implements JwtTokenClient {
     private final ObjectMapper mapper;
 
     public OkHttpJwtTokenClient(final @NonNull OkHttpClient authHttpClient) {
-        this(authHttpClient, new ObjectMapper());
-    }
-
-    public OkHttpJwtTokenClient(final @NonNull OkHttpClient authHttpClient,
-                                final @NonNull ObjectMapper mapper) {
         this.authHttpClient = authHttpClient;
-        this.mapper = mapper;
+        this.mapper = new ObjectMapper();
     }
 
     @Override
@@ -44,14 +39,10 @@ public class OkHttpJwtTokenClient implements JwtTokenClient {
 
         try (Response response = authHttpClient.newCall(request).execute()) {
 
-            if (!response.isSuccessful()) {
-                String body = response.body() != null ? response.body().string() : "";
-                throw new WpAuthException(
-                        "Failed to fetch JWT token. HTTP " + response.code() + ": " + body
-                );
-            }
+            String body = response.body().string();
 
-            String body = response.body() != null ? response.body().string() : "";
+            if (!response.isSuccessful())
+                throw new WpAuthException("Failed to fetch JWT token. HTTP " + response.code() + ": " + body);
 
             return mapper.readValue(body, JwtResponse.class);
         } catch (IOException e) {

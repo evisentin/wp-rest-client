@@ -1,8 +1,7 @@
 package io.github.evisentin.wordpress.test.integration.base.factory;
 
-import io.github.evisentin.wordpress.client.adapter.okhttp.OkHttpWpRestClient;
+import io.github.evisentin.wordpress.client.adapter.okhttp.OkHttpWpRestClientBuilder;
 import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
-import io.github.evisentin.wordpress.client.domain.auth.WpJwtAuthenticationStrategy;
 import io.github.evisentin.wordpress.client.domain.configuration.SslConfiguration;
 import org.testcontainers.shaded.org.checkerframework.checker.nullness.qual.NonNull;
 
@@ -19,11 +18,9 @@ public final class OkHttpWpJwtAuthRestClientFactory implements WpJwtAuthRestClie
                                final @NonNull String jwtTokenUrl,
                                final @NonNull String username,
                                final @NonNull String password) {
-        return new OkHttpWpRestClient(
-                baseUrl,
-                new WpJwtAuthenticationStrategy(username, password, jwtTokenUrl),
-                sslConfiguration,
-                null
-        );
+
+        return OkHttpWpRestClientBuilder.jwtAuthentication(baseUrl, username, password, jwtTokenUrl)
+                                        .withSslConfiguration(sslConfiguration)
+                                        .build();
     }
 }

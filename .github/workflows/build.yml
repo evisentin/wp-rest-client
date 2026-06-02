@@ -27,4 +27,4 @@ jobs:
           cache: maven
 
       - name: Build and test
-        run: mvn -B clean verify -Pdeveloper
+        run: mvn -B clean verify -Plocal-tests

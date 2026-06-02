@@ -43,7 +43,7 @@ A compliant implementation should:
 Before opening a pull request, run the full test suite.
 
 ```bash
-mvn clean verify -Pdeveloper,integration-tests
+mvn clean verify -Plocal-tests,integration-tests
 ```
 
 ## Contract Tests

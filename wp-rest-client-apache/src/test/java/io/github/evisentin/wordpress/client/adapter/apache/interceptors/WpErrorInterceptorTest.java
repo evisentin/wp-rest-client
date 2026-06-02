@@ -9,17 +9,16 @@ import org.apache.hc.core5.http.HttpResponse;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
+import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class WpErrorInterceptorTest {
+class WpErrorInterceptorTest implements WithAssertions {
 
     private final WpErrorInterceptor interceptor = new WpErrorInterceptor();
 
@@ -29,9 +28,8 @@ class WpErrorInterceptorTest {
         BasicClassicHttpResponse response = new BasicClassicHttpResponse(200);
         response.setEntity(new StringEntity("{\"ok\":true}"));
 
-        org.assertj.core.api.Assertions.assertThatCode(() ->
-                interceptor.process(response, null, null)
-        ).doesNotThrowAnyException();
+        assertThatCode(() -> interceptor.process(response, null, null))
+                .doesNotThrowAnyException();
 
         assertThat(response.getEntity()).isNotNull();
     }
@@ -81,7 +79,7 @@ class WpErrorInterceptorTest {
         assertThatThrownBy(() -> interceptor.process(response, null, null))
                 .isInstanceOf(WpBadRequestException.class);
 
-        org.assertj.core.api.Assertions.assertThat(entityBody(response)).isEqualTo("not-json");
+        assertThat(entityBody(response)).isEqualTo("not-json");
     }
 
     @Test

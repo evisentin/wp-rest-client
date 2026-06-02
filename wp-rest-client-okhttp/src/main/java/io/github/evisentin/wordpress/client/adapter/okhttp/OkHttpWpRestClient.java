@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.evisentin.wordpress.client.adapter.okhttp.interceptors.AuthenticationInterceptor;
-import io.github.evisentin.wordpress.client.adapter.okhttp.interceptors.LoggingInterceptor;
 import io.github.evisentin.wordpress.client.adapter.okhttp.interceptors.WpErrorInterceptor;
 import io.github.evisentin.wordpress.client.adapter.okhttp.query.mappers.CategoryQueryParamMapper;
 import io.github.evisentin.wordpress.client.adapter.okhttp.query.mappers.MediaQueryParamMapper;
@@ -33,10 +32,7 @@ import org.apache.commons.text.StringSubstitutor;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static io.github.evisentin.wordpress.client.adapter.okhttp.TypeReferences.*;
 import static io.github.evisentin.wordpress.client.adapter.okhttp.http.HttpHeaders.ACCEPT;
@@ -87,7 +83,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  */
 public class OkHttpWpRestClient extends WpBaseRestClient {
 
-    public static final String BASE_URL = "baseUrl";
+    private static final String BASE_URL = "baseUrl";
     private final OkHttpClient httpClient;
     private final ObjectMapper mapper;
 
@@ -114,6 +110,8 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
      *         optional SSL configuration; may be {@code null}
      * @param timeoutConfiguration
      *         optional timeout configuration; may be {@code null}
+     * @param interceptors
+     *         additional OkHttp interceptors to register with the underlying HTTP client; may be empty
      *
      * @throws NullPointerException
      *         if {@code baseUrl} or {@code authenticationStrategy} is {@code null}
@@ -121,18 +119,20 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
      *         if the provided {@link SslConfiguration} is invalid
      */
     @SneakyThrows
-    public OkHttpWpRestClient(final @NonNull String baseUrl,
-                              final @NonNull WpAuthenticationStrategy authenticationStrategy,
-                              final SslConfiguration sslConfiguration,
-                              final TimeoutConfiguration timeoutConfiguration) {
+    OkHttpWpRestClient(final @NonNull String baseUrl,
+                       final @NonNull WpAuthenticationStrategy authenticationStrategy,
+                       final SslConfiguration sslConfiguration,
+                       final TimeoutConfiguration timeoutConfiguration,
+                       final Interceptor... interceptors) {
         super(baseUrl, authenticationStrategy);
         this.mapper = new ObjectMapper();
         mapper.findAndRegisterModules();
 
         OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder()
                 .addInterceptor(new AuthenticationInterceptor(authenticationStrategy, buildAuthHttpClient(sslConfiguration, timeoutConfiguration)))
-                .addInterceptor(new WpErrorInterceptor())
-                .addInterceptor(new LoggingInterceptor());
+                .addInterceptor(new WpErrorInterceptor());
+
+        Arrays.stream(interceptors).forEach(clientBuilder::addInterceptor);
 
         applySslConfigurationIfPresent(clientBuilder, sslConfiguration);
         applyTimeoutConfigurationIfPresent(clientBuilder, timeoutConfiguration);
@@ -356,7 +356,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
     @Override
     @SneakyThrows
-    public WpPost trashPost(@NonNull Long id) {
+    public WpPost trashPost(final @NonNull Long id) {
         final HttpUrl.Builder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/posts/${id}",
                 Map.of(BASE_URL, baseUrl, "id", id));
 
@@ -410,7 +410,8 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         return performPostWithBody(builder, updateRequest, WP_TAG_TYPE);
     }
 
-    private void applyTimeoutConfigurationIfPresent(OkHttpClient.Builder clientBuilder, TimeoutConfiguration config) {
+    private void applyTimeoutConfigurationIfPresent(final OkHttpClient.Builder clientBuilder,
+                                                    final TimeoutConfiguration config) {
         if (config != null) {
             clientBuilder.connectTimeout(config.getConnectTimeout())
                          .readTimeout(config.getReadTimeout())
@@ -419,7 +420,8 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         }
     }
 
-    private OkHttpClient buildAuthHttpClient(SslConfiguration sslConfiguration, TimeoutConfiguration timeoutConfiguration) {
+    private OkHttpClient buildAuthHttpClient(final SslConfiguration sslConfiguration,
+                                             final TimeoutConfiguration timeoutConfiguration) {
         OkHttpClient.Builder authClientBuilder = new OkHttpClient.Builder();
         applySslConfigurationIfPresent(authClientBuilder, sslConfiguration);
         applyTimeoutConfigurationIfPresent(authClientBuilder, timeoutConfiguration);

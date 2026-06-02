@@ -1,24 +1,62 @@
 ## Supported WP REST APIs
 
+---
+
+## Table of contents
+
+<!-- toc -->
+
+- [Tested WordPress Versions](#tested-wordpress-versions)
+  * [Posts](#posts)
+  * [Pages](#pages)
+  * [Media](#media)
+  * [Categories](#categories)
+  * [Tags](#tags)
+  * [Comments](#comments)
+
+<!-- tocstop -->
+
+---
+
+
 This page documents the WordPress REST API endpoints supported by this client.
 
 The complete WordPress REST API reference is available in the official WordPress
 documentation: <https://developer.wordpress.org/rest-api/reference/>.
 
-| Resource   |      Endpoint | Read | Create | Update | Delete | Notes                              |
-|------------|--------------:|:----:|:------:|:------:|:------:|------------------------------------|
-| Posts      |      `/posts` |  ✅   |   ✅    |   ✅    |   ✅    | Blog posts and post content.       |
-| Pages      |      `/pages` |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Static site pages.                 |
-| Media      |      `/media` |  ✅   |   ✅    |   ✅    |   ✅    | Images, files, and attachments.    |
-| Categories | `/categories` |  ✅   |   ✅    |   ✅    |   ✅    | Post categories.                   |
-| Tags       |       `/tags` |  ✅   |   ✅    |   ✅    |   ✅    | Post tags.                         |
-| Comments   |   `/comments` |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Comments and moderation workflows. |
-| Users      |      `/users` |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Usually requires authentication.   |
-| Search     |     `/search` |  ⬜   |  N/A   |  N/A   |  N/A   | Search across public content.      |
-| Taxonomies | `/taxonomies` |  ⬜   |  N/A   |  N/A   |  N/A   | Taxonomy metadata.                 |
-| Post Types |      `/types` |  ⬜   |  N/A   |  N/A   |  N/A   | Registered post type metadata.     |
-| Statuses   |   `/statuses` |  ⬜   |  N/A   |  N/A   |  N/A   | Registered post statuses.          |
-| Settings   |   `/settings` |  ⬜   |  N/A   |   ⬜    |  N/A   | Requires elevated permissions.     |
+## Tested WordPress Versions
+
+The supported APIs are covered by integration tests in the `wp-rest-client-test-integration`
+module and are continuously validated against the following WordPress versions:
+
+| WordPress Version | Tested |
+|-------------------|:------:|
+| 6.4.x             |   ✅    |
+| 6.5.x             |   ✅    |
+| 6.6.x             |   ✅    |
+| 6.7.x             |   ✅    |
+| 6.8.x             |   ✅    |
+| 7.0.x             |   ✅    |
+
+> Integration tests are executed against all supported WordPress versions to help
+> ensure API compatibility and detect regressions across releases.
+
+| Resource       |                    Endpoint | Read | Create | Update | Delete | Notes                              |
+|----------------|----------------------------:|:----:|:------:|:------:|:------:|------------------------------------|
+| Posts          |                    `/posts` |  ✅   |   ✅    |   ✅    |   ✅    | Blog posts and post content.       |
+| Post Revisions | `/posts/<parent>/revisions` |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Blog posts revisions.              |
+| Pages          |                    `/pages` |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Static site pages.                 |
+| Page Revisions | `/pages/<parent>/revisions` |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Static site pages revisions.       |
+| Media          |                    `/media` |  ✅   |   ✅    |   ✅    |   ✅    | Images, files, and attachments.    |
+| Categories     |               `/categories` |  ✅   |   ✅    |   ✅    |   ✅    | Post categories.                   |
+| Tags           |                     `/tags` |  ✅   |   ✅    |   ✅    |   ✅    | Post tags.                         |
+| Comments       |                 `/comments` |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Comments and moderation workflows. |
+| Users          |                    `/users` |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Usually requires authentication.   |
+| Search         |                   `/search` |  ⬜   |  N/A   |  N/A   |  N/A   | Search across public content.      |
+| Taxonomies     |               `/taxonomies` |  ⬜   |  N/A   |  N/A   |  N/A   | Taxonomy metadata.                 |
+| Post Types     |                    `/types` |  ⬜   |  N/A   |  N/A   |  N/A   | Registered post type metadata.     |
+| Statuses       |                 `/statuses` |  ⬜   |  N/A   |  N/A   |  N/A   | Registered post statuses.          |
+| Settings       |                 `/settings` |  ⬜   |  N/A   |   ⬜    |  N/A   | Requires elevated permissions.     |
 
 Legend:
 

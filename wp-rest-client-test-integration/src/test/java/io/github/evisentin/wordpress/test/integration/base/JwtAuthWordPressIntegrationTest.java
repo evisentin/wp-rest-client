@@ -22,19 +22,19 @@ public abstract class JwtAuthWordPressIntegrationTest extends BaseWordPressInteg
     @BeforeAll
     void installWordpress() {
 
-        log.info("installWordpress: BEGIN");
+        log.info("installWordpress ({}): BEGIN", getWordPressVersion());
 
         if (!wpIsWordPressInstalled()) {
-            log.info("installWordpress: initializing...");
+            log.info("installWordpress ({}): initializing...", getWordPressVersion());
             wpInitWordPress(getHttpsBaseUrl());
             wpConfigureDefaultUsers();
             wpActivatePermalinks();
             wpInstallAndActivateWpRestApiAuthenticationPlugin(true);
             wpCleanDefaultData();
-            log.info("installWordpress: initialized");
+            log.info("installWordpress ({}): initialized", getWordPressVersion());
         }
 
-        log.info("installWordpress: END");
+        log.info("installWordpress ({}): END", getWordPressVersion());
 
         adminClient = clientFactory().create(
                 getHttpsBaseUrl(),

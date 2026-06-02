@@ -3,8 +3,6 @@ package io.github.evisentin.wordpress.client.adapter.apache;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.evisentin.wordpress.client.adapter.apache.interceptors.AuthenticationInterceptor;
-import io.github.evisentin.wordpress.client.adapter.apache.interceptors.LoggingRequestInterceptor;
-import io.github.evisentin.wordpress.client.adapter.apache.interceptors.LoggingResponseInterceptor;
 import io.github.evisentin.wordpress.client.adapter.apache.interceptors.WpErrorInterceptor;
 import io.github.evisentin.wordpress.client.adapter.apache.query.mappers.CategoryQueryParamMapper;
 import io.github.evisentin.wordpress.client.adapter.apache.query.mappers.MediaQueryParamMapper;
@@ -40,9 +38,7 @@ import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManager;
 import org.apache.hc.client5.http.impl.io.PoolingHttpClientConnectionManagerBuilder;
 import org.apache.hc.client5.http.ssl.ClientTlsStrategyBuilder;
-import org.apache.hc.core5.http.ClassicHttpResponse;
-import org.apache.hc.core5.http.ContentType;
-import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.hc.core5.http.*;
 import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.net.URIBuilder;
@@ -101,7 +97,7 @@ import static org.apache.hc.core5.http.HttpHeaders.ACCEPT;
  */
 public class ApacheWpRestClient extends WpBaseRestClient {
 
-    public static final String BASE_URL = "baseUrl";
+    private static final String BASE_URL = "baseUrl";
     private final CloseableHttpClient httpClient;
     private final ObjectMapper mapper;
 
@@ -128,16 +124,24 @@ public class ApacheWpRestClient extends WpBaseRestClient {
      *         optional SSL configuration; may be {@code null}
      * @param timeoutConfiguration
      *         optional timeout configuration; may be {@code null}
+     * @param requestInterceptors
+     *         additional request interceptors to register with the underlying HTTP client; may be {@code null} or
+     *         empty
+     * @param responseInterceptors
+     *         additional response interceptors to register with the underlying HTTP client; may be {@code null} or
+     *         empty
      *
      * @throws NullPointerException
      *         if {@code baseUrl} or {@code authenticationStrategy} is {@code null}
      * @throws IllegalStateException
      *         if the provided {@link SslConfiguration} is invalid
      */
-    public ApacheWpRestClient(final @NonNull String baseUrl,
-                              final @NonNull WpAuthenticationStrategy authenticationStrategy,
-                              final SslConfiguration sslConfiguration,
-                              final TimeoutConfiguration timeoutConfiguration) {
+    ApacheWpRestClient(final @NonNull String baseUrl,
+                       final @NonNull WpAuthenticationStrategy authenticationStrategy,
+                       final SslConfiguration sslConfiguration,
+                       final TimeoutConfiguration timeoutConfiguration,
+                       final List<HttpRequestInterceptor> requestInterceptors,
+                       final List<HttpResponseInterceptor> responseInterceptors) {
         super(baseUrl, authenticationStrategy);
         this.mapper = new ObjectMapper();
         mapper.findAndRegisterModules();
@@ -146,11 +150,11 @@ public class ApacheWpRestClient extends WpBaseRestClient {
 
         final HttpClientBuilder httpClientBuilder = HttpClients.custom();
 
-        httpClientBuilder.addRequestInterceptorFirst(new AuthenticationInterceptor(authenticationStrategy, authHttpClient))
-                         .addRequestInterceptorLast(new LoggingRequestInterceptor());
+        httpClientBuilder.addRequestInterceptorFirst(new AuthenticationInterceptor(authenticationStrategy, authHttpClient));
+        httpClientBuilder.addResponseInterceptorFirst(new WpErrorInterceptor());
 
-        httpClientBuilder.addResponseInterceptorFirst(new LoggingResponseInterceptor())
-                         .addResponseInterceptorLast(new WpErrorInterceptor());
+        emptyIfNull(requestInterceptors).forEach(httpClientBuilder::addRequestInterceptorLast);
+        emptyIfNull(responseInterceptors).forEach(httpClientBuilder::addResponseInterceptorLast);
 
         applySslConfigurationIfPresent(httpClientBuilder, sslConfiguration);
         applyTimeoutConfigurationIfPresent(httpClientBuilder, timeoutConfiguration);
@@ -163,6 +167,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     public WpCategory createCategory(final @NonNull WpCategoryCreateUpdateRequest creationRequest) {
         if (isBlank(creationRequest.getName()))
             throw new IllegalArgumentException("name cannot be blank");
+
         final URIBuilder builder = urlBuilder("${baseUrl}/wp-json/wp/v2/categories",
                 Map.of(BASE_URL, baseUrl));
 
@@ -416,7 +421,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
 
     @SneakyThrows
     private <T> T performDeleteRequest(final URIBuilder uriBuilder,
-                                       final TypeReference<T> responseType) throws IOException {
+                                       final TypeReference<T> responseType) {
 
         URI uri = uriBuilder.build();
 
@@ -431,7 +436,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
 
     @SneakyThrows
     private <T> T performGetRequest(final URIBuilder uriBuilder,
-                                    final TypeReference<T> responseType) throws IOException {
+                                    final TypeReference<T> responseType) {
 
         URI uri = uriBuilder.build();
 
@@ -447,7 +452,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     @SneakyThrows
     private <T> WpPagedResponse<T> performPagingRequest(final URIBuilder uriBuilder,
                                                         final WpPagingQuery pageQuery,
-                                                        final TypeReference<List<T>> responseType) throws IOException {
+                                                        final TypeReference<List<T>> responseType) {
         URI uri = uriBuilder.build();
 
         HttpGet request = new HttpGet(uri);
@@ -480,7 +485,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     @SneakyThrows
     private <T> T performPostWithBody(final URIBuilder uriBuilder,
                                       final Object requestBody,
-                                      final TypeReference<T> responseType) throws IOException {
+                                      final TypeReference<T> responseType) {
 
         URI uri = uriBuilder.build();
 
@@ -504,7 +509,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
                                             final File file,
                                             final String fileName,
                                             final String mimeType,
-                                            final TypeReference<T> responseType) throws IOException {
+                                            final TypeReference<T> responseType) {
 
         URI uri = uriBuilder.build();
 
@@ -573,7 +578,8 @@ public class ApacheWpRestClient extends WpBaseRestClient {
                 .setDefaultRequestConfig(requestConfig);
     }
 
-    private static CloseableHttpClient buildAuthHttpClient(SslConfiguration sslConfiguration, TimeoutConfiguration timeoutConfiguration) {
+    private static CloseableHttpClient buildAuthHttpClient(final SslConfiguration sslConfiguration,
+                                                           final TimeoutConfiguration timeoutConfiguration) {
         final HttpClientBuilder authClientBuilder = HttpClients.custom();
 
         applySslConfigurationIfPresent(authClientBuilder, sslConfiguration);
@@ -597,6 +603,10 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return ofNullable(map).orElseGet(Collections::emptyMap);
     }
 
+    private static <T> List<T> emptyIfNull(final List<T> list) {
+        return Optional.ofNullable(list).orElseGet(Collections::emptyList);
+    }
+
     private static void failOnEmptyResponseBody(final ClassicHttpResponse response) throws IOException {
         if (response.getEntity() == null) {
             throw new IOException("Empty response body");
@@ -609,7 +619,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         }
     }
 
-    private static PoolingHttpClientConnectionManager getPoolingHttpClientConnectionManager(TimeoutConfiguration config) {
+    private static PoolingHttpClientConnectionManager getPoolingHttpClientConnectionManager(final TimeoutConfiguration config) {
         ConnectionConfig.Builder connBuilder = ConnectionConfig.custom();
 
         Optional.ofNullable(config.getConnectTimeout())
@@ -623,7 +633,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
                                                         .build();
     }
 
-    private static RequestConfig getRequestConfig(TimeoutConfiguration config) {
+    private static RequestConfig getRequestConfig(final TimeoutConfiguration config) {
         RequestConfig.Builder builder = RequestConfig.custom();
 
         Optional.ofNullable(config.getReadTimeout())

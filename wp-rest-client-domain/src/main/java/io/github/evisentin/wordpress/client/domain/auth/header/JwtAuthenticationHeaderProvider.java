@@ -8,6 +8,13 @@ import lombok.NonNull;
 
 import java.time.Instant;
 
+/**
+ * Creates JWT bearer {@code Authorization} headers.
+ *
+ * <p>This provider fetches a JWT token using a {@link JwtTokenClient}, caches it, and reuses it until it expires.
+ * Token
+ * refresh is synchronized to avoid duplicate token requests when accessed concurrently.</p>
+ */
 public final class JwtAuthenticationHeaderProvider
         implements AuthenticationHeaderProvider<WpJwtAuthenticationStrategy> {
 

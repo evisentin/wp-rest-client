@@ -6,6 +6,7 @@ import io.github.evisentin.wordpress.client.domain.auth.WpJwtAuthenticationStrat
 import io.github.evisentin.wordpress.client.domain.auth.jwt.JwtResponse;
 import io.github.evisentin.wordpress.client.domain.auth.jwt.JwtTokenClient;
 import lombok.NonNull;
+import lombok.val;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
@@ -24,13 +25,8 @@ public class ApacheJwtTokenClient implements JwtTokenClient {
     private final ObjectMapper mapper;
 
     public ApacheJwtTokenClient(final @NonNull CloseableHttpClient authHttpClient) {
-        this(authHttpClient, new ObjectMapper());
-    }
-
-    public ApacheJwtTokenClient(final @NonNull CloseableHttpClient authHttpClient,
-                                final @NonNull ObjectMapper mapper) {
         this.authHttpClient = authHttpClient;
-        this.mapper = mapper;
+        this.mapper = new ObjectMapper();
     }
 
     @Override
@@ -47,8 +43,8 @@ public class ApacheJwtTokenClient implements JwtTokenClient {
 
         try {
             return authHttpClient.execute(request, response -> {
-                int statusCode = response.getCode();
-                String body = response.getEntity() == null
+                val statusCode = response.getCode();
+                val body = response.getEntity() == null
                         ? ""
                         : EntityUtils.toString(response.getEntity());
 
