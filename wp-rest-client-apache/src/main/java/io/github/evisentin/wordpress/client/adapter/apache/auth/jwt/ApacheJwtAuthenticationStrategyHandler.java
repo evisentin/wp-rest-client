@@ -12,9 +12,7 @@ public class ApacheJwtAuthenticationStrategyHandler
     private final JwtAuthenticationHeaderProvider provider;
 
     public ApacheJwtAuthenticationStrategyHandler(final @NonNull CloseableHttpClient authHttpClient) {
-        this.provider = new JwtAuthenticationHeaderProvider(
-                new ApacheJwtTokenClient(authHttpClient)
-        );
+        this.provider = new JwtAuthenticationHeaderProvider(new ApacheJwtTokenClient(authHttpClient));
     }
 
     @Override

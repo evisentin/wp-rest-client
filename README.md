@@ -7,6 +7,10 @@
 ![Java](https://img.shields.io/badge/Java-21-green)
 ![Java](https://img.shields.io/badge/Java-25-red)
 
+
+
+## Table of contents
+
 <!-- toc -->
 
 - [Overview](#overview)
@@ -105,6 +109,10 @@ Internal testing and architecture modules are documented in [`docs/architecture.
 
 See [Supported REST APIs](doc/api.md)
 
+> **Compatibility note**
+> All supported REST APIs are covered by integration tests in the `wp-rest-client-test-integration` module and are
+> validated against WordPress versions 6.4 through 7.0.
+
 ## Usage
 
 ### Sample with Apache HttpClient 5
@@ -125,37 +133,33 @@ Import the right module
 List the posts
 
 ```java
-import io.github.evisentin.wordpress.client.adapter.apache.ApacheWpRestClient;
-import io.github.evisentin.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
+import io.github.evisentin.wordpress.client.adapter.apache.ApacheWpRestClientBuilder;
+import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
 import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
 import io.github.evisentin.wordpress.client.domain.model.WpPost;
 import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
 import io.github.evisentin.wordpress.client.domain.model.query.WpPostQuery;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.DRAFT;
 import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.PUBLISH;
 
-...
 // Initialize the client
-final WpBasicAuthenticationStrategy authenticationStrategy = new WpBasicAuthenticationStrategy("username", "password");
-final ApacheWpRestClient restClient = new ApacheWpRestClient(
-        "http://localhost:8080", // baseUrl
-        authenticationStrategy,
-        null, // ssl configuration
-        null // timeout configuration
-);
+final WpRestClient restClient =
+        ApacheWpRestClientBuilder.basicAuthentication(
+                "http://localhost:8080", // baseUrl
+                "admin", // userName
+                "admin" // password
+        ).build();
 
-final WpPagingQuery pageQuery = WpPagingQuery.of(1, 10);
-final WpPostQuery postQuery = WpPostQuery.builder()
-        .withStatuses(Set.of(DRAFT, PUBLISH))
-        .build();
+        final WpPagingQuery pageQuery = WpPagingQuery.of(1, 10);
+        final WpPostQuery postQuery = WpPostQuery.builder()
+                .withStatuses(Set.of(DRAFT, PUBLISH))
+                .build();
+        final WpPagedResponse<WpPost> response = restClient.listPosts(pageQuery, postQuery);
+        final List<WpPost> posts = response.getItems();
 
-final WpPagedResponse<WpPost> response = restClient.listPosts(pageQuery, postQuery);
-final List<WpPost> posts = response.getItems();
-...
 ```
 
 ### Sample with OKHTTP
@@ -176,37 +180,34 @@ Import the right module
 List the posts
 
 ```java
-import io.github.evisentin.wordpress.client.adapter.okhttp.OkHttpWpRestClient;
-import io.github.evisentin.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
+import io.github.evisentin.wordpress.client.adapter.okhttp.OkHttpWpRestClientBuilder;
+import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
 import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
 import io.github.evisentin.wordpress.client.domain.model.WpPost;
 import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
 import io.github.evisentin.wordpress.client.domain.model.query.WpPostQuery;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.DRAFT;
 import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.PUBLISH;
 
-...
+
 // Initialize the client
-final WpBasicAuthenticationStrategy authenticationStrategy = new WpBasicAuthenticationStrategy("username", "password");
-final OkHttpWpRestClient restClient = new OkHttpWpRestClient(
-        "http://localhost:8080", // baseUrl
-        authenticationStrategy,
-        null, // ssl configuration
-        null // timeout configuration
-);
+final WpRestClient restClient =
+        OkHttpWpRestClientBuilder.basicAuthentication(
+                "http://localhost:8080", // baseUrl
+                "admin", // userName
+                "admin" // password
+        ).build();
 
-final WpPagingQuery pageQuery = WpPagingQuery.of(1, 10);
-final WpPostQuery postQuery = WpPostQuery.builder()
-        .withStatuses(Set.of(DRAFT, PUBLISH))
-        .build();
+        final WpPagingQuery pageQuery = WpPagingQuery.of(1, 10);
+        final WpPostQuery postQuery = WpPostQuery.builder()
+                .withStatuses(Set.of(DRAFT, PUBLISH))
+                .build();
+        final WpPagedResponse<WpPost> response = restClient.listPosts(pageQuery, postQuery);
+        final List<WpPost> posts = response.getItems();
 
-final WpPagedResponse<WpPost> response = restClient.listPosts(pageQuery, postQuery);
-final List<WpPost> posts = response.getItems();
-...
 ```
 
 ## Documentation

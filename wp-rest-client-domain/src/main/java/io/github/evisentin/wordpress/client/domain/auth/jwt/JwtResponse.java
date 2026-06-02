@@ -6,6 +6,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+/**
+ * DTO representing the response returned by a JWT token endpoint.
+ *
+ * <p>Unknown JSON properties are ignored.</p>
+ */
 @Getter
 @Setter
 @NoArgsConstructor

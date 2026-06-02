@@ -19,7 +19,9 @@ public final class WpErrorInterceptor implements HttpResponseInterceptor {
     private static final ObjectMapper MAPPER = new ObjectMapper();
 
     @Override
-    public void process(HttpResponse response, EntityDetails entityDetails, HttpContext context)
+    public void process(final HttpResponse response,
+                        final EntityDetails entityDetails,
+                        final HttpContext context)
             throws HttpException, IOException {
 
         int statusCode = response.getCode();
@@ -48,11 +50,13 @@ public final class WpErrorInterceptor implements HttpResponseInterceptor {
         throw mapException(statusCode, wpError, rawBody);
     }
 
-    private static String buildBodySuffix(String rawBody) {
+    private static String buildBodySuffix(final String rawBody) {
         return isBlank(rawBody) ? "" : ", body=" + rawBody;
     }
 
-    private static RuntimeException mapException(int statusCode, WpError wpError, String rawBody) {
+    private static RuntimeException mapException(final int statusCode,
+                                                 final WpError wpError,
+                                                 final String rawBody) {
         return switch (statusCode) {
             case 400 -> new WpBadRequestException(wpError);
             case 401 -> new WpUnauthorizedException(wpError);
@@ -64,7 +68,7 @@ public final class WpErrorInterceptor implements HttpResponseInterceptor {
         };
     }
 
-    private static WpError parseWpError(String rawBody) {
+    private static WpError parseWpError(final String rawBody) {
         if (isBlank(rawBody)) return null;
 
         try {

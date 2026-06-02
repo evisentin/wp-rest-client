@@ -2,7 +2,6 @@ package io.github.evisentin.wordpress.client.adapter.apache;
 
 import io.github.evisentin.wordpress.client.contract.test.AbstractJwtAuthenticationWpRestClientContractTest;
 import io.github.evisentin.wordpress.client.domain.api.WpBaseRestClient;
-import io.github.evisentin.wordpress.client.domain.auth.WpJwtAuthenticationStrategy;
 import io.github.evisentin.wordpress.client.domain.configuration.SslConfiguration;
 
 import javax.net.ssl.HostnameVerifier;
@@ -14,9 +13,10 @@ class ApacheWpRestClientJwtAuthTest extends AbstractJwtAuthenticationWpRestClien
     @Override
     protected WpBaseRestClient client() {
         final String jwtTokenUrl = mockServerUrl() + "/wp-json/api/v1/token";
-        final WpJwtAuthenticationStrategy authenticationStrategy = new WpJwtAuthenticationStrategy("user", "password", jwtTokenUrl);
 
-        return new ApacheWpRestClient(mockServerUrl(), authenticationStrategy, insecure(), null);
+        return ApacheWpRestClientBuilder.jwtAuthentication(mockServerUrl(), "user", "password", jwtTokenUrl)
+                                        .withSslConfiguration(insecure())
+                                        .build();
     }
 
     private SslConfiguration insecure() {

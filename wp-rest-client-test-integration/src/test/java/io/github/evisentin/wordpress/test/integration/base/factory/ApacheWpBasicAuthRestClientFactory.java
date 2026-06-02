@@ -1,8 +1,7 @@
 package io.github.evisentin.wordpress.test.integration.base.factory;
 
-import io.github.evisentin.wordpress.client.adapter.apache.ApacheWpRestClient;
+import io.github.evisentin.wordpress.client.adapter.apache.ApacheWpRestClientBuilder;
 import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
-import io.github.evisentin.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
 import io.github.evisentin.wordpress.client.domain.configuration.SslConfiguration;
 import io.github.evisentin.wordpress.test.integration.BaseWordPressIntegrationTest;
 import io.github.evisentin.wordpress.test.integration.base.BasicAuthWordPressIntegrationTest;
@@ -76,11 +75,8 @@ public final class ApacheWpBasicAuthRestClientFactory implements WpBasicAuthRest
     public WpRestClient create(final @NonNull String baseUrl,
                                final @NonNull String username,
                                final @NonNull String password) {
-        return new ApacheWpRestClient(
-                baseUrl,
-                new WpBasicAuthenticationStrategy(username, password),
-                sslConfiguration,
-                null
-        );
+        return ApacheWpRestClientBuilder.basicAuthentication(baseUrl, username, password)
+                                        .withSslConfiguration(sslConfiguration)
+                                        .build();
     }
 }

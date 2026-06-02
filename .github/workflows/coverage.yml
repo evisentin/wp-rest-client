@@ -21,7 +21,7 @@ jobs:
           java-version: 21
 
       - name: Build and generate coverage
-        run: mvn -B clean verify -Pdeveloper
+        run: mvn -B clean verify -Plocal-tests
 
       - name: Publish coverage report
         uses: peaceiris/actions-gh-pages@v4
