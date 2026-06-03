@@ -20,7 +20,7 @@ class OkHttpWpRestClientBasicAuthTest extends AbstractBasicAuthenticationWpRestC
     @Test
     void constructorFailsOnInvalidSSLConfiguration() {
 
-        final String baseUrl = "http://localhost:8080";
+        final String baseUrl = mockServerUrl();
         final WpBasicAuthenticationStrategy authenticationStrategy = new WpBasicAuthenticationStrategy("user", "password");
 
         final SslConfiguration sslConfiguration = SslConfiguration.builder()
@@ -46,7 +46,7 @@ class OkHttpWpRestClientBasicAuthTest extends AbstractBasicAuthenticationWpRestC
     @Test
     void constructorWorksOnNoSSL() {
 
-        final String baseUrl = "http://localhost:8080";
+        final String baseUrl = mockServerUrl();
         final WpBasicAuthenticationStrategy authenticationStrategy = new WpBasicAuthenticationStrategy("user", "password");
 
         val client = new OkHttpWpRestClient(baseUrl, authenticationStrategy, null, null);
@@ -58,7 +58,7 @@ class OkHttpWpRestClientBasicAuthTest extends AbstractBasicAuthenticationWpRestC
     @SneakyThrows
     void constructorWorksWithSSLConfigurationAndNoHostNameVerifier() {
 
-        final String baseUrl = "http://localhost:8080";
+        final String baseUrl = mockServerUrl();
         final WpBasicAuthenticationStrategy authenticationStrategy = new WpBasicAuthenticationStrategy("user", "password");
 
         X509TrustManager trustManager = new TestX509TrustManager();
@@ -81,7 +81,7 @@ class OkHttpWpRestClientBasicAuthTest extends AbstractBasicAuthenticationWpRestC
     @SneakyThrows
     void constructorWorksWithSSLConfigurationHavingHostNameVerifier() {
 
-        final String baseUrl = "http://localhost:8080";
+        final String baseUrl = mockServerUrl();
         final WpBasicAuthenticationStrategy authenticationStrategy = new WpBasicAuthenticationStrategy("user", "password");
 
         X509TrustManager trustManager = new TestX509TrustManager();
