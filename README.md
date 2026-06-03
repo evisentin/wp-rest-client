@@ -21,6 +21,7 @@
 - [Modules](#modules)
 - [Supported REST APIs](#supported-rest-apis)
 - [Usage](#usage)
+  * [Endpoint Discovery](#endpoint-discovery)
   * [Sample with Apache HttpClient 5](#sample-with-apache-httpclient-5)
     + [Basic Authentication](#basic-authentication)
     + [JWT Authentication](#jwt-authentication)
@@ -38,6 +39,12 @@ A modular Java client for interacting with the WordPress REST API.
 
 WP REST Client provides a type-safe Java API for WordPress REST endpoints, with interchangeable HTTP client
 implementations.
+
+The client uses the WordPress REST
+API [discovery mechanism](https://developer.wordpress.org/rest-api/using-the-rest-api/discovery/) to automatically
+resolve the REST API root URL from the
+site base URL. Users typically only need to provide the WordPress site URL; the client discovers the API endpoint
+according to the WordPress REST API discovery specification.
 
 Currently available implementations:
 
@@ -117,6 +124,12 @@ See [Supported REST APIs](doc/api.md)
 
 ## Usage
 
+### Endpoint Discovery
+
+WP REST Client accepts a WordPress site URL rather than a REST API URL.
+The client automatically discovers the REST API root using the standard WordPress REST API discovery mechanism and then
+resolves all endpoint URLs from the discovered API index.
+
 ### Sample with Apache HttpClient 5
 
 Import the right module
@@ -165,6 +178,7 @@ final WpRestClient restClient =
         final List<WpPost> posts = response.getItems();
 
 ```
+
 #### JWT Authentication
 
 List the posts
