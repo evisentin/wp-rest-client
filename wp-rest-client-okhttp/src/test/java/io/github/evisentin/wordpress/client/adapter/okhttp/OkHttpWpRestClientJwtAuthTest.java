@@ -20,9 +20,9 @@ class OkHttpWpRestClientJwtAuthTest extends AbstractJwtAuthenticationWpRestClien
     @Test
     void constructorFailsOnInvalidSSLConfiguration() {
 
-        final String baseUrl = "http://localhost:8080";
-        final String jwtTokenUrl = "http://localhost:8080/wp-json/api/v1/token";
-        final WpJwtAuthenticationStrategy authenticationStrategy = new WpJwtAuthenticationStrategy("user", "password", jwtTokenUrl);
+        final String baseUrl = mockServerUrl();
+        final String jwtTokenEndPoint = "/api/v1/token";
+        final WpJwtAuthenticationStrategy authenticationStrategy = new WpJwtAuthenticationStrategy("user", "password", jwtTokenEndPoint);
 
         final SslConfiguration sslConfiguration = SslConfiguration.builder()
                                                                   .sslSocketFactory(null)
@@ -47,9 +47,9 @@ class OkHttpWpRestClientJwtAuthTest extends AbstractJwtAuthenticationWpRestClien
     @Test
     void constructorWorksOnNoSSL() {
 
-        final String baseUrl = "http://localhost:8080";
-        final String jwtTokenUrl = "http://localhost:8080/wp-json/api/v1/token";
-        final WpJwtAuthenticationStrategy authenticationStrategy = new WpJwtAuthenticationStrategy("user", "password", jwtTokenUrl);
+        final String baseUrl = mockServerUrl();
+        final String jwtTokenEndPoint = "/api/v1/token";
+        final WpJwtAuthenticationStrategy authenticationStrategy = new WpJwtAuthenticationStrategy("user", "password", jwtTokenEndPoint);
 
         val client = new OkHttpWpRestClient(baseUrl, authenticationStrategy, null, null);
 
@@ -60,9 +60,9 @@ class OkHttpWpRestClientJwtAuthTest extends AbstractJwtAuthenticationWpRestClien
     @SneakyThrows
     void constructorWorksWithSSLConfigurationAndNoHostNameVerifier() {
 
-        final String baseUrl = "http://localhost:8080";
-        final String jwtTokenUrl = "http://localhost:8080/wp-json/api/v1/token";
-        final WpJwtAuthenticationStrategy authenticationStrategy = new WpJwtAuthenticationStrategy("user", "password", jwtTokenUrl);
+        final String baseUrl = mockServerUrl();
+        final String jwtTokenEndPoint = "/api/v1/token";
+        final WpJwtAuthenticationStrategy authenticationStrategy = new WpJwtAuthenticationStrategy("user", "password", jwtTokenEndPoint);
 
         X509TrustManager trustManager = new TestX509TrustManager();
         SSLContext sslContext = SSLContext.getInstance("TLS");
@@ -84,9 +84,9 @@ class OkHttpWpRestClientJwtAuthTest extends AbstractJwtAuthenticationWpRestClien
     @SneakyThrows
     void constructorWorksWithSSLConfigurationHavingHostNameVerifier() {
 
-        final String baseUrl = "http://localhost:8080";
-        final String jwtTokenUrl = "http://localhost:8080/wp-json/api/v1/token";
-        final WpJwtAuthenticationStrategy authenticationStrategy = new WpJwtAuthenticationStrategy("user", "password", jwtTokenUrl);
+        final String baseUrl = mockServerUrl();
+        final String jwtTokenEndPoint = "/api/v1/token";
+        final WpJwtAuthenticationStrategy authenticationStrategy = new WpJwtAuthenticationStrategy("user", "password", jwtTokenEndPoint);
 
         X509TrustManager trustManager = new TestX509TrustManager();
         SSLContext sslContext = SSLContext.getInstance("TLS");
@@ -108,8 +108,8 @@ class OkHttpWpRestClientJwtAuthTest extends AbstractJwtAuthenticationWpRestClien
     @SneakyThrows
     protected WpBaseRestClient client() {
 
-        final String jwtTokenUrl = mockServerUrl() + "/wp-json/api/v1/token";
-        final WpJwtAuthenticationStrategy authenticationStrategy = new WpJwtAuthenticationStrategy("user", "password", jwtTokenUrl);
+        final String jwtTokenEndPoint = mockServerUrl() + "/wp-json/api/v1/token";
+        final WpJwtAuthenticationStrategy authenticationStrategy = new WpJwtAuthenticationStrategy("user", "password", jwtTokenEndPoint);
 
         return new OkHttpWpRestClient(mockServerUrl(), authenticationStrategy, testSSLConfiguration(), null);
     }

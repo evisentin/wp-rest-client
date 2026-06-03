@@ -1,0 +1,19 @@
+[
+    {
+        "httpRequest": {
+            "method": "HEAD",
+            "path": "/"
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "headers": {
+                "Link": [
+                    "<http://localhost:8080/wp-json/>; rel=\"https://api.w.org/\""
+                ],
+                "Content-Type": [
+                    "text/html; charset=UTF-8"
+                ]
+            }
+        }
+    }
+]

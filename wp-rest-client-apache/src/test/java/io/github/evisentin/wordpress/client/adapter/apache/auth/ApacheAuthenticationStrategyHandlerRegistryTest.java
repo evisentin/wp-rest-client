@@ -6,6 +6,7 @@ import io.github.evisentin.wordpress.client.domain.auth.WpAuthenticationStrategy
 import io.github.evisentin.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
 import io.github.evisentin.wordpress.client.domain.auth.WpJwtAuthenticationStrategy;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,7 @@ class ApacheAuthenticationStrategyHandlerRegistryTest implements WithAssertions 
 
     @BeforeEach
     void beforeEach() {
-        registry = new ApacheAuthenticationStrategyHandlerRegistry(httpClient);
+        registry = new ApacheAuthenticationStrategyHandlerRegistry(httpClient, "");
     }
 
     @Test
@@ -35,10 +36,14 @@ class ApacheAuthenticationStrategyHandlerRegistryTest implements WithAssertions 
     }
 
     @Test
-    void shouldRejectNullHttpClient() {
-        assertThatThrownBy(() -> new ApacheAuthenticationStrategyHandlerRegistry(null))
+    void shouldRejectNullParameters() {
+        assertThatThrownBy(() -> new ApacheAuthenticationStrategyHandlerRegistry(null, null))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("authHttpClient is marked non-null but is null");
+
+        assertThatThrownBy(() -> new ApacheAuthenticationStrategyHandlerRegistry(HttpClients.createDefault(), null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("apiUrl is marked non-null but is null");
     }
 
     @Test

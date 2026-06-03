@@ -17,9 +17,10 @@ public class AuthenticationInterceptor implements HttpRequestInterceptor {
     private final ApacheAuthenticationStrategyHandlerRegistry registry;
 
     public AuthenticationInterceptor(final @NonNull WpAuthenticationStrategy strategy,
-                                     final @NonNull CloseableHttpClient authHttpClient) {
+                                     final @NonNull CloseableHttpClient authHttpClient,
+                                     final @NonNull String apiUrl) {
         this.strategy = strategy;
-        registry = new ApacheAuthenticationStrategyHandlerRegistry(authHttpClient);
+        registry = new ApacheAuthenticationStrategyHandlerRegistry(authHttpClient, apiUrl);
     }
 
     @Override

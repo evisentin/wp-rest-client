@@ -15,11 +15,6 @@
   <description>WP REST Client implementation based on OKHTTP</description>
   <packaging>jar</packaging>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-  <properties>
-    <!-- we enable tests with profile 'local-tests' -->
-    <maven.test.skip>true</maven.test.skip>
-  </properties>
-  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <dependencies>
 
     <!-- [PROJECT MODULES] -->
@@ -55,6 +50,12 @@
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
+    </dependency>
+
+    <!-- [JAVA-JWT] -->
+    <dependency>
+      <groupId>com.auth0</groupId>
+      <artifactId>java-jwt</artifactId>
     </dependency>
 
     <!-- [OKHTTP] -->
@@ -130,9 +131,6 @@
   <profiles>
     <profile>
       <id>local-tests</id>
-      <properties>
-        <maven.test.skip>false</maven.test.skip>
-      </properties>
       <dependencies>
         <dependency>
           <groupId>io.github.evisentin</groupId>

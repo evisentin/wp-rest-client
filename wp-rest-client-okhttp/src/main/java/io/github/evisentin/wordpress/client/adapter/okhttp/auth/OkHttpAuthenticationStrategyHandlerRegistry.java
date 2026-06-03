@@ -13,9 +13,9 @@ public class OkHttpAuthenticationStrategyHandlerRegistry {
 
     private final Set<OkHttpAuthenticationStrategyHandler<?>> handlers = new HashSet<>();
 
-    public OkHttpAuthenticationStrategyHandlerRegistry(final @NonNull OkHttpClient authHttpClient) {
+    public OkHttpAuthenticationStrategyHandlerRegistry(final @NonNull OkHttpClient authHttpClient, final @NonNull String apiUrl) {
         handlers.add(new OkHttpBasicAuthenticationStrategyHandler());
-        handlers.add(new OkHttpJwtAuthenticationStrategyHandler(authHttpClient));
+        handlers.add(new OkHttpJwtAuthenticationStrategyHandler(authHttpClient, apiUrl));
     }
 
     public OkHttpAuthenticationStrategyHandler<?> getHandler(final @NonNull WpAuthenticationStrategy strategy) {

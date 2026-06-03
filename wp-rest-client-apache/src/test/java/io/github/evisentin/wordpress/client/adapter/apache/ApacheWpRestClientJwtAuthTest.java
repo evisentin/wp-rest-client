@@ -12,9 +12,8 @@ class ApacheWpRestClientJwtAuthTest extends AbstractJwtAuthenticationWpRestClien
 
     @Override
     protected WpBaseRestClient client() {
-        final String jwtTokenUrl = mockServerUrl() + "/wp-json/api/v1/token";
 
-        return ApacheWpRestClientBuilder.jwtAuthentication(mockServerUrl(), "user", "password", jwtTokenUrl)
+        return ApacheWpRestClientBuilder.jwtAuthentication(mockServerUrl(), "user", "password", "/api/v1/token")
                                         .withSslConfiguration(insecure())
                                         .build();
     }

@@ -12,8 +12,7 @@ import java.time.Instant;
  * Creates JWT bearer {@code Authorization} headers.
  *
  * <p>This provider fetches a JWT token using a {@link JwtTokenClient}, caches it, and reuses it until it expires.
- * Token
- * refresh is synchronized to avoid duplicate token requests when accessed concurrently.</p>
+ * Token refresh is synchronized to avoid duplicate token requests when accessed concurrently.</p>
  */
 public final class JwtAuthenticationHeaderProvider
         implements AuthenticationHeaderProvider<WpJwtAuthenticationStrategy> {
@@ -46,8 +45,8 @@ public final class JwtAuthenticationHeaderProvider
 
             JwtResponse response = tokenClient.fetchToken(strategy);
 
-            token = response.getJwtToken();
-            expiresAt = TokenUtils.resolveExpiration(response.getExpiresIn(), response.getIat());
+            token = response.getToken();
+            expiresAt = TokenUtils.resolveExpiration(token);
 
             return bearerToken();
         }
@@ -58,6 +57,6 @@ public final class JwtAuthenticationHeaderProvider
     }
 
     private boolean hasValidToken() {
-        return token != null && !TokenUtils.isExpired(expiresAt);
+        return (token != null) && !TokenUtils.isExpired(expiresAt);
     }
 }

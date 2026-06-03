@@ -1,10 +1,11 @@
 package io.github.evisentin.wordpress.client.adapter.okhttp;
 
+import io.github.evisentin.wordpress.client.contract.test.AbstractMockServerTest;
 import io.github.evisentin.wordpress.client.domain.configuration.SslConfiguration;
 import io.github.evisentin.wordpress.client.domain.configuration.TimeoutConfiguration;
 import lombok.SneakyThrows;
 import okhttp3.Interceptor;
-import org.assertj.core.api.WithAssertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.net.ssl.SSLContext;
@@ -15,12 +16,19 @@ import java.security.cert.X509Certificate;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
-class OkHttpWpRestClientBuilderTest implements WithAssertions {
+class OkHttpWpRestClientBuilderTest extends AbstractMockServerTest {
 
-    private static final String BASE_URL = "https://example.com";
     private static final String USERNAME = "admin";
     private static final String PASSWORD = "secret";
-    private static final String JWT_TOKEN_URL = "https://example.com/wp-json/jwt-auth/v1/token";
+
+    private String BASE_URL;
+    private String JWT_TOKEN_URL;
+
+    @BeforeEach
+    void beforeEach() {
+        BASE_URL = mockServerUrl();
+        JWT_TOKEN_URL = "/jwt-auth/v1/token";
+    }
 
     @Test
     void shouldAllowInterceptor() {
@@ -114,17 +122,17 @@ class OkHttpWpRestClientBuilderTest implements WithAssertions {
 
     @Test
     void shouldRejectNullBasicAuthenticationArguments() {
-        assertThatThrownBy(() ->
-                OkHttpWpRestClientBuilder.basicAuthentication(null, USERNAME, PASSWORD)
-        ).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> OkHttpWpRestClientBuilder.basicAuthentication(null, USERNAME, PASSWORD))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("baseUrl is marked non-null but is null");
 
-        assertThatThrownBy(() ->
-                OkHttpWpRestClientBuilder.basicAuthentication(BASE_URL, null, PASSWORD)
-        ).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> OkHttpWpRestClientBuilder.basicAuthentication(BASE_URL, null, PASSWORD))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("username is marked non-null but is null");
 
-        assertThatThrownBy(() ->
-                OkHttpWpRestClientBuilder.basicAuthentication(BASE_URL, USERNAME, null)
-        ).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> OkHttpWpRestClientBuilder.basicAuthentication(BASE_URL, USERNAME, null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("password is marked non-null but is null");
     }
 
     @Test
@@ -142,21 +150,21 @@ class OkHttpWpRestClientBuilderTest implements WithAssertions {
 
     @Test
     void shouldRejectNullJwtAuthenticationArguments() {
-        assertThatThrownBy(() ->
-                OkHttpWpRestClientBuilder.jwtAuthentication(null, USERNAME, PASSWORD, JWT_TOKEN_URL)
-        ).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> OkHttpWpRestClientBuilder.jwtAuthentication(null, USERNAME, PASSWORD, JWT_TOKEN_URL))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("baseUrl is marked non-null but is null");
 
-        assertThatThrownBy(() ->
-                OkHttpWpRestClientBuilder.jwtAuthentication(BASE_URL, null, PASSWORD, JWT_TOKEN_URL)
-        ).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> OkHttpWpRestClientBuilder.jwtAuthentication(BASE_URL, null, PASSWORD, JWT_TOKEN_URL))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("username is marked non-null but is null");
 
-        assertThatThrownBy(() ->
-                OkHttpWpRestClientBuilder.jwtAuthentication(BASE_URL, USERNAME, null, JWT_TOKEN_URL)
-        ).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> OkHttpWpRestClientBuilder.jwtAuthentication(BASE_URL, USERNAME, null, JWT_TOKEN_URL))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("password is marked non-null but is null");
 
-        assertThatThrownBy(() ->
-                OkHttpWpRestClientBuilder.jwtAuthentication(BASE_URL, USERNAME, PASSWORD, null)
-        ).isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> OkHttpWpRestClientBuilder.jwtAuthentication(BASE_URL, USERNAME, PASSWORD, null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("jwtTokenEndPoint is marked non-null but is null");
     }
 
     @Test

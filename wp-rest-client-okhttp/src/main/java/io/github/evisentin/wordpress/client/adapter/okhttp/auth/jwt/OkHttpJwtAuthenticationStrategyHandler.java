@@ -11,8 +11,8 @@ public class OkHttpJwtAuthenticationStrategyHandler
 
     private final JwtAuthenticationHeaderProvider provider;
 
-    public OkHttpJwtAuthenticationStrategyHandler(final @NonNull OkHttpClient authHttpClient) {
-        this.provider = new JwtAuthenticationHeaderProvider(new OkHttpJwtTokenClient(authHttpClient));
+    public OkHttpJwtAuthenticationStrategyHandler(final @NonNull OkHttpClient authHttpClient, final @NonNull String apiUrl) {
+        this.provider = new JwtAuthenticationHeaderProvider(new OkHttpJwtTokenClient(authHttpClient, apiUrl));
     }
 
     @Override

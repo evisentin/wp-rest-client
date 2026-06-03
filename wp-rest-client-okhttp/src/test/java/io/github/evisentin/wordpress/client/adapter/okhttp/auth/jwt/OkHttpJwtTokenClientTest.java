@@ -23,9 +23,13 @@ class OkHttpJwtTokenClientTest implements WithAssertions {
 
     @Test
     void constructorsFailOnNullParameter() {
-        assertThatThrownBy(() -> new OkHttpJwtTokenClient(null))
+        assertThatThrownBy(() -> new OkHttpJwtTokenClient(null, null))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("authHttpClient is marked non-null but is null");
+
+        assertThatThrownBy(() -> new OkHttpJwtTokenClient(new OkHttpClient(), null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("apiUrl is marked non-null but is null");
     }
 
     @Test
@@ -39,7 +43,7 @@ class OkHttpJwtTokenClientTest implements WithAssertions {
         server = new MockWebServer();
         server.start();
 
-        client = new OkHttpJwtTokenClient(new OkHttpClient());
+        client = new OkHttpJwtTokenClient(new OkHttpClient(), "");
     }
 
     @Test
@@ -71,10 +75,14 @@ class OkHttpJwtTokenClientTest implements WithAssertions {
     }
 
     @Test
-    void shouldRejectNullOkHttpClient() {
-        assertThatThrownBy(() -> new OkHttpJwtTokenClient(null))
+    void shouldRejectNullParameters() {
+        assertThatThrownBy(() -> new OkHttpJwtTokenClient(null, null))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("authHttpClient is marked non-null but is null");
+
+        assertThatThrownBy(() -> new OkHttpJwtTokenClient(new OkHttpClient(), null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("apiUrl is marked non-null but is null");
     }
 
     @Test
