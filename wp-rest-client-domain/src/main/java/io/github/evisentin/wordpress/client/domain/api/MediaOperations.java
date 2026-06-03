@@ -52,11 +52,11 @@ public interface MediaOperations {
      * Deletes a media item by its unique identifier.
      *
      * @param id
-     *         the ID of the media item to delete; must not be {@code null}
+     *         the ID of the media item to delete
      *
      * @return the media item deletion response
      */
-    WpMediaDeletionResponse deleteMedia(@NonNull Long id);
+    WpMediaDeletionResponse deleteMedia(long id);
 
     /**
      * Retrieves a media item by its unique identifier using the given context.
@@ -65,19 +65,19 @@ public interface MediaOperations {
      * {@link WpContext#VIEW}, {@link WpContext#EDIT}, or {@link WpContext#EMBED}.</p>
      *
      * @param id
-     *         the ID of the media item to retrieve; must not be {@code null}
+     *         the ID of the media item to retrieve
      * @param context
      *         the retrieval context; may be {@code null}, in which case {@link WpContext#VIEW} is used
      *
      * @return the matching {@link WpMedia}
      */
-    WpMedia getMedia(@NonNull Long id, WpContext context);
+    WpMedia getMedia(long id, WpContext context);
 
     /**
      * Retrieves a paginated list of media items using optional filtering and sorting criteria.
      *
-     * <p>The result set can be refined using {@link WpMediaQuery}, for example by filtering on parent,
-     * search term, include or exclude lists, or sort order.</p>
+     * <p>The result set can be refined using {@link WpMediaQuery}, for example by filtering on parent, search term,
+     * include or exclude lists, or sort order.</p>
      *
      * @param pageQuery
      *         the pagination settings, including page number and page size; must not be {@code null}
@@ -94,11 +94,11 @@ public interface MediaOperations {
      * <p>Updates a media item in WordPress using the provided request payload.</p>
      *
      * @param id
-     *         the ID of the media item to update; must not be {@code null}
+     *         the ID of the media item to update
      * @param updateRequest
      *         the category update request; must not be {@code null}
      *
      * @return the updated {@link WpMedia}
      */
-    WpMedia updateMedia(@NonNull Long id, @NonNull WpMediaUpdateRequest updateRequest);
+    WpMedia updateMedia(long id, @NonNull WpMediaUpdateRequest updateRequest);
 }

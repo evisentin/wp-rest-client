@@ -199,7 +199,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
     @Override
     @SneakyThrows
-    public WpCategoryDeletionResponse deleteCategory(final @NonNull Long id) {
+    public WpCategoryDeletionResponse deleteCategory(final long id) {
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/categories/${id}", Map.of(API_URL, apiUrl, "id", id));
 
         // For tags/terms, WordPress does not support trashing, and the REST API explicitly
@@ -211,7 +211,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
     @Override
     @SneakyThrows
-    public WpMediaDeletionResponse deleteMedia(final @NonNull Long id) {
+    public WpMediaDeletionResponse deleteMedia(final long id) {
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/media/${id}", Map.of(API_URL, apiUrl, "id", id));
 
         // For tags/terms, WordPress does not support trashing, and the REST API explicitly
@@ -223,7 +223,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
     @Override
     @SneakyThrows
-    public WpPostDeletionResponse deletePost(@NonNull Long id) {
+    public WpPostDeletionResponse deletePost(long id) {
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/posts/${id}", Map.of(API_URL, apiUrl, "id", id));
 
         builder.addQueryParameter(FORCE, Boolean.TRUE.toString());
@@ -233,7 +233,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
     @Override
     @SneakyThrows
-    public WpTagDeletionResponse deleteTag(final @NonNull Long id) {
+    public WpTagDeletionResponse deleteTag(final long id) {
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/tags/${id}",
                 Map.of(API_URL, apiUrl, "id", id));
 
@@ -246,7 +246,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
     @SneakyThrows
     @Override
-    public WpCategory getCategory(final @NonNull Long id, final WpContext context) {
+    public WpCategory getCategory(final long id, final WpContext context) {
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/categories/${id}", Map.of(API_URL, apiUrl, "id", id));
 
         builder.addQueryParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
@@ -256,7 +256,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
     @Override
     @SneakyThrows
-    public WpMedia getMedia(final @NonNull Long id, final WpContext context) {
+    public WpMedia getMedia(final long id, final WpContext context) {
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/media/${id}", Map.of(API_URL, apiUrl, "id", id));
 
         builder.addQueryParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
@@ -265,13 +265,13 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     }
 
     @Override
-    public WpPost getPost(final @NonNull Long id, final WpContext context) {
+    public WpPost getPost(final long id, final WpContext context) {
         return getPost(id, context, null);
     }
 
     @SneakyThrows
     @Override
-    public WpPost getPost(final @NonNull Long id, final WpContext context, final String password) {
+    public WpPost getPost(final long id, final WpContext context, final String password) {
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/posts/${id}", Map.of(API_URL, apiUrl, "id", id));
 
         builder.addQueryParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
@@ -284,7 +284,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
     @SneakyThrows
     @Override
-    public WpTag getTag(@NonNull final Long id, final WpContext context) {
+    public WpTag getTag(final long id, final WpContext context) {
 
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/tags/${id}", Map.of(API_URL, apiUrl, "id", id));
 
@@ -350,7 +350,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
     @Override
     @SneakyThrows
-    public WpPost trashPost(final @NonNull Long id) {
+    public WpPost trashPost(final long id) {
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/posts/${id}",
                 Map.of(API_URL, apiUrl, "id", id));
 
@@ -361,7 +361,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
     @Override
     @SneakyThrows
-    public WpCategory updateCategory(final @NonNull Long id,
+    public WpCategory updateCategory(final long id,
                                      final @NonNull WpCategoryCreateUpdateRequest updateRequest) {
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/categories/${id}", Map.of(API_URL, apiUrl, "id", id));
 
@@ -370,7 +370,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
     @Override
     @SneakyThrows
-    public WpMedia updateMedia(final @NonNull Long id,
+    public WpMedia updateMedia(final long id,
                                final @NonNull WpMediaUpdateRequest updateRequest) {
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/media/${id}", Map.of(API_URL, apiUrl, "id", id));
 
@@ -379,7 +379,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
     @Override
     @SneakyThrows
-    public WpPost updatePost(final @NonNull Long id,
+    public WpPost updatePost(final long id,
                              final @NonNull WpPostCreateUpdateRequest updateRequest) {
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/posts/${id}", Map.of(API_URL, apiUrl, "id", id));
 
@@ -388,7 +388,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
     @Override
     @SneakyThrows
-    public WpTag updateTag(final @NonNull Long id,
+    public WpTag updateTag(final long id,
                            final @NonNull WpTagCreateUpdateRequest updateRequest) {
 
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/tags/${id}", Map.of(API_URL, apiUrl, "id", id));

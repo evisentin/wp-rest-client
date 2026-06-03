@@ -211,7 +211,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
 
     @SneakyThrows
     @Override
-    public WpCategoryDeletionResponse deleteCategory(final @NonNull Long id) {
+    public WpCategoryDeletionResponse deleteCategory(final long id) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/categories/${id}", Map.of(API_URL, apiUrl, "id", id));
 
         // For tags/terms, WordPress does not support trashing, and the REST API explicitly
@@ -223,7 +223,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
 
     @Override
     @SneakyThrows
-    public WpMediaDeletionResponse deleteMedia(final @NonNull Long id) {
+    public WpMediaDeletionResponse deleteMedia(final long id) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/media/${id}", Map.of(API_URL, apiUrl, "id", id));
 
         // For tags/terms, WordPress does not support trashing, and the REST API explicitly
@@ -235,7 +235,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
 
     @SneakyThrows
     @Override
-    public WpPostDeletionResponse deletePost(final @NonNull Long id) {
+    public WpPostDeletionResponse deletePost(final long id) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/posts/${id}", Map.of(API_URL, apiUrl, "id", id));
 
         builder.addParameter(FORCE, Boolean.TRUE.toString());
@@ -245,7 +245,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
 
     @SneakyThrows
     @Override
-    public WpTagDeletionResponse deleteTag(final @NonNull Long id) {
+    public WpTagDeletionResponse deleteTag(final long id) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/tags/${id}", Map.of(API_URL, apiUrl, "id", id));
 
         // For tags/terms, WordPress does not support trashing, and the REST API explicitly
@@ -257,7 +257,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
 
     @SneakyThrows
     @Override
-    public WpCategory getCategory(final @NonNull Long id, final WpContext context) {
+    public WpCategory getCategory(final long id, final WpContext context) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/categories/${id}", Map.of(API_URL, apiUrl, "id", id));
         builder.addParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
 
@@ -266,7 +266,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
 
     @Override
     @SneakyThrows
-    public WpMedia getMedia(final @NonNull Long id, final WpContext context) {
+    public WpMedia getMedia(final long id, final WpContext context) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/media/${id}", Map.of(API_URL, apiUrl, "id", id));
         builder.addParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
 
@@ -275,13 +275,13 @@ public class ApacheWpRestClient extends WpBaseRestClient {
 
     @SneakyThrows
     @Override
-    public WpPost getPost(final @NonNull Long id, final WpContext context) {
+    public WpPost getPost(final long id, final WpContext context) {
         return getPost(id, context, null);
     }
 
     @SneakyThrows
     @Override
-    public WpPost getPost(final @NonNull Long id, final WpContext context, final String password) {
+    public WpPost getPost(final long id, final WpContext context, final String password) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/posts/${id}", Map.of(API_URL, apiUrl, "id", id));
         builder.addParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
         if (isNotBlank(password))
@@ -292,7 +292,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
 
     @SneakyThrows
     @Override
-    public WpTag getTag(final @NonNull Long id, final WpContext context) {
+    public WpTag getTag(final long id, final WpContext context) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/tags/${id}", Map.of(API_URL, apiUrl, "id", id));
         builder.addParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
 
@@ -357,7 +357,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
 
     @SneakyThrows
     @Override
-    public WpPost trashPost(final @NonNull Long id) {
+    public WpPost trashPost(final long id) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/posts/${id}", Map.of(API_URL, apiUrl, "id", id));
 
         builder.addParameter(FORCE, Boolean.FALSE.toString());
@@ -367,7 +367,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
 
     @SneakyThrows
     @Override
-    public WpCategory updateCategory(final @NonNull Long id,
+    public WpCategory updateCategory(final long id,
                                      final @NonNull WpCategoryCreateUpdateRequest updateRequest) {
 
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/categories/${id}", Map.of(API_URL, apiUrl, "id", id));
@@ -377,7 +377,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
 
     @Override
     @SneakyThrows
-    public WpMedia updateMedia(final @NonNull Long id,
+    public WpMedia updateMedia(final long id,
                                final @NonNull WpMediaUpdateRequest updateRequest) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/media/${id}", Map.of(API_URL, apiUrl, "id", id));
 
@@ -386,7 +386,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
 
     @SneakyThrows
     @Override
-    public WpPost updatePost(final @NonNull Long id,
+    public WpPost updatePost(final long id,
                              final @NonNull WpPostCreateUpdateRequest updateRequest) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/posts/${id}", Map.of(API_URL, apiUrl, "id", id));
 
@@ -395,7 +395,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
 
     @SneakyThrows
     @Override
-    public WpTag updateTag(final @NonNull Long id,
+    public WpTag updateTag(final long id,
                            final @NonNull WpTagCreateUpdateRequest updateRequest) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/tags/${id}", Map.of(API_URL, apiUrl, "id", id));
 

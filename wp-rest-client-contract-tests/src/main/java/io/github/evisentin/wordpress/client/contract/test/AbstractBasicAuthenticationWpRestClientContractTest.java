@@ -147,16 +147,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThrowsWpNotFound(() -> client.deleteMedia(9L));
         }
 
-        @DisplayName("'DELETE' fails on null ID")
-        @Test
-        void deleteFailsOnNullId() {
-
-            // WHEN/THEN
-            assertThatThrownBy(() -> client.deleteMedia(null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("id is marked non-null but is null");
-        }
-
         @DisplayName("'DELETE' fails on HTTP UNAUTHORIZED")
         @Test
         void deleteFailsOnUnauthorized() {
@@ -208,16 +198,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
             // WHEN/THEN
             assertThrowsWpNotFound(() -> client.getMedia(9L, null));
-        }
-
-        @DisplayName("'GET' fails on null ID")
-        @Test
-        void getFailsOnNullId() {
-
-            // WHEN/THEN
-            assertThatThrownBy(() -> client.getMedia(null, null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("id is marked non-null but is null");
         }
 
         @DisplayName("'GET' fails on HTTP UNAUTHORIZED")
@@ -416,16 +396,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
             // WHEN/THEN
             assertThrowsWpNotFound(() -> client.updateMedia(9L, updateRequest));
-        }
-
-        @DisplayName("'UPDATE' fails on null ID")
-        @Test
-        void updateFailsOnNullId() {
-
-            // WHEN/THEN
-            assertThatThrownBy(() -> client.updateMedia(null, null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("id is marked non-null but is null");
         }
 
         @DisplayName("'UPDATE' fails on null request")
@@ -630,16 +600,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThrowsWpNotFound(() -> client.deleteCategory(1005L));
         }
 
-        @DisplayName("'DELETE' fails on null ID")
-        @Test
-        void deleteFailsOnNullId() {
-
-            // WHEN/THEN
-            assertThatThrownBy(() -> client.deleteCategory(null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("id is marked non-null but is null");
-        }
-
         @DisplayName("'DELETE' fails on HTTP UNAUTHORIZED")
         @Test
         void deleteFailsOnUnauthorized() {
@@ -697,16 +657,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
             // WHEN/THEN
             assertThrowsWpNotFound(() -> client.getCategory(1005L, null));
-        }
-
-        @DisplayName("'GET' fails on null ID")
-        @Test
-        void getFailsOnNullId() {
-
-            // WHEN/THEN
-            assertThatThrownBy(() -> client.getCategory(null, null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("id is marked non-null but is null");
         }
 
         @DisplayName("'GET' fails on HTTP UNAUTHORIZED")
@@ -954,16 +904,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
             // WHEN/THEN
             assertThrowsWpNotFound(() -> client.updateCategory(2L, updateRequest));
-        }
-
-        @DisplayName("'UPDATE' fails on null ID")
-        @Test
-        void updateFailsOnNullId() {
-
-            // WHEN/THEN
-            assertThatThrownBy(() -> client.updateCategory(null, null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("id is marked non-null but is null");
         }
 
         @DisplayName("'UPDATE' fails on null request")
@@ -1232,16 +1172,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThrowsWpNotFound(() -> client.deletePost(1005L));
         }
 
-        @DisplayName("'DELETE' fails on null ID")
-        @Test
-        void deleteFailsOnNullId() {
-
-            // WHEN/THEN
-            assertThatThrownBy(() -> client.deletePost(null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("id is marked non-null but is null");
-        }
-
         @DisplayName("'DELETE' fails on HTTP UNAUTHORIZED")
         @Test
         void deleteFailsOnUnauthorized() {
@@ -1304,20 +1234,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
             // WHEN/THEN
             assertThrowsWpNotFound(() -> client.getPost(1005L, null));
-        }
-
-        @DisplayName("'GET' fails on null ID")
-        @Test
-        void getFailsOnNullId() {
-
-            // WHEN/THEN
-            assertThatThrownBy(() -> client.getPost(null, null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("id is marked non-null but is null");
-
-            assertThatThrownBy(() -> client.getPost(null, null, null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("id is marked non-null but is null");
         }
 
         @DisplayName("'GET' fails on HTTP UNAUTHORIZED")
@@ -1517,16 +1433,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThrowsWpNotFound(() -> client.trashPost(1005L));
         }
 
-        @DisplayName("'TRASH' fails on null ID")
-        @Test
-        void trashFailsOnNullId() {
-
-            // WHEN/THEN
-            assertThatThrownBy(() -> client.trashPost(null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("id is marked non-null but is null");
-        }
-
         @DisplayName("'TRASH' fails on HTTP UNAUTHORIZED")
         @Test
         void trashFailsOnUnauthorized() {
@@ -1618,16 +1524,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
             // WHEN/THEN
             assertThrowsWpNotFound(() -> client.updatePost(4L, updateRequest));
-        }
-
-        @DisplayName("'UPDATE' fails on null ID")
-        @Test
-        void updateFailsOnNullId() {
-
-            // WHEN/THEN
-            assertThatThrownBy(() -> client.updatePost(null, null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("id is marked non-null but is null");
         }
 
         @DisplayName("'UPDATE' fails on null request")
@@ -1852,16 +1748,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             assertThrowsWpNotFound(() -> client.deleteTag(1005L));
         }
 
-        @DisplayName("'DELETE' fails on null ID")
-        @Test
-        void deleteFailsOnNullId() {
-
-            // WHEN/THEN
-            assertThatThrownBy(() -> client.deleteTag(null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("id is marked non-null but is null");
-        }
-
         @DisplayName("'DELETE' fails on HTTP UNAUTHORIZED")
         @Test
         void deleteFailsOnUnauthorized() {
@@ -1918,16 +1804,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
             // WHEN/THEN
             assertThrowsWpNotFound(() -> client.getTag(1005L, null));
-        }
-
-        @DisplayName("'GET' fails on null ID")
-        @Test
-        void getFailsOnNullId() {
-
-            // WHEN/THEN
-            assertThatThrownBy(() -> client.getTag(null, null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("id is marked non-null but is null");
         }
 
         @DisplayName("'GET' fails on HTTP UNAUTHORIZED")
@@ -2158,16 +2034,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
             // WHEN/THEN
             assertThrowsWpNotFound(() -> client.updateTag(2L, updateRequest));
-        }
-
-        @DisplayName("'UPDATE' fails on null ID")
-        @Test
-        void updateFailsOnNullId() {
-
-            // WHEN/THEN
-            assertThatThrownBy(() -> client.updateTag(null, null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("id is marked non-null but is null");
         }
 
         @DisplayName("'UPDATE' fails on null request")
