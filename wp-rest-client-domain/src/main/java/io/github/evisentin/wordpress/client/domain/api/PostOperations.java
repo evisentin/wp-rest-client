@@ -18,8 +18,8 @@ import lombok.NonNull;
  * <p>Operations support standard WordPress REST API features such as pagination, filtering, retrieval contexts,
  * password-protected content, and partial querying.</p>
  *
- * <p>Implementations are expected to communicate with the
- * {@code /wp-json/wp/v2/posts} endpoint or compatible APIs.</p>
+ * <p>Implementations are expected to communicate with the {@code /wp-json/wp/v2/posts} endpoint or compatible
+ * APIs.</p>
  */
 public interface PostOperations {
     /**

@@ -1,0 +1,69 @@
+[
+    {
+        "httpRequest": {
+            "method": "GET",
+            "path": "/wp-json/wp/v2/types/wp_navigation",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ]
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "description": "Navigation menus that can be inserted into your site.",
+                    "hierarchical": false,
+                    "has_archive": false,
+                    "name": "Navigation Menus",
+                    "slug": "wp_navigation",
+                    "icon": null,
+                    "taxonomies": [],
+                    "rest_base": "navigation",
+                    "rest_namespace": "wp/v2",
+                    "template": [],
+                    "template_lock": false,
+                    "_links": {
+                        "collection": [
+                            {
+                                "href": "http://localhost:8080/wp-json/wp/v2/types"
+                            }
+                        ],
+                        "wp:items": [
+                            {
+                                "href": "http://localhost:8080/wp-json/wp/v2/navigation"
+                            }
+                        ],
+                        "curies": [
+                            {
+                                "name": "wp",
+                                "href": "https://api.w.org/{rel}",
+                                "templated": true
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+]

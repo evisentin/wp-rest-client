@@ -25,10 +25,14 @@ public enum WpTaxonomy implements WpHasValueEnum {
      */
     CATEGORY("category"),
 
+    NAV_MENU("nav_menu"),
+
     /**
      * Taxonomy representing post tags.
      */
-    POST_TAG("post_tag");
+    POST_TAG("post_tag"),
+
+    WP_PATTERN_CATEGORY("wp_pattern_category");
 
     /**
      * The API value associated with the taxonomy.

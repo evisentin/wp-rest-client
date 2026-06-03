@@ -161,213 +161,6 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
         return WpTagCreateUpdateRequest.builder();
     }
 
-    @DisplayName("Media APIs - Integration Tests")
-    @Nested
-    class MediaTests {
-
-        @DisplayName("'CREATE' works")
-        @Test
-        @SneakyThrows
-        void create__works() {
-
-            // GIVEN
-            wpCleanDefaultData();
-            InputStream is = getClass()
-                    .getClassLoader()
-                    .getResourceAsStream("files/sample.png");
-
-            Path tempFile = Files.createTempFile("sample", ".png");
-
-            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
-
-            File file = tempFile.toFile();
-
-            // WHEN
-            final WpMedia media = adminClient.createMedia(file, "sample.png", "image/png");
-            // THEN
-            WordPressAssertions.assertThat(media)
-                               .isNotNull()
-                               .hasNonZeroId()
-                               .hasSlugStartingWith("sample")
-                               .hasType("attachment")
-                               .hasAuthorId(1L)
-                               .hasCommentStatus(WpOpenClosed.OPEN)
-                               .hasPingStatus(WpOpenClosed.CLOSED)
-                               .hasMediaType(WpMediaType.IMAGE)
-                               .hasMimeType("image/png");
-        }
-
-        @DisplayName("'DELETE' fails on HTTP NOT FOUND")
-        @Test
-        void delete__fails_on_not_found() {
-
-            // GIVEN
-            wpCleanDefaultData();
-
-            // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.deleteMedia(1000L), "rest_post_invalid_id", "Invalid post ID.");
-        }
-
-        @DisplayName("'DELETE' works")
-        @Test
-        @SneakyThrows
-        void delete__works() {
-
-            // GIVEN
-            wpCleanDefaultData();
-            InputStream is = getClass()
-                    .getClassLoader()
-                    .getResourceAsStream("files/sample.png");
-
-            Path tempFile = Files.createTempFile("sample", ".png");
-
-            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
-
-            File file = tempFile.toFile();
-            final WpMedia existingMedia = adminClient.createMedia(file, "sample.png", "image/png");
-
-            // WHEN
-            final WpMediaDeletionResponse deletionResponse = adminClient.deleteMedia(existingMedia.getId());
-
-            // THEN
-            WordPressAssertions.assertThat(deletionResponse)
-                               .isNotNull()
-                               .isDeleted()
-                               .hasPreviousSatisfying(summary ->
-                                       summary.isNotNull()
-                                              .hasId(existingMedia.getId())
-                               );
-        }
-
-        @DisplayName("'GET' fails on HTTP NOT FOUND")
-        @Test
-        void get__fails_on_not_found() {
-
-            // GIVEN
-            wpCleanDefaultData();
-
-            // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.getMedia(10L, null), "rest_post_invalid_id", "Invalid post ID.");
-        }
-
-        @DisplayName("'GET' works with context")
-        @Test
-        @SneakyThrows
-        void get__works_with_context() {
-
-            // GIVEN
-            wpCleanDefaultData();
-            InputStream is = getClass()
-                    .getClassLoader()
-                    .getResourceAsStream("files/sample.png");
-
-            Path tempFile = Files.createTempFile("sample", ".png");
-
-            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
-
-            File file = tempFile.toFile();
-            final WpMedia existingMedia = adminClient.createMedia(file, "sample.png", "image/png");
-
-            // WHEN
-            final WpMedia media = adminClient.getMedia(existingMedia.getId(), WpContext.EDIT);
-
-            // THEN
-            WordPressAssertions.assertThat(media)
-                               .isNotNull();
-
-            assertThat(media).usingRecursiveComparison()
-                             .isEqualTo(existingMedia);
-        }
-
-        @DisplayName("'GET' works with no context")
-        @Test
-        @SneakyThrows
-        void get__works_with_no_context() {
-
-            // GIVEN
-            wpCleanDefaultData();
-            InputStream is = getClass()
-                    .getClassLoader()
-                    .getResourceAsStream("files/sample.png");
-
-            Path tempFile = Files.createTempFile("sample", ".png");
-
-            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
-
-            File file = tempFile.toFile();
-            final WpMedia existingMedia = adminClient.createMedia(file, "sample.png", "image/png");
-
-            // WHEN
-            final WpMedia media = adminClient.getMedia(existingMedia.getId(), null);
-
-            // THEN
-            WordPressAssertions.assertThat(media)
-                               .isNotNull();
-
-            // with context VIEW ( default if null ) some properties are set to null, we must adjust before comparison
-            existingMedia.getCaption().setRaw(null);
-            existingMedia.getDescription().setRaw(null);
-            existingMedia.getGuid().setRaw(null);
-            existingMedia.setGeneratedSlug(null);
-            existingMedia.setPermalinkTemplate(null);
-            existingMedia.getTitle().setRaw(null);
-
-            assertThat(media).usingRecursiveComparison()
-                             .isEqualTo(existingMedia);
-        }
-
-        @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
-        @Test
-        void update__fails_on_not_found() {
-
-            // GIVEN
-            wpCleanDefaultData();
-            Long nonExistingMediaId = 9L;
-
-            // WHEN/THEN
-            final WpMediaUpdateRequest updateRequest = WpMediaUpdateRequest.builder().build();
-            assertThrowsWpNotFound(() -> adminClient.updateMedia(nonExistingMediaId, updateRequest), "rest_post_invalid_id", "Invalid post ID.");
-        }
-
-        @DisplayName("'UPDATE' works")
-        @Test
-        @SneakyThrows
-        void update__works() {
-
-            // GIVEN
-            wpCleanDefaultData();
-
-            InputStream is = getClass()
-                    .getClassLoader()
-                    .getResourceAsStream("files/sample.png");
-
-            Path tempFile = Files.createTempFile("sample", ".png");
-
-            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
-
-            File file = tempFile.toFile();
-            final WpMedia existingMedia = adminClient.createMedia(file, "sample.png", "image/png");
-
-            // WHEN
-            final WpMediaUpdateRequest updateRequest =
-                    WpMediaUpdateRequest.builder()
-                                        .withTitle("Title updated")
-                                        .withDescription("Description updated")
-                                        .withSlug("Slug updated")
-                                        .build();
-
-            final WpMedia media = adminClient.updateMedia(existingMedia.getId(), updateRequest);
-
-            // THEN
-            WordPressAssertions.assertThat(media)
-                               .isNotNull()
-                               .hasId(existingMedia.getId())
-                               .hasDescriptionSatisfying(t -> t.hasRaw("Description updated"))
-                               .hasTitleSatisfying(t -> t.hasRaw("Title updated"))
-                               .hasSlug("slug-updated");
-        }
-    }
-
     @DisplayName("Category APIs - Integration Tests")
     @Nested
     class CategoryTests {
@@ -675,64 +468,40 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
         }
     }
 
-    @DisplayName("Tag APIs - Integration Tests")
+    @DisplayName("Media APIs - Integration Tests")
     @Nested
-    class TagTests {
-
-        private static final String TAG_1_NAME = "Tag #1";
-        private static final String TAG_1_DESCRIPTION = "My first tag";
-        private static final String TAG_1_SLUG = "tag-1";
-
-        private static final String TAG_2_NAME = "Tag #2";
-        private static final String TAG_2_DESCRIPTION = "My second tag";
-        private static final String TAG_2_SLUG = "tag-2";
-
-        @DisplayName("'CREATE' fails on duplicate")
-        @Test
-        void create__fails_on_parent_not_found() {
-
-            // GIVEN
-            wpCleanDefaultData();
-
-            // given a tag already exists
-            final Long existingTagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
-
-            // WHEN/THEN
-            final WpTagCreateUpdateRequest creationRequest =
-                    tagCreateUpdateRequest()
-                            .withName(TAG_1_NAME)
-                            .build();
-
-            assertThrowsWpBadRequest(() -> adminClient.createTag(creationRequest),
-                    "term_exists",
-                    "A term with the name provided already exists in this taxonomy.",
-                    Map.of("term_id", existingTagId.intValue()));
-        }
+    class MediaTests {
 
         @DisplayName("'CREATE' works")
         @Test
+        @SneakyThrows
         void create__works() {
 
             // GIVEN
             wpCleanDefaultData();
+            InputStream is = getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("files/sample.png");
+
+            Path tempFile = Files.createTempFile("sample", ".png");
+
+            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            File file = tempFile.toFile();
 
             // WHEN
-            final WpTag tag = adminClient.createTag(tagCreateUpdateRequest()
-                    .withName(TAG_1_NAME)
-                    .withDescription(TAG_1_DESCRIPTION)
-                    .withSlug(TAG_1_SLUG)
-                    .build());
-
+            final WpMedia media = adminClient.createMedia(file, "sample.png", "image/png");
             // THEN
-            WordPressAssertions.assertThat(tag)
+            WordPressAssertions.assertThat(media)
                                .isNotNull()
                                .hasNonZeroId()
-                               .hasName(TAG_1_NAME)
-                               .hasDescription(TAG_1_DESCRIPTION)
-                               .hasSlug(TAG_1_SLUG)
-                               .hasCount(0)
-                               .hasTaxonomy(WpTaxonomy.POST_TAG)
-                               .hasLink(linkForTag(TAG_1_SLUG));
+                               .hasSlugStartingWith("sample")
+                               .hasType("attachment")
+                               .hasAuthorId(1L)
+                               .hasCommentStatus(WpOpenClosed.OPEN)
+                               .hasPingStatus(WpOpenClosed.CLOSED)
+                               .hasMediaType(WpMediaType.IMAGE)
+                               .hasMimeType("image/png");
         }
 
         @DisplayName("'DELETE' fails on HTTP NOT FOUND")
@@ -743,19 +512,29 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             wpCleanDefaultData();
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.deleteTag(1000L), "rest_term_invalid", "Term does not exist.");
+            assertThrowsWpNotFound(() -> adminClient.deleteMedia(1000L), "rest_post_invalid_id", "Invalid post ID.");
         }
 
         @DisplayName("'DELETE' works")
         @Test
+        @SneakyThrows
         void delete__works() {
 
             // GIVEN
             wpCleanDefaultData();
-            final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+            InputStream is = getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("files/sample.png");
+
+            Path tempFile = Files.createTempFile("sample", ".png");
+
+            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            File file = tempFile.toFile();
+            final WpMedia existingMedia = adminClient.createMedia(file, "sample.png", "image/png");
 
             // WHEN
-            final WpTagDeletionResponse deletionResponse = adminClient.deleteTag(tagId);
+            final WpMediaDeletionResponse deletionResponse = adminClient.deleteMedia(existingMedia.getId());
 
             // THEN
             WordPressAssertions.assertThat(deletionResponse)
@@ -763,13 +542,8 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                .isDeleted()
                                .hasPreviousSatisfying(summary ->
                                        summary.isNotNull()
-                                              .hasId(tagId)
-                                              .hasCount(0)
-                                              .hasDescription(TAG_1_DESCRIPTION)
-                                              .hasName(TAG_1_NAME)
-                                              .hasSlug(TAG_1_SLUG)
-                                              .hasLink(linkForTag(TAG_1_SLUG))
-                                              .hasTaxonomy(POST_TAG));
+                                              .hasId(existingMedia.getId())
+                               );
         }
 
         @DisplayName("'GET' fails on HTTP NOT FOUND")
@@ -778,134 +552,75 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // GIVEN
             wpCleanDefaultData();
-            final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.getTag(tagId + 1000, null), "rest_term_invalid", "Term does not exist.");
+            assertThrowsWpNotFound(() -> adminClient.getMedia(10L, null), "rest_post_invalid_id", "Invalid post ID.");
         }
 
         @DisplayName("'GET' works with context")
         @Test
+        @SneakyThrows
         void get__works_with_context() {
 
             // GIVEN
             wpCleanDefaultData();
-            final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+            InputStream is = getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("files/sample.png");
+
+            Path tempFile = Files.createTempFile("sample", ".png");
+
+            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            File file = tempFile.toFile();
+            final WpMedia existingMedia = adminClient.createMedia(file, "sample.png", "image/png");
 
             // WHEN
-            final WpTag tag = adminClient.getTag(tagId, WpContext.EDIT);
+            final WpMedia media = adminClient.getMedia(existingMedia.getId(), WpContext.EDIT);
 
             // THEN
-            WordPressAssertions.assertThat(tag)
-                               .isNotNull()
-                               .hasId(tagId)
-                               .hasCount(0)
-                               .hasDescription(TAG_1_DESCRIPTION)
-                               .hasName(TAG_1_NAME)
-                               .hasSlug(TAG_1_SLUG)
-                               .hasTaxonomy(POST_TAG);
+            WordPressAssertions.assertThat(media)
+                               .isNotNull();
+
+            assertThat(media).usingRecursiveComparison()
+                             .isEqualTo(existingMedia);
         }
 
         @DisplayName("'GET' works with no context")
         @Test
+        @SneakyThrows
         void get__works_with_no_context() {
 
             // GIVEN
             wpCleanDefaultData();
-            final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+            InputStream is = getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("files/sample.png");
+
+            Path tempFile = Files.createTempFile("sample", ".png");
+
+            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            File file = tempFile.toFile();
+            final WpMedia existingMedia = adminClient.createMedia(file, "sample.png", "image/png");
 
             // WHEN
-            final WpTag tag = adminClient.getTag(tagId, null);
+            final WpMedia media = adminClient.getMedia(existingMedia.getId(), null);
 
             // THEN
-            WordPressAssertions.assertThat(tag)
-                               .isNotNull()
-                               .hasId(tagId)
-                               .hasCount(0)
-                               .hasDescription(TAG_1_DESCRIPTION)
-                               .hasName(TAG_1_NAME)
-                               .hasSlug(TAG_1_SLUG)
-                               .hasTaxonomy(POST_TAG);
-        }
+            WordPressAssertions.assertThat(media)
+                               .isNotNull();
 
-        @DisplayName("'LIST' works with just paging")
-        @Test
-        void list__works_with_just_paging() {
+            // with context VIEW ( default if null ) some properties are set to null, we must adjust before comparison
+            existingMedia.getCaption().setRaw(null);
+            existingMedia.getDescription().setRaw(null);
+            existingMedia.getGuid().setRaw(null);
+            existingMedia.setGeneratedSlug(null);
+            existingMedia.setPermalinkTemplate(null);
+            existingMedia.getTitle().setRaw(null);
 
-            // GIVEN
-            wpCleanDefaultData();
-
-            final Long cat1_id = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
-            final Long cat2_id = givenTagExists(TAG_2_NAME, TAG_2_DESCRIPTION, TAG_2_SLUG);
-
-            // WHEN
-            final WpPagedResponse<WpTag> response = adminClient.listTags(WpPagingQuery.of(1, 10), null);
-
-            // THEN
-            WordPressAssertions.assertThat(response)
-                               .isNotNull()
-                               .hasPageNumber(1)
-                               .hasItemsPerPage(10)
-                               .hasTotalPages(1)
-                               .hasTotalItems(2)
-                               .doesNotHaveNextPage();
-
-            assertThat(response.getItems())
-                    .isNotNull()
-                    .hasSize(2)
-                    .extracting(
-                            WpTag::getId,
-                            WpTag::getName,
-                            WpTag::getDescription,
-                            WpTag::getSlug,
-                            WpTag::getTaxonomy
-                    )
-                    .containsExactly(
-                            tuple(cat1_id, TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG, POST_TAG),
-                            tuple(cat2_id, TAG_2_NAME, TAG_2_DESCRIPTION, TAG_2_SLUG, POST_TAG)
-                    );
-        }
-
-        @DisplayName("'LIST' works with paging and query")
-        @Test
-        void list__works_with_paging_and_query() {
-
-            // GIVEN
-            wpCleanDefaultData();
-
-            final Long cat1_id = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
-            final Long cat2_id = givenTagExists(TAG_2_NAME, TAG_2_DESCRIPTION, TAG_2_SLUG);
-
-            // Filter just for tag #2
-            final WpTagQuery tagQuery = WpTagQuery.builder()
-                                                  .withSlug(TAG_2_SLUG)
-                                                  .build();
-
-            // WHEN
-            final WpPagedResponse<WpTag> response = adminClient.listTags(WpPagingQuery.of(1, 10), tagQuery);
-
-            // THEN
-            WordPressAssertions.assertThat(response)
-                               .isNotNull()
-                               .hasPageNumber(1)
-                               .hasItemsPerPage(10)
-                               .hasTotalPages(1)
-                               .hasTotalItems(1)
-                               .doesNotHaveNextPage();
-
-            assertThat(response.getItems())
-                    .isNotNull()
-                    .hasSize(1)
-                    .extracting(
-                            WpTag::getId,
-                            WpTag::getName,
-                            WpTag::getDescription,
-                            WpTag::getSlug,
-                            WpTag::getTaxonomy
-                    )
-                    .containsExactly(
-                            tuple(cat2_id, TAG_2_NAME, TAG_2_DESCRIPTION, TAG_2_SLUG, POST_TAG)
-                    );
+            assertThat(media).usingRecursiveComparison()
+                             .isEqualTo(existingMedia);
         }
 
         @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
@@ -914,45 +629,49 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // GIVEN
             wpCleanDefaultData();
-            Long nonExistingTagId = 1000L;
+            Long nonExistingMediaId = 9L;
 
             // WHEN/THEN
-            final WpTagCreateUpdateRequest updateRequest = tagCreateUpdateRequest().build();
-            assertThrowsWpNotFound(() -> adminClient.updateTag(nonExistingTagId, updateRequest), "rest_term_invalid", "Term does not exist.");
+            final WpMediaUpdateRequest updateRequest = WpMediaUpdateRequest.builder().build();
+            assertThrowsWpNotFound(() -> adminClient.updateMedia(nonExistingMediaId, updateRequest), "rest_post_invalid_id", "Invalid post ID.");
         }
 
         @DisplayName("'UPDATE' works")
         @Test
+        @SneakyThrows
         void update__works() {
 
             // GIVEN
             wpCleanDefaultData();
 
-            final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+            InputStream is = getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("files/sample.png");
+
+            Path tempFile = Files.createTempFile("sample", ".png");
+
+            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            File file = tempFile.toFile();
+            final WpMedia existingMedia = adminClient.createMedia(file, "sample.png", "image/png");
 
             // WHEN
-            final WpTagCreateUpdateRequest updateRequest =
-                    tagCreateUpdateRequest()
-                            .withName(TAG_1_NAME + " UPDATED")
-                            .withDescription(TAG_1_DESCRIPTION + " UPDATED")
-                            .withSlug(TAG_1_SLUG + " UPDATED")
-                            .build();
+            final WpMediaUpdateRequest updateRequest =
+                    WpMediaUpdateRequest.builder()
+                                        .withTitle("Title updated")
+                                        .withDescription("Description updated")
+                                        .withSlug("Slug updated")
+                                        .build();
 
-            final WpTag tag = adminClient.updateTag(tagId, updateRequest);
+            final WpMedia media = adminClient.updateMedia(existingMedia.getId(), updateRequest);
 
             // THEN
-            WordPressAssertions.assertThat(tag)
+            WordPressAssertions.assertThat(media)
                                .isNotNull()
-                               .hasId(tagId)
-                               .hasCount(0)
-                               .hasDescription(TAG_1_DESCRIPTION + " UPDATED")
-                               .hasName(TAG_1_NAME + " UPDATED")
-                               .hasSlug(toWordPressSlug(TAG_1_SLUG + " UPDATED"))
-                               .hasTaxonomy(POST_TAG);
-        }
-
-        private String linkForTag(final @NonNull String slug) {
-            return String.format("%s/tag/%s/", getHttpsBaseUrl(), slug);
+                               .hasId(existingMedia.getId())
+                               .hasDescriptionSatisfying(t -> t.hasRaw("Description updated"))
+                               .hasTitleSatisfying(t -> t.hasRaw("Title updated"))
+                               .hasSlug("slug-updated");
         }
     }
 
@@ -1500,6 +1219,318 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
         private static String toBlock(final @NonNull String text) {
             return String.format("<p>%s</p>\n", text);
+        }
+    }
+
+    @DisplayName("Post Types APIs - Integration Tests")
+    @Nested
+    class PostTypesTests {
+
+        @DisplayName("'LIST' works")
+        @Test
+        void list__works_with_just_paging() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN
+            final Map<String, WpPostType> response = adminClient.getPostTypes();
+
+            // THEN
+            assertThat(response)
+                    .containsOnlyKeys(
+                            "post",
+                            "page",
+                            "attachment",
+                            "nav_menu_item",
+                            "wp_block",
+                            "wp_template",
+                            "wp_template_part",
+                            "wp_global_styles",
+                            "wp_navigation",
+                            "wp_font_family",
+                            "wp_font_face");
+        }
+    }
+
+    @DisplayName("Tag APIs - Integration Tests")
+    @Nested
+    class TagTests {
+
+        private static final String TAG_1_NAME = "Tag #1";
+        private static final String TAG_1_DESCRIPTION = "My first tag";
+        private static final String TAG_1_SLUG = "tag-1";
+
+        private static final String TAG_2_NAME = "Tag #2";
+        private static final String TAG_2_DESCRIPTION = "My second tag";
+        private static final String TAG_2_SLUG = "tag-2";
+
+        @DisplayName("'CREATE' fails on duplicate")
+        @Test
+        void create__fails_on_parent_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // given a tag already exists
+            final Long existingTagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+
+            // WHEN/THEN
+            final WpTagCreateUpdateRequest creationRequest =
+                    tagCreateUpdateRequest()
+                            .withName(TAG_1_NAME)
+                            .build();
+
+            assertThrowsWpBadRequest(() -> adminClient.createTag(creationRequest),
+                    "term_exists",
+                    "A term with the name provided already exists in this taxonomy.",
+                    Map.of("term_id", existingTagId.intValue()));
+        }
+
+        @DisplayName("'CREATE' works")
+        @Test
+        void create__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN
+            final WpTag tag = adminClient.createTag(tagCreateUpdateRequest()
+                    .withName(TAG_1_NAME)
+                    .withDescription(TAG_1_DESCRIPTION)
+                    .withSlug(TAG_1_SLUG)
+                    .build());
+
+            // THEN
+            WordPressAssertions.assertThat(tag)
+                               .isNotNull()
+                               .hasNonZeroId()
+                               .hasName(TAG_1_NAME)
+                               .hasDescription(TAG_1_DESCRIPTION)
+                               .hasSlug(TAG_1_SLUG)
+                               .hasCount(0)
+                               .hasTaxonomy(WpTaxonomy.POST_TAG)
+                               .hasLink(linkForTag(TAG_1_SLUG));
+        }
+
+        @DisplayName("'DELETE' fails on HTTP NOT FOUND")
+        @Test
+        void delete__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.deleteTag(1000L), "rest_term_invalid", "Term does not exist.");
+        }
+
+        @DisplayName("'DELETE' works")
+        @Test
+        void delete__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+
+            // WHEN
+            final WpTagDeletionResponse deletionResponse = adminClient.deleteTag(tagId);
+
+            // THEN
+            WordPressAssertions.assertThat(deletionResponse)
+                               .isNotNull()
+                               .isDeleted()
+                               .hasPreviousSatisfying(summary ->
+                                       summary.isNotNull()
+                                              .hasId(tagId)
+                                              .hasCount(0)
+                                              .hasDescription(TAG_1_DESCRIPTION)
+                                              .hasName(TAG_1_NAME)
+                                              .hasSlug(TAG_1_SLUG)
+                                              .hasLink(linkForTag(TAG_1_SLUG))
+                                              .hasTaxonomy(POST_TAG));
+        }
+
+        @DisplayName("'GET' fails on HTTP NOT FOUND")
+        @Test
+        void get__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.getTag(tagId + 1000, null), "rest_term_invalid", "Term does not exist.");
+        }
+
+        @DisplayName("'GET' works with context")
+        @Test
+        void get__works_with_context() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+
+            // WHEN
+            final WpTag tag = adminClient.getTag(tagId, WpContext.EDIT);
+
+            // THEN
+            WordPressAssertions.assertThat(tag)
+                               .isNotNull()
+                               .hasId(tagId)
+                               .hasCount(0)
+                               .hasDescription(TAG_1_DESCRIPTION)
+                               .hasName(TAG_1_NAME)
+                               .hasSlug(TAG_1_SLUG)
+                               .hasTaxonomy(POST_TAG);
+        }
+
+        @DisplayName("'GET' works with no context")
+        @Test
+        void get__works_with_no_context() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+
+            // WHEN
+            final WpTag tag = adminClient.getTag(tagId, null);
+
+            // THEN
+            WordPressAssertions.assertThat(tag)
+                               .isNotNull()
+                               .hasId(tagId)
+                               .hasCount(0)
+                               .hasDescription(TAG_1_DESCRIPTION)
+                               .hasName(TAG_1_NAME)
+                               .hasSlug(TAG_1_SLUG)
+                               .hasTaxonomy(POST_TAG);
+        }
+
+        @DisplayName("'LIST' works with just paging")
+        @Test
+        void list__works_with_just_paging() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            final Long cat1_id = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+            final Long cat2_id = givenTagExists(TAG_2_NAME, TAG_2_DESCRIPTION, TAG_2_SLUG);
+
+            // WHEN
+            final WpPagedResponse<WpTag> response = adminClient.listTags(WpPagingQuery.of(1, 10), null);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(2)
+                               .doesNotHaveNextPage();
+
+            assertThat(response.getItems())
+                    .isNotNull()
+                    .hasSize(2)
+                    .extracting(
+                            WpTag::getId,
+                            WpTag::getName,
+                            WpTag::getDescription,
+                            WpTag::getSlug,
+                            WpTag::getTaxonomy
+                    )
+                    .containsExactly(
+                            tuple(cat1_id, TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG, POST_TAG),
+                            tuple(cat2_id, TAG_2_NAME, TAG_2_DESCRIPTION, TAG_2_SLUG, POST_TAG)
+                    );
+        }
+
+        @DisplayName("'LIST' works with paging and query")
+        @Test
+        void list__works_with_paging_and_query() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            final Long cat1_id = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+            final Long cat2_id = givenTagExists(TAG_2_NAME, TAG_2_DESCRIPTION, TAG_2_SLUG);
+
+            // Filter just for tag #2
+            final WpTagQuery tagQuery = WpTagQuery.builder()
+                                                  .withSlug(TAG_2_SLUG)
+                                                  .build();
+
+            // WHEN
+            final WpPagedResponse<WpTag> response = adminClient.listTags(WpPagingQuery.of(1, 10), tagQuery);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(1)
+                               .doesNotHaveNextPage();
+
+            assertThat(response.getItems())
+                    .isNotNull()
+                    .hasSize(1)
+                    .extracting(
+                            WpTag::getId,
+                            WpTag::getName,
+                            WpTag::getDescription,
+                            WpTag::getSlug,
+                            WpTag::getTaxonomy
+                    )
+                    .containsExactly(
+                            tuple(cat2_id, TAG_2_NAME, TAG_2_DESCRIPTION, TAG_2_SLUG, POST_TAG)
+                    );
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
+        @Test
+        void update__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            Long nonExistingTagId = 1000L;
+
+            // WHEN/THEN
+            final WpTagCreateUpdateRequest updateRequest = tagCreateUpdateRequest().build();
+            assertThrowsWpNotFound(() -> adminClient.updateTag(nonExistingTagId, updateRequest), "rest_term_invalid", "Term does not exist.");
+        }
+
+        @DisplayName("'UPDATE' works")
+        @Test
+        void update__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
+
+            // WHEN
+            final WpTagCreateUpdateRequest updateRequest =
+                    tagCreateUpdateRequest()
+                            .withName(TAG_1_NAME + " UPDATED")
+                            .withDescription(TAG_1_DESCRIPTION + " UPDATED")
+                            .withSlug(TAG_1_SLUG + " UPDATED")
+                            .build();
+
+            final WpTag tag = adminClient.updateTag(tagId, updateRequest);
+
+            // THEN
+            WordPressAssertions.assertThat(tag)
+                               .isNotNull()
+                               .hasId(tagId)
+                               .hasCount(0)
+                               .hasDescription(TAG_1_DESCRIPTION + " UPDATED")
+                               .hasName(TAG_1_NAME + " UPDATED")
+                               .hasSlug(toWordPressSlug(TAG_1_SLUG + " UPDATED"))
+                               .hasTaxonomy(POST_TAG);
+        }
+
+        private String linkForTag(final @NonNull String slug) {
+            return String.format("%s/tag/%s/", getHttpsBaseUrl(), slug);
         }
     }
 }

@@ -15,11 +15,12 @@ package io.github.evisentin.wordpress.client.domain.api;
  *     <li>{@link CategoryOperations} for category management</li>
  *     <li>{@link MediaOperations} for media upload and management</li>
  *     <li>{@link PostOperations} for post management</li>
+ *     <li>{@link PostTypesOperations} for post types management</li>
  *     <li>{@link TagOperations} for tag management</li>
  * </ul>
  *
  * <p>Implementations are expected to communicate with the standard WordPress REST API endpoints under
  * {@code /wp-json/wp/v2} or compatible APIs.</p>
  */
-public interface WpRestClient extends CategoryOperations, MediaOperations, PostOperations, TagOperations {
+public interface WpRestClient extends CategoryOperations, MediaOperations, PostOperations, PostTypesOperations, TagOperations {
 }

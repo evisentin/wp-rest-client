@@ -282,6 +282,25 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         return performGetRequest(builder, WP_POST_TYPE);
     }
 
+    @Override
+    @SneakyThrows
+    public WpPostType getPostType(final @NonNull String name) {
+        if (isBlank(name))
+            throw new IllegalArgumentException("name cannot be blank");
+
+        final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/types/${name}", Map.of(API_URL, apiUrl, "name", name));
+
+        return performGetRequest(builder, WP_POST_TYPE_TYPEREFERENCE);
+    }
+
+    @Override
+    @SneakyThrows
+    public Map<String, WpPostType> getPostTypes() {
+        final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/types", Map.of(API_URL, apiUrl));
+
+        return performGetRequest(builder, WP_POST_TYPES_MAP_TYPEREFERENCE);
+    }
+
     @SneakyThrows
     @Override
     public WpTag getTag(final long id, final WpContext context) {
