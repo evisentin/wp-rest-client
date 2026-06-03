@@ -8,6 +8,7 @@
 
 - [Tested WordPress Versions](#tested-wordpress-versions)
   * [Posts](#posts)
+  * [Post Types](#post-types)
   * [Pages](#pages)
   * [Media](#media)
   * [Categories](#categories)
@@ -54,7 +55,7 @@ module and are continuously validated against the following WordPress versions:
 | Users          |                    `/users` |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Usually requires authentication.   |
 | Search         |                   `/search` |  ⬜   |  N/A   |  N/A   |  N/A   | Search across public content.      |
 | Taxonomies     |               `/taxonomies` |  ⬜   |  N/A   |  N/A   |  N/A   | Taxonomy metadata.                 |
-| Post Types     |                    `/types` |  ⬜   |  N/A   |  N/A   |  N/A   | Registered post type metadata.     |
+| Post Types     |                    `/types` |  ✅   |  N/A   |  N/A   |  N/A   | Registered post type metadata.     |
 | Statuses       |                 `/statuses` |  ⬜   |  N/A   |  N/A   |  N/A   | Registered post statuses.          |
 | Settings       |                 `/settings` |  ⬜   |  N/A   |   ⬜    |  N/A   | Requires elevated permissions.     |
 
@@ -65,6 +66,13 @@ Legend:
 - N/A not applicable
 
 ### Posts
+
+| Endpoint                  | Description     | Status |
+|---------------------------|-----------------|--------|
+| `GET /wp/v2/types`        | List Post Types | ✅      |
+| `GET /wp/v2/types/<name>` | Get Post Type   | ✅      |
+
+### Post Types
 
 | Endpoint                   | Description     | Status |
 |----------------------------|-----------------|--------|

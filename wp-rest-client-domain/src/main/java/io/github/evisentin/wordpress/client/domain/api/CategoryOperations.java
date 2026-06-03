@@ -38,11 +38,11 @@ public interface CategoryOperations {
      * Deletes a category by its unique identifier.
      *
      * @param id
-     *         the ID of the category to delete; must not be {@code null}
+     *         the ID of the category to delete
      *
      * @return the category deletion response
      */
-    WpCategoryDeletionResponse deleteCategory(@NonNull Long id);
+    WpCategoryDeletionResponse deleteCategory(long id);
 
     /**
      * Retrieves a category by its unique identifier using the given context.
@@ -51,19 +51,19 @@ public interface CategoryOperations {
      * {@link WpContext#VIEW}, {@link WpContext#EDIT}, or {@link WpContext#EMBED}.</p>
      *
      * @param id
-     *         the ID of the category to retrieve; must not be {@code null}
+     *         the ID of the category to retrieve
      * @param context
      *         the retrieval context; may be {@code null}, in which case {@link WpContext#VIEW} is used
      *
      * @return the matching {@link WpCategory}
      */
-    WpCategory getCategory(@NonNull Long id, WpContext context);
+    WpCategory getCategory(long id, WpContext context);
 
     /**
      * Retrieves a paginated list of categories using optional filtering and sorting criteria.
      *
-     * <p>The result set can be refined using {@link WpCategoryQuery}, for example by filtering on parent,
-     * search term, include or exclude lists, or sort order.</p>
+     * <p>The result set can be refined using {@link WpCategoryQuery}, for example by filtering on parent, search term,
+     * include or exclude lists, or sort order.</p>
      *
      * @param pageQuery
      *         the pagination settings, including page number and page size; must not be {@code null}
@@ -80,11 +80,11 @@ public interface CategoryOperations {
      * <p>Updates a category in WordPress using the provided request payload.</p>
      *
      * @param id
-     *         the ID of the category to update; must not be {@code null}
+     *         the ID of the category to update
      * @param updateRequest
      *         the category update request; must not be {@code null}
      *
      * @return the updated {@link WpCategory}
      */
-    WpCategory updateCategory(@NonNull Long id, @NonNull WpCategoryCreateUpdateRequest updateRequest);
+    WpCategory updateCategory(long id, @NonNull WpCategoryCreateUpdateRequest updateRequest);
 }
