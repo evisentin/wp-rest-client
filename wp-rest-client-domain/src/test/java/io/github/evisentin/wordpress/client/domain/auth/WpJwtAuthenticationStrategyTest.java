@@ -9,18 +9,16 @@ class WpJwtAuthenticationStrategyTest implements WithAssertions {
 
     @ParameterizedTest
     @ValueSource(strings = {"", " ", "   "})
-    void shouldRejectBlankJwtTokenUrl(String jwtTokenUrl) {
-        assertThatThrownBy(() ->
-                new WpJwtAuthenticationStrategy("user", "password", jwtTokenUrl))
+    void shouldRejectBlankJwtTokenEndPoint(String jwtTokenEndPoint) {
+        assertThatThrownBy(() -> new WpJwtAuthenticationStrategy("user", "password", jwtTokenEndPoint))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("jwtTokenUrl must not be blank");
+                .hasMessage("jwtTokenEndPoint must not be blank");
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"", " ", "   "})
     void shouldRejectBlankPassword(String password) {
-        assertThatThrownBy(() ->
-                new WpJwtAuthenticationStrategy("user", password, "https://example.com"))
+        assertThatThrownBy(() -> new WpJwtAuthenticationStrategy("user", password, "https://example.com"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("password must not be blank");
     }
@@ -28,33 +26,32 @@ class WpJwtAuthenticationStrategyTest implements WithAssertions {
     @ParameterizedTest
     @ValueSource(strings = {"", " ", "   "})
     void shouldRejectBlankUsername(String username) {
-        assertThatThrownBy(() ->
-                new WpJwtAuthenticationStrategy(username, "password", "https://example.com"))
+        assertThatThrownBy(() -> new WpJwtAuthenticationStrategy(username, "password", "https://example.com"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("username must not be blank");
     }
 
     @ParameterizedTest
     @NullSource
-    void shouldRejectNullJwtTokenUrl(String jwtTokenUrl) {
-        assertThatThrownBy(() ->
-                new WpJwtAuthenticationStrategy("user", "password", jwtTokenUrl))
-                .isInstanceOf(NullPointerException.class);
+    void shouldRejectNullJwtTokenEndPoint(String jwtTokenEndPoint) {
+        assertThatThrownBy(() -> new WpJwtAuthenticationStrategy("user", "password", jwtTokenEndPoint))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("jwtTokenEndPoint is marked non-null but is null");
     }
 
     @ParameterizedTest
     @NullSource
     void shouldRejectNullPassword(String password) {
-        assertThatThrownBy(() ->
-                new WpJwtAuthenticationStrategy("user", password, "https://example.com"))
-                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> new WpJwtAuthenticationStrategy("user", password, "https://example.com"))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("password is marked non-null but is null");
     }
 
     @ParameterizedTest
     @NullSource
     void shouldRejectNullUsername(String username) {
-        assertThatThrownBy(() ->
-                new WpJwtAuthenticationStrategy(username, "password", "https://example.com"))
-                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> new WpJwtAuthenticationStrategy(username, "password", "https://example.com"))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("username is marked non-null but is null");
     }
 }

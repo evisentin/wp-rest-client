@@ -27,7 +27,7 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  * ApacheWpRestClient client =
  *     ApacheWpRestClientBuilder
  *         .basicAuthentication(
- *             "https://my-wordpress-site.com",
+ *             "https://my-wordpress-site.com", // this must be the ROOT url, the client will find the API-URL via discovery
  *             "user",
  *             "password"
  *         )
@@ -41,10 +41,10 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  * ApacheWpRestClient client =
  *     ApacheWpRestClientBuilder
  *         .jwtAuthentication(
- *             "https://my-wordpress-site.com",
+ *             "https://my-wordpress-site.com", // this must be the ROOT url, the client will find the API-URL via discovery
  *             "user",
  *             "password",
- *             "https://my-wordpress-site.com/wp-json/jwt-auth/v1/token"
+ *             "/jwt-auth/v1/token" // ths must be relative to the API-URL
  *         )
  *         .build();
  * }</pre>
@@ -183,15 +183,15 @@ public final class ApacheWpRestClientBuilder {
      *         Username used to obtain JWT tokens.
      * @param password
      *         Password used to obtain JWT tokens.
-     * @param jwtTokenUrl
-     *         Endpoint used to retrieve JWT tokens.
+     * @param jwtTokenEndPoint
+     *         endpoint for the JWT token, relative to API-URL; must not be blank
      *
      * @return A new builder instance.
      */
     public static ApacheWpRestClientBuilder jwtAuthentication(final @NonNull String baseUrl,
                                                               final @NonNull String username,
                                                               final @NonNull String password,
-                                                              final @NonNull String jwtTokenUrl) {
-        return new ApacheWpRestClientBuilder(baseUrl, new WpJwtAuthenticationStrategy(username, password, jwtTokenUrl));
+                                                              final @NonNull String jwtTokenEndPoint) {
+        return new ApacheWpRestClientBuilder(baseUrl, new WpJwtAuthenticationStrategy(username, password, jwtTokenEndPoint));
     }
 }

@@ -13,9 +13,9 @@ public class ApacheAuthenticationStrategyHandlerRegistry {
 
     private final Set<ApacheAuthenticationStrategyHandler<?>> handlers = new HashSet<>();
 
-    public ApacheAuthenticationStrategyHandlerRegistry(final @NonNull CloseableHttpClient authHttpClient) {
+    public ApacheAuthenticationStrategyHandlerRegistry(final @NonNull CloseableHttpClient authHttpClient, final @NonNull String apiUrl) {
         handlers.add(new ApacheBasicAuthenticationStrategyHandler());
-        handlers.add(new ApacheJwtAuthenticationStrategyHandler(authHttpClient));
+        handlers.add(new ApacheJwtAuthenticationStrategyHandler(authHttpClient, apiUrl));
     }
 
     public ApacheAuthenticationStrategyHandler<?> getHandler(final @NonNull WpAuthenticationStrategy strategy) {

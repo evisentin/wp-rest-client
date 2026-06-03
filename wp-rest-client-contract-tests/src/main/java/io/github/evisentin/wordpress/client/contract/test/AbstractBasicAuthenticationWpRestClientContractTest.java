@@ -47,45 +47,6 @@ import static java.util.Collections.emptySet;
 public abstract class AbstractBasicAuthenticationWpRestClientContractTest extends AbstractMockServerTest {
     private WpRestClient client;
 
-    @DisplayName("'LIST' works with paging and query")
-    @Test
-    void listWorksWithPagingAndQuery() {
-
-        // GIVEN
-        final String NAME_2 = "category2";
-        final String DESCRIPTION_2 = "Category #2";
-        final String SLUG_2 = "category-2";
-
-        givenExpectationFromFile("basic-auth/media/list.success.paging-and-query.json");
-
-        final WpMediaQuery mediaQuery = WpMediaQuery.builder()
-                                                    .withSlugs(Set.of("slug-1"))
-                                                    .build();
-
-        // WHEN
-        final WpPagedResponse<WpMedia> response = client.listMedia(WpPagingQuery.of(1, 10), mediaQuery);
-
-        // THEN
-        WordPressAssertions.assertThat(response)
-                           .isNotNull()
-                           .hasPageNumber(1)
-                           .hasItemsPerPage(10)
-                           .hasTotalPages(1)
-                           .hasTotalItems(1)
-                           .doesNotHaveNextPage()
-                           .satisfies(r ->
-                                   assertThat(r.getItems())
-                                           .hasSize(1)
-                                           .satisfiesExactly(
-                                                   media ->
-                                                           WordPressAssertions.assertThat(media)
-                                                                              .isNotNull()
-                                                                              .hasId(9L)
-                                                                              .hasTitleSatisfying(title -> title.hasRaw("sample-1")
-                                                                                                                .hasRendered("sample-1"))
-                                           ));
-    }
-
     @BeforeEach
     void setUp() {
         this.client = client();
@@ -346,6 +307,41 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
             // WHEN
             final WpPagedResponse<WpMedia> response = client.listMedia(WpPagingQuery.of(1, 10), null);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(1)
+                               .doesNotHaveNextPage()
+                               .satisfies(r ->
+                                       assertThat(r.getItems())
+                                               .hasSize(1)
+                                               .satisfiesExactly(
+                                                       media ->
+                                                               WordPressAssertions.assertThat(media)
+                                                                                  .isNotNull()
+                                                                                  .hasId(9L)
+                                                                                  .hasTitleSatisfying(title -> title.hasRaw("sample-1")
+                                                                                                                    .hasRendered("sample-1"))
+                                               ));
+        }
+
+        @DisplayName("'LIST' works with paging and query")
+        @Test
+        void listWorksWithPagingAndQuery() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/list.success.paging-and-query.json");
+
+            final WpMediaQuery mediaQuery = WpMediaQuery.builder()
+                                                        .withSlugs(Set.of("slug-1"))
+                                                        .build();
+
+            // WHEN
+            final WpPagedResponse<WpMedia> response = client.listMedia(WpPagingQuery.of(1, 10), mediaQuery);
 
             // THEN
             WordPressAssertions.assertThat(response)

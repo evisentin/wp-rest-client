@@ -6,13 +6,11 @@ import org.junit.jupiter.api.Test;
 
 class BasicAuthenticationHeaderProviderTest implements WithAssertions {
 
-    private final BasicAuthenticationHeaderProvider provider =
-            new BasicAuthenticationHeaderProvider();
+    private final BasicAuthenticationHeaderProvider provider = new BasicAuthenticationHeaderProvider();
 
     @Test
     void shouldCreateBasicAuthorizationHeader() {
-        WpBasicAuthenticationStrategy strategy =
-                new WpBasicAuthenticationStrategy("user", "password");
+        WpBasicAuthenticationStrategy strategy = new WpBasicAuthenticationStrategy("user", "password");
 
         String header = provider.createAuthorizationHeader(strategy);
 

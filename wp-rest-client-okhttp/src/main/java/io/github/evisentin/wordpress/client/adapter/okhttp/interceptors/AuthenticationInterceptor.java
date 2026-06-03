@@ -19,10 +19,11 @@ public class AuthenticationInterceptor implements Interceptor {
     private final WpAuthenticationStrategy strategy;
 
     public AuthenticationInterceptor(final @NonNull WpAuthenticationStrategy strategy,
-                                     final @NonNull OkHttpClient authHttpClient) {
+                                     final @NonNull OkHttpClient authHttpClient,
+                                     final @NonNull String apiUrl) {
 
         this.strategy = strategy;
-        registry = new OkHttpAuthenticationStrategyHandlerRegistry(authHttpClient);
+        registry = new OkHttpAuthenticationStrategyHandlerRegistry(authHttpClient, apiUrl);
     }
 
     @NotNull

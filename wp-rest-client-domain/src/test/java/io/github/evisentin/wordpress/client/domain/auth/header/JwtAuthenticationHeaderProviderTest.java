@@ -1,5 +1,7 @@
 package io.github.evisentin.wordpress.client.domain.auth.header;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
 import io.github.evisentin.wordpress.client.domain.auth.WpJwtAuthenticationStrategy;
 import io.github.evisentin.wordpress.client.domain.auth.jwt.JwtResponse;
 import io.github.evisentin.wordpress.client.domain.auth.jwt.JwtTokenClient;
@@ -10,6 +12,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.stream.IntStream;
@@ -38,6 +43,41 @@ class JwtAuthenticationHeaderProviderTest implements WithAssertions {
     }
 
     @Test
+    void createAuthorizationHeaderFetchesNewTokenWhenCachedTokenHasExpired() {
+
+        final String expiredToken = createExpiredToken();
+        final String validToken = createToken();
+
+        // Simulate the token endpoint returning an expired token first,
+        // then a fresh valid token when a refresh is required.
+        when(response.getToken())
+                .thenReturn(expiredToken, validToken);
+
+        WpJwtAuthenticationStrategy strategy =
+                new WpJwtAuthenticationStrategy(
+                        "user",
+                        "password",
+                        "https://example.com/jwt");
+
+        when(tokenClient.fetchToken(strategy)).thenReturn(response);
+
+        // First invocation populates the provider cache with an expired token.
+        // The provider does not validate freshness until the next access.
+        provider.createAuthorizationHeader(strategy);
+
+        // Second invocation detects the cached token is expired,
+        // fetches a new one, caches it, and returns it.
+        String header = provider.createAuthorizationHeader(strategy);
+
+        assertThat(header)
+                .isEqualTo("Bearer " + validToken);
+
+        // One fetch for the initial token and one fetch for the refresh.
+        verify(tokenClient, times(2))
+                .fetchToken(strategy);
+    }
+
+    @Test
     void createAuthorizationHeader_shouldFailOnNull() {
         assertThatThrownBy(() -> provider.createAuthorizationHeader(null))
                 .isInstanceOf(NullPointerException.class)
@@ -47,9 +87,9 @@ class JwtAuthenticationHeaderProviderTest implements WithAssertions {
     @Test
     void shouldCreateBearerAuthorizationHeader() {
 
-        when(response.getJwtToken()).thenReturn("jwt-token");
-        when(response.getExpiresIn()).thenReturn(3600L);
-        when(response.getIat()).thenReturn(System.currentTimeMillis() / 1000);
+        final String token = createToken();
+
+        when(response.getToken()).thenReturn(token);
 
         WpJwtAuthenticationStrategy strategy =
                 new WpJwtAuthenticationStrategy(
@@ -62,7 +102,30 @@ class JwtAuthenticationHeaderProviderTest implements WithAssertions {
         String header = provider.createAuthorizationHeader(strategy);
 
         assertThat(header)
-                .isEqualTo("Bearer jwt-token");
+                .isEqualTo("Bearer " + token);
+
+        verify(tokenClient).fetchToken(strategy);
+    }
+
+    @Test
+    void shouldCreateBearerAuthorizationHeaderOnExpired() {
+
+        final String token = createExpiredToken();
+
+        when(response.getToken()).thenReturn(token);
+
+        WpJwtAuthenticationStrategy strategy =
+                new WpJwtAuthenticationStrategy(
+                        "user",
+                        "password",
+                        "https://example.com/jwt");
+
+        when(tokenClient.fetchToken(strategy)).thenReturn(response);
+
+        String header = provider.createAuthorizationHeader(strategy);
+
+        assertThat(header)
+                .isEqualTo("Bearer " + token);
 
         verify(tokenClient).fetchToken(strategy);
     }
@@ -70,9 +133,9 @@ class JwtAuthenticationHeaderProviderTest implements WithAssertions {
     @Test
     void shouldFetchTokenOnlyOnceWhenCalledConcurrently() throws Exception {
 
-        when(response.getJwtToken()).thenReturn("jwt-token");
-        when(response.getExpiresIn()).thenReturn(3600L);
-        when(response.getIat()).thenReturn(System.currentTimeMillis() / 1000);
+        final String token = createToken();
+
+        when(response.getToken()).thenReturn(token);
 
         WpJwtAuthenticationStrategy strategy =
                 new WpJwtAuthenticationStrategy(
@@ -118,7 +181,7 @@ class JwtAuthenticationHeaderProviderTest implements WithAssertions {
 
             // Every thread should receive the same cached bearer token.
             for (Future<String> future : futures) {
-                assertThat(future.get()).isEqualTo("Bearer jwt-token");
+                assertThat(future.get()).isEqualTo("Bearer " + token);
             }
 
             executor.shutdown();
@@ -133,9 +196,9 @@ class JwtAuthenticationHeaderProviderTest implements WithAssertions {
     @Test
     void shouldReuseCachedToken() {
 
-        when(response.getJwtToken()).thenReturn("jwt-token");
-        when(response.getExpiresIn()).thenReturn(3600L);
-        when(response.getIat()).thenReturn(System.currentTimeMillis() / 1000);
+        final String token = createToken();
+
+        when(response.getToken()).thenReturn(token);
 
         WpJwtAuthenticationStrategy strategy =
                 new WpJwtAuthenticationStrategy(
@@ -149,5 +212,26 @@ class JwtAuthenticationHeaderProviderTest implements WithAssertions {
         provider.createAuthorizationHeader(strategy);
 
         verify(tokenClient, times(1)).fetchToken(strategy);
+    }
+
+    private static String createExpiredToken() {
+        final Instant now = Instant.now();
+
+        return JWT.create()
+                  .withSubject("1")
+                  .withClaim("name", "admin")
+                  .withIssuedAt(Date.from(now))
+                  .withExpiresAt(Date.from(now.minus(1, ChronoUnit.HOURS)))
+                  .sign(Algorithm.HMAC256("test-secret"));
+    }
+
+    private static String createToken() {
+        final Instant now = Instant.now();
+        return JWT.create()
+                  .withSubject("1")
+                  .withClaim("name", "admin")
+                  .withIssuedAt(Date.from(now))
+                  .withExpiresAt(Date.from(now.plus(1, ChronoUnit.HOURS)))
+                  .sign(Algorithm.HMAC256("test-secret"));
     }
 }

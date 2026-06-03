@@ -5,6 +5,7 @@ import io.github.evisentin.wordpress.client.domain.auth.WpJwtAuthenticationStrat
 import io.github.evisentin.wordpress.client.domain.auth.jwt.JwtResponse;
 import org.apache.hc.client5.http.classic.methods.HttpPost;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.apache.hc.core5.http.io.HttpClientResponseHandler;
 import org.apache.hc.core5.http.io.entity.StringEntity;
 import org.apache.hc.core5.http.message.BasicClassicHttpResponse;
@@ -36,7 +37,7 @@ class ApacheJwtTokenClientTest implements WithAssertions {
     @Test
     void shouldFetchJwtToken() throws Exception {
 
-        ApacheJwtTokenClient client = new ApacheJwtTokenClient(httpClient);
+        ApacheJwtTokenClient client = new ApacheJwtTokenClient(httpClient, "");
 
         when(httpClient.execute(any(HttpPost.class), any(HttpClientResponseHandler.class)))
                 .thenAnswer(invocation -> {
@@ -77,16 +78,20 @@ class ApacheJwtTokenClientTest implements WithAssertions {
     }
 
     @Test
-    void shouldRejectNullHttpClient() {
-        assertThatThrownBy(() -> new ApacheJwtTokenClient(null))
+    void shouldRejectNullParameters() {
+        assertThatThrownBy(() -> new ApacheJwtTokenClient(null, null))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("authHttpClient is marked non-null but is null");
+
+        assertThatThrownBy(() -> new ApacheJwtTokenClient(HttpClients.createDefault(), null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("apiUrl is marked non-null but is null");
     }
 
     @Test
     void shouldRejectNullStrategy() {
 
-        ApacheJwtTokenClient client = new ApacheJwtTokenClient(httpClient);
+        ApacheJwtTokenClient client = new ApacheJwtTokenClient(httpClient, "");
 
         assertThatThrownBy(() -> client.fetchToken(null))
                 .isInstanceOf(NullPointerException.class)
@@ -96,7 +101,7 @@ class ApacheJwtTokenClientTest implements WithAssertions {
     @Test
     void shouldThrowWpAuthExceptionWhenHttpClientFails() throws Exception {
 
-        ApacheJwtTokenClient client = new ApacheJwtTokenClient(httpClient);
+        ApacheJwtTokenClient client = new ApacheJwtTokenClient(httpClient, "");
 
         when(httpClient.execute(any(HttpPost.class), any(HttpClientResponseHandler.class)))
                 .thenThrow(new IOException("connection failed"));
@@ -110,7 +115,7 @@ class ApacheJwtTokenClientTest implements WithAssertions {
     @Test
     void shouldThrowWpAuthExceptionWhenResponseBodyCannotBeParsed() throws Exception {
 
-        ApacheJwtTokenClient client = new ApacheJwtTokenClient(httpClient);
+        ApacheJwtTokenClient client = new ApacheJwtTokenClient(httpClient, "");
 
         when(httpClient.execute(any(HttpPost.class), any(HttpClientResponseHandler.class)))
                 .thenAnswer(invocation -> {
@@ -130,7 +135,7 @@ class ApacheJwtTokenClientTest implements WithAssertions {
     @Test
     void shouldThrowWpAuthExceptionWhenResponseIsNotSuccessful() throws Exception {
 
-        ApacheJwtTokenClient client = new ApacheJwtTokenClient(httpClient);
+        ApacheJwtTokenClient client = new ApacheJwtTokenClient(httpClient, "");
 
         when(httpClient.execute(any(HttpPost.class), any(HttpClientResponseHandler.class)))
                 .thenAnswer(invocation -> {

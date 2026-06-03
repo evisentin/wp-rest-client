@@ -15,10 +15,10 @@ public final class ApacheWpJwtAuthRestClientFactory implements WpJwtAuthRestClie
 
     @Override
     public WpRestClient create(final @NonNull String baseUrl,
-                               final @NonNull String jwtTokenUrl,
+                               final @NonNull String jwtTokenEndPoint,
                                final @NonNull String username,
                                final @NonNull String password) {
-        return ApacheWpRestClientBuilder.jwtAuthentication(baseUrl, username, password, jwtTokenUrl)
+        return ApacheWpRestClientBuilder.jwtAuthentication(baseUrl, username, password, jwtTokenEndPoint)
                                         .withSslConfiguration(sslConfiguration)
                                         .build();
     }

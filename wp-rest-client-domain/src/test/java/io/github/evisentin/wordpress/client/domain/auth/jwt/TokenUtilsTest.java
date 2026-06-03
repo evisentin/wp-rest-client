@@ -1,57 +1,47 @@
 package io.github.evisentin.wordpress.client.domain.auth.jwt;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.Test;
 
 import java.time.Instant;
+import java.util.Date;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
-class TokenUtilsTest {
+class TokenUtilsTest implements WithAssertions {
 
     @Test
-    void shouldRejectNullExpiresIn() {
-        assertThatThrownBy(() -> TokenUtils.resolveExpiration(null, 1_700_000_000L))
-                .isInstanceOf(NullPointerException.class);
+    void isExpiredReturnsFalseWhenExpirationIsInFuture() {
+        assertThat(TokenUtils.isExpired(Instant.now().plusSeconds(60))).isFalse();
     }
 
     @Test
-    void shouldRejectNullIat() {
-        assertThatThrownBy(() -> TokenUtils.resolveExpiration(3600L, null))
-                .isInstanceOf(NullPointerException.class);
+    void isExpiredReturnsFalseWhenExpirationIsNull() {
+        assertThat(TokenUtils.isExpired(null)).isFalse();
     }
 
     @Test
-    void shouldResolveExpirationWhenExpiresInIsDuration() {
-        Instant expiration = TokenUtils.resolveExpiration(3600L, 1_700_000_000L);
-
-        assertThat(expiration)
-                .isEqualTo(Instant.ofEpochSecond(1_700_003_600L));
+    void isExpiredReturnsTrueWhenExpirationIsInPast() {
+        assertThat(TokenUtils.isExpired(Instant.now().minusSeconds(60))).isTrue();
     }
 
     @Test
-    void shouldResolveExpirationWhenExpiresInIsTimestamp() {
-        Instant expiration = TokenUtils.resolveExpiration(1_700_000_000L, 1_600_000_000L);
-
-        assertThat(expiration)
-                .isEqualTo(Instant.ofEpochSecond(1_700_000_000L));
+    void resolveExpirationFailsOnNullInput() {
+        assertThatThrownBy(() -> TokenUtils.resolveExpiration(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("jwtToken is marked non-null but is null");
     }
 
     @Test
-    void shouldReturnFalseWhenExpirationIsInTheFuture() {
-        assertThat(TokenUtils.isExpired(Instant.now().plusSeconds(60)))
-                .isFalse();
-    }
+    void resolveExpirationReturnsJwtExpiration() {
 
-    @Test
-    void shouldReturnFalseWhenExpirationIsNull() {
-        assertThat(TokenUtils.isExpired(null))
-                .isFalse();
-    }
+        final Instant expiration = Instant.parse("2030-01-01T12:00:00Z");
 
-    @Test
-    void shouldReturnTrueWhenExpirationIsInThePast() {
-        assertThat(TokenUtils.isExpired(Instant.now().minusSeconds(60)))
-                .isTrue();
+        final String token = JWT.create()
+                                .withExpiresAt(Date.from(expiration))
+                                .sign(Algorithm.HMAC256("test-secret"));
+
+        assertThat(TokenUtils.resolveExpiration(token))
+                .isEqualTo(expiration);
     }
 }

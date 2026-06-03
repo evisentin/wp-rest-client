@@ -38,21 +38,24 @@ class AuthenticationInterceptorTest implements WithAssertions {
     private AuthenticationInterceptor interceptor;
 
     @Test
-    @DisplayName("constructor should fail on null strategy")
-    void constructorShouldFailOnNullStrategy() {
+    void constructorShouldFailOnNullParameters() {
 
-        assertThatThrownBy(() -> new AuthenticationInterceptor(null, null))
+        assertThatThrownBy(() -> new AuthenticationInterceptor(null, null, null))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("strategy is marked non-null but is null");
 
-        assertThatThrownBy(() -> new AuthenticationInterceptor(new WpAuthenticationStrategy() {}, null))
+        assertThatThrownBy(() -> new AuthenticationInterceptor(new WpAuthenticationStrategy() {}, null, null))
                 .isInstanceOf(NullPointerException.class)
                 .hasMessage("authHttpClient is marked non-null but is null");
+
+        assertThatThrownBy(() -> new AuthenticationInterceptor(new WpAuthenticationStrategy() {}, new OkHttpClient(), null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("apiUrl is marked non-null but is null");
     }
 
     @BeforeEach
     void setUp() {
-        interceptor = new AuthenticationInterceptor(strategy, authHttpClient);
+        interceptor = new AuthenticationInterceptor(strategy, authHttpClient, "");
     }
 
     @Test

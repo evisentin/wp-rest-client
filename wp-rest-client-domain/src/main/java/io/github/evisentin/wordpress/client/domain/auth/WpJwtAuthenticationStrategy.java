@@ -11,15 +11,15 @@ import lombok.NonNull;
  *         WordPress username; must not be blank
  * @param password
  *         WordPress password; must not be blank
- * @param jwtTokenUrl
- *         URL of the JWT token endpoint; must not be blank
+ * @param jwtTokenEndPoint
+ *         endpoint for the JWT token, relative to API-URL; must not be blank
  */
 public record WpJwtAuthenticationStrategy(@NonNull String username,
                                           @NonNull String password,
-                                          @NonNull String jwtTokenUrl) implements WpAuthenticationStrategy {
+                                          @NonNull String jwtTokenEndPoint) implements WpAuthenticationStrategy {
     public WpJwtAuthenticationStrategy {
         if (username.isBlank()) throw new IllegalArgumentException("username must not be blank");
         if (password.isBlank()) throw new IllegalArgumentException("password must not be blank");
-        if (jwtTokenUrl.isBlank()) throw new IllegalArgumentException("jwtTokenUrl must not be blank");
+        if (jwtTokenEndPoint.isBlank()) throw new IllegalArgumentException("jwtTokenEndPoint must not be blank");
     }
 }

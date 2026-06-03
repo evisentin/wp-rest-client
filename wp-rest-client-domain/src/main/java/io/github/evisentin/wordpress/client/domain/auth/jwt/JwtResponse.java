@@ -16,16 +16,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class JwtResponse {
-
-    @JsonProperty("token_type")
-    private String tokenType;
-
     @JsonProperty("jwt_token")
-    private String jwtToken;
-
-    @JsonProperty("iat")
-    private long iat;
-
-    @JsonProperty("expires_in")
-    private long expiresIn;
+    private String token;
 }

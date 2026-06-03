@@ -15,11 +15,6 @@
   <description>WP REST Client implementation based on Apache HttpClient 5</description>
   <packaging>jar</packaging>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-  <properties>
-    <!-- we enable tests with profile 'local-tests' -->
-    <maven.test.skip>true</maven.test.skip>
-  </properties>
-  <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <dependencies>
     <!-- [PROJECT MODULES] -->
     <dependency>
@@ -60,6 +55,12 @@
     <dependency>
       <groupId>org.apache.httpcomponents.client5</groupId>
       <artifactId>httpclient5</artifactId>
+    </dependency>
+
+    <!-- [JAVA-JWT] -->
+    <dependency>
+      <groupId>com.auth0</groupId>
+      <artifactId>java-jwt</artifactId>
     </dependency>
 
     <!-- [LOMBOK] -->
@@ -124,9 +125,6 @@
   <profiles>
     <profile>
       <id>local-tests</id>
-      <properties>
-        <maven.test.skip>false</maven.test.skip>
-      </properties>
       <dependencies>
         <dependency>
           <groupId>io.github.evisentin</groupId>

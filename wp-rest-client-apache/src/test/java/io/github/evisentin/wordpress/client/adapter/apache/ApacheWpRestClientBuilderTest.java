@@ -1,21 +1,29 @@
 package io.github.evisentin.wordpress.client.adapter.apache;
 
+import io.github.evisentin.wordpress.client.contract.test.AbstractMockServerTest;
 import io.github.evisentin.wordpress.client.domain.configuration.SslConfiguration;
 import io.github.evisentin.wordpress.client.domain.configuration.TimeoutConfiguration;
 import org.apache.hc.core5.http.HttpRequestInterceptor;
 import org.apache.hc.core5.http.HttpResponseInterceptor;
-import org.assertj.core.api.WithAssertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;
 
-class ApacheWpRestClientBuilderTest implements WithAssertions {
+class ApacheWpRestClientBuilderTest extends AbstractMockServerTest {
 
-    private static final String BASE_URL = "https://example.com";
     private static final String USERNAME = "admin";
     private static final String PASSWORD = "secret";
-    private static final String JWT_TOKEN_URL = "https://example.com/wp-json/jwt-auth/v1/token";
+
+    private String BASE_URL;
+    private String JWT_TOKEN_URL;
+
+    @BeforeEach
+    void beforeEach() {
+        BASE_URL = mockServerUrl();
+        JWT_TOKEN_URL = "/wp-json/jwt-auth/v1/token";
+    }
 
     @Test
     void shouldAllowRequestInterceptor() {
@@ -131,7 +139,7 @@ class ApacheWpRestClientBuilderTest implements WithAssertions {
 
         assertThatThrownBy(() -> ApacheWpRestClientBuilder.jwtAuthentication(BASE_URL, USERNAME, PASSWORD, null))
                 .isInstanceOf(NullPointerException.class)
-                .hasMessage("jwtTokenUrl is marked non-null but is null");
+                .hasMessage("jwtTokenEndPoint is marked non-null but is null");
     }
 
     @Test

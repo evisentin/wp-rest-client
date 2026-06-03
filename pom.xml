@@ -54,6 +54,7 @@
     <commons-text.version>1.15.0</commons-text.version>
 
     <jackson.version>2.21.4</jackson.version>
+    <java-jwt.version>4.5.2</java-jwt.version>
     <lombok.version>1.18.46</lombok.version>
 
     <httpclient5.version>5.6.1</httpclient5.version>
@@ -121,6 +122,13 @@
         <version>${jackson.version}</version>
         <scope>import</scope>
         <type>pom</type>
+      </dependency>
+
+      <!-- [JAVA-JWT] -->
+      <dependency>
+        <groupId>com.auth0</groupId>
+        <artifactId>java-jwt</artifactId>
+        <version>${java-jwt.version}</version>
       </dependency>
 
       <!-- [APACHE HTTPCLIENT 5] -->

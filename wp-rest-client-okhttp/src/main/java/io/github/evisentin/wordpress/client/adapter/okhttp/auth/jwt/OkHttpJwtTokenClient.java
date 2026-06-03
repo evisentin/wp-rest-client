@@ -9,6 +9,7 @@ import lombok.NonNull;
 import okhttp3.*;
 
 import java.io.IOException;
+import java.net.URI;
 
 import static io.github.evisentin.wordpress.client.adapter.okhttp.http.HttpHeaders.ACCEPT;
 import static io.github.evisentin.wordpress.client.adapter.okhttp.http.MimeTypes.APPLICATION_JSON;
@@ -16,10 +17,12 @@ import static io.github.evisentin.wordpress.client.adapter.okhttp.http.MimeTypes
 public class OkHttpJwtTokenClient implements JwtTokenClient {
 
     private final OkHttpClient authHttpClient;
+    private final String apiUrl;
     private final ObjectMapper mapper;
 
-    public OkHttpJwtTokenClient(final @NonNull OkHttpClient authHttpClient) {
+    public OkHttpJwtTokenClient(final @NonNull OkHttpClient authHttpClient, final @NonNull String apiUrl) {
         this.authHttpClient = authHttpClient;
+        this.apiUrl = apiUrl;
         this.mapper = new ObjectMapper();
     }
 
@@ -32,7 +35,7 @@ public class OkHttpJwtTokenClient implements JwtTokenClient {
                 .build();
 
         Request request = new Request.Builder()
-                .url(strategy.jwtTokenUrl())
+                .url(concatUrl(apiUrl, strategy.jwtTokenEndPoint()))
                 .addHeader(ACCEPT, APPLICATION_JSON)
                 .post(formBody)
                 .build();
@@ -48,5 +51,11 @@ public class OkHttpJwtTokenClient implements JwtTokenClient {
         } catch (IOException e) {
             throw new WpAuthException("Failed to fetch JWT token", e);
         }
+    }
+
+    private static String concatUrl(final String baseUrl, final String segment) {
+        return URI.create(baseUrl.endsWith("/") ? baseUrl : baseUrl + "/")
+                  .resolve(segment.startsWith("/") ? segment.substring(1) : segment)
+                  .toString();
     }
 }

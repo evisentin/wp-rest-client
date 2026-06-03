@@ -14,6 +14,8 @@ import org.mockserver.serialization.ExpectationSerializer;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.apache.commons.io.IOUtils.resourceToString;
+import static org.mockserver.model.HttpRequest.request;
+import static org.mockserver.model.HttpResponse.response;
 
 @Slf4j
 @ExtendWith(MockServerExtension.class)
@@ -27,6 +29,7 @@ public abstract class AbstractMockServerTest implements WithAssertions {
     void beforeEach(final MockServerClient mockServerClient) {
         this.mockServerClient = mockServerClient;
         this.mockServerClient.reset();
+        setUpMockApiUrlDiscovery(this.mockServerClient);
     }
 
     @SneakyThrows
@@ -43,5 +46,18 @@ public abstract class AbstractMockServerTest implements WithAssertions {
 
     protected String mockServerUrl() {
         return String.format("http://%s:%d", mockServerClient.remoteAddress().getHostName(), mockServerClient.remoteAddress().getPort());
+    }
+
+    private void setUpMockApiUrlDiscovery(final MockServerClient mockServerClient) {
+
+        mockServerClient
+                .when(request().withMethod("HEAD")
+                               .withPath("/")
+                )
+                .respond(
+                        response().withStatusCode(200)
+                                  .withHeader("Link", "<" + mockServerUrl() + "/wp-json/>; rel=\"https://api.w.org/\"")
+                                  .withHeader("Content-Type", "text/html; charset=UTF-8")
+                );
     }
 }

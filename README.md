@@ -7,8 +7,6 @@
 ![Java](https://img.shields.io/badge/Java-21-green)
 ![Java](https://img.shields.io/badge/Java-25-red)
 
-
-
 ## Table of contents
 
 <!-- toc -->
@@ -24,7 +22,11 @@
 - [Supported REST APIs](#supported-rest-apis)
 - [Usage](#usage)
   * [Sample with Apache HttpClient 5](#sample-with-apache-httpclient-5)
+    + [Basic Authentication](#basic-authentication)
+    + [JWT Authentication](#jwt-authentication)
   * [Sample with OKHTTP](#sample-with-okhttp)
+    + [Basic Authentication](#basic-authentication-1)
+    + [JWT Authentication](#jwt-authentication-1)
 - [Documentation](#documentation)
 - [License](#license)
 
@@ -130,6 +132,8 @@ Import the right module
 </dependencies>
 ```
 
+#### Basic Authentication
+
 List the posts
 
 ```java
@@ -148,9 +152,43 @@ import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStat
 // Initialize the client
 final WpRestClient restClient =
         ApacheWpRestClientBuilder.basicAuthentication(
-                "http://localhost:8080", // baseUrl
+                "http://localhost:8080", // baseUrl, this will be used to discover the API-URL
                 "admin", // userName
                 "admin" // password
+        ).build();
+
+        final WpPagingQuery pageQuery = WpPagingQuery.of(1, 10);
+        final WpPostQuery postQuery = WpPostQuery.builder()
+                .withStatuses(Set.of(DRAFT, PUBLISH))
+                .build();
+        final WpPagedResponse<WpPost> response = restClient.listPosts(pageQuery, postQuery);
+        final List<WpPost> posts = response.getItems();
+
+```
+#### JWT Authentication
+
+List the posts
+
+```java
+import io.github.evisentin.wordpress.client.adapter.apache.ApacheWpRestClientBuilder;
+import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
+import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
+import io.github.evisentin.wordpress.client.domain.model.WpPost;
+import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.client.domain.model.query.WpPostQuery;
+
+import java.util.*;
+
+import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.DRAFT;
+import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.PUBLISH;
+
+// Initialize the client
+final WpRestClient restClient =
+        ApacheWpRestClientBuilder.jwtAuthentication(
+                "http://localhost:8080", // baseUrl, this will be used to discover the API-URL
+                "admin", // userName
+                "admin",// password
+                "/api/v1/token" // jwtTokenEndPoint (relative to API-URL)
         ).build();
 
         final WpPagingQuery pageQuery = WpPagingQuery.of(1, 10);
@@ -177,6 +215,8 @@ Import the right module
 </dependencies>
 ```
 
+#### Basic Authentication
+
 List the posts
 
 ```java
@@ -196,9 +236,45 @@ import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStat
 // Initialize the client
 final WpRestClient restClient =
         OkHttpWpRestClientBuilder.basicAuthentication(
-                "http://localhost:8080", // baseUrl
+                "http://localhost:8080", // baseUrl, this will be used to discover the API-URL
                 "admin", // userName
                 "admin" // password
+        ).build();
+
+        final WpPagingQuery pageQuery = WpPagingQuery.of(1, 10);
+        final WpPostQuery postQuery = WpPostQuery.builder()
+                .withStatuses(Set.of(DRAFT, PUBLISH))
+                .build();
+        final WpPagedResponse<WpPost> response = restClient.listPosts(pageQuery, postQuery);
+        final List<WpPost> posts = response.getItems();
+
+```
+
+#### JWT Authentication
+
+List the posts
+
+```java
+import io.github.evisentin.wordpress.client.adapter.okhttp.OkHttpWpRestClientBuilder;
+import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
+import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
+import io.github.evisentin.wordpress.client.domain.model.WpPost;
+import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.client.domain.model.query.WpPostQuery;
+
+import java.util.*;
+
+import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.DRAFT;
+import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.PUBLISH;
+
+
+// Initialize the client
+final WpRestClient restClient =
+        OkHttpWpRestClientBuilder.jwtAuthentication(
+                "http://localhost:8080", // baseUrl, this will be used to discover the API-URL
+                "admin", // userName
+                "admin",// password
+                "/api/v1/token" // jwtTokenEndPoint (relative to API-URL)
         ).build();
 
         final WpPagingQuery pageQuery = WpPagingQuery.of(1, 10);

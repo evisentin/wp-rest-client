@@ -1,4 +1,3 @@
-
 package io.github.evisentin.wordpress.client.adapter.okhttp.auth;
 
 import io.github.evisentin.wordpress.client.adapter.okhttp.auth.basic.OkHttpBasicAuthenticationStrategyHandler;
@@ -13,13 +12,40 @@ import org.junit.jupiter.api.Test;
 class OkHttpAuthenticationStrategyHandlerRegistryTest implements WithAssertions {
 
     @Test
-    void shouldReturnBasicAuthenticationHandler() {
+    void shouldFailOnUnknownStrategy() {
         OkHttpAuthenticationStrategyHandlerRegistry registry =
-                new OkHttpAuthenticationStrategyHandlerRegistry(new OkHttpClient());
+                new OkHttpAuthenticationStrategyHandlerRegistry(new OkHttpClient(), "");
 
-        var handler = registry.getHandler(
-                new WpBasicAuthenticationStrategy("user", "password")
-        );
+        assertThatThrownBy(() -> registry.getHandler(new WpAuthenticationStrategy() {}))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("No handler found");
+    }
+
+    @Test
+    void shouldRejectNullParameters() {
+        assertThatThrownBy(() -> new OkHttpAuthenticationStrategyHandlerRegistry(null, null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("authHttpClient is marked non-null but is null");
+
+        assertThatThrownBy(() -> new OkHttpAuthenticationStrategyHandlerRegistry(new OkHttpClient(), null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("apiUrl is marked non-null but is null");
+    }
+
+    @Test
+    void shouldRejectNullStrategy() {
+        OkHttpAuthenticationStrategyHandlerRegistry registry = new OkHttpAuthenticationStrategyHandlerRegistry(new OkHttpClient(), "");
+
+        assertThatThrownBy(() -> registry.getHandler(null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("strategy is marked non-null but is null");
+    }
+
+    @Test
+    void shouldReturnBasicAuthenticationHandler() {
+        OkHttpAuthenticationStrategyHandlerRegistry registry = new OkHttpAuthenticationStrategyHandlerRegistry(new OkHttpClient(), "");
+
+        var handler = registry.getHandler(new WpBasicAuthenticationStrategy("user", "password"));
 
         assertThat(handler)
                 .isNotNull()
@@ -28,50 +54,12 @@ class OkHttpAuthenticationStrategyHandlerRegistryTest implements WithAssertions 
 
     @Test
     void shouldReturnJwtAuthenticationHandler() {
-        OkHttpAuthenticationStrategyHandlerRegistry registry =
-                new OkHttpAuthenticationStrategyHandlerRegistry(new OkHttpClient());
+        OkHttpAuthenticationStrategyHandlerRegistry registry = new OkHttpAuthenticationStrategyHandlerRegistry(new OkHttpClient(), "");
 
-        var handler = registry.getHandler(
-                new WpJwtAuthenticationStrategy(
-                        "user",
-                        "password",
-                        "https://example.com/token"
-                )
-        );
+        var handler = registry.getHandler(new WpJwtAuthenticationStrategy("user", "password", "https://example.com/token"));
 
         assertThat(handler)
                 .isNotNull()
                 .isInstanceOf(OkHttpJwtAuthenticationStrategyHandler.class);
-    }
-
-    @Test
-    void shouldFailOnUnknownStrategy() {
-        OkHttpAuthenticationStrategyHandlerRegistry registry =
-                new OkHttpAuthenticationStrategyHandlerRegistry(new OkHttpClient());
-
-        assertThatThrownBy(() -> registry.getHandler(new WpAuthenticationStrategy() {}))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("No handler found");
-    }
-
-    @Test
-    void shouldRejectNullOkHttpClient() {
-        assertThatThrownBy(() ->
-                new OkHttpAuthenticationStrategyHandlerRegistry(null)
-        )
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("authHttpClient is marked non-null but is null");
-    }
-
-    @Test
-    void shouldRejectNullStrategy() {
-        OkHttpAuthenticationStrategyHandlerRegistry registry =
-                new OkHttpAuthenticationStrategyHandlerRegistry(new OkHttpClient());
-
-        assertThatThrownBy(() ->
-                registry.getHandler(null)
-        )
-                .isInstanceOf(NullPointerException.class)
-                .hasMessage("strategy is marked non-null but is null");
     }
 }

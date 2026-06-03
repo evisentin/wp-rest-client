@@ -10,8 +10,7 @@ class WpBasicAuthenticationStrategyTest implements WithAssertions {
     @ParameterizedTest
     @ValueSource(strings = {"", " ", "   "})
     void shouldRejectBlankPassword(String password) {
-        assertThatThrownBy(() ->
-                new WpBasicAuthenticationStrategy("user", password))
+        assertThatThrownBy(() -> new WpBasicAuthenticationStrategy("user", password))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("password must not be blank");
     }
@@ -19,8 +18,7 @@ class WpBasicAuthenticationStrategyTest implements WithAssertions {
     @ParameterizedTest
     @ValueSource(strings = {"", " ", "   "})
     void shouldRejectBlankUsername(String username) {
-        assertThatThrownBy(() ->
-                new WpBasicAuthenticationStrategy(username, "password"))
+        assertThatThrownBy(() -> new WpBasicAuthenticationStrategy(username, "password"))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("username must not be blank");
     }
@@ -28,16 +26,16 @@ class WpBasicAuthenticationStrategyTest implements WithAssertions {
     @ParameterizedTest
     @NullSource
     void shouldRejectNullPassword(String password) {
-        assertThatThrownBy(() ->
-                new WpBasicAuthenticationStrategy("user", password))
-                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> new WpBasicAuthenticationStrategy("user", password))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("password is marked non-null but is null");
     }
 
     @ParameterizedTest
     @NullSource
     void shouldRejectNullUsername(String username) {
-        assertThatThrownBy(() ->
-                new WpBasicAuthenticationStrategy(username, "password"))
-                .isInstanceOf(NullPointerException.class);
+        assertThatThrownBy(() -> new WpBasicAuthenticationStrategy(username, "password"))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("username is marked non-null but is null");
     }
 }

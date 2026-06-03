@@ -22,12 +22,23 @@
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-annotations</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <scope>test</scope>
+    </dependency>
 
     <!-- [LOMBOK] -->
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <scope>provided</scope>
+    </dependency>
+
+    <!-- [JAVA-JWT] -->
+    <dependency>
+      <groupId>com.auth0</groupId>
+      <artifactId>java-jwt</artifactId>
     </dependency>
 
     <!-- [JUNIT] -->
@@ -44,7 +55,7 @@
       <scope>test</scope>
     </dependency>
 
-     <!-- [MOCKITO] -->
+    <!-- [MOCKITO] -->
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-junit-jupiter</artifactId>

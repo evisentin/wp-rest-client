@@ -15,11 +15,11 @@ public final class OkHttpWpJwtAuthRestClientFactory implements WpJwtAuthRestClie
 
     @Override
     public WpRestClient create(final @NonNull String baseUrl,
-                               final @NonNull String jwtTokenUrl,
+                               final @NonNull String jwtTokenEndPoint,
                                final @NonNull String username,
                                final @NonNull String password) {
 
-        return OkHttpWpRestClientBuilder.jwtAuthentication(baseUrl, username, password, jwtTokenUrl)
+        return OkHttpWpRestClientBuilder.jwtAuthentication(baseUrl, username, password, jwtTokenEndPoint)
                                         .withSslConfiguration(sslConfiguration)
                                         .build();
     }
