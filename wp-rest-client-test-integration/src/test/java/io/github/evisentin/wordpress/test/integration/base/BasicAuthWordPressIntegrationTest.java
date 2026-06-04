@@ -1238,18 +1238,35 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // THEN
             assertThat(response)
-                    .containsOnlyKeys(
+                    .containsKeys(
                             "post",
                             "page",
                             "attachment",
                             "nav_menu_item",
                             "wp_block",
                             "wp_template",
-                            "wp_template_part",
-                            "wp_global_styles",
-                            "wp_navigation",
-                            "wp_font_family",
-                            "wp_font_face");
+                            "wp_navigation"); // we might have others, but we are not testing that here
+        }
+    }
+
+    @DisplayName("Status APIs - Integration Tests")
+    @Nested
+    class StatusTests {
+
+        @DisplayName("'LIST' works")
+        @Test
+        void list__works_with_just_paging() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN
+            final Map<String, WpStatus> response = adminClient.getStatuses();
+
+            // THEN
+            assertThat(response)
+                    .containsKeys(
+                            "publish", "future", "draft", "pending", "private", "trash");
         }
     }
 

@@ -20,6 +20,7 @@
     <module>wp-rest-client-test-integration</module>
     <module>wp-rest-client-test-report</module>
     <module>wp-rest-client-contract-tests</module>
+    <module>samples</module>
   </modules>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <properties>

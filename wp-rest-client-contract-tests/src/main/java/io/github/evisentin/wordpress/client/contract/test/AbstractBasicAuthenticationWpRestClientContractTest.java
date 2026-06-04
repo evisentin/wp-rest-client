@@ -1696,6 +1696,63 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         }
     }
 
+    @DisplayName("'STATUS' Operations")
+    @Nested
+    class StatusTests {
+
+        @DisplayName("'GET' succeeds")
+        @Test
+        void getSucceeds() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/statuses/get.success.json");
+
+            // WHEN
+            final WpStatus status = client.getStatus("publish");
+
+            // THEN
+            assertThat(status)
+                    .isNotNull();
+        }
+
+        @DisplayName("'LIST' fails on HTTP FORBIDDEN")
+        @Test
+        void listFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/statuses/list.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.getStatuses());
+        }
+
+        @DisplayName("'LIST' fails on HTTP UNAUTHORIZED")
+        @Test
+        void listFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/statuses/list.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.getStatuses());
+        }
+
+        @DisplayName("'LIST' succeeds")
+        @Test
+        void listSucceeds() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/statuses/list.success.json");
+
+            // WHEN
+            final Map<String, WpStatus> statuses = client.getStatuses();
+
+            // THEN
+            assertThat(statuses)
+                    .containsOnlyKeys("publish", "future", "draft", "pending", "private", "trash");
+        }
+    }
+
     @DisplayName("'TAG' Operations")
     @Nested
     class TagTests {
