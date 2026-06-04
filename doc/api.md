@@ -7,13 +7,13 @@
 <!-- toc -->
 
 - [Tested WordPress Versions](#tested-wordpress-versions)
-  * [Posts](#posts)
-  * [Post Types](#post-types)
-  * [Pages](#pages)
-  * [Media](#media)
-  * [Categories](#categories)
-  * [Tags](#tags)
-  * [Comments](#comments)
+    * [Posts](#posts)
+    * [Post Types](#post-types)
+    * [Pages](#pages)
+    * [Media](#media)
+    * [Categories](#categories)
+    * [Tags](#tags)
+    * [Comments](#comments)
 
 <!-- tocstop -->
 
@@ -56,7 +56,7 @@ module and are continuously validated against the following WordPress versions:
 | Search         |                   `/search` |  ⬜   |  N/A   |  N/A   |  N/A   | Search across public content.      |
 | Taxonomies     |               `/taxonomies` |  ⬜   |  N/A   |  N/A   |  N/A   | Taxonomy metadata.                 |
 | Post Types     |                    `/types` |  ✅   |  N/A   |  N/A   |  N/A   | Registered post type metadata.     |
-| Statuses       |                 `/statuses` |  ⬜   |  N/A   |  N/A   |  N/A   | Registered post statuses.          |
+| Statuses       |                 `/statuses` |  ✅   |  N/A   |  N/A   |  N/A   | Registered post statuses.          |
 | Settings       |                 `/settings` |  ⬜   |  N/A   |   ⬜    |  N/A   | Requires elevated permissions.     |
 
 Legend:
@@ -66,13 +66,6 @@ Legend:
 - N/A not applicable
 
 ### Posts
-
-| Endpoint                  | Description     | Status |
-|---------------------------|-----------------|--------|
-| `GET /wp/v2/types`        | List Post Types | ✅      |
-| `GET /wp/v2/types/<name>` | Get Post Type   | ✅      |
-
-### Post Types
 
 | Endpoint                   | Description     | Status |
 |----------------------------|-----------------|--------|
@@ -131,3 +124,21 @@ Legend:
 | `GET /wp/v2/comments/<id>`    | Retrieve a Comment | ⬜      |
 | `POST /wp/v2/comments/<id>`   | Update a Comment   | ⬜      |
 | `DELETE /wp/v2/comments/<id>` | Delete a Comment   | ⬜      |
+
+### Post Types
+
+| Endpoint                  | Description     | Status |
+|---------------------------|-----------------|--------|
+| `GET /wp/v2/types`        | List Post Types | ✅      |
+| `GET /wp/v2/types/<name>` | Get Post Type   | ✅      |
+
+### Statuses
+
+| Endpoint                     | Description   | Status |
+|------------------------------|---------------|--------|
+| `GET /wp/v2/statuses`        | List Statuses | ✅      |
+| `GET /wp/v2/statuses/<name>` | Get Status    | ✅      |
+
+
+
+

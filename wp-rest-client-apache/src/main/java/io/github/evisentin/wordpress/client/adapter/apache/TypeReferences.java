@@ -14,6 +14,7 @@ interface TypeReferences {
     TypeReference<WpCategory> WP_CATEGORY_TYPEREFERENCE = new TypeReference<>() {};
     TypeReference<WpPost> WP_POST_TYPEREFERENCE = new TypeReference<>() {};
     TypeReference<WpPostType> WP_POST_TYPE_TYPEREFERENCE = new TypeReference<>() {};
+    TypeReference<WpStatus> WP_STATUS_TYPE_REFERENCE = new TypeReference<>() {};
     TypeReference<WpMedia> WP_MEDIA_TYPEREFERENCE = new TypeReference<>() {};
     TypeReference<WpTag> WP_TAG_TYPEREFERENCE = new TypeReference<>() {};
 
@@ -28,4 +29,5 @@ interface TypeReferences {
     TypeReference<List<WpTag>> WP_TAG_LIST_TYPEREFERENCE = new TypeReference<>() {};
 
     TypeReference<Map<String, WpPostType>> WP_POST_TYPES_MAP_TYPEREFERENCE = new TypeReference<>() {};
+    TypeReference<Map<String, WpStatus>> WP_STATUSES_MAP_TYPEREFERENCE = new TypeReference<>() {};
 }

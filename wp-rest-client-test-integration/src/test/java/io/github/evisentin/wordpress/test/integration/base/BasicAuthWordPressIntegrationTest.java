@@ -1249,6 +1249,27 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
         }
     }
 
+    @DisplayName("Status APIs - Integration Tests")
+    @Nested
+    class StatusTests {
+
+        @DisplayName("'LIST' works")
+        @Test
+        void list__works_with_just_paging() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN
+            final Map<String, WpStatus> response = adminClient.getStatuses();
+
+            // THEN
+            assertThat(response)
+                    .containsKeys(
+                            "publish", "future", "draft", "pending", "private", "trash");
+        }
+    }
+
     @DisplayName("Tag APIs - Integration Tests")
     @Nested
     class TagTests {

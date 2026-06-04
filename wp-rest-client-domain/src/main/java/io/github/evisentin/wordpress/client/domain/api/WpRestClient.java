@@ -1,5 +1,7 @@
 package io.github.evisentin.wordpress.client.domain.api;
 
+import io.github.evisentin.wordpress.client.domain.api.operations.*;
+
 /**
  * Main entry point for interacting with the WordPress REST API.
  *
@@ -22,5 +24,5 @@ package io.github.evisentin.wordpress.client.domain.api;
  * <p>Implementations are expected to communicate with the standard WordPress REST API endpoints under
  * {@code /wp-json/wp/v2} or compatible APIs.</p>
  */
-public interface WpRestClient extends CategoryOperations, MediaOperations, PostOperations, PostTypesOperations, TagOperations {
+public interface WpRestClient extends CategoryOperations, MediaOperations, PostOperations, PostTypesOperations, StatusOperations, TagOperations {
 }

@@ -166,8 +166,8 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         this.httpClient = httpClientBuilder.build();
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
     public WpCategory createCategory(final @NonNull WpCategoryCreateUpdateRequest creationRequest) {
         if (isBlank(creationRequest.getName()))
             throw new IllegalArgumentException("name cannot be blank");
@@ -190,8 +190,8 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performPostWithFileUpload(builder, file, fileName, mimeType, WP_MEDIA_TYPEREFERENCE);
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
     public WpPost createPost(final @NonNull WpPostCreateUpdateRequest creationRequest) {
 
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/posts", Map.of(API_URL, apiUrl));
@@ -199,8 +199,8 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performPostWithBody(builder, creationRequest, WP_POST_TYPEREFERENCE);
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
     public WpTag createTag(final @NonNull WpTagCreateUpdateRequest creationRequest) {
         if (isBlank(creationRequest.getName()))
             throw new IllegalArgumentException("name cannot be blank");
@@ -209,8 +209,8 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performPostWithBody(builder, creationRequest, WP_TAG_TYPEREFERENCE);
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
     public WpCategoryDeletionResponse deleteCategory(final long id) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/categories/${id}", Map.of(API_URL, apiUrl, "id", id));
 
@@ -233,8 +233,8 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performDeleteRequest(builder, WP_MEDIA_DELETION_RESPONSE_TYPEREFERENCE);
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
     public WpPostDeletionResponse deletePost(final long id) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/posts/${id}", Map.of(API_URL, apiUrl, "id", id));
 
@@ -243,8 +243,8 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performDeleteRequest(builder, WP_POST_DELETION_RESPONSE_TYPEREFERENCE);
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
     public WpTagDeletionResponse deleteTag(final long id) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/tags/${id}", Map.of(API_URL, apiUrl, "id", id));
 
@@ -255,8 +255,8 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performDeleteRequest(builder, WP_TAG_DELETION_RESPONSE_TYPEREFERENCE);
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
     public WpCategory getCategory(final long id, final WpContext context) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/categories/${id}", Map.of(API_URL, apiUrl, "id", id));
         builder.addParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
@@ -273,14 +273,14 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performGetRequest(builder, WP_MEDIA_TYPEREFERENCE);
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
     public WpPost getPost(final long id, final WpContext context) {
         return getPost(id, context, null);
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
     public WpPost getPost(final long id, final WpContext context, final String password) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/posts/${id}", Map.of(API_URL, apiUrl, "id", id));
         builder.addParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
@@ -309,8 +309,27 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performGetRequest(builder, WP_POST_TYPES_MAP_TYPEREFERENCE);
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
+    public WpStatus getStatus(final @NonNull String name) {
+        if (isBlank(name))
+            throw new IllegalArgumentException("name cannot be blank");
+
+        final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/statuses/${name}", Map.of(API_URL, apiUrl, "name", name));
+
+        return performGetRequest(builder, WP_STATUS_TYPE_REFERENCE);
+    }
+
+    @Override
+    @SneakyThrows
+    public Map<String, WpStatus> getStatuses() {
+        final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/statuses", Map.of(API_URL, apiUrl));
+
+        return performGetRequest(builder, WP_STATUSES_MAP_TYPEREFERENCE);
+    }
+
+    @Override
+    @SneakyThrows
     public WpTag getTag(final long id, final WpContext context) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/tags/${id}", Map.of(API_URL, apiUrl, "id", id));
         builder.addParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
@@ -318,8 +337,8 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performGetRequest(builder, WP_TAG_TYPEREFERENCE);
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
     public WpPagedResponse<WpCategory> listCategories(final @NonNull WpPagingQuery pageQuery,
                                                       final WpCategoryQuery categoryQuery) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/categories", Map.of(API_URL, apiUrl));
@@ -346,8 +365,8 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performPagingRequest(builder, pageQuery, WP_MEDIA_LIST_TYPEREFERENCE);
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
     public WpPagedResponse<WpPost> listPosts(final @NonNull WpPagingQuery pageQuery,
                                              final WpPostQuery postQuery) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/posts", Map.of(API_URL, apiUrl));
@@ -360,8 +379,8 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performPagingRequest(builder, pageQuery, WP_POST_LIST_TYPEREFERENCE);
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
     public WpPagedResponse<WpTag> listTags(final @NonNull WpPagingQuery pageQuery,
                                            final WpTagQuery tagQuery) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/tags", Map.of(API_URL, apiUrl));
@@ -374,8 +393,8 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performPagingRequest(builder, pageQuery, WP_TAG_LIST_TYPEREFERENCE);
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
     public WpPost trashPost(final long id) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/posts/${id}", Map.of(API_URL, apiUrl, "id", id));
 
@@ -384,8 +403,8 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performDeleteRequest(builder, WP_POST_TYPEREFERENCE);
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
     public WpCategory updateCategory(final long id,
                                      final @NonNull WpCategoryCreateUpdateRequest updateRequest) {
 
@@ -403,8 +422,8 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performPostWithBody(builder, updateRequest, WP_MEDIA_TYPEREFERENCE);
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
     public WpPost updatePost(final long id,
                              final @NonNull WpPostCreateUpdateRequest updateRequest) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/posts/${id}", Map.of(API_URL, apiUrl, "id", id));
@@ -412,8 +431,8 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         return performPostWithBody(builder, updateRequest, WP_POST_TYPEREFERENCE);
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
     public WpTag updateTag(final long id,
                            final @NonNull WpTagCreateUpdateRequest updateRequest) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/tags/${id}", Map.of(API_URL, apiUrl, "id", id));

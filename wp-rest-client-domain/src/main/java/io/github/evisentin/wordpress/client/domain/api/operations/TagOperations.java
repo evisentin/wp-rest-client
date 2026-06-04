@@ -1,4 +1,4 @@
-package io.github.evisentin.wordpress.client.domain.api;
+package io.github.evisentin.wordpress.client.domain.api.operations;
 
 import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
 import io.github.evisentin.wordpress.client.domain.model.WpTag;

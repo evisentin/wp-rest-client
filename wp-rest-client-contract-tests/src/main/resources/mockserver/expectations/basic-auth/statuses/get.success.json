@@ -1,0 +1,51 @@
+[
+    {
+        "httpRequest": {
+            "method": "GET",
+            "path": "/wp-json/wp/v2/statuses/publish",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ]
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "name": "Published",
+                    "public": true,
+                    "queryable": true,
+                    "slug": "publish",
+                    "date_floating": false,
+                    "_links": {
+                        "archives": [
+                            {
+                                "href": "http://localhost:8080/wp-json/wp/v2/posts"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+]
