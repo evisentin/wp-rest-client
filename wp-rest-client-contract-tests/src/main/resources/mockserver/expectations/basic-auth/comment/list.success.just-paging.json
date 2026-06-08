@@ -1,0 +1,175 @@
+[
+    {
+        "httpRequest": {
+            "method": "GET",
+            "path": "/wp-json/wp/v2/comments",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ],
+            "queryStringParameters": {
+                "per_page": [
+                    "10"
+                ],
+                "page": [
+                    "1"
+                ]
+            }
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "X-WP-Total",
+                    "values": [
+                        "2"
+                    ]
+                },
+                {
+                    "name": "X-WP-TotalPages",
+                    "values": [
+                        "1"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": [
+                    {
+                        "id": 4,
+                        "post": 8,
+                        "parent": 0,
+                        "author": 1,
+                        "author_name": "admin",
+                        "author_url": "http:\/\/localhost:8080",
+                        "date": "2026-06-05T08:25:39",
+                        "date_gmt": "2026-06-05T08:25:39",
+                        "content": {
+                            "rendered": "<p>sample comment #2<\/p>\n"
+                        },
+                        "link": "http:\/\/localhost:8080\/archives\/8#comment-4",
+                        "status": "approved",
+                        "type": "comment",
+                        "author_avatar_urls": {
+                            "24": "https:\/\/secure.gravatar.com\/avatar\/258d8dc916db8cea2cafb6c3cd0cb0246efe061421dbd83ec3a350428cabda4f?s=24&d=mm&r=g",
+                            "48": "https:\/\/secure.gravatar.com\/avatar\/258d8dc916db8cea2cafb6c3cd0cb0246efe061421dbd83ec3a350428cabda4f?s=48&d=mm&r=g",
+                            "96": "https:\/\/secure.gravatar.com\/avatar\/258d8dc916db8cea2cafb6c3cd0cb0246efe061421dbd83ec3a350428cabda4f?s=96&d=mm&r=g"
+                        },
+                        "meta": {
+                            "_wp_note_status": null
+                        },
+                        "_links": {
+                            "self": [
+                                {
+                                    "href": "http:\/\/localhost:8080\/wp-json\/wp\/v2\/comments\/4",
+                                    "targetHints": {
+                                        "allow": [
+                                            "GET",
+                                            "POST",
+                                            "PUT",
+                                            "PATCH",
+                                            "DELETE"
+                                        ]
+                                    }
+                                }
+                            ],
+                            "collection": [
+                                {
+                                    "href": "http:\/\/localhost:8080\/wp-json\/wp\/v2\/comments"
+                                }
+                            ],
+                            "author": [
+                                {
+                                    "embeddable": true,
+                                    "href": "http:\/\/localhost:8080\/wp-json\/wp\/v2\/users\/1"
+                                }
+                            ],
+                            "up": [
+                                {
+                                    "embeddable": true,
+                                    "post_type": "post",
+                                    "href": "http:\/\/localhost:8080\/wp-json\/wp\/v2\/posts\/8"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "id": 3,
+                        "post": 8,
+                        "parent": 0,
+                        "author": 1,
+                        "author_name": "admin",
+                        "author_url": "http:\/\/localhost:8080",
+                        "date": "2026-06-05T08:25:28",
+                        "date_gmt": "2026-06-05T08:25:28",
+                        "content": {
+                            "rendered": "<p>sample comment #1<\/p>\n"
+                        },
+                        "link": "http:\/\/localhost:8080\/archives\/8#comment-3",
+                        "status": "approved",
+                        "type": "comment",
+                        "author_avatar_urls": {
+                            "24": "https:\/\/secure.gravatar.com\/avatar\/258d8dc916db8cea2cafb6c3cd0cb0246efe061421dbd83ec3a350428cabda4f?s=24&d=mm&r=g",
+                            "48": "https:\/\/secure.gravatar.com\/avatar\/258d8dc916db8cea2cafb6c3cd0cb0246efe061421dbd83ec3a350428cabda4f?s=48&d=mm&r=g",
+                            "96": "https:\/\/secure.gravatar.com\/avatar\/258d8dc916db8cea2cafb6c3cd0cb0246efe061421dbd83ec3a350428cabda4f?s=96&d=mm&r=g"
+                        },
+                        "meta": {
+                            "_wp_note_status": null
+                        },
+                        "_links": {
+                            "self": [
+                                {
+                                    "href": "http:\/\/localhost:8080\/wp-json\/wp\/v2\/comments\/3",
+                                    "targetHints": {
+                                        "allow": [
+                                            "GET",
+                                            "POST",
+                                            "PUT",
+                                            "PATCH",
+                                            "DELETE"
+                                        ]
+                                    }
+                                }
+                            ],
+                            "collection": [
+                                {
+                                    "href": "http:\/\/localhost:8080\/wp-json\/wp\/v2\/comments"
+                                }
+                            ],
+                            "author": [
+                                {
+                                    "embeddable": true,
+                                    "href": "http:\/\/localhost:8080\/wp-json\/wp\/v2\/users\/1"
+                                }
+                            ],
+                            "up": [
+                                {
+                                    "embeddable": true,
+                                    "post_type": "post",
+                                    "href": "http:\/\/localhost:8080\/wp-json\/wp\/v2\/posts\/8"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    }
+]

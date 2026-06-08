@@ -12,6 +12,10 @@ public final class WordPressAssertions {
         return new WpCategoryAssert(actual);
     }
 
+    public static WpCommentAssert assertThat(final WpComment actual) {
+        return new WpCommentAssert(actual);
+    }
+
     public static WpErrorAssert assertThat(final WpError actual) {
         return new WpErrorAssert(actual);
     }
@@ -42,6 +46,10 @@ public final class WordPressAssertions {
 
     public static WpMediaDeletionResponseAssert assertThat(final WpMediaDeletionResponse actual) {
         return new WpMediaDeletionResponseAssert(actual);
+    }
+
+    public static WpCommentDeletionResponseAssert assertThat(final WpCommentDeletionResponse actual) {
+        return new WpCommentDeletionResponseAssert(actual);
     }
 
     public static WpCategoryDeletionResponseAssert assertThat(final WpCategoryDeletionResponse actual) {

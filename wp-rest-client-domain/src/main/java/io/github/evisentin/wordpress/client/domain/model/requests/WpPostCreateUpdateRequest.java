@@ -13,6 +13,18 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.Set;
 
+/**
+ * Request body used to create or update a WordPress post.
+ *
+ * <p>This model maps the JSON arguments accepted by the WordPress Posts REST API endpoint, including publication
+ * dates, slug, status, password, title, content, excerpt, author, featured media, discussion settings, post format,
+ * sticky flag, template, categories, and tags.</p>
+ *
+ * <p>Null values are omitted during serialization.</p>
+ *
+ * @see <a href="https://developer.wordpress.org/rest-api/reference/posts/#arguments-2">WordPress REST API -
+ * Create a Post Arguments</a>
+ */
 @Getter
 @Setter
 @Builder(setterPrefix = "with")

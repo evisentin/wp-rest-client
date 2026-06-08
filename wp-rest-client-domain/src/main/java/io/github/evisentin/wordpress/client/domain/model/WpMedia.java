@@ -12,19 +12,17 @@ import lombok.Setter;
 /**
  * Represents a WordPress media item as returned by the WordPress REST API.
  *
- * <p>This model maps the JSON structure of a media object, including metadata
- * such as identifiers, publication and modification dates, rendered fields, media metadata, attachment information,
- * publication status, and additional configuration flags.</p>
+ * <p>This model maps the JSON structure of a media object, including metadata such as identifiers, publication and
+ * modification dates, rendered fields, publication status, media type, MIME type, file information, source URL,
+ * alternative text, caption, description, and associated parent post.</p>
  *
- * <p>Media items in WordPress are represented as {@code attachment} posts and
- * expose information such as MIME type, file size, captions, descriptions, and source URLs.</p>
+ * <p>Unknown JSON properties are ignored during deserialization to ensure forward compatibility with the API.</p>
  *
- * <p>Unknown JSON properties are ignored during deserialization to ensure
- * forward compatibility with the API.</p>
+ * @see <a href="https://developer.wordpress.org/rest-api/reference/media/">WordPress REST API - Media</a>
  */
 @Getter
 @Setter
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class WpMedia extends WpResource {

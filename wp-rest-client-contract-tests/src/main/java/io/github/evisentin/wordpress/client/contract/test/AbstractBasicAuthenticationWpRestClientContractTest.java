@@ -5,15 +5,11 @@ import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
 import io.github.evisentin.wordpress.client.domain.assertions.WordPressAssertions;
 import io.github.evisentin.wordpress.client.domain.model.*;
 import io.github.evisentin.wordpress.client.domain.model.enums.*;
+import io.github.evisentin.wordpress.client.domain.model.enums.order.WpCommentOrderFields;
+import io.github.evisentin.wordpress.client.domain.model.enums.order.WpPostOrderFields;
 import io.github.evisentin.wordpress.client.domain.model.query.*;
-import io.github.evisentin.wordpress.client.domain.model.requests.WpCategoryCreateUpdateRequest;
-import io.github.evisentin.wordpress.client.domain.model.requests.WpMediaUpdateRequest;
-import io.github.evisentin.wordpress.client.domain.model.requests.WpPostCreateUpdateRequest;
-import io.github.evisentin.wordpress.client.domain.model.requests.WpTagCreateUpdateRequest;
-import io.github.evisentin.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
-import io.github.evisentin.wordpress.client.domain.model.responses.WpMediaDeletionResponse;
-import io.github.evisentin.wordpress.client.domain.model.responses.WpPostDeletionResponse;
-import io.github.evisentin.wordpress.client.domain.model.responses.WpTagDeletionResponse;
+import io.github.evisentin.wordpress.client.domain.model.requests.*;
+import io.github.evisentin.wordpress.client.domain.model.responses.*;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -21,12 +17,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,11 +35,11 @@ import static io.github.evisentin.wordpress.client.contract.test.WpAssertions.as
 import static io.github.evisentin.wordpress.client.contract.test.WpAssertions.assertThrowsWpForbidden;
 import static io.github.evisentin.wordpress.client.contract.test.WpAssertions.assertThrowsWpNotFound;
 import static io.github.evisentin.wordpress.client.contract.test.WpAssertions.assertThrowsWpUnauthorized;
+import static io.github.evisentin.wordpress.client.domain.model.enums.WpCommentStatus.APPROVED;
 import static io.github.evisentin.wordpress.client.domain.model.enums.WpContext.EDIT;
 import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.DRAFT;
 import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.PRIVATE;
 import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.PUBLISH;
-import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.TRASH;
 import static io.github.evisentin.wordpress.client.domain.model.enums.WpSortDirection.ASC;
 import static io.github.evisentin.wordpress.client.domain.model.enums.WpTaxonomy.CATEGORY;
 import static io.github.evisentin.wordpress.client.domain.model.enums.WpTaxonomy.POST_TAG;
@@ -973,6 +972,602 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         }
     }
 
+    @DisplayName("'COMMENT' Operations")
+    @Nested
+    class CommentTests {
+
+        @DisplayName("'CREATE' fails on HTTP BAD REQUEST")
+        @Test
+        void createFailsOnBadRequest() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/create.failure.bad-request.json");
+
+            final String CONTENT = "My Content";
+
+            final WpCommentCreateUpdateRequest createRequest =
+                    WpCommentCreateUpdateRequest.builder()
+                                                .withContent(CONTENT)
+                                                .withPostId(8L)
+                                                .build();
+
+            // WHEN/THEN
+            assertThrowsWpBadRequest(() -> client.createComment(createRequest));
+        }
+
+        @DisplayName("'CREATE' fails on blank content")
+
+        @ParameterizedTest
+        @ValueSource(strings = {"", " "})
+        void createFailsOnBlankContent(String content) {
+
+            final WpCommentCreateUpdateRequest createRequest =
+                    WpCommentCreateUpdateRequest.builder()
+                                                .withContent(content)
+                                                .withPostId(8L)
+                                                .build();
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.createComment(createRequest))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("content cannot be blank");
+        }
+
+        @DisplayName("'CREATE' fails on HTTP FORBIDDEN")
+        @Test
+        void createFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/create.failure.forbidden.json");
+
+            final String CONTENT = "My Content";
+
+            final WpCommentCreateUpdateRequest createRequest =
+                    WpCommentCreateUpdateRequest.builder()
+                                                .withContent(CONTENT)
+                                                .withPostId(8L)
+                                                .build();
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.createComment(createRequest));
+        }
+
+        @DisplayName("'CREATE' fails on null request")
+        @Test
+        void createFailsOnNullRequest() {
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.createComment(null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("creationRequest is marked non-null but is null");
+        }
+
+        @DisplayName("'CREATE' fails on HTTP UNAUTHORIZED")
+        @Test
+        void createFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/create.failure.unauthorized.json");
+
+            final String CONTENT = "My Content";
+
+            final WpCommentCreateUpdateRequest createRequest =
+                    WpCommentCreateUpdateRequest.builder()
+                                                .withContent(CONTENT)
+                                                .withPostId(8L)
+                                                .build();
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.createComment(createRequest));
+        }
+
+        @DisplayName("'CREATE' works")
+        @Test
+        void createWorks() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/create.success.json");
+
+            // WHEN
+
+            WpCommentCreateUpdateRequest createUpdateRequest =
+                    WpCommentCreateUpdateRequest.builder()
+                                                .withPostId(8L)
+                                                .withAuthorName("admin")
+                                                .withAuthorIp("10.0.0.1")
+                                                .withAuthorId(1L)
+                                                .withAuthorEmail("a@a.com")
+                                                .withAuthorUrl("http://aa.com")
+                                                .withStatus(APPROVED)
+                                                .withContent("This is a test comment created via the WordPress REST API")
+                                                .withDate(LocalDateTime.of(2025, 8, 7, 10, 30, 0))
+                                                .withDateGMT(LocalDateTime.of(2025, 8, 7, 8, 30, 0))
+                                                .build();
+
+            final WpComment comment = client.createComment(createUpdateRequest);
+
+            // THEN
+            WordPressAssertions.assertThat(comment)
+                               .isNotNull()
+                               .hasId(10L)
+                               .hasPost(8L)
+                               .hasParent(0L)
+                               .hasAuthorId(1L)
+                               .hasAuthorName("admin")
+                               .hasStatus(APPROVED)
+                               .hasContentSatisfying(c -> c.hasRaw("This is a test comment created via the WordPress REST API"));
+        }
+
+        @DisplayName("'CREATE' works with password")
+        @Test
+        void createWorksWithPassword() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/create.success.with-password.json");
+
+            // WHEN
+
+            WpCommentCreateUpdateRequest createUpdateRequest =
+                    WpCommentCreateUpdateRequest.builder()
+                                                .withPostId(8L)
+                                                .withAuthorName("admin")
+                                                .withAuthorIp("10.0.0.1")
+                                                .withAuthorId(1L)
+                                                .withAuthorEmail("a@a.com")
+                                                .withAuthorUrl("http://aa.com")
+                                                .withStatus(APPROVED)
+                                                .withContent("This is a test comment created via the WordPress REST API")
+                                                .withDate(LocalDateTime.of(2025, 8, 7, 10, 30, 0))
+                                                .withDateGMT(LocalDateTime.of(2025, 8, 7, 8, 30, 0))
+                                                .withPassword("my-password")
+                                                .build();
+
+            final WpComment comment = client.createComment(createUpdateRequest);
+
+            // THEN
+            WordPressAssertions.assertThat(comment)
+                               .isNotNull()
+                               .hasId(12L)
+                               .hasPost(8L)
+                               .hasParent(0L)
+                               .hasAuthorId(1L)
+                               .hasAuthorName("admin")
+                               .hasStatus(APPROVED)
+                               .hasContentSatisfying(c -> c.hasRaw("This is a test comment created via the WordPress REST API"));
+        }
+
+        @DisplayName("'DELETE' fails on HTTP FORBIDDEN")
+        @Test
+        void deleteFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/delete.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.deleteComment(13L));
+        }
+
+        @DisplayName("'DELETE' fails on HTTP NOT FOUND")
+        @Test
+        void deleteFailsOnNotFound() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/delete.failure.not-found.json");
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.deleteComment(13L));
+        }
+
+        @DisplayName("'DELETE' fails on HTTP UNAUTHORIZED")
+        @Test
+        void deleteFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/delete.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.deleteComment(13L));
+        }
+
+        @DisplayName("'DELETE' works")
+        @Test
+        void deleteWorks() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/delete.success.json");
+
+            // WHEN
+            final WpCommentDeletionResponse response = client.deleteComment(13L);
+
+            // THEN
+
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .isDeleted()
+                               .hasPreviousSatisfying(summary ->
+                                       summary.isNotNull()
+                                              .hasId(13L)
+                                              .hasStatus(APPROVED)
+                               );
+        }
+
+        @DisplayName("'GET' fails on HTTP FORBIDDEN")
+        @Test
+        void getFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/get.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.getComment(12L, null));
+        }
+
+        @DisplayName("'GET' fails on HTTP NOT FOUND")
+        @Test
+        void getFailsOnNotFound() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/get.failure.not-found.json");
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.getComment(12L, null));
+        }
+
+        @DisplayName("'GET' fails on HTTP UNAUTHORIZED")
+        @Test
+        void getFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/get.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.getComment(12L, null));
+        }
+
+        @DisplayName("'GET' works (with context)")
+        @Test
+        void getWorksWithContext() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/get.success.with-context.json");
+
+            final Long id = 12L;
+
+            // WHEN
+            final WpComment comment = client.getComment(id, EDIT);
+
+            // THEN
+            WordPressAssertions.assertThat(comment)
+                               .isNotNull()
+                               .hasId(id)
+                               .hasStatus(APPROVED);
+        }
+
+        @DisplayName("'GET' works (with context and password)")
+        @Test
+        void getWorksWithContextAndPassword() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/get.success.with-context-and-password.json");
+
+            final Long id = 12L;
+
+            // WHEN
+            final WpComment comment = client.getComment(id, EDIT, "my-password");
+
+            // THEN
+            WordPressAssertions.assertThat(comment)
+                               .isNotNull()
+                               .hasId(id)
+                               .hasStatus(APPROVED);
+        }
+
+        @DisplayName("'GET' works (with no context - default)")
+        @Test
+        void getWorksWithNoContext() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/get.success.without-context.json");
+
+            final Long id = 12L;
+
+            // WHEN
+            final WpComment comment = client.getComment(id, null);
+
+            // THEN
+            WordPressAssertions.assertThat(comment)
+                               .isNotNull()
+                               .hasId(id)
+                               .hasStatus(APPROVED);
+        }
+
+        @DisplayName("'LIST' fails on HTTP FORBIDDEN")
+        @Test
+        void listFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/list.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.listComments(WpPagingQuery.of(1, 10), null));
+        }
+
+        @DisplayName("'LIST' fails on null pageQuery")
+        @Test
+        void listFailsOnNullPaging() {
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.listComments(null, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("pageQuery is marked non-null but is null");
+        }
+
+        @DisplayName("'LIST' fails on HTTP UNAUTHORIZED")
+        @Test
+        void listFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/list.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.listComments(WpPagingQuery.of(1, 10), null));
+        }
+
+        @DisplayName("'LIST' works with paging")
+        @Test
+        void listWorksWithJustPaging() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/list.success.just-paging.json");
+
+            // WHEN
+            final WpPagedResponse<WpComment> response = client.listComments(WpPagingQuery.of(1, 10), null);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(2)
+                               .doesNotHaveNextPage()
+                               .satisfies(r ->
+                                       WordPressAssertions.assertThat(r.getItems().get(0))
+                                                          .isNotNull()
+                                                          .hasId(4L)
+                                                          .hasPost(8L)
+                                                          .hasAuthorId(1L)
+                                                          .hasAuthorName("admin")
+                                                          .hasAuthorUrl("http://localhost:8080")
+                                                          .hasLink("http://localhost:8080/archives/8#comment-4")
+                                                          .hasStatus(APPROVED)
+                                                          .hasType("comment")
+                               ).satisfies(r ->
+                                       WordPressAssertions.assertThat(r.getItems().get(1))
+                                                          .isNotNull()
+                                                          .hasId(3L)
+                                                          .hasPost(8L)
+                                                          .hasAuthorId(1L)
+                                                          .hasAuthorName("admin")
+                                                          .hasAuthorUrl("http://localhost:8080")
+                                                          .hasLink("http://localhost:8080/archives/8#comment-3")
+                                                          .hasStatus(APPROVED)
+                                                          .hasType("comment")
+                               );
+        }
+
+        @DisplayName("'LIST' works with paging and query")
+        @Test
+        void listWorksWithPagingAndQuery() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/list.success.paging-and-query.json");
+
+            // WHEN
+            final WpCommentQuery commentQuery = WpCommentQuery.builder()
+                                                              .withStatus(APPROVED)
+                                                              .withOrder(ASC)
+                                                              .withOrderBy(WpCommentOrderFields.ID)
+                                                              .build();
+
+            // WHEN
+            final WpPagedResponse<WpComment> response = client.listComments(WpPagingQuery.of(1, 10), commentQuery);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(2)
+                               .doesNotHaveNextPage()
+
+                               .satisfies(r ->
+                                       WordPressAssertions.assertThat(r.getItems().get(0))
+                                                          .isNotNull()
+                                                          .hasId(3L)
+                                                          .hasPost(8L)
+                                                          .hasAuthorId(1L)
+                                                          .hasAuthorName("admin")
+                                                          .hasAuthorUrl("http://localhost:8080")
+                                                          .hasLink("http://localhost:8080/archives/8#comment-3")
+                                                          .hasStatus(APPROVED)
+                                                          .hasType("comment")
+                               )
+                               .satisfies(r ->
+                                       WordPressAssertions.assertThat(r.getItems().get(1))
+                                                          .isNotNull()
+                                                          .hasId(4L)
+                                                          .hasPost(8L)
+                                                          .hasAuthorId(1L)
+                                                          .hasAuthorName("admin")
+                                                          .hasAuthorUrl("http://localhost:8080")
+                                                          .hasLink("http://localhost:8080/archives/8#comment-4")
+                                                          .hasStatus(APPROVED)
+                                                          .hasType("comment")
+                               );
+        }
+
+        @DisplayName("'TRASH' fails on HTTP FORBIDDEN")
+        @Test
+        void trashFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/trash.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.trashComment(12L));
+        }
+
+        @DisplayName("'TRASH' fails on HTTP NOT FOUND")
+        @Test
+        void trashFailsOnNotFound() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/trash.failure.not-found.json");
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.trashComment(12L));
+        }
+
+        @DisplayName("'TRASH' fails on HTTP UNAUTHORIZED")
+        @Test
+        void trashFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/trash.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.trashComment(12L));
+        }
+
+        @DisplayName("'TRASH' works")
+        @Test
+        void trashWorks() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/trash.success.json");
+
+            // WHEN
+            final WpComment comment = client.trashComment(12L);
+
+            // THEN
+            WordPressAssertions.assertThat(comment)
+                               .isNotNull()
+                               .hasId(12L)
+                               .hasStatus(WpCommentStatus.TRASH);
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP BAD REQUEST")
+        @Test
+        void updateFailsOnBadRequest() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/update.failure.bad-request.json");
+
+            final String CONTENT = "My Content";
+
+            WpCommentCreateUpdateRequest updateRequest =
+                    WpCommentCreateUpdateRequest.builder()
+                                                .withContent(CONTENT + " UPDATED")
+                                                .build();
+
+            // WHEN/THEN
+            assertThrowsWpBadRequest(() -> client.updateComment(12L, updateRequest));
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP FORBIDDEN")
+        @Test
+        void updateFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/update.failure.forbidden.json");
+
+            final String CONTENT = "My Content";
+
+            WpCommentCreateUpdateRequest updateRequest =
+                    WpCommentCreateUpdateRequest.builder()
+                                                .withContent(CONTENT + " UPDATED")
+                                                .build();
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.updateComment(12L, updateRequest));
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
+        @Test
+        void updateFailsOnNotFound() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/update.failure.not-found.json");
+
+            final String CONTENT = "My Content";
+
+            WpCommentCreateUpdateRequest updateRequest =
+                    WpCommentCreateUpdateRequest.builder()
+                                                .withContent(CONTENT + " UPDATED")
+                                                .build();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.updateComment(12L, updateRequest));
+        }
+
+        @DisplayName("'UPDATE' fails on null request")
+        @Test
+        void updateFailsOnNullRequest() {
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.updateComment(1000L, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("updateRequest is marked non-null but is null");
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP UNAUTHORIZED")
+        @Test
+        void updateFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/update.failure.unauthorized.json");
+            final String CONTENT = "My Content";
+
+            WpCommentCreateUpdateRequest updateRequest =
+                    WpCommentCreateUpdateRequest.builder()
+                                                .withContent(CONTENT + " UPDATED")
+                                                .build();
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.updateComment(12L, updateRequest));
+        }
+
+        @DisplayName("'UPDATE' works")
+        @Test
+        void updateWorks() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/comment/update.success.json");
+
+            final String CONTENT = "My Content";
+
+            final String CONTENT_UPDATED = CONTENT + " UPDATED";
+            WpCommentCreateUpdateRequest updateRequest =
+                    WpCommentCreateUpdateRequest.builder()
+                                                .withContent(CONTENT_UPDATED)
+                                                .build();
+
+            // WHEN
+            val comment = client.updateComment(12L, updateRequest);
+
+            // THEN
+            WordPressAssertions.assertThat(comment)
+                               .isNotNull()
+                               .hasId(12L)
+                               .hasPost(8L)
+                               .hasParent(0L)
+                               .hasAuthorId(1L)
+                               .hasAuthorName("admin")
+                               .hasStatus(APPROVED)
+                               .hasContentSatisfying(c -> c.hasRaw(CONTENT_UPDATED));
+        }
+    }
+
     @DisplayName("'POST' Operations")
     @Nested
     class PostTests {
@@ -1387,7 +1982,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final WpPostQuery postQuery = WpPostQuery.builder()
                                                      .withStatuses(Set.of(DRAFT, PRIVATE))
                                                      .withOrder(ASC)
-                                                     .withOrderBy(WpTagOrderFields.ID)
+                                                     .withOrderBy(WpPostOrderFields.ID)
                                                      .build();
 
             final WpPagedResponse<WpPost> response = client.listPosts(WpPagingQuery.of(1, 10), postQuery);
@@ -1459,7 +2054,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             // THEN
             WordPressAssertions.assertThat(post)
                                .isNotNull()
-                               .hasStatus(TRASH);
+                               .hasStatus(WpPostStatus.TRASH);
         }
 
         @DisplayName("'UPDATE' fails on HTTP BAD REQUEST")
@@ -1603,6 +2198,23 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
         @DisplayName("'GET' succeeds")
         @Test
+        void getFailsOnBlankOrNullParameter() {
+
+            assertThatThrownBy(() -> client.getPostType(null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("name is marked non-null but is null");
+
+            assertThatThrownBy(() -> client.getPostType(""))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("name cannot be blank");
+
+            assertThatThrownBy(() -> client.getPostType("    "))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("name cannot be blank");
+        }
+
+        @DisplayName("'GET' succeeds")
+        @Test
         void getSucceeds() {
 
             // GIVEN
@@ -1693,6 +2305,80 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                             "navigation",
                             "font-families",
                             "font-families/(?P<font_family_id>[\\d]+)/font-faces");
+        }
+    }
+
+    @DisplayName("'STATUS' Operations")
+    @Nested
+    class StatusTests {
+
+        @DisplayName("'GET' succeeds")
+        @Test
+        void getFailsOnBlankOrNullParameter() {
+
+            assertThatThrownBy(() -> client.getStatus(null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("name is marked non-null but is null");
+
+            assertThatThrownBy(() -> client.getStatus(""))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("name cannot be blank");
+
+            assertThatThrownBy(() -> client.getStatus("    "))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("name cannot be blank");
+        }
+
+        @DisplayName("'GET' succeeds")
+        @Test
+        void getSucceeds() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/statuses/get.success.json");
+
+            // WHEN
+            final WpStatus status = client.getStatus("publish");
+
+            // THEN
+            assertThat(status)
+                    .isNotNull();
+        }
+
+        @DisplayName("'LIST' fails on HTTP FORBIDDEN")
+        @Test
+        void listFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/statuses/list.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.getStatuses());
+        }
+
+        @DisplayName("'LIST' fails on HTTP UNAUTHORIZED")
+        @Test
+        void listFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/statuses/list.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.getStatuses());
+        }
+
+        @DisplayName("'LIST' succeeds")
+        @Test
+        void listSucceeds() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/statuses/list.success.json");
+
+            // WHEN
+            final Map<String, WpStatus> statuses = client.getStatuses();
+
+            // THEN
+            assertThat(statuses)
+                    .containsOnlyKeys("publish", "future", "draft", "pending", "private", "trash");
         }
     }
 

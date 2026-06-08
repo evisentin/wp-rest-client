@@ -87,7 +87,7 @@ class MediaQueryParamMapperTest extends ParamMapperTest {
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.EDIT.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, "id"));
+                        ORDER_BY, WpMediaOrderFields.ID.getValue()));
     }
 
     @Test
@@ -157,7 +157,7 @@ class MediaQueryParamMapperTest extends ParamMapperTest {
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.DESC.getValue(),
-                        ORDER_BY, "id"));
+                        ORDER_BY, WpMediaOrderFields.ID.getValue()));
     }
 
     @Test

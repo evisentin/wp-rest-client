@@ -20,6 +20,7 @@
     <module>wp-rest-client-test-integration</module>
     <module>wp-rest-client-test-report</module>
     <module>wp-rest-client-contract-tests</module>
+    <module>samples</module>
   </modules>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <properties>
@@ -67,7 +68,7 @@
     <junit.version>6.1.0</junit.version>
     <assertj.version>3.27.7</assertj.version>
     <mockito.version>5.23.0</mockito.version>
-    <mockserver-junit-jupiter.version>5.15.0</mockserver-junit-jupiter.version>
+    <mockserver-junit-jupiter.version>7.0.0</mockserver-junit-jupiter.version>
   </properties>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <licenses>

@@ -1,0 +1,123 @@
+[
+    {
+        "httpRequest": {
+            "method": "GET",
+            "path": "/wp-json/wp/v2/statuses",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ]
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "publish": {
+                        "name": "Published",
+                        "public": true,
+                        "queryable": true,
+                        "slug": "publish",
+                        "date_floating": false,
+                        "_links": {
+                            "archives": [
+                                {
+                                    "href": "http://localhost:8080/wp-json/wp/v2/posts"
+                                }
+                            ]
+                        }
+                    },
+                    "future": {
+                        "name": "Scheduled",
+                        "public": false,
+                        "queryable": false,
+                        "slug": "future",
+                        "date_floating": false,
+                        "_links": {
+                            "archives": [
+                                {
+                                    "href": "http://localhost:8080/wp-json/wp/v2/posts?status=future"
+                                }
+                            ]
+                        }
+                    },
+                    "draft": {
+                        "name": "Draft",
+                        "public": false,
+                        "queryable": false,
+                        "slug": "draft",
+                        "date_floating": true,
+                        "_links": {
+                            "archives": [
+                                {
+                                    "href": "http://localhost:8080/wp-json/wp/v2/posts?status=draft"
+                                }
+                            ]
+                        }
+                    },
+                    "pending": {
+                        "name": "Pending",
+                        "public": false,
+                        "queryable": false,
+                        "slug": "pending",
+                        "date_floating": true,
+                        "_links": {
+                            "archives": [
+                                {
+                                    "href": "http://localhost:8080/wp-json/wp/v2/posts?status=pending"
+                                }
+                            ]
+                        }
+                    },
+                    "private": {
+                        "name": "Private",
+                        "public": false,
+                        "queryable": false,
+                        "slug": "private",
+                        "date_floating": false,
+                        "_links": {
+                            "archives": [
+                                {
+                                    "href": "http://localhost:8080/wp-json/wp/v2/posts?status=private"
+                                }
+                            ]
+                        }
+                    },
+                    "trash": {
+                        "name": "Trash",
+                        "public": false,
+                        "queryable": false,
+                        "slug": "trash",
+                        "date_floating": false,
+                        "_links": {
+                            "archives": [
+                                {
+                                    "href": "http://localhost:8080/wp-json/wp/v2/posts?status=trash"
+                                }
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+]

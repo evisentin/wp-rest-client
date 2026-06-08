@@ -3,19 +3,17 @@ package io.github.evisentin.wordpress.test.integration.base;
 import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
 import io.github.evisentin.wordpress.client.domain.assertions.WordPressAssertions;
 import io.github.evisentin.wordpress.client.domain.model.*;
-import io.github.evisentin.wordpress.client.domain.model.enums.*;
+import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
+import io.github.evisentin.wordpress.client.domain.model.enums.WpMediaType;
+import io.github.evisentin.wordpress.client.domain.model.enums.WpOpenClosed;
+import io.github.evisentin.wordpress.client.domain.model.enums.WpTaxonomy;
+import io.github.evisentin.wordpress.client.domain.model.enums.order.WpPostOrderFields;
 import io.github.evisentin.wordpress.client.domain.model.query.WpCategoryQuery;
 import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
 import io.github.evisentin.wordpress.client.domain.model.query.WpPostQuery;
 import io.github.evisentin.wordpress.client.domain.model.query.WpTagQuery;
-import io.github.evisentin.wordpress.client.domain.model.requests.WpCategoryCreateUpdateRequest;
-import io.github.evisentin.wordpress.client.domain.model.requests.WpMediaUpdateRequest;
-import io.github.evisentin.wordpress.client.domain.model.requests.WpPostCreateUpdateRequest;
-import io.github.evisentin.wordpress.client.domain.model.requests.WpTagCreateUpdateRequest;
-import io.github.evisentin.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
-import io.github.evisentin.wordpress.client.domain.model.responses.WpMediaDeletionResponse;
-import io.github.evisentin.wordpress.client.domain.model.responses.WpPostDeletionResponse;
-import io.github.evisentin.wordpress.client.domain.model.responses.WpTagDeletionResponse;
+import io.github.evisentin.wordpress.client.domain.model.requests.*;
+import io.github.evisentin.wordpress.client.domain.model.responses.*;
 import io.github.evisentin.wordpress.test.integration.BaseWordPressIntegrationTest;
 import io.github.evisentin.wordpress.test.integration.base.factory.WpBasicAuthRestClientFactory;
 import lombok.NonNull;
@@ -45,6 +43,7 @@ import static io.github.evisentin.wordpress.client.domain.model.enums.WpTaxonomy
 import static io.github.evisentin.wordpress.client.domain.model.enums.WpTaxonomy.POST_TAG;
 import static io.github.evisentin.wordpress.test.integration.base.SlugUtils.toWordPressSlug;
 import static io.github.evisentin.wordpress.test.integration.base.WpAssertions.assertThrowsWpBadRequest;
+import static io.github.evisentin.wordpress.test.integration.base.WpAssertions.assertThrowsWpForbidden;
 import static io.github.evisentin.wordpress.test.integration.base.WpAssertions.assertThrowsWpNotFound;
 import static java.util.Collections.emptySet;
 
@@ -1103,7 +1102,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             final WpPostQuery postQuery = WpPostQuery.builder()
                                                      .withStatuses(Set.of(DRAFT, PRIVATE))
                                                      .withOrder(ASC)
-                                                     .withOrderBy(WpTagOrderFields.ID)
+                                                     .withOrderBy(WpPostOrderFields.ID)
                                                      .build();
 
             final WpPagedResponse<WpPost> response = adminClient.listPosts(WpPagingQuery.of(1, 10), postQuery);
@@ -1238,18 +1237,35 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // THEN
             assertThat(response)
-                    .containsOnlyKeys(
+                    .containsKeys(
                             "post",
                             "page",
                             "attachment",
                             "nav_menu_item",
                             "wp_block",
                             "wp_template",
-                            "wp_template_part",
-                            "wp_global_styles",
-                            "wp_navigation",
-                            "wp_font_family",
-                            "wp_font_face");
+                            "wp_navigation"); // we might have others, but we are not testing that here
+        }
+    }
+
+    @DisplayName("Status APIs - Integration Tests")
+    @Nested
+    class StatusTests {
+
+        @DisplayName("'LIST' works")
+        @Test
+        void list__works_with_just_paging() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN
+            final Map<String, WpStatus> response = adminClient.getStatuses();
+
+            // THEN
+            assertThat(response)
+                    .containsKeys(
+                            "publish", "future", "draft", "pending", "private", "trash");
         }
     }
 
@@ -1531,6 +1547,168 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
         private String linkForTag(final @NonNull String slug) {
             return String.format("%s/tag/%s/", getHttpsBaseUrl(), slug);
+        }
+    }
+
+    @DisplayName("Comment APIs - Integration Tests")
+    @Nested
+    class CommentTests {
+
+        @Test
+        void create__fails_on_non_existing_parent_post() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN
+            final WpCommentCreateUpdateRequest createUpdateRequest =
+                    WpCommentCreateUpdateRequest.builder()
+                                                .withPostId(1000L) // NON EXISTENT POST
+                                                .withContent("This is my comment")
+                                                .build();
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> adminClient.createComment(createUpdateRequest),
+                    "rest_comment_invalid_post_id",
+                    "Sorry, you are not allowed to create this comment without a post.");
+        }
+
+        @DisplayName("'CREATE' works")
+        @Test
+        void create__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            WpPost existingPost = adminClient.createPost(
+                    WpPostCreateUpdateRequest.builder()
+                                             .withTitle("My Post")
+                                             .withContent("My Content")
+                                             .withStatus(PUBLISH)
+                                             .build());
+
+            // WHEN
+            WpCommentCreateUpdateRequest createUpdateRequest =
+                    WpCommentCreateUpdateRequest.builder()
+                                                .withPostId(existingPost.getId())
+                                                .withContent("My Comment")
+                                                .build();
+
+            final WpComment comment = adminClient.createComment(createUpdateRequest);
+
+            // THEN
+            WordPressAssertions.assertThat(comment)
+                               .isNotNull()
+                               .hasId()
+                               .hasPost(existingPost.getId())
+                               .hasContentSatisfying(c -> c.hasRaw("My Comment"));
+        }
+
+        @DisplayName("'CREATE' works with password")
+        @Test
+        void create__works_with_password() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            WpPost existingPost = adminClient.createPost(
+                    WpPostCreateUpdateRequest.builder()
+                                             .withTitle("My Post")
+                                             .withContent("My Content")
+                                             .withStatus(PUBLISH)
+                                             .build());
+
+            // WHEN
+            WpCommentCreateUpdateRequest createUpdateRequest =
+                    WpCommentCreateUpdateRequest.builder()
+                                                .withPostId(existingPost.getId())
+                                                .withContent("My Comment")
+                                                .withPassword("mypassword")
+                                                .build();
+
+            final WpComment comment = adminClient.createComment(createUpdateRequest);
+
+            // THEN
+            WordPressAssertions.assertThat(comment)
+                               .isNotNull()
+                               .hasId()
+                               .hasPost(existingPost.getId())
+                               .hasContentSatisfying(c -> c.hasRaw("My Comment"));
+        }
+
+        @DisplayName("'DELETE' fails on HTTP NOT FOUND")
+        @Test
+        void delete__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.deleteComment(1000L), "rest_comment_invalid_id", "Invalid comment ID.");
+        }
+
+        @DisplayName("'DELETE' works")
+        @Test
+        void delete__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            WpPost existingPost = adminClient.createPost(
+                    WpPostCreateUpdateRequest.builder()
+                                             .withTitle("My Post")
+                                             .withContent("My Content")
+                                             .withStatus(PUBLISH)
+                                             .build());
+
+            WpCommentCreateUpdateRequest createUpdateRequest =
+                    WpCommentCreateUpdateRequest.builder()
+                                                .withPostId(existingPost.getId())
+                                                .withContent("My Comment")
+                                                .build();
+
+            final WpComment existingComment = adminClient.createComment(createUpdateRequest);
+
+            // WHEN
+            final WpCommentDeletionResponse deletionResponse = adminClient.deleteComment(existingComment.getId());
+
+            // THEN
+            WordPressAssertions.assertThat(deletionResponse)
+                               .isNotNull()
+                               .isDeleted()
+                               .hasPreviousSatisfying(summary ->
+                                       summary.isNotNull()
+                                              .hasId(existingComment.getId())
+                               );
+        }
+
+        @DisplayName("'GET' fails on HTTP NOT FOUND")
+        @Test
+        void get__fails_on_not_found() {
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.getComment(1000L, null), "rest_comment_invalid_id", "Invalid comment ID.");
+        }
+
+        @DisplayName("'TRASH' fails on HTTP NOT FOUND")
+        @Test
+        void trash__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.trashComment(1000L), "rest_comment_invalid_id", "Invalid comment ID.");
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
+        @Test
+        void update__fails_on_not_found() {
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.updateComment(1000L, WpCommentCreateUpdateRequest.builder().build()),
+                    "rest_comment_invalid_id", "Invalid comment ID.");
         }
     }
 }

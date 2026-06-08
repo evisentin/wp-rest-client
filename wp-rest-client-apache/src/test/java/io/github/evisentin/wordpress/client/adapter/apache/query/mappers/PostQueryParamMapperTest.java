@@ -3,7 +3,7 @@ package io.github.evisentin.wordpress.client.adapter.apache.query.mappers;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpSortDirection;
-import io.github.evisentin.wordpress.client.domain.model.enums.WpTagOrderFields;
+import io.github.evisentin.wordpress.client.domain.model.enums.order.WpPostOrderFields;
 import io.github.evisentin.wordpress.client.domain.model.query.WpPostQuery;
 import org.junit.jupiter.api.Test;
 
@@ -40,7 +40,7 @@ class PostQueryParamMapperTest extends ParamMapperTest {
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue(),
+                        ORDER_BY, WpPostOrderFields.DATE.getValue(),
                         AFTER, "2026-01-01"));
     }
 
@@ -51,7 +51,7 @@ class PostQueryParamMapperTest extends ParamMapperTest {
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue(),
+                        ORDER_BY, WpPostOrderFields.DATE.getValue(),
                         AUTHOR_EXCLUDE, "1000,1100,2000"));
     }
 
@@ -62,7 +62,7 @@ class PostQueryParamMapperTest extends ParamMapperTest {
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue(),
+                        ORDER_BY, WpPostOrderFields.DATE.getValue(),
                         AUTHOR, "1000"));
     }
 
@@ -76,7 +76,7 @@ class PostQueryParamMapperTest extends ParamMapperTest {
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue(),
+                        ORDER_BY, WpPostOrderFields.DATE.getValue(),
                         BEFORE, "2026-01-01"));
     }
 
@@ -87,7 +87,7 @@ class PostQueryParamMapperTest extends ParamMapperTest {
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.EDIT.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, "name"));
+                        ORDER_BY, WpPostOrderFields.DATE.getValue()));
     }
 
     @Test
@@ -97,7 +97,7 @@ class PostQueryParamMapperTest extends ParamMapperTest {
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue()));
+                        ORDER_BY, WpPostOrderFields.DATE.getValue()));
     }
 
     @Test
@@ -107,7 +107,7 @@ class PostQueryParamMapperTest extends ParamMapperTest {
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue(),
+                        ORDER_BY, WpPostOrderFields.DATE.getValue(),
                         CATEGORIES_EXCLUDE, "100,200,300"));
     }
 
@@ -118,7 +118,7 @@ class PostQueryParamMapperTest extends ParamMapperTest {
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue(),
+                        ORDER_BY, WpPostOrderFields.DATE.getValue(),
                         EXCLUDE, "1000,2000,3000"));
     }
 
@@ -129,7 +129,7 @@ class PostQueryParamMapperTest extends ParamMapperTest {
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue(),
+                        ORDER_BY, WpPostOrderFields.DATE.getValue(),
                         TAGS_EXCLUDE, "100,200,300"));
     }
 
@@ -140,7 +140,7 @@ class PostQueryParamMapperTest extends ParamMapperTest {
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue(),
+                        ORDER_BY, WpPostOrderFields.DATE.getValue(),
                         CATEGORIES, "100,200,300"));
     }
 
@@ -151,7 +151,7 @@ class PostQueryParamMapperTest extends ParamMapperTest {
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue(),
+                        ORDER_BY, WpPostOrderFields.DATE.getValue(),
                         INCLUDE, "1000,2000,3000"));
     }
 
@@ -162,7 +162,7 @@ class PostQueryParamMapperTest extends ParamMapperTest {
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue(),
+                        ORDER_BY, WpPostOrderFields.DATE.getValue(),
                         TAGS, "100,200,300"));
     }
 
@@ -176,7 +176,7 @@ class PostQueryParamMapperTest extends ParamMapperTest {
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue(),
+                        ORDER_BY, WpPostOrderFields.DATE.getValue(),
                         MODIFIED_AFTER, "2026-01-01"));
     }
 
@@ -190,7 +190,7 @@ class PostQueryParamMapperTest extends ParamMapperTest {
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue(),
+                        ORDER_BY, WpPostOrderFields.DATE.getValue(),
                         MODIFIED_BEFORE, "2026-01-01"));
     }
 
@@ -201,17 +201,17 @@ class PostQueryParamMapperTest extends ParamMapperTest {
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.DESC.getValue(),
-                        ORDER_BY, "name"));
+                        ORDER_BY, WpPostOrderFields.DATE.getValue()));
     }
 
     @Test
     void maps_with_order_by() {
-        PostQueryParamMapper.map(builder, WpPostQuery.builder().withOrderBy(WpTagOrderFields.SLUG).build());
+        PostQueryParamMapper.map(builder, WpPostQuery.builder().withOrderBy(WpPostOrderFields.SLUG).build());
 
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.SLUG.getValue()));
+                        ORDER_BY, WpPostOrderFields.SLUG.getValue()));
     }
 
     @Test
@@ -221,7 +221,7 @@ class PostQueryParamMapperTest extends ParamMapperTest {
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue(),
+                        ORDER_BY, WpPostOrderFields.DATE.getValue(),
                         SEARCH, "some criteria"));
     }
 
@@ -232,7 +232,7 @@ class PostQueryParamMapperTest extends ParamMapperTest {
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue(),
+                        ORDER_BY, WpPostOrderFields.DATE.getValue(),
                         SLUG, "a,b,c"));
     }
 
@@ -243,7 +243,7 @@ class PostQueryParamMapperTest extends ParamMapperTest {
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue(),
+                        ORDER_BY, WpPostOrderFields.DATE.getValue(),
                         STATUS, "draft,trash"));
     }
 
@@ -254,7 +254,7 @@ class PostQueryParamMapperTest extends ParamMapperTest {
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue(),
+                        ORDER_BY, WpPostOrderFields.DATE.getValue(),
                         STICKY, "true"));
     }
 }

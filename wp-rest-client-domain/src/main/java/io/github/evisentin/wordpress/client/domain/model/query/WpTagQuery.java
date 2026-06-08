@@ -2,7 +2,7 @@ package io.github.evisentin.wordpress.client.domain.model.query;
 
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpSortDirection;
-import io.github.evisentin.wordpress.client.domain.model.enums.WpTagOrderFields;
+import io.github.evisentin.wordpress.client.domain.model.enums.order.WpTagOrderFields;
 import lombok.Builder;
 import lombok.Getter;
 

@@ -6,10 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.evisentin.wordpress.client.adapter.okhttp.discovery.ApiUrlDiscoveryHelper;
 import io.github.evisentin.wordpress.client.adapter.okhttp.interceptors.AuthenticationInterceptor;
 import io.github.evisentin.wordpress.client.adapter.okhttp.interceptors.WpErrorInterceptor;
-import io.github.evisentin.wordpress.client.adapter.okhttp.query.mappers.CategoryQueryParamMapper;
-import io.github.evisentin.wordpress.client.adapter.okhttp.query.mappers.MediaQueryParamMapper;
-import io.github.evisentin.wordpress.client.adapter.okhttp.query.mappers.PostQueryParamMapper;
-import io.github.evisentin.wordpress.client.adapter.okhttp.query.mappers.TagQueryParamMapper;
+import io.github.evisentin.wordpress.client.adapter.okhttp.query.mappers.*;
 import io.github.evisentin.wordpress.client.domain.api.WpBaseRestClient;
 import io.github.evisentin.wordpress.client.domain.auth.WpAuthenticationStrategy;
 import io.github.evisentin.wordpress.client.domain.configuration.SslConfiguration;
@@ -17,14 +14,8 @@ import io.github.evisentin.wordpress.client.domain.configuration.TimeoutConfigur
 import io.github.evisentin.wordpress.client.domain.model.*;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.client.domain.model.query.*;
-import io.github.evisentin.wordpress.client.domain.model.requests.WpCategoryCreateUpdateRequest;
-import io.github.evisentin.wordpress.client.domain.model.requests.WpMediaUpdateRequest;
-import io.github.evisentin.wordpress.client.domain.model.requests.WpPostCreateUpdateRequest;
-import io.github.evisentin.wordpress.client.domain.model.requests.WpTagCreateUpdateRequest;
-import io.github.evisentin.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
-import io.github.evisentin.wordpress.client.domain.model.responses.WpMediaDeletionResponse;
-import io.github.evisentin.wordpress.client.domain.model.responses.WpPostDeletionResponse;
-import io.github.evisentin.wordpress.client.domain.model.responses.WpTagDeletionResponse;
+import io.github.evisentin.wordpress.client.domain.model.requests.*;
+import io.github.evisentin.wordpress.client.domain.model.responses.*;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.val;
@@ -153,7 +144,17 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/categories", Map.of(API_URL, apiUrl));
 
-        return performPostWithBody(builder, creationRequest, WP_CATEGORY_TYPE);
+        return performPostWithBody(builder, creationRequest, WP_CATEGORY_TYPEREFERENCE);
+    }
+
+    @Override
+    @SneakyThrows
+    public WpComment createComment(final @NonNull WpCommentCreateUpdateRequest creationRequest) {
+        if (isBlank(creationRequest.getContent())) throw new IllegalArgumentException("content cannot be blank");
+
+        final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/comments", Map.of(API_URL, apiUrl));
+
+        return performPostWithBody(builder, creationRequest, WP_COMMENT_TYPEREFERENCE);
     }
 
     @Override
@@ -174,7 +175,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/media", Map.of(API_URL, apiUrl));
 
-        return performPostWithMultiPartBody(builder, requestBody, WP_MEDIA_TYPE);
+        return performPostWithMultiPartBody(builder, requestBody, WP_MEDIA_TYPEREFERENCE);
     }
 
     @Override
@@ -182,7 +183,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     public WpPost createPost(final @NonNull WpPostCreateUpdateRequest creationRequest) {
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/posts", Map.of(API_URL, apiUrl));
 
-        return performPostWithBody(builder, creationRequest, WP_POST_TYPE);
+        return performPostWithBody(builder, creationRequest, WP_POST_TYPEREFERENCE);
     }
 
     @Override
@@ -194,7 +195,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/tags", Map.of(API_URL, apiUrl));
 
-        return performPostWithBody(builder, creationRequest, WP_TAG_TYPE);
+        return performPostWithBody(builder, creationRequest, WP_TAG_TYPEREFERENCE);
     }
 
     @Override
@@ -206,7 +207,19 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         // requires force to be true for delete.
         builder.addQueryParameter(FORCE, Boolean.TRUE.toString());
 
-        return performDeleteRequest(builder, WP_CATEGORY_DELETION_RESPONSE_TYPE);
+        return performDeleteRequest(builder, WP_CATEGORY_DELETION_RESPONSE_TYPEREFERENCE);
+    }
+
+    @Override
+    @SneakyThrows
+    public WpCommentDeletionResponse deleteComment(final long id) {
+        final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/comments/${id}", Map.of(API_URL, apiUrl, "id", id));
+
+        // For tags/terms, WordPress does not support trashing, and the REST API explicitly
+        // requires force to be true for delete.
+        builder.addQueryParameter(FORCE, Boolean.TRUE.toString());
+
+        return performDeleteRequest(builder, WP_COMMENT_DELETION_RESPONSE_TYPEREFERENCE);
     }
 
     @Override
@@ -218,7 +231,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         // requires force to be true for delete.
         builder.addQueryParameter(FORCE, Boolean.TRUE.toString());
 
-        return performDeleteRequest(builder, WP_MEDIA_DELETION_RESPONSE_TYPE);
+        return performDeleteRequest(builder, WP_MEDIA_DELETION_RESPONSE_TYPEREFERENCE);
     }
 
     @Override
@@ -228,7 +241,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
         builder.addQueryParameter(FORCE, Boolean.TRUE.toString());
 
-        return performDeleteRequest(builder, WP_POST_DELETION_RESPONSE_TYPE);
+        return performDeleteRequest(builder, WP_POST_DELETION_RESPONSE_TYPEREFERENCE);
     }
 
     @Override
@@ -241,17 +254,34 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         // requires force to be true for delete.
         builder.addQueryParameter(FORCE, Boolean.TRUE.toString());
 
-        return performDeleteRequest(builder, WP_TAG_DELETION_RESPONSE_TYPE);
+        return performDeleteRequest(builder, WP_TAG_DELETION_RESPONSE_TYPEREFERENCE);
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
     public WpCategory getCategory(final long id, final WpContext context) {
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/categories/${id}", Map.of(API_URL, apiUrl, "id", id));
 
         builder.addQueryParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
 
-        return performGetRequest(builder, WP_CATEGORY_TYPE);
+        return performGetRequest(builder, WP_CATEGORY_TYPEREFERENCE);
+    }
+
+    @Override
+    @SneakyThrows
+    public WpComment getComment(final long id, final WpContext context) {
+        return getComment(id, context, null);
+    }
+
+    @Override
+    @SneakyThrows
+    public WpComment getComment(final long id, final WpContext context, final String password) {
+        final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/comments/${id}", Map.of(API_URL, apiUrl, "id", id));
+        builder.addQueryParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
+        if (isNotBlank(password))
+            builder.addQueryParameter("password", password);
+
+        return performGetRequest(builder, WP_COMMENT_TYPEREFERENCE);
     }
 
     @Override
@@ -261,7 +291,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
         builder.addQueryParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
 
-        return performGetRequest(builder, WP_MEDIA_TYPE);
+        return performGetRequest(builder, WP_MEDIA_TYPEREFERENCE);
     }
 
     @Override
@@ -269,8 +299,8 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         return getPost(id, context, null);
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
     public WpPost getPost(final long id, final WpContext context, final String password) {
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/posts/${id}", Map.of(API_URL, apiUrl, "id", id));
 
@@ -279,7 +309,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         if (isNotBlank(password))
             builder.addQueryParameter("password", password);
 
-        return performGetRequest(builder, WP_POST_TYPE);
+        return performGetRequest(builder, WP_POST_TYPEREFERENCE);
     }
 
     @Override
@@ -301,15 +331,34 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         return performGetRequest(builder, WP_POST_TYPES_MAP_TYPEREFERENCE);
     }
 
-    @SneakyThrows
     @Override
+    @SneakyThrows
+    public WpStatus getStatus(final @NonNull String name) {
+        if (isBlank(name))
+            throw new IllegalArgumentException("name cannot be blank");
+
+        final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/statuses/${name}", Map.of(API_URL, apiUrl, "name", name));
+
+        return performGetRequest(builder, WP_STATUS_TYPE_REFERENCE);
+    }
+
+    @Override
+    @SneakyThrows
+    public Map<String, WpStatus> getStatuses() {
+        final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/statuses", Map.of(API_URL, apiUrl));
+
+        return performGetRequest(builder, WP_STATUSES_MAP_TYPEREFERENCE);
+    }
+
+    @Override
+    @SneakyThrows
     public WpTag getTag(final long id, final WpContext context) {
 
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/tags/${id}", Map.of(API_URL, apiUrl, "id", id));
 
         builder.addQueryParameter(CONTEXT, ofNullable(context).orElse(WpContext.VIEW).getValue());
 
-        return performGetRequest(builder, WP_TAG_TYPE);
+        return performGetRequest(builder, WP_TAG_TYPEREFERENCE);
     }
 
     @Override
@@ -323,7 +372,21 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
         CategoryQueryParamMapper.map(builder, categoryQuery);
 
-        return performPagingRequest(builder, pageQuery, WP_CATEGORY_LIST_TYPE);
+        return performPagingRequest(builder, pageQuery, WP_CATEGORY_LIST_TYPEREFERENCE);
+    }
+
+    @Override
+    @SneakyThrows
+    public WpPagedResponse<WpComment> listComments(final @NonNull WpPagingQuery pageQuery,
+                                                   final WpCommentQuery commentQuery) {
+        final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/comments", Map.of(API_URL, apiUrl));
+
+        builder.addQueryParameter(PAGE, Integer.toString(pageQuery.getPageNumber()));
+        builder.addQueryParameter(PER_PAGE, Integer.toString(pageQuery.getPageSize()));
+
+        CommentQueryParamMapper.map(builder, commentQuery);
+
+        return performPagingRequest(builder, pageQuery, WP_COMMENT_LIST_TYPEREFERENCE);
     }
 
     @Override
@@ -337,7 +400,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
         MediaQueryParamMapper.map(builder, mediaQuery);
 
-        return performPagingRequest(builder, pageQuery, WP_MEDIA_LIST_TYPE);
+        return performPagingRequest(builder, pageQuery, WP_MEDIA_LIST_TYPEREFERENCE);
     }
 
     @Override
@@ -350,7 +413,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
         PostQueryParamMapper.map(builder, postQuery);
 
-        return performPagingRequest(builder, pageQuery, WP_POST_LIST_TYPE);
+        return performPagingRequest(builder, pageQuery, WP_POST_LIST_TYPEREFERENCE);
     }
 
     @Override
@@ -364,7 +427,17 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
         TagQueryParamMapper.map(builder, tagQuery);
 
-        return performPagingRequest(builder, pageQuery, WP_TAG_LIST_TYPE);
+        return performPagingRequest(builder, pageQuery, WP_TAG_LIST_TYPEREFERENCE);
+    }
+
+    @Override
+    @SneakyThrows
+    public WpComment trashComment(long id) {
+        final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/comments/${id}", Map.of(API_URL, apiUrl, "id", id));
+
+        builder.addQueryParameter(FORCE, Boolean.FALSE.toString());
+
+        return performDeleteRequest(builder, WP_COMMENT_TYPEREFERENCE);
     }
 
     @Override
@@ -375,7 +448,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
         builder.addQueryParameter(FORCE, Boolean.FALSE.toString());
 
-        return performDeleteRequest(builder, WP_POST_TYPE);
+        return performDeleteRequest(builder, WP_POST_TYPEREFERENCE);
     }
 
     @Override
@@ -384,7 +457,15 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
                                      final @NonNull WpCategoryCreateUpdateRequest updateRequest) {
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/categories/${id}", Map.of(API_URL, apiUrl, "id", id));
 
-        return performPostWithBody(builder, updateRequest, WP_CATEGORY_TYPE);
+        return performPostWithBody(builder, updateRequest, WP_CATEGORY_TYPEREFERENCE);
+    }
+
+    @Override
+    @SneakyThrows
+    public WpComment updateComment(long id, final @NonNull WpCommentCreateUpdateRequest updateRequest) {
+        final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/comments/${id}", Map.of(API_URL, apiUrl, "id", id));
+
+        return performPostWithBody(builder, updateRequest, WP_COMMENT_TYPEREFERENCE);
     }
 
     @Override
@@ -393,7 +474,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
                                final @NonNull WpMediaUpdateRequest updateRequest) {
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/media/${id}", Map.of(API_URL, apiUrl, "id", id));
 
-        return performPostWithBody(builder, updateRequest, WP_MEDIA_TYPE);
+        return performPostWithBody(builder, updateRequest, WP_MEDIA_TYPEREFERENCE);
     }
 
     @Override
@@ -402,7 +483,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
                              final @NonNull WpPostCreateUpdateRequest updateRequest) {
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/posts/${id}", Map.of(API_URL, apiUrl, "id", id));
 
-        return performPostWithBody(builder, updateRequest, WP_POST_TYPE);
+        return performPostWithBody(builder, updateRequest, WP_POST_TYPEREFERENCE);
     }
 
     @Override
@@ -412,7 +493,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
 
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/tags/${id}", Map.of(API_URL, apiUrl, "id", id));
 
-        return performPostWithBody(builder, updateRequest, WP_TAG_TYPE);
+        return performPostWithBody(builder, updateRequest, WP_TAG_TYPEREFERENCE);
     }
 
     private void applyTimeoutConfigurationIfPresent(final OkHttpClient.Builder clientBuilder,
