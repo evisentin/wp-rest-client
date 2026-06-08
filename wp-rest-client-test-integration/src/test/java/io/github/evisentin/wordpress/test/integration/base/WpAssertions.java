@@ -60,6 +60,20 @@ public class WpAssertions {
                 });
     }
 
+    public static void assertThrowsWpForbidden(final @NonNull ThrowableAssert.ThrowingCallable shouldRaiseThrowable,
+                                               final @NonNull String expectedCode,
+                                               final @NonNull String expectedMessage) {
+        assertThatThrownBy(shouldRaiseThrowable)
+                .hasMessage(expectedMessage)
+                .extracting(ex -> (WpForbiddenException) ex)
+                .extracting(WpForbiddenException::getError)
+                .satisfies(error -> {
+                    Assertions.assertThat(error.getCode()).isEqualTo(expectedCode);
+                    Assertions.assertThat(error.getMessage()).isEqualTo(expectedMessage);
+                    Assertions.assertThat(error.getData()).containsExactly(Assertions.entry("status", 403));
+                });
+    }
+
     public static void assertThrowsWpNotFound(final @NonNull ThrowableAssert.ThrowingCallable shouldRaiseThrowable,
                                               final @NonNull String expectedCode,
                                               final @NonNull String expectedMessage) {
