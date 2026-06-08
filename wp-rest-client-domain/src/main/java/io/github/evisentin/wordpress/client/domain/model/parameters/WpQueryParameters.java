@@ -9,6 +9,7 @@ public final class WpQueryParameters {
     public static final String AFTER = "after";
     public static final String AUTHOR = "author";
     public static final String AUTHOR_EXCLUDE = "author_exclude";
+    public static final String AUTHOR_EMAIL = "author_email";
 
     public static final String BEFORE = "before";
 
@@ -39,6 +40,7 @@ public final class WpQueryParameters {
     public static final String PARENT_EXCLUDE = "parent_exclude";
 
     public static final String PER_PAGE = "per_page";
+    public static final String PASSWORD = "PASSWORD";
     public static final String POST = "post";
 
     public static final String SEARCH = "search";
@@ -46,6 +48,7 @@ public final class WpQueryParameters {
     public static final String STATUS = "status";
     public static final String STICKY = "sticky";
 
+    public static final String TYPE = "type";
     public static final String TAGS = "tags";
     public static final String TAGS_EXCLUDE = "tags_exclude";
 }

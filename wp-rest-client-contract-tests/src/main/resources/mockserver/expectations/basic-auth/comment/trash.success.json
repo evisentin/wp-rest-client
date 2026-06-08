@@ -1,0 +1,98 @@
+[
+    {
+        "httpRequest": {
+            "method": "DELETE",
+            "path": "/wp-json/wp/v2/comments/12",
+            "queryStringParameters": {
+                "force": [
+                    "false"
+                ]
+            },
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ]
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "id": 12,
+                    "post": 8,
+                    "parent": 0,
+                    "author": 0,
+                    "author_name": "admin",
+                    "author_email": "a@a.com",
+                    "author_url": "http:\/\/aa.com",
+                    "author_ip": "10.0.0.1",
+                    "author_user_agent": "curl\/8.7.1",
+                    "date": "2025-08-07T10:30:00",
+                    "date_gmt": "2025-08-07T10:30:00",
+                    "content": {
+                        "rendered": "<p>This is a test comment created via the WordPress REST API<\/p>\n",
+                        "raw": "This is a test comment created via the WordPress REST API"
+                    },
+                    "link": "http:\/\/localhost:8080\/archives\/8#comment-12",
+                    "status": "trash",
+                    "type": "comment",
+                    "author_avatar_urls": {
+                        "24": "https:\/\/secure.gravatar.com\/avatar\/7dcb0cd247aa94896e665c337696a7be18d387a78d6d55b4854b7ff7d5925042?s=24&d=mm&r=g",
+                        "48": "https:\/\/secure.gravatar.com\/avatar\/7dcb0cd247aa94896e665c337696a7be18d387a78d6d55b4854b7ff7d5925042?s=48&d=mm&r=g",
+                        "96": "https:\/\/secure.gravatar.com\/avatar\/7dcb0cd247aa94896e665c337696a7be18d387a78d6d55b4854b7ff7d5925042?s=96&d=mm&r=g"
+                    },
+                    "meta": {
+                        "_wp_note_status": null
+                    },
+                    "_links": {
+                        "self": [
+                            {
+                                "href": "http:\/\/localhost:8080\/wp-json\/wp\/v2\/comments\/12",
+                                "targetHints": {
+                                    "allow": [
+                                        "GET",
+                                        "POST",
+                                        "PUT",
+                                        "PATCH",
+                                        "DELETE"
+                                    ]
+                                }
+                            }
+                        ],
+                        "collection": [
+                            {
+                                "href": "http:\/\/localhost:8080\/wp-json\/wp\/v2\/comments"
+                            }
+                        ],
+                        "up": [
+                            {
+                                "embeddable": true,
+                                "post_type": "post",
+                                "href": "http:\/\/localhost:8080\/wp-json\/wp\/v2\/posts\/8"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+]

@@ -9,11 +9,12 @@ import lombok.Setter;
 /**
  * Represents a WordPress tag as returned by the WordPress REST API.
  *
- * <p>This model maps the JSON structure of a tag object, including metadata
- * such as name, slug, usage count, and associated taxonomy.</p>
+ * <p>This model maps the JSON structure of a tag object, including metadata such as its identifier, name, slug,
+ * description, usage count, taxonomy, and resource link.</p>
  *
- * <p>Unknown JSON properties are ignored during deserialization to ensure
- * forward compatibility with the API.</p>
+ * <p>Unknown JSON properties are ignored during deserialization to ensure forward compatibility with the API.</p>
+ *
+ * @see <a href="https://developer.wordpress.org/rest-api/reference/tags/">WordPress REST API - Tags</a>
  */
 @Getter
 @Setter

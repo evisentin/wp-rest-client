@@ -15,6 +15,7 @@ import io.github.evisentin.wordpress.client.domain.api.operations.*;
  *
  * <ul>
  *     <li>{@link CategoryOperations} for category management</li>
+ *     <li>{@link CommentOperations} for category management</li>
  *     <li>{@link MediaOperations} for media upload and management</li>
  *     <li>{@link PostOperations} for post management</li>
  *     <li>{@link PostTypesOperations} for post types management</li>
@@ -24,5 +25,5 @@ import io.github.evisentin.wordpress.client.domain.api.operations.*;
  * <p>Implementations are expected to communicate with the standard WordPress REST API endpoints under
  * {@code /wp-json/wp/v2} or compatible APIs.</p>
  */
-public interface WpRestClient extends CategoryOperations, MediaOperations, PostOperations, PostTypesOperations, StatusOperations, TagOperations {
+public interface WpRestClient extends CategoryOperations, CommentOperations, MediaOperations, PostOperations, PostTypesOperations, StatusOperations, TagOperations {
 }

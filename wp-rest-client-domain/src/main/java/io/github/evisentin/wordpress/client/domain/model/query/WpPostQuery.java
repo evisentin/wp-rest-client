@@ -3,7 +3,8 @@ package io.github.evisentin.wordpress.client.domain.model.query;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpSortDirection;
-import io.github.evisentin.wordpress.client.domain.model.enums.WpTagOrderFields;
+import io.github.evisentin.wordpress.client.domain.model.enums.order.WpPostOrderFields;
+import io.github.evisentin.wordpress.client.domain.model.enums.order.WpTagOrderFields;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -93,7 +94,7 @@ public class WpPostQuery {
      * Field used to sort the result. Defaults to {@link WpTagOrderFields#NAME}.
      */
     @Builder.Default
-    private final WpTagOrderFields orderBy = WpTagOrderFields.NAME;
+    private final WpPostOrderFields orderBy = WpPostOrderFields.DATE;
 
     /**
      * Set of post slugs to include in the result. Defaults to an empty set.

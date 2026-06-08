@@ -2,7 +2,7 @@ package io.github.evisentin.wordpress.client.adapter.okhttp.query.mappers;
 
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpSortDirection;
-import io.github.evisentin.wordpress.client.domain.model.enums.WpTagOrderFields;
+import io.github.evisentin.wordpress.client.domain.model.enums.order.WpCategoryOrderFields;
 import io.github.evisentin.wordpress.client.domain.model.query.WpCategoryQuery;
 import okhttp3.HttpUrl;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,7 +49,7 @@ class CategoryQueryParamMapperTest implements ParamMapperTest {
         assertThatUrlContainsExactly(url,
                 Map.of(CONTEXT, WpContext.EDIT.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, "name"));
+                        ORDER_BY, WpCategoryOrderFields.NAME.getValue()));
     }
 
     @Test
@@ -61,7 +61,7 @@ class CategoryQueryParamMapperTest implements ParamMapperTest {
         assertThatUrlContainsExactly(url,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue()));
+                        ORDER_BY, WpCategoryOrderFields.NAME.getValue()));
     }
 
     @Test
@@ -73,7 +73,7 @@ class CategoryQueryParamMapperTest implements ParamMapperTest {
         assertThatUrlContainsExactly(url,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue(),
+                        ORDER_BY, WpCategoryOrderFields.NAME.getValue(),
                         EXCLUDE, "1000,2000,3000"));
     }
 
@@ -86,7 +86,7 @@ class CategoryQueryParamMapperTest implements ParamMapperTest {
         assertThatUrlContainsExactly(url,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue(),
+                        ORDER_BY, WpCategoryOrderFields.NAME.getValue(),
                         HIDE_EMPTY, "true"));
     }
 
@@ -99,7 +99,7 @@ class CategoryQueryParamMapperTest implements ParamMapperTest {
         assertThatUrlContainsExactly(url,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue(),
+                        ORDER_BY, WpCategoryOrderFields.NAME.getValue(),
                         INCLUDE, "1000,2000,3000"));
     }
 
@@ -112,19 +112,19 @@ class CategoryQueryParamMapperTest implements ParamMapperTest {
         assertThatUrlContainsExactly(url,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.DESC.getValue(),
-                        ORDER_BY, "name"));
+                        ORDER_BY, WpCategoryOrderFields.NAME.getValue()));
     }
 
     @Test
     void maps_with_order_by() {
-        CategoryQueryParamMapper.map(builder, WpCategoryQuery.builder().withOrderBy(WpTagOrderFields.SLUG).build());
+        CategoryQueryParamMapper.map(builder, WpCategoryQuery.builder().withOrderBy(WpCategoryOrderFields.SLUG).build());
 
         final HttpUrl url = builder.build();
 
         assertThatUrlContainsExactly(url,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.SLUG.getValue()));
+                        ORDER_BY, WpCategoryOrderFields.SLUG.getValue()));
     }
 
     @Test
@@ -136,7 +136,7 @@ class CategoryQueryParamMapperTest implements ParamMapperTest {
         assertThatUrlContainsExactly(url,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue(),
+                        ORDER_BY, WpCategoryOrderFields.NAME.getValue(),
                         PARENT, "123456"));
     }
 
@@ -149,7 +149,7 @@ class CategoryQueryParamMapperTest implements ParamMapperTest {
         assertThatUrlContainsExactly(url,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue(),
+                        ORDER_BY, WpCategoryOrderFields.NAME.getValue(),
                         POST, "123456"));
     }
 
@@ -162,7 +162,7 @@ class CategoryQueryParamMapperTest implements ParamMapperTest {
         assertThatUrlContainsExactly(url,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue(),
+                        ORDER_BY, WpCategoryOrderFields.NAME.getValue(),
                         SEARCH, "some criteria"));
     }
 
@@ -175,7 +175,7 @@ class CategoryQueryParamMapperTest implements ParamMapperTest {
         assertThatUrlContainsExactly(url,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        ORDER_BY, WpTagOrderFields.NAME.getValue(),
+                        ORDER_BY, WpCategoryOrderFields.NAME.getValue(),
                         SLUG, "my-slug"));
     }
 }

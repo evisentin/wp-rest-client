@@ -3,7 +3,11 @@ package io.github.evisentin.wordpress.test.integration.base;
 import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
 import io.github.evisentin.wordpress.client.domain.assertions.WordPressAssertions;
 import io.github.evisentin.wordpress.client.domain.model.*;
-import io.github.evisentin.wordpress.client.domain.model.enums.*;
+import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
+import io.github.evisentin.wordpress.client.domain.model.enums.WpMediaType;
+import io.github.evisentin.wordpress.client.domain.model.enums.WpOpenClosed;
+import io.github.evisentin.wordpress.client.domain.model.enums.WpTaxonomy;
+import io.github.evisentin.wordpress.client.domain.model.enums.order.WpPostOrderFields;
 import io.github.evisentin.wordpress.client.domain.model.query.WpCategoryQuery;
 import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
 import io.github.evisentin.wordpress.client.domain.model.query.WpPostQuery;
@@ -1103,7 +1107,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             final WpPostQuery postQuery = WpPostQuery.builder()
                                                      .withStatuses(Set.of(DRAFT, PRIVATE))
                                                      .withOrder(ASC)
-                                                     .withOrderBy(WpTagOrderFields.ID)
+                                                     .withOrderBy(WpPostOrderFields.ID)
                                                      .build();
 
             final WpPagedResponse<WpPost> response = adminClient.listPosts(WpPagingQuery.of(1, 10), postQuery);
