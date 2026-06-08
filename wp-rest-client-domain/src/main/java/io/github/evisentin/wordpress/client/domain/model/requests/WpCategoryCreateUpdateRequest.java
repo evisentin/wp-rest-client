@@ -10,6 +10,17 @@ import lombok.Setter;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Request body used to create or update a WordPress category.
+ *
+ * <p>This model maps the JSON arguments accepted by the WordPress Categories REST API endpoint, including the category
+ * name, description, slug, parent category, and custom meta fields.</p>
+ *
+ * <p>Null values are omitted during serialization.</p>
+ *
+ * @see <a href="https://developer.wordpress.org/rest-api/reference/categories/#arguments-2">WordPress REST API -
+ * Create a Category Arguments</a>
+ */
 @Getter
 @Setter
 @Builder(setterPrefix = "with")

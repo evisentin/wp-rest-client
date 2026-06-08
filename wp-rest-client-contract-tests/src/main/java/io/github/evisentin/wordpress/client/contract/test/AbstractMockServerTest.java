@@ -5,9 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.Strings;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockserver.client.MockServerClient;
-import org.mockserver.junit.jupiter.MockServerExtension;
+import org.mockserver.integration.ClientAndServer;
 import org.mockserver.logging.MockServerLogger;
 import org.mockserver.mock.Expectation;
 import org.mockserver.serialization.ExpectationSerializer;
@@ -18,17 +17,14 @@ import static org.mockserver.model.HttpRequest.request;
 import static org.mockserver.model.HttpResponse.response;
 
 @Slf4j
-@ExtendWith(MockServerExtension.class)
 public abstract class AbstractMockServerTest implements WithAssertions {
 
     private final ExpectationSerializer expectationSerializer = new ExpectationSerializer(new MockServerLogger(log));
-    protected MockServerClient mockServerClient;
+    private final ClientAndServer mockServerClient = ClientAndServer.startClientAndServer(0);
 
     @BeforeEach
-    @SneakyThrows
-    void beforeEach(final MockServerClient mockServerClient) {
-        this.mockServerClient = mockServerClient;
-        this.mockServerClient.reset();
+    void beforeEach() {
+        mockServerClient.reset();
         setUpMockApiUrlDiscovery(this.mockServerClient);
     }
 

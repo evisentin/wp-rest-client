@@ -1,0 +1,73 @@
+[
+    {
+        "httpRequest": {
+            "method": "DELETE",
+            "path": "/wp-json/wp/v2/comments/13",
+            "queryStringParameters": {
+                "force": [
+                    "true"
+                ]
+            },
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ]
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "deleted": true,
+                    "previous": {
+                        "id": 13,
+                        "post": 8,
+                        "parent": 0,
+                        "author": 1,
+                        "author_name": "admin",
+                        "author_email": "admin@example.com",
+                        "author_url": "http:\/\/localhost:8080",
+                        "author_ip": "192.168.65.1",
+                        "author_user_agent": "Mozilla\/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit\/537.36 (KHTML, like Gecko) Chrome\/149.0.0.0 Safari\/537.36",
+                        "date": "2026-06-05T13:28:03",
+                        "date_gmt": "2026-06-05T13:28:03",
+                        "content": {
+                            "rendered": "<p>Some content<\/p>\n",
+                            "raw": "Some content"
+                        },
+                        "link": "http:\/\/localhost:8080\/archives\/8#comment-13",
+                        "status": "approved",
+                        "type": "comment",
+                        "author_avatar_urls": {
+                            "24": "https:\/\/secure.gravatar.com\/avatar\/258d8dc916db8cea2cafb6c3cd0cb0246efe061421dbd83ec3a350428cabda4f?s=24&d=mm&r=g",
+                            "48": "https:\/\/secure.gravatar.com\/avatar\/258d8dc916db8cea2cafb6c3cd0cb0246efe061421dbd83ec3a350428cabda4f?s=48&d=mm&r=g",
+                            "96": "https:\/\/secure.gravatar.com\/avatar\/258d8dc916db8cea2cafb6c3cd0cb0246efe061421dbd83ec3a350428cabda4f?s=96&d=mm&r=g"
+                        },
+                        "meta": {
+                            "_wp_note_status": null
+                        }
+                    }
+                }
+            }
+        }
+    }
+]

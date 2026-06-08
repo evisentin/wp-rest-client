@@ -2,7 +2,7 @@ package io.github.evisentin.wordpress.client.domain.model.query;
 
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpSortDirection;
-import io.github.evisentin.wordpress.client.domain.model.enums.WpTagOrderFields;
+import io.github.evisentin.wordpress.client.domain.model.enums.order.WpCategoryOrderFields;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -53,10 +53,10 @@ public class WpCategoryQuery {
     private final WpSortDirection order = WpSortDirection.ASC;
 
     /**
-     * Field used to sort the result. Defaults to {@link WpTagOrderFields#NAME}.
+     * Field used to sort the result. Defaults to {@link WpCategoryOrderFields#NAME}.
      */
     @Builder.Default
-    private final WpTagOrderFields orderBy = WpTagOrderFields.NAME;
+    private final WpCategoryOrderFields orderBy = WpCategoryOrderFields.NAME;
 
     /**
      * Whether to hide categories that are not assigned to any posts.

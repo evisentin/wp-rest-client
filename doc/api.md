@@ -7,13 +7,14 @@
 <!-- toc -->
 
 - [Tested WordPress Versions](#tested-wordpress-versions)
-    * [Posts](#posts)
-    * [Post Types](#post-types)
-    * [Pages](#pages)
-    * [Media](#media)
-    * [Categories](#categories)
-    * [Tags](#tags)
-    * [Comments](#comments)
+  * [Posts](#posts)
+  * [Pages](#pages)
+  * [Media](#media)
+  * [Categories](#categories)
+  * [Tags](#tags)
+  * [Comments](#comments)
+  * [Post Types](#post-types)
+  * [Statuses](#statuses)
 
 <!-- tocstop -->
 
@@ -51,7 +52,7 @@ module and are continuously validated against the following WordPress versions:
 | Media          |                    `/media` |  ✅   |   ✅    |   ✅    |   ✅    | Images, files, and attachments.    |
 | Categories     |               `/categories` |  ✅   |   ✅    |   ✅    |   ✅    | Post categories.                   |
 | Tags           |                     `/tags` |  ✅   |   ✅    |   ✅    |   ✅    | Post tags.                         |
-| Comments       |                 `/comments` |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Comments and moderation workflows. |
+| Comments       |                 `/comments` |  ✅   |   ✅    |   ⬜    |   ✅    | Comments and moderation workflows. |
 | Users          |                    `/users` |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Usually requires authentication.   |
 | Search         |                   `/search` |  ⬜   |  N/A   |  N/A   |  N/A   | Search across public content.      |
 | Taxonomies     |               `/taxonomies` |  ⬜   |  N/A   |  N/A   |  N/A   | Taxonomy metadata.                 |
@@ -119,11 +120,11 @@ Legend:
 
 | Endpoint                      | Description        | Status |
 |-------------------------------|--------------------|--------|
-| `GET /wp/v2/comments`         | List Comments      | ⬜      |
-| `POST /wp/v2/comments`        | Create a Comment   | ⬜      |
-| `GET /wp/v2/comments/<id>`    | Retrieve a Comment | ⬜      |
-| `POST /wp/v2/comments/<id>`   | Update a Comment   | ⬜      |
-| `DELETE /wp/v2/comments/<id>` | Delete a Comment   | ⬜      |
+| `GET /wp/v2/comments`         | List Comments      | ✅      |
+| `POST /wp/v2/comments`        | Create a Comment   | ✅      |
+| `GET /wp/v2/comments/<id>`    | Retrieve a Comment | ✅      |
+| `POST /wp/v2/comments/<id>`   | Update a Comment   | ✅      |
+| `DELETE /wp/v2/comments/<id>` | Delete a Comment   | ✅      |
 
 ### Post Types
 

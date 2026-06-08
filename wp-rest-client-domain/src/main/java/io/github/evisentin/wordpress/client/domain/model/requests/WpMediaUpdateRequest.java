@@ -11,6 +11,18 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+/**
+ * Request body used to update a WordPress media item.
+ *
+ * <p>This model maps the JSON arguments accepted by the WordPress Media REST API endpoint, including publication
+ * dates, slug, status, title, author, associated post, discussion settings, template, alternative text, caption, and
+ * description.</p>
+ *
+ * <p>Null values are omitted during serialization.</p>
+ *
+ * @see <a href="https://developer.wordpress.org/rest-api/reference/media/#arguments-2">WordPress REST API -
+ * Update a Media Item Arguments</a>
+ */
 @Getter
 @Setter
 @Builder(setterPrefix = "with")

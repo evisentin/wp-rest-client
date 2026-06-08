@@ -10,11 +10,12 @@ import lombok.Setter;
 /**
  * Represents a WordPress category as returned by the WordPress REST API.
  *
- * <p>This model maps the JSON structure of a category object, including
- * metadata such as its name, slug, description, usage count, taxonomy, parent category, and custom meta fields.</p>
+ * <p>This model maps the JSON structure of a category object, including metadata such as its identifier, name, slug,
+ * description, usage count, taxonomy, parent category, and resource link.</p>
  *
- * <p>Unknown JSON properties are ignored during deserialization to provide
- * forward compatibility with newer WordPress API responses.</p>
+ * <p>Unknown JSON properties are ignored during deserialization to ensure forward compatibility with the API.</p>
+ *
+ * @see <a href="https://developer.wordpress.org/rest-api/reference/categories/">WordPress REST API - Categories</a>
  */
 @Getter
 @Setter

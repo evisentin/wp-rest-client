@@ -2,7 +2,7 @@ package io.github.evisentin.wordpress.client.adapter.apache.query.mappers;
 
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpSortDirection;
-import io.github.evisentin.wordpress.client.domain.model.enums.WpTagOrderFields;
+import io.github.evisentin.wordpress.client.domain.model.enums.order.WpTagOrderFields;
 import io.github.evisentin.wordpress.client.domain.model.query.WpTagQuery;
 import org.junit.jupiter.api.Test;
 
@@ -35,7 +35,7 @@ class TagQueryParamMapperTest extends ParamMapperTest {
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.EDIT.getValue(),
                         ORDER, WpSortDirection.ASC.getValue(),
-                        "order_by", "name"));
+                        ORDER_BY, WpTagOrderFields.NAME.getValue()));
     }
 
     @Test
@@ -99,7 +99,7 @@ class TagQueryParamMapperTest extends ParamMapperTest {
         assertThatUrlContainsExactly(builder,
                 Map.of(CONTEXT, WpContext.VIEW.getValue(),
                         ORDER, WpSortDirection.DESC.getValue(),
-                        ORDER_BY, "name"));
+                        ORDER_BY, WpTagOrderFields.NAME.getValue()));
     }
 
     @Test

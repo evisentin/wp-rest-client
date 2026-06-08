@@ -7,15 +7,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * Represents a WordPress post status as exposed by the {@code /wp/v2/statuses} REST endpoint.
+ * Represents a WordPress post type as returned by the WordPress REST API.
  *
- * <p>A post status determines the publication state and visibility of a post, page, or other content type. Typical
- * statuses include {@code publish}, {@code draft}, {@code pending}, {@code future}, and {@code private}.
+ * <p>This model maps the JSON structure of a post type object, including metadata such as its name, slug, description,
+ * icon, REST API configuration, hierarchy support, archive support, and associated taxonomies.</p>
  *
- * <p>Instances of this class are usually obtained by invoking the WordPress REST API {@code /wp/v2/statuses} endpoint.
+ * <p>Unknown JSON properties are ignored during deserialization to ensure forward compatibility with the API.</p>
  *
- * @see <a href="https://developer.wordpress.org/rest-api/reference/post-statuses/"> WordPress REST API - Post Statuses
- * </a>
+ * @see <a href="https://developer.wordpress.org/rest-api/reference/post-types/">WordPress REST API - Post Types</a>
  */
 @Getter
 @Setter

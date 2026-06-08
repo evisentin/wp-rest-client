@@ -11,17 +11,14 @@ import lombok.Setter;
 import java.util.Set;
 
 /**
- * Represents a WordPress post type as returned by the WordPress REST API.
+ * Represents a WordPress tag as returned by the WordPress REST API.
  *
- * <p>A post type defines the structure, behavior, and capabilities of a content resource within WordPress. Examples
- * include built-in post types such as {@code post}, {@code page}, and {@code attachment}, as well as custom post types
- * registered by plugins or themes.</p>
+ * <p>This model maps the JSON structure of a tag object, including metadata such as its identifier, name, slug,
+ * description, usage count, taxonomy, and resource link.</p>
  *
- * <p>This model maps metadata exposed by the WordPress REST API, including the post type name and slug, REST API
- * configuration, archive and hierarchy settings, associated taxonomies, and additional descriptive information.</p>
+ * <p>Unknown JSON properties are ignored during deserialization to ensure forward compatibility with the API.</p>
  *
- * <p>Unknown JSON properties are ignored during deserialization to ensure forward compatibility with future WordPress
- * API versions.</p>
+ * @see <a href="https://developer.wordpress.org/rest-api/reference/tags/">WordPress REST API - Tags</a>
  */
 @Getter
 @Setter

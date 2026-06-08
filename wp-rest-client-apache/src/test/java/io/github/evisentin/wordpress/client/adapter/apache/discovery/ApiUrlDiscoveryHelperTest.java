@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
 import org.apache.hc.client5.http.impl.classic.HttpClients;
 import org.assertj.core.api.WithAssertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockserver.integration.ClientAndServer;
 
@@ -13,12 +14,31 @@ import static org.mockserver.model.HttpResponse.response;
 
 class ApiUrlDiscoveryHelperTest implements WithAssertions {
 
+    private final ClientAndServer mockServer = ClientAndServer.startClientAndServer(0);
+
+    @BeforeEach
+    void beforeEach() {
+        mockServer.reset();
+    }
+
+    @Test
+    @SneakyThrows
+    void resolveApiUrlFailsOnNullParameters() {
+
+        assertThatThrownBy(() -> ApiUrlDiscoveryHelper.resolveApiUrl(null, null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("httpClient is marked non-null but is null");
+
+        assertThatThrownBy(() -> ApiUrlDiscoveryHelper.resolveApiUrl(HttpClients.createDefault(), null))
+                .isInstanceOf(NullPointerException.class)
+                .hasMessage("baseUrl is marked non-null but is null");
+    }
+
     @Test
     @SneakyThrows
     void resolveApiUrlReturnsWordPressApiUrlFromLinkHeader() {
 
-        try (ClientAndServer mockServer = ClientAndServer.startClientAndServer();
-             CloseableHttpClient httpClient = HttpClients.createDefault()) {
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
 
             final String baseUrl = "http://localhost:" + mockServer.getLocalPort();
             final String apiUrl = baseUrl + "/wp-json/";
@@ -42,8 +62,7 @@ class ApiUrlDiscoveryHelperTest implements WithAssertions {
     @SneakyThrows
     void resolveApiUrlThrowsApiUrlNotFoundExceptionWhenLinkHeaderIsMissing() {
 
-        try (ClientAndServer mockServer = ClientAndServer.startClientAndServer();
-             CloseableHttpClient httpClient = HttpClients.createDefault()) {
+        try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
 
             final String baseUrl = "http://localhost:" + mockServer.getLocalPort();
 
