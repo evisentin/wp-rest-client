@@ -1,7 +1,6 @@
 # WP-REST-CLIENT
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.evisentin/wp-rest-client)](https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client)
-[![Javadoc](https://javadoc.io/badge2/io.github.evisentin/wp-rest-client/javadoc.svg)](https://javadoc.io/doc/io.github.evisentin/wp-rest-client)
 [![Coverage](https://img.shields.io/badge/coverage-report-brightgreen)](https://evisentin.github.io/wp-rest-client/coverage/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-brightgreen)](https://github.com/evisentin/wp-rest-client/blob/main/LICENSE)
 
