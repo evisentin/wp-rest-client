@@ -1,10 +1,8 @@
 /**
- * Public API for interacting with the WordPress REST client.
+ * Defines typed API contracts for interacting with WordPress REST API resources.
  *
- * <p>This package defines the main client interfaces and base abstractions
- * used to perform operations against the WordPress REST API.
- *
- * <p>Implementations of these interfaces are provided by adapter modules
- * (e.g. Apache HttpClient, OkHttp).
+ * <p>This package contains resource-specific interfaces for posts, comments, categories, tags, media items, post
+ * statuses, and post types. These interfaces model high-level WordPress REST API operations such as creating,
+ * retrieving, updating, listing, trashing, and deleting resources.</p>
  */
 package io.github.evisentin.wordpress.client.domain.api;

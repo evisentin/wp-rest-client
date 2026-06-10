@@ -176,7 +176,7 @@ final WpRestClient restClient =
         final WpPostQuery postQuery = WpPostQuery.builder()
                 .withStatuses(Set.of(DRAFT, PUBLISH))
                 .build();
-        final WpPagedResponse<WpPost> response = restClient.listPosts(pageQuery, postQuery);
+        final WpPagedResponse<WpPost> response = restClient.posts().list(pageQuery, postQuery);
         final List<WpPost> posts = response.getItems();
 
 ```
@@ -211,7 +211,7 @@ final WpRestClient restClient =
         final WpPostQuery postQuery = WpPostQuery.builder()
                 .withStatuses(Set.of(DRAFT, PUBLISH))
                 .build();
-        final WpPagedResponse<WpPost> response = restClient.listPosts(pageQuery, postQuery);
+        final WpPagedResponse<WpPost> response = restClient.posts().list(pageQuery, postQuery);
         final List<WpPost> posts = response.getItems();
 
 ```
@@ -261,7 +261,7 @@ final WpRestClient restClient =
         final WpPostQuery postQuery = WpPostQuery.builder()
                 .withStatuses(Set.of(DRAFT, PUBLISH))
                 .build();
-        final WpPagedResponse<WpPost> response = restClient.listPosts(pageQuery, postQuery);
+        final WpPagedResponse<WpPost> response = restClient.posts().list(pageQuery, postQuery);
         final List<WpPost> posts = response.getItems();
 
 ```
@@ -297,7 +297,7 @@ final WpRestClient restClient =
         final WpPostQuery postQuery = WpPostQuery.builder()
                 .withStatuses(Set.of(DRAFT, PUBLISH))
                 .build();
-        final WpPagedResponse<WpPost> response = restClient.listPosts(pageQuery, postQuery);
+        final WpPagedResponse<WpPost> response = restClient.posts().list(pageQuery, postQuery);
         final List<WpPost> posts = response.getItems();
 
 ```

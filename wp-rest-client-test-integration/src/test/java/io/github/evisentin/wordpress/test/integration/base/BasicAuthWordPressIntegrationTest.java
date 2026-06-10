@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.test.integration.base;
 
-import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
+import io.github.evisentin.wordpress.client.domain.WpRestClient;
 import io.github.evisentin.wordpress.client.domain.assertions.WordPressAssertions;
 import io.github.evisentin.wordpress.client.domain.model.*;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
@@ -189,7 +189,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                             .withParentId(nonExistingParentId)
                             .build();
 
-            assertThrowsWpBadRequest(() -> adminClient.createCategory(creationRequest),
+            assertThrowsWpBadRequest(() -> adminClient.categories().create(creationRequest),
                     "rest_term_invalid",
                     "Parent term does not exist.");
         }
@@ -203,7 +203,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             Long existingParentCategory = givenCategoryExists("Parent", "Parent Category", "parent");
 
             // WHEN
-            final WpCategory category = adminClient.createCategory(categoryCreateUpdateRequest()
+            final WpCategory category = adminClient.categories().create(categoryCreateUpdateRequest()
                     .withName(CATEGORY_1_NAME)
                     .withDescription(CATEGORY_1_DESCRIPTION)
                     .withSlug(CATEGORY_1_SLUG)
@@ -230,7 +230,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             wpCleanDefaultData();
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.deleteCategory(1000L), "rest_term_invalid", "Term does not exist.");
+            assertThrowsWpNotFound(() -> adminClient.categories().delete(1000L), "rest_term_invalid", "Term does not exist.");
         }
 
         @DisplayName("'DELETE' works")
@@ -242,7 +242,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             final Long categoryId = givenCategoryExists(CATEGORY_1_NAME, CATEGORY_1_DESCRIPTION, CATEGORY_1_SLUG);
 
             // WHEN
-            final WpCategoryDeletionResponse deletionResponse = adminClient.deleteCategory(categoryId);
+            final WpCategoryDeletionResponse deletionResponse = adminClient.categories().delete(categoryId);
 
             // THEN
             WordPressAssertions.assertThat(deletionResponse)
@@ -268,7 +268,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             final Long categoryId = givenCategoryExists(CATEGORY_1_NAME, CATEGORY_1_DESCRIPTION, CATEGORY_1_SLUG);
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.getCategory(categoryId + 1000, null), "rest_term_invalid", "Term does not exist.");
+            assertThrowsWpNotFound(() -> adminClient.categories().get(categoryId + 1000, null), "rest_term_invalid", "Term does not exist.");
         }
 
         @DisplayName("'GET' works with context")
@@ -280,7 +280,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             final Long categoryId = givenCategoryExists(CATEGORY_1_NAME, CATEGORY_1_DESCRIPTION, CATEGORY_1_SLUG);
 
             // WHEN
-            final WpCategory category = adminClient.getCategory(categoryId, WpContext.EDIT);
+            final WpCategory category = adminClient.categories().get(categoryId, WpContext.EDIT);
 
             // THEN
             WordPressAssertions.assertThat(category)
@@ -302,7 +302,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             final Long categoryId = givenCategoryExists(CATEGORY_1_NAME, CATEGORY_1_DESCRIPTION, CATEGORY_1_SLUG);
 
             // WHEN
-            final WpCategory category = adminClient.getCategory(categoryId, null);
+            final WpCategory category = adminClient.categories().get(categoryId, null);
 
             // THEN
             WordPressAssertions.assertThat(category)
@@ -326,7 +326,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             final Long cat2_id = givenCategoryExists(CATEGORY_2_NAME, CATEGORY_2_DESCRIPTION, CATEGORY_2_SLUG);
 
             // WHEN
-            final WpPagedResponse<WpCategory> response = adminClient.listCategories(WpPagingQuery.of(1, 10), null);
+            final WpPagedResponse<WpCategory> response = adminClient.categories().list(WpPagingQuery.of(1, 10), null);
 
             // THEN
             WordPressAssertions.assertThat(response)
@@ -370,7 +370,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                                                  .build();
 
             // WHEN
-            final WpPagedResponse<WpCategory> response = adminClient.listCategories(WpPagingQuery.of(1, 10), categoryQuery);
+            final WpPagedResponse<WpCategory> response = adminClient.categories().list(WpPagingQuery.of(1, 10), categoryQuery);
 
             // THEN
             WordPressAssertions.assertThat(response)
@@ -405,7 +405,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // WHEN/THEN
             final WpCategoryCreateUpdateRequest updateRequest = categoryCreateUpdateRequest().build();
-            assertThrowsWpNotFound(() -> adminClient.updateCategory(nonExistingCategoryId, updateRequest), "rest_term_invalid", "Term does not exist.");
+            assertThrowsWpNotFound(() -> adminClient.categories().update(nonExistingCategoryId, updateRequest), "rest_term_invalid", "Term does not exist.");
         }
 
         @DisplayName("'UPDATE' fails on parent not found")
@@ -424,7 +424,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                     .withParentId(nonExistingCategoryId)
                     .build();
 
-            assertThrowsWpBadRequest(() -> adminClient.updateCategory(categoryId, updateRequest),
+            assertThrowsWpBadRequest(() -> adminClient.categories().update(categoryId, updateRequest),
                     "rest_term_invalid", "Parent term does not exist.");
         }
 
@@ -445,7 +445,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                             .withSlug(CATEGORY_1_SLUG + " UPDATED")
                             .build();
 
-            final WpCategory category = adminClient.updateCategory(categoryId, updateRequest);
+            final WpCategory category = adminClient.categories().update(categoryId, updateRequest);
 
             // THEN
             WordPressAssertions.assertThat(category)
@@ -489,7 +489,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             File file = tempFile.toFile();
 
             // WHEN
-            final WpMedia media = adminClient.createMedia(file, "sample.png", "image/png");
+            final WpMedia media = adminClient.media().create(file, "sample.png", "image/png");
             // THEN
             WordPressAssertions.assertThat(media)
                                .isNotNull()
@@ -511,7 +511,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             wpCleanDefaultData();
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.deleteMedia(1000L), "rest_post_invalid_id", "Invalid post ID.");
+            assertThrowsWpNotFound(() -> adminClient.media().delete(1000L), "rest_post_invalid_id", "Invalid post ID.");
         }
 
         @DisplayName("'DELETE' works")
@@ -530,10 +530,10 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
 
             File file = tempFile.toFile();
-            final WpMedia existingMedia = adminClient.createMedia(file, "sample.png", "image/png");
+            final WpMedia existingMedia = adminClient.media().create(file, "sample.png", "image/png");
 
             // WHEN
-            final WpMediaDeletionResponse deletionResponse = adminClient.deleteMedia(existingMedia.getId());
+            final WpMediaDeletionResponse deletionResponse = adminClient.media().delete(existingMedia.getId());
 
             // THEN
             WordPressAssertions.assertThat(deletionResponse)
@@ -553,7 +553,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             wpCleanDefaultData();
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.getMedia(10L, null), "rest_post_invalid_id", "Invalid post ID.");
+            assertThrowsWpNotFound(() -> adminClient.media().get(10L, null), "rest_post_invalid_id", "Invalid post ID.");
         }
 
         @DisplayName("'GET' works with context")
@@ -572,10 +572,10 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
 
             File file = tempFile.toFile();
-            final WpMedia existingMedia = adminClient.createMedia(file, "sample.png", "image/png");
+            final WpMedia existingMedia = adminClient.media().create(file, "sample.png", "image/png");
 
             // WHEN
-            final WpMedia media = adminClient.getMedia(existingMedia.getId(), WpContext.EDIT);
+            final WpMedia media = adminClient.media().get(existingMedia.getId(), WpContext.EDIT);
 
             // THEN
             WordPressAssertions.assertThat(media)
@@ -601,10 +601,10 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
 
             File file = tempFile.toFile();
-            final WpMedia existingMedia = adminClient.createMedia(file, "sample.png", "image/png");
+            final WpMedia existingMedia = adminClient.media().create(file, "sample.png", "image/png");
 
             // WHEN
-            final WpMedia media = adminClient.getMedia(existingMedia.getId(), null);
+            final WpMedia media = adminClient.media().get(existingMedia.getId(), null);
 
             // THEN
             WordPressAssertions.assertThat(media)
@@ -632,7 +632,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // WHEN/THEN
             final WpMediaUpdateRequest updateRequest = WpMediaUpdateRequest.builder().build();
-            assertThrowsWpNotFound(() -> adminClient.updateMedia(nonExistingMediaId, updateRequest), "rest_post_invalid_id", "Invalid post ID.");
+            assertThrowsWpNotFound(() -> adminClient.media().update(nonExistingMediaId, updateRequest), "rest_post_invalid_id", "Invalid post ID.");
         }
 
         @DisplayName("'UPDATE' works")
@@ -652,7 +652,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
 
             File file = tempFile.toFile();
-            final WpMedia existingMedia = adminClient.createMedia(file, "sample.png", "image/png");
+            final WpMedia existingMedia = adminClient.media().create(file, "sample.png", "image/png");
 
             // WHEN
             final WpMediaUpdateRequest updateRequest =
@@ -662,7 +662,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                         .withSlug("Slug updated")
                                         .build();
 
-            final WpMedia media = adminClient.updateMedia(existingMedia.getId(), updateRequest);
+            final WpMedia media = adminClient.media().update(existingMedia.getId(), updateRequest);
 
             // THEN
             WordPressAssertions.assertThat(media)
@@ -704,7 +704,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                             .withTags(Set.of(tagCH))
                             .build();
 
-            final WpPost post = adminClient.createPost(createUpdateRequest);
+            final WpPost post = adminClient.posts().create(createUpdateRequest);
 
             // THEN
             WordPressAssertions.assertThat(post)
@@ -755,7 +755,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                             .withPingStatus(WpOpenClosed.CLOSED)
                             .build();
 
-            final WpPost post = adminClient.createPost(createUpdateRequest);
+            final WpPost post = adminClient.posts().create(createUpdateRequest);
 
             // THEN
             WordPressAssertions.assertThat(post)
@@ -805,7 +805,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                             .withStatus(PUBLISH)
                             .build();
 
-            final WpPost post = adminClient.createPost(createUpdateRequest);
+            final WpPost post = adminClient.posts().create(createUpdateRequest);
 
             // THEN
             WordPressAssertions.assertThat(post)
@@ -844,7 +844,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             wpCleanDefaultData();
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.deletePost(1000L), "rest_post_invalid_id", "Invalid post ID.");
+            assertThrowsWpNotFound(() -> adminClient.posts().delete(1000L), "rest_post_invalid_id", "Invalid post ID.");
         }
 
         @DisplayName("'DELETE' works")
@@ -861,10 +861,10 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                             .withStatus(PUBLISH)
                             .build();
 
-            final WpPost existingPost = adminClient.createPost(createUpdateRequest);
+            final WpPost existingPost = adminClient.posts().create(createUpdateRequest);
 
             // WHEN
-            final WpPostDeletionResponse deletionResponse = adminClient.deletePost(existingPost.getId());
+            final WpPostDeletionResponse deletionResponse = adminClient.posts().delete(existingPost.getId());
 
             // THEN
             WordPressAssertions.assertThat(deletionResponse)
@@ -897,7 +897,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             wpCleanDefaultData();
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.getPost(1000L, null), "rest_post_invalid_id", "Invalid post ID.");
+            assertThrowsWpNotFound(() -> adminClient.posts().get(1000L, null), "rest_post_invalid_id", "Invalid post ID.");
         }
 
         @DisplayName("'GET' works with password")
@@ -917,10 +917,10 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                             .withPassword(PASSWORD)
                             .build();
 
-            final WpPost existingPost = adminClient.createPost(createUpdateRequest);
+            final WpPost existingPost = adminClient.posts().create(createUpdateRequest);
 
             // WHEN
-            final WpPost post = standardUserClient.getPost(existingPost.getId(), WpContext.VIEW, PASSWORD);
+            final WpPost post = standardUserClient.posts().get(existingPost.getId(), WpContext.VIEW, PASSWORD);
 
             // THEN
             WordPressAssertions.assertThat(post)
@@ -960,10 +960,10 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                             .withPassword("password$$")
                             .build();
 
-            final WpPost existingPost = adminClient.createPost(createUpdateRequest);
+            final WpPost existingPost = adminClient.posts().create(createUpdateRequest);
 
             // WHEN
-            final WpPost post = standardUserClient.getPost(existingPost.getId(), WpContext.VIEW);
+            final WpPost post = standardUserClient.posts().get(existingPost.getId(), WpContext.VIEW);
 
             // THEN
             WordPressAssertions.assertThat(post)
@@ -1002,10 +1002,10 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                             .withStatus(PUBLISH)
                             .build();
 
-            final WpPost existingPost = adminClient.createPost(createUpdateRequest);
+            final WpPost existingPost = adminClient.posts().create(createUpdateRequest);
 
             // WHEN
-            final WpPost post = adminClient.getPost(existingPost.getId(), WpContext.EDIT);
+            final WpPost post = adminClient.posts().get(existingPost.getId(), WpContext.EDIT);
 
             // THEN
             assertThat(post).isNotNull();
@@ -1025,10 +1025,10 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                             .withStatus(PUBLISH)
                             .build();
 
-            final WpPost existingPost = adminClient.createPost(createUpdateRequest);
+            final WpPost existingPost = adminClient.posts().create(createUpdateRequest);
 
             // WHEN
-            final WpPost post = adminClient.getPost(existingPost.getId(), null);
+            final WpPost post = adminClient.posts().get(existingPost.getId(), null);
 
             // THEN
             assertThat(post).isNotNull();
@@ -1041,13 +1041,13 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // GIVEN
             wpCleanDefaultData();
-            final WpPost existingPost = adminClient.createPost(postCreateUpdateRequest()
+            final WpPost existingPost = adminClient.posts().create(postCreateUpdateRequest()
                     .withTitle(POST_1_TITLE)
                     .withStatus(PUBLISH)
                     .build());
 
             // WHEN
-            final WpPagedResponse<WpPost> response = adminClient.listPosts(WpPagingQuery.of(1, 10), null);
+            final WpPagedResponse<WpPost> response = adminClient.posts().list(WpPagingQuery.of(1, 10), null);
 
             // THEN
             WordPressAssertions.assertThat(response)
@@ -1083,17 +1083,17 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // GIVEN
             wpCleanDefaultData();
-            final WpPost draft_post = adminClient.createPost(postCreateUpdateRequest()
+            final WpPost draft_post = adminClient.posts().create(postCreateUpdateRequest()
                     .withTitle(POST_1_TITLE)
                     .withStatus(DRAFT)
                     .build());
 
-            final WpPost private_post = adminClient.createPost(postCreateUpdateRequest()
+            final WpPost private_post = adminClient.posts().create(postCreateUpdateRequest()
                     .withTitle(POST_2_TITLE)
                     .withStatus(PRIVATE)
                     .build());
 
-            final WpPost published_post = adminClient.createPost(postCreateUpdateRequest()
+            final WpPost published_post = adminClient.posts().create(postCreateUpdateRequest()
                     .withTitle(POST_3_TITLE)
                     .withStatus(PUBLISH)
                     .build());
@@ -1105,7 +1105,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                                      .withOrderBy(WpPostOrderFields.ID)
                                                      .build();
 
-            final WpPagedResponse<WpPost> response = adminClient.listPosts(WpPagingQuery.of(1, 10), postQuery);
+            final WpPagedResponse<WpPost> response = adminClient.posts().list(WpPagingQuery.of(1, 10), postQuery);
 
             // THEN
             WordPressAssertions.assertThat(response)
@@ -1129,7 +1129,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             wpCleanDefaultData();
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.trashPost(1000L), "rest_post_invalid_id", "Invalid post ID.");
+            assertThrowsWpNotFound(() -> adminClient.posts().trash(1000L), "rest_post_invalid_id", "Invalid post ID.");
         }
 
         @DisplayName("'TRASH' works")
@@ -1146,10 +1146,10 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                             .withStatus(PUBLISH)
                             .build();
 
-            final WpPost existingPost = adminClient.createPost(createUpdateRequest);
+            final WpPost existingPost = adminClient.posts().create(createUpdateRequest);
 
             // WHEN
-            final WpPost deletionResponse = adminClient.trashPost(existingPost.getId());
+            final WpPost deletionResponse = adminClient.posts().trash(existingPost.getId());
 
             // THEN
             WordPressAssertions.assertThat(deletionResponse)
@@ -1165,7 +1165,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             wpCleanDefaultData();
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.updatePost(1000L, postCreateUpdateRequest().build()),
+            assertThrowsWpNotFound(() -> adminClient.posts().update(1000L, postCreateUpdateRequest().build()),
                     "rest_post_invalid_id", "Invalid post ID.");
         }
 
@@ -1182,7 +1182,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                             .withStatus(PUBLISH)
                             .build();
 
-            final WpPost existingPost = adminClient.createPost(createUpdateRequest);
+            final WpPost existingPost = adminClient.posts().create(createUpdateRequest);
 
             // WHEN
             WpPostCreateUpdateRequest updateRequest =
@@ -1193,7 +1193,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                             .withStatus(DRAFT)
                             .build();
 
-            final WpPost post = adminClient.updatePost(existingPost.getId(), updateRequest);
+            final WpPost post = adminClient.posts().update(existingPost.getId(), updateRequest);
 
             // THEN
             // TODO: fix assertions
@@ -1233,7 +1233,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             wpCleanDefaultData();
 
             // WHEN
-            final Map<String, WpPostType> response = adminClient.getPostTypes();
+            final Map<String, WpPostType> response = adminClient.postTypes().list();
 
             // THEN
             assertThat(response)
@@ -1248,7 +1248,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
         }
     }
 
-    @DisplayName("Status APIs - Integration Tests")
+    @DisplayName("Post Status APIs - Integration Tests")
     @Nested
     class StatusTests {
 
@@ -1260,7 +1260,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             wpCleanDefaultData();
 
             // WHEN
-            final Map<String, WpStatus> response = adminClient.getStatuses();
+            final Map<String, WpStatus> response = adminClient.postStatuses().list();
 
             // THEN
             assertThat(response)
@@ -1297,7 +1297,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                             .withName(TAG_1_NAME)
                             .build();
 
-            assertThrowsWpBadRequest(() -> adminClient.createTag(creationRequest),
+            assertThrowsWpBadRequest(() -> adminClient.tags().create(creationRequest),
                     "term_exists",
                     "A term with the name provided already exists in this taxonomy.",
                     Map.of("term_id", existingTagId.intValue()));
@@ -1311,7 +1311,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             wpCleanDefaultData();
 
             // WHEN
-            final WpTag tag = adminClient.createTag(tagCreateUpdateRequest()
+            final WpTag tag = adminClient.tags().create(tagCreateUpdateRequest()
                     .withName(TAG_1_NAME)
                     .withDescription(TAG_1_DESCRIPTION)
                     .withSlug(TAG_1_SLUG)
@@ -1337,7 +1337,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             wpCleanDefaultData();
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.deleteTag(1000L), "rest_term_invalid", "Term does not exist.");
+            assertThrowsWpNotFound(() -> adminClient.tags().delete(1000L), "rest_term_invalid", "Term does not exist.");
         }
 
         @DisplayName("'DELETE' works")
@@ -1349,7 +1349,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
 
             // WHEN
-            final WpTagDeletionResponse deletionResponse = adminClient.deleteTag(tagId);
+            final WpTagDeletionResponse deletionResponse = adminClient.tags().delete(tagId);
 
             // THEN
             WordPressAssertions.assertThat(deletionResponse)
@@ -1375,7 +1375,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.getTag(tagId + 1000, null), "rest_term_invalid", "Term does not exist.");
+            assertThrowsWpNotFound(() -> adminClient.tags().get(tagId + 1000, null), "rest_term_invalid", "Term does not exist.");
         }
 
         @DisplayName("'GET' works with context")
@@ -1387,7 +1387,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
 
             // WHEN
-            final WpTag tag = adminClient.getTag(tagId, WpContext.EDIT);
+            final WpTag tag = adminClient.tags().get(tagId, WpContext.EDIT);
 
             // THEN
             WordPressAssertions.assertThat(tag)
@@ -1409,7 +1409,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             final Long tagId = givenTagExists(TAG_1_NAME, TAG_1_DESCRIPTION, TAG_1_SLUG);
 
             // WHEN
-            final WpTag tag = adminClient.getTag(tagId, null);
+            final WpTag tag = adminClient.tags().get(tagId, null);
 
             // THEN
             WordPressAssertions.assertThat(tag)
@@ -1433,7 +1433,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             final Long cat2_id = givenTagExists(TAG_2_NAME, TAG_2_DESCRIPTION, TAG_2_SLUG);
 
             // WHEN
-            final WpPagedResponse<WpTag> response = adminClient.listTags(WpPagingQuery.of(1, 10), null);
+            final WpPagedResponse<WpTag> response = adminClient.tags().list(WpPagingQuery.of(1, 10), null);
 
             // THEN
             WordPressAssertions.assertThat(response)
@@ -1476,7 +1476,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                                   .build();
 
             // WHEN
-            final WpPagedResponse<WpTag> response = adminClient.listTags(WpPagingQuery.of(1, 10), tagQuery);
+            final WpPagedResponse<WpTag> response = adminClient.tags().list(WpPagingQuery.of(1, 10), tagQuery);
 
             // THEN
             WordPressAssertions.assertThat(response)
@@ -1512,7 +1512,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // WHEN/THEN
             final WpTagCreateUpdateRequest updateRequest = tagCreateUpdateRequest().build();
-            assertThrowsWpNotFound(() -> adminClient.updateTag(nonExistingTagId, updateRequest), "rest_term_invalid", "Term does not exist.");
+            assertThrowsWpNotFound(() -> adminClient.tags().update(nonExistingTagId, updateRequest), "rest_term_invalid", "Term does not exist.");
         }
 
         @DisplayName("'UPDATE' works")
@@ -1532,7 +1532,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                             .withSlug(TAG_1_SLUG + " UPDATED")
                             .build();
 
-            final WpTag tag = adminClient.updateTag(tagId, updateRequest);
+            final WpTag tag = adminClient.tags().update(tagId, updateRequest);
 
             // THEN
             WordPressAssertions.assertThat(tag)
@@ -1568,7 +1568,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                                 .build();
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> adminClient.createComment(createUpdateRequest),
+            assertThrowsWpForbidden(() -> adminClient.comments().create(createUpdateRequest),
                     "rest_comment_invalid_post_id",
                     "Sorry, you are not allowed to create this comment without a post.");
         }
@@ -1579,7 +1579,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // GIVEN
             wpCleanDefaultData();
-            WpPost existingPost = adminClient.createPost(
+            WpPost existingPost = adminClient.posts().create(
                     WpPostCreateUpdateRequest.builder()
                                              .withTitle("My Post")
                                              .withContent("My Content")
@@ -1593,7 +1593,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                                 .withContent("My Comment")
                                                 .build();
 
-            final WpComment comment = adminClient.createComment(createUpdateRequest);
+            final WpComment comment = adminClient.comments().create(createUpdateRequest);
 
             // THEN
             WordPressAssertions.assertThat(comment)
@@ -1609,7 +1609,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // GIVEN
             wpCleanDefaultData();
-            WpPost existingPost = adminClient.createPost(
+            WpPost existingPost = adminClient.posts().create(
                     WpPostCreateUpdateRequest.builder()
                                              .withTitle("My Post")
                                              .withContent("My Content")
@@ -1624,7 +1624,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                                 .withPassword("mypassword")
                                                 .build();
 
-            final WpComment comment = adminClient.createComment(createUpdateRequest);
+            final WpComment comment = adminClient.comments().create(createUpdateRequest);
 
             // THEN
             WordPressAssertions.assertThat(comment)
@@ -1642,7 +1642,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             wpCleanDefaultData();
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.deleteComment(1000L), "rest_comment_invalid_id", "Invalid comment ID.");
+            assertThrowsWpNotFound(() -> adminClient.comments().delete(1000L), "rest_comment_invalid_id", "Invalid comment ID.");
         }
 
         @DisplayName("'DELETE' works")
@@ -1651,7 +1651,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // GIVEN
             wpCleanDefaultData();
-            WpPost existingPost = adminClient.createPost(
+            WpPost existingPost = adminClient.posts().create(
                     WpPostCreateUpdateRequest.builder()
                                              .withTitle("My Post")
                                              .withContent("My Content")
@@ -1664,10 +1664,10 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                                 .withContent("My Comment")
                                                 .build();
 
-            final WpComment existingComment = adminClient.createComment(createUpdateRequest);
+            final WpComment existingComment = adminClient.comments().create(createUpdateRequest);
 
             // WHEN
-            final WpCommentDeletionResponse deletionResponse = adminClient.deleteComment(existingComment.getId());
+            final WpCommentDeletionResponse deletionResponse = adminClient.comments().delete(existingComment.getId());
 
             // THEN
             WordPressAssertions.assertThat(deletionResponse)
@@ -1686,7 +1686,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             wpCleanDefaultData();
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.getComment(1000L, null), "rest_comment_invalid_id", "Invalid comment ID.");
+            assertThrowsWpNotFound(() -> adminClient.comments().get(1000L, null), "rest_comment_invalid_id", "Invalid comment ID.");
         }
 
         @DisplayName("'TRASH' fails on HTTP NOT FOUND")
@@ -1697,7 +1697,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             wpCleanDefaultData();
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.trashComment(1000L), "rest_comment_invalid_id", "Invalid comment ID.");
+            assertThrowsWpNotFound(() -> adminClient.comments().trash(1000L), "rest_comment_invalid_id", "Invalid comment ID.");
         }
 
         @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
@@ -1707,7 +1707,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             wpCleanDefaultData();
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.updateComment(1000L, WpCommentCreateUpdateRequest.builder().build()),
+            assertThrowsWpNotFound(() -> adminClient.comments().update(1000L, WpCommentCreateUpdateRequest.builder().build()),
                     "rest_comment_invalid_id", "Invalid comment ID.");
         }
     }

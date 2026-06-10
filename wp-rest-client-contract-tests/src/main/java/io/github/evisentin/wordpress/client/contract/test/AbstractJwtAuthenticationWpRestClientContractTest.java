@@ -1,7 +1,7 @@
 package io.github.evisentin.wordpress.client.contract.test;
 
-import io.github.evisentin.wordpress.client.domain.api.WpBaseRestClient;
-import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
+import io.github.evisentin.wordpress.client.domain.WpBaseRestClient;
+import io.github.evisentin.wordpress.client.domain.WpRestClient;
 import io.github.evisentin.wordpress.client.domain.assertions.WordPressAssertions;
 import io.github.evisentin.wordpress.client.domain.model.WpCategory;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
@@ -40,7 +40,7 @@ public abstract class AbstractJwtAuthenticationWpRestClientContractTest extends 
             final Long catId = 2L;
 
             // WHEN
-            final WpCategory category = client.getCategory(catId, WpContext.VIEW);
+            final WpCategory category = client.categories().get(catId, WpContext.VIEW);
 
             // THEN
             WordPressAssertions.assertThat(category)

@@ -7,7 +7,7 @@ import io.github.evisentin.wordpress.client.domain.model.responses.*;
 import java.util.List;
 import java.util.Map;
 
-interface TypeReferences {
+public interface TypeReferences {
     TypeReference<WpCategory> WP_CATEGORY_TYPEREFERENCE = new TypeReference<>() {};
     TypeReference<WpComment> WP_COMMENT_TYPEREFERENCE = new TypeReference<>() {};
     TypeReference<WpPost> WP_POST_TYPEREFERENCE = new TypeReference<>() {};

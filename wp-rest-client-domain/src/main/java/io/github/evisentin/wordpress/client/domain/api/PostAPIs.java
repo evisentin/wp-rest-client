@@ -1,4 +1,4 @@
-package io.github.evisentin.wordpress.client.domain.api.operations;
+package io.github.evisentin.wordpress.client.domain.api;
 
 import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
 import io.github.evisentin.wordpress.client.domain.model.WpPost;
@@ -7,7 +7,6 @@ import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
 import io.github.evisentin.wordpress.client.domain.model.query.WpPostQuery;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpPostCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpPostDeletionResponse;
-import lombok.NonNull;
 
 /**
  * Defines operations for managing WordPress posts through the WordPress REST API.
@@ -21,7 +20,7 @@ import lombok.NonNull;
  * <p>Implementations are expected to communicate with the {@code /wp-json/wp/v2/posts} endpoint or compatible
  * APIs.</p>
  */
-public interface PostOperations {
+public interface PostAPIs {
     /**
      * Creates a new post.
      *
@@ -32,7 +31,7 @@ public interface PostOperations {
      *
      * @return the created {@link WpPost}
      */
-    WpPost createPost(@NonNull WpPostCreateUpdateRequest creationRequest);
+    WpPost create(WpPostCreateUpdateRequest creationRequest);
 
     /**
      * Permanently deletes a post by its unique identifier.
@@ -42,7 +41,7 @@ public interface PostOperations {
      *
      * @return the post deletion response
      */
-    WpPostDeletionResponse deletePost(long id);
+    WpPostDeletionResponse delete(long id);
 
     /**
      * Retrieves a post by its unique identifier using the given context.
@@ -57,7 +56,7 @@ public interface PostOperations {
      *
      * @return the matching {@link WpPost}
      */
-    WpPost getPost(long id, WpContext context);
+    WpPost get(long id, WpContext context);
 
     /**
      * Retrieves a post by its unique identifier using the given context and optional password.
@@ -78,7 +77,7 @@ public interface PostOperations {
      *
      * @return the matching {@link WpPost}
      */
-    WpPost getPost(long id, WpContext context, String password);
+    WpPost get(long id, WpContext context, String password);
 
     /**
      * Retrieves a paginated list of posts using optional filtering and sorting criteria.
@@ -93,7 +92,7 @@ public interface PostOperations {
      *
      * @return a paginated response containing {@link WpPost} items
      */
-    WpPagedResponse<WpPost> listPosts(@NonNull WpPagingQuery pageQuery, WpPostQuery postQuery);
+    WpPagedResponse<WpPost> list(WpPagingQuery pageQuery, WpPostQuery postQuery);
 
     /**
      * Moves a post to the trash by its unique identifier.
@@ -103,7 +102,7 @@ public interface PostOperations {
      *
      * @return the trashed {@link WpPost}
      */
-    WpPost trashPost(long id);
+    WpPost trash(long id);
 
     /**
      * Updates an existing post.
@@ -117,5 +116,5 @@ public interface PostOperations {
      *
      * @return the updated {@link WpPost}
      */
-    WpPost updatePost(long id, @NonNull WpPostCreateUpdateRequest updateRequest);
+    WpPost update(long id, WpPostCreateUpdateRequest updateRequest);
 }

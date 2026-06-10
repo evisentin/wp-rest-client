@@ -1,7 +1,6 @@
-package io.github.evisentin.wordpress.client.domain.api.operations;
+package io.github.evisentin.wordpress.client.domain.api;
 
 import io.github.evisentin.wordpress.client.domain.model.WpStatus;
-import lombok.NonNull;
 
 import java.util.Map;
 
@@ -17,7 +16,7 @@ import java.util.Map;
  * <p>Implementations are expected to communicate with the {@code /wp-json/wp/v2/statuses} endpoint or compatible
  * APIs.</p>
  */
-public interface StatusOperations {
+public interface PostStatusAPIs {
 
     /**
      * Retrieves a post status definition by its unique slug.
@@ -29,7 +28,7 @@ public interface StatusOperations {
      *
      * @return the matching {@link WpStatus}
      */
-    WpStatus getStatus(@NonNull String name);
+    WpStatus get(String name);
 
     /**
      * Retrieves all registered post statuses.
@@ -38,5 +37,5 @@ public interface StatusOperations {
      *
      * @return a map of status slugs to status definitions
      */
-    Map<String, WpStatus> getStatuses();
+    Map<String, WpStatus> list();
 }

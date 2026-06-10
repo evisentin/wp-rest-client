@@ -1,7 +1,7 @@
 package io.github.evisentin.wordpress.client.contract.test;
 
-import io.github.evisentin.wordpress.client.domain.api.WpBaseRestClient;
-import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
+import io.github.evisentin.wordpress.client.domain.WpBaseRestClient;
+import io.github.evisentin.wordpress.client.domain.WpRestClient;
 import io.github.evisentin.wordpress.client.domain.assertions.WordPressAssertions;
 import io.github.evisentin.wordpress.client.domain.model.*;
 import io.github.evisentin.wordpress.client.domain.model.enums.*;
@@ -67,23 +67,23 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         @Test
         @SneakyThrows
         void createFailsOnNullParameters() {
-            assertThatThrownBy(() -> client.createMedia(null, null, null))
+            assertThatThrownBy(() -> client.media().create(null, null, null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("file is marked non-null but is null");
 
-            assertThatThrownBy(() -> client.createMedia(new File(""), null, null))
+            assertThatThrownBy(() -> client.media().create(new File(""), null, null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("fileName is marked non-null but is null");
 
-            assertThatThrownBy(() -> client.createMedia(new File(""), "some name", null))
+            assertThatThrownBy(() -> client.media().create(new File(""), "some name", null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("mimeType is marked non-null but is null");
 
-            assertThatThrownBy(() -> client.createMedia(new File(""), " ", " "))
+            assertThatThrownBy(() -> client.media().create(new File(""), " ", " "))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("fileName cannot be blank");
 
-            assertThatThrownBy(() -> client.createMedia(new File(""), "some name", " "))
+            assertThatThrownBy(() -> client.media().create(new File(""), "some name", " "))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("mimeType cannot be blank");
         }
@@ -107,7 +107,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             File file = tempFile.toFile();
 
             // WHEN
-            final WpMedia media = client.createMedia(file, "sample.png", "image/png");
+            final WpMedia media = client.media().create(file, "sample.png", "image/png");
 
             // THEN
             WordPressAssertions.assertThat(media)
@@ -134,7 +134,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/media/delete.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.deleteMedia(9L));
+            assertThrowsWpForbidden(() -> client.media().delete(9L));
         }
 
         @DisplayName("'DELETE' fails on HTTP NOT FOUND")
@@ -145,7 +145,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/media/delete.failure.not-found.json");
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> client.deleteMedia(9L));
+            assertThrowsWpNotFound(() -> client.media().delete(9L));
         }
 
         @DisplayName("'DELETE' fails on HTTP UNAUTHORIZED")
@@ -156,7 +156,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/media/delete.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.deleteMedia(9L));
+            assertThrowsWpUnauthorized(() -> client.media().delete(9L));
         }
 
         @DisplayName("'DELETE' works")
@@ -167,7 +167,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/media/delete.success.json");
 
             // WHEN
-            final WpMediaDeletionResponse response = client.deleteMedia(9L);
+            final WpMediaDeletionResponse response = client.media().delete(9L);
 
             // THEN
             WordPressAssertions.assertThat(response)
@@ -187,7 +187,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/media/get.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.getMedia(9L, null));
+            assertThrowsWpForbidden(() -> client.media().get(9L, null));
         }
 
         @DisplayName("'GET' fails on HTTP NOT FOUND")
@@ -198,7 +198,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/media/get.failure.not-found.json");
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> client.getMedia(9L, null));
+            assertThrowsWpNotFound(() -> client.media().get(9L, null));
         }
 
         @DisplayName("'GET' fails on HTTP UNAUTHORIZED")
@@ -209,7 +209,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/media/get.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.getMedia(9L, null));
+            assertThrowsWpUnauthorized(() -> client.media().get(9L, null));
         }
 
         @DisplayName("'GET' works with context")
@@ -222,7 +222,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final Long id = 9L;
 
             // WHEN
-            final WpMedia media = client.getMedia(id, WpContext.VIEW);
+            final WpMedia media = client.media().get(id, WpContext.VIEW);
 
             // THEN
             WordPressAssertions.assertThat(media)
@@ -240,7 +240,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final Long id = 9L;
 
             // WHEN
-            final WpMedia media = client.getMedia(id, null);
+            final WpMedia media = client.media().get(id, null);
 
             // THEN
             WordPressAssertions.assertThat(media)
@@ -256,14 +256,14 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/media/list.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.listMedia(WpPagingQuery.of(1, 10), null));
+            assertThrowsWpForbidden(() -> client.media().list(WpPagingQuery.of(1, 10), null));
         }
 
         @DisplayName("'LIST' fails on null pageQuery")
         @Test
         void listFailsOnNullPaging() {
             // WHEN/THEN
-            assertThatThrownBy(() -> client.listMedia(null, null))
+            assertThatThrownBy(() -> client.media().list(null, null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("pageQuery is marked non-null but is null");
         }
@@ -276,7 +276,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/media/list.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.listMedia(WpPagingQuery.of(1, 10), null));
+            assertThrowsWpUnauthorized(() -> client.media().list(WpPagingQuery.of(1, 10), null));
         }
 
         @DisplayName("'LIST' works with paging")
@@ -287,7 +287,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/media/list.success.just-paging.json");
 
             // WHEN
-            final WpPagedResponse<WpMedia> response = client.listMedia(WpPagingQuery.of(1, 10), null);
+            final WpPagedResponse<WpMedia> response = client.media().list(WpPagingQuery.of(1, 10), null);
 
             // THEN
             WordPressAssertions.assertThat(response)
@@ -322,7 +322,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                         .build();
 
             // WHEN
-            final WpPagedResponse<WpMedia> response = client.listMedia(WpPagingQuery.of(1, 10), mediaQuery);
+            final WpPagedResponse<WpMedia> response = client.media().list(WpPagingQuery.of(1, 10), mediaQuery);
 
             // THEN
             WordPressAssertions.assertThat(response)
@@ -360,7 +360,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                         .build();
 
             // WHEN/THEN
-            assertThrowsWpBadRequest(() -> client.updateMedia(9L, updateRequest));
+            assertThrowsWpBadRequest(() -> client.media().update(9L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on HTTP FORBIDDEN")
@@ -378,7 +378,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                         .build();
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.updateMedia(9L, updateRequest));
+            assertThrowsWpForbidden(() -> client.media().update(9L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
@@ -396,7 +396,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                         .build();
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> client.updateMedia(9L, updateRequest));
+            assertThrowsWpNotFound(() -> client.media().update(9L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on null request")
@@ -404,7 +404,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         void updateFailsOnNullRequest() {
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.updateMedia(1000L, null))
+            assertThatThrownBy(() -> client.media().update(1000L, null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("updateRequest is marked non-null but is null");
         }
@@ -424,7 +424,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                         .build();
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.updateMedia(9L, updateRequest));
+            assertThrowsWpUnauthorized(() -> client.media().update(9L, updateRequest));
         }
 
         @DisplayName("UPDATE' works")
@@ -442,7 +442,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                         .build();
 
             // WHEN
-            final WpMedia media = client.updateMedia(9L, updateRequest);
+            final WpMedia media = client.media().update(9L, updateRequest);
 
             WordPressAssertions.assertThat(media)
                                .isNotNull()
@@ -476,7 +476,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                  .build();
 
             // WHEN/THEN
-            assertThrowsWpBadRequest(() -> client.createCategory(createRequest));
+            assertThrowsWpBadRequest(() -> client.categories().create(createRequest));
         }
 
         @DisplayName("'CREATE' fails on blank name")
@@ -492,7 +492,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                  .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.createCategory(createRequest))
+            assertThatThrownBy(() -> client.categories().create(createRequest))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("name cannot be blank");
         }
@@ -512,7 +512,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                  .build();
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.createCategory(createRequest));
+            assertThrowsWpForbidden(() -> client.categories().create(createRequest));
         }
 
         @DisplayName("'CREATE' fails on null request")
@@ -520,7 +520,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         void createFailsOnNullRequest() {
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.createCategory(null))
+            assertThatThrownBy(() -> client.categories().create(null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("creationRequest is marked non-null but is null");
         }
@@ -540,7 +540,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                  .build();
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.createCategory(createRequest));
+            assertThrowsWpUnauthorized(() -> client.categories().create(createRequest));
         }
 
         @DisplayName("'CREATE' works")
@@ -562,7 +562,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                  .withParentId(parent_id)
                                                  .build();
 
-            final WpCategory category = client.createCategory(createRequest);
+            final WpCategory category = client.categories().create(createRequest);
 
             // THEN
             WordPressAssertions.assertThat(category)
@@ -587,7 +587,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/category/delete.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.deleteCategory(1005L));
+            assertThrowsWpForbidden(() -> client.categories().delete(1005L));
         }
 
         @DisplayName("'DELETE' fails on HTTP NOT FOUND")
@@ -598,7 +598,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/category/delete.failure.not-found.json");
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> client.deleteCategory(1005L));
+            assertThrowsWpNotFound(() -> client.categories().delete(1005L));
         }
 
         @DisplayName("'DELETE' fails on HTTP UNAUTHORIZED")
@@ -609,7 +609,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/category/delete.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.deleteCategory(1005L));
+            assertThrowsWpUnauthorized(() -> client.categories().delete(1005L));
         }
 
         @DisplayName("'DELETE' works")
@@ -620,7 +620,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/category/delete.success.json");
 
             // WHEN
-            final WpCategoryDeletionResponse response = client.deleteCategory(1005L);
+            final WpCategoryDeletionResponse response = client.categories().delete(1005L);
 
             // THEN
             WordPressAssertions.assertThat(response)
@@ -646,7 +646,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/category/get.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.getCategory(1005L, null));
+            assertThrowsWpForbidden(() -> client.categories().get(1005L, null));
         }
 
         @DisplayName("'GET' fails on HTTP NOT FOUND")
@@ -657,7 +657,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/category/get.failure.not-found.json");
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> client.getCategory(1005L, null));
+            assertThrowsWpNotFound(() -> client.categories().get(1005L, null));
         }
 
         @DisplayName("'GET' fails on HTTP UNAUTHORIZED")
@@ -668,7 +668,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/category/get.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.getCategory(1005L, null));
+            assertThrowsWpUnauthorized(() -> client.categories().get(1005L, null));
         }
 
         @DisplayName("'GET' works with context")
@@ -681,7 +681,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final Long catId = 2L;
 
             // WHEN
-            final WpCategory category = client.getCategory(catId, WpContext.VIEW);
+            final WpCategory category = client.categories().get(catId, WpContext.VIEW);
 
             // THEN
             WordPressAssertions.assertThat(category)
@@ -704,7 +704,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final Long catId = 2L;
 
             // WHEN
-            final WpCategory category = client.getCategory(catId, null);
+            final WpCategory category = client.categories().get(catId, null);
 
             // THEN
             WordPressAssertions.assertThat(category)
@@ -725,14 +725,14 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/category/list.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.listCategories(WpPagingQuery.of(1, 10), null));
+            assertThrowsWpForbidden(() -> client.categories().list(WpPagingQuery.of(1, 10), null));
         }
 
         @DisplayName("'LIST' fails on null pageQuery")
         @Test
         void listFailsOnNullPaging() {
             // WHEN/THEN
-            assertThatThrownBy(() -> client.listCategories(null, null))
+            assertThatThrownBy(() -> client.categories().list(null, null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("pageQuery is marked non-null but is null");
         }
@@ -745,7 +745,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/category/list.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.listCategories(WpPagingQuery.of(1, 10), null));
+            assertThrowsWpUnauthorized(() -> client.categories().list(WpPagingQuery.of(1, 10), null));
         }
 
         @DisplayName("'LIST' works with paging")
@@ -764,7 +764,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/category/list.success.just-paging.json");
 
             // WHEN
-            final WpPagedResponse<WpCategory> response = client.listCategories(WpPagingQuery.of(1, 10), null);
+            final WpPagedResponse<WpCategory> response = client.categories().list(WpPagingQuery.of(1, 10), null);
 
             // THEN
             WordPressAssertions.assertThat(response)
@@ -817,7 +817,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                                  .build();
 
             // WHEN
-            final WpPagedResponse<WpCategory> response = client.listCategories(WpPagingQuery.of(1, 10), categoryQuery);
+            final WpPagedResponse<WpCategory> response = client.categories().list(WpPagingQuery.of(1, 10), categoryQuery);
 
             // THEN
             WordPressAssertions.assertThat(response)
@@ -860,7 +860,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                  .build();
 
             // WHEN/THEN
-            assertThrowsWpBadRequest(() -> client.updateCategory(2L, updateRequest));
+            assertThrowsWpBadRequest(() -> client.categories().update(2L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on HTTP FORBIDDEN")
@@ -882,7 +882,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                  .build();
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.updateCategory(2L, updateRequest));
+            assertThrowsWpForbidden(() -> client.categories().update(2L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
@@ -904,7 +904,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                  .build();
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> client.updateCategory(2L, updateRequest));
+            assertThrowsWpNotFound(() -> client.categories().update(2L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on null request")
@@ -912,7 +912,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         void updateFailsOnNullRequest() {
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.updateCategory(1000L, null))
+            assertThatThrownBy(() -> client.categories().update(1000L, null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("updateRequest is marked non-null but is null");
         }
@@ -936,7 +936,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                  .build();
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.updateCategory(2L, updateRequest));
+            assertThrowsWpUnauthorized(() -> client.categories().update(2L, updateRequest));
         }
 
         @DisplayName("UPDATE' works")
@@ -958,7 +958,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                  .build();
 
             // WHEN
-            final WpCategory category = client.updateCategory(2L, updateRequest);
+            final WpCategory category = client.categories().update(2L, updateRequest);
 
             WordPressAssertions.assertThat(category)
                                .isNotNull()
@@ -992,7 +992,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                 .build();
 
             // WHEN/THEN
-            assertThrowsWpBadRequest(() -> client.createComment(createRequest));
+            assertThrowsWpBadRequest(() -> client.comments().create(createRequest));
         }
 
         @DisplayName("'CREATE' fails on blank content")
@@ -1008,7 +1008,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                 .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.createComment(createRequest))
+            assertThatThrownBy(() -> client.comments().create(createRequest))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("content cannot be blank");
         }
@@ -1029,7 +1029,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                 .build();
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.createComment(createRequest));
+            assertThrowsWpForbidden(() -> client.comments().create(createRequest));
         }
 
         @DisplayName("'CREATE' fails on null request")
@@ -1037,7 +1037,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         void createFailsOnNullRequest() {
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.createComment(null))
+            assertThatThrownBy(() -> client.comments().create(null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("creationRequest is marked non-null but is null");
         }
@@ -1058,7 +1058,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                 .build();
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.createComment(createRequest));
+            assertThrowsWpUnauthorized(() -> client.comments().create(createRequest));
         }
 
         @DisplayName("'CREATE' works")
@@ -1084,7 +1084,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                 .withDateGMT(LocalDateTime.of(2025, 8, 7, 8, 30, 0))
                                                 .build();
 
-            final WpComment comment = client.createComment(createUpdateRequest);
+            final WpComment comment = client.comments().create(createUpdateRequest);
 
             // THEN
             WordPressAssertions.assertThat(comment)
@@ -1122,7 +1122,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                 .withPassword("my-password")
                                                 .build();
 
-            final WpComment comment = client.createComment(createUpdateRequest);
+            final WpComment comment = client.comments().create(createUpdateRequest);
 
             // THEN
             WordPressAssertions.assertThat(comment)
@@ -1144,7 +1144,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/comment/delete.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.deleteComment(13L));
+            assertThrowsWpForbidden(() -> client.comments().delete(13L));
         }
 
         @DisplayName("'DELETE' fails on HTTP NOT FOUND")
@@ -1155,7 +1155,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/comment/delete.failure.not-found.json");
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> client.deleteComment(13L));
+            assertThrowsWpNotFound(() -> client.comments().delete(13L));
         }
 
         @DisplayName("'DELETE' fails on HTTP UNAUTHORIZED")
@@ -1166,7 +1166,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/comment/delete.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.deleteComment(13L));
+            assertThrowsWpUnauthorized(() -> client.comments().delete(13L));
         }
 
         @DisplayName("'DELETE' works")
@@ -1177,7 +1177,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/comment/delete.success.json");
 
             // WHEN
-            final WpCommentDeletionResponse response = client.deleteComment(13L);
+            final WpCommentDeletionResponse response = client.comments().delete(13L);
 
             // THEN
 
@@ -1199,7 +1199,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/comment/get.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.getComment(12L, null));
+            assertThrowsWpForbidden(() -> client.comments().get(12L, null));
         }
 
         @DisplayName("'GET' fails on HTTP NOT FOUND")
@@ -1210,7 +1210,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/comment/get.failure.not-found.json");
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> client.getComment(12L, null));
+            assertThrowsWpNotFound(() -> client.comments().get(12L, null));
         }
 
         @DisplayName("'GET' fails on HTTP UNAUTHORIZED")
@@ -1221,7 +1221,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/comment/get.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.getComment(12L, null));
+            assertThrowsWpUnauthorized(() -> client.comments().get(12L, null));
         }
 
         @DisplayName("'GET' works (with context)")
@@ -1234,7 +1234,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final Long id = 12L;
 
             // WHEN
-            final WpComment comment = client.getComment(id, EDIT);
+            final WpComment comment = client.comments().get(id, EDIT);
 
             // THEN
             WordPressAssertions.assertThat(comment)
@@ -1253,7 +1253,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final Long id = 12L;
 
             // WHEN
-            final WpComment comment = client.getComment(id, EDIT, "my-password");
+            final WpComment comment = client.comments().get(id, EDIT, "my-password");
 
             // THEN
             WordPressAssertions.assertThat(comment)
@@ -1272,7 +1272,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final Long id = 12L;
 
             // WHEN
-            final WpComment comment = client.getComment(id, null);
+            final WpComment comment = client.comments().get(id, null);
 
             // THEN
             WordPressAssertions.assertThat(comment)
@@ -1289,14 +1289,14 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/comment/list.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.listComments(WpPagingQuery.of(1, 10), null));
+            assertThrowsWpForbidden(() -> client.comments().list(WpPagingQuery.of(1, 10), null));
         }
 
         @DisplayName("'LIST' fails on null pageQuery")
         @Test
         void listFailsOnNullPaging() {
             // WHEN/THEN
-            assertThatThrownBy(() -> client.listComments(null, null))
+            assertThatThrownBy(() -> client.comments().list(null, null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("pageQuery is marked non-null but is null");
         }
@@ -1309,7 +1309,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/comment/list.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.listComments(WpPagingQuery.of(1, 10), null));
+            assertThrowsWpUnauthorized(() -> client.comments().list(WpPagingQuery.of(1, 10), null));
         }
 
         @DisplayName("'LIST' works with paging")
@@ -1320,7 +1320,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/comment/list.success.just-paging.json");
 
             // WHEN
-            final WpPagedResponse<WpComment> response = client.listComments(WpPagingQuery.of(1, 10), null);
+            final WpPagedResponse<WpComment> response = client.comments().list(WpPagingQuery.of(1, 10), null);
 
             // THEN
             WordPressAssertions.assertThat(response)
@@ -1370,7 +1370,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                               .build();
 
             // WHEN
-            final WpPagedResponse<WpComment> response = client.listComments(WpPagingQuery.of(1, 10), commentQuery);
+            final WpPagedResponse<WpComment> response = client.comments().list(WpPagingQuery.of(1, 10), commentQuery);
 
             // THEN
             WordPressAssertions.assertThat(response)
@@ -1415,7 +1415,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/comment/trash.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.trashComment(12L));
+            assertThrowsWpForbidden(() -> client.comments().trash(12L));
         }
 
         @DisplayName("'TRASH' fails on HTTP NOT FOUND")
@@ -1426,7 +1426,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/comment/trash.failure.not-found.json");
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> client.trashComment(12L));
+            assertThrowsWpNotFound(() -> client.comments().trash(12L));
         }
 
         @DisplayName("'TRASH' fails on HTTP UNAUTHORIZED")
@@ -1437,7 +1437,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/comment/trash.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.trashComment(12L));
+            assertThrowsWpUnauthorized(() -> client.comments().trash(12L));
         }
 
         @DisplayName("'TRASH' works")
@@ -1448,7 +1448,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/comment/trash.success.json");
 
             // WHEN
-            final WpComment comment = client.trashComment(12L);
+            final WpComment comment = client.comments().trash(12L);
 
             // THEN
             WordPressAssertions.assertThat(comment)
@@ -1472,7 +1472,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                 .build();
 
             // WHEN/THEN
-            assertThrowsWpBadRequest(() -> client.updateComment(12L, updateRequest));
+            assertThrowsWpBadRequest(() -> client.comments().update(12L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on HTTP FORBIDDEN")
@@ -1490,7 +1490,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                 .build();
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.updateComment(12L, updateRequest));
+            assertThrowsWpForbidden(() -> client.comments().update(12L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
@@ -1508,7 +1508,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                 .build();
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> client.updateComment(12L, updateRequest));
+            assertThrowsWpNotFound(() -> client.comments().update(12L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on null request")
@@ -1516,7 +1516,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         void updateFailsOnNullRequest() {
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.updateComment(1000L, null))
+            assertThatThrownBy(() -> client.comments().update(1000L, null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("updateRequest is marked non-null but is null");
         }
@@ -1534,7 +1534,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                 .withContent(CONTENT + " UPDATED")
                                                 .build();
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.updateComment(12L, updateRequest));
+            assertThrowsWpUnauthorized(() -> client.comments().update(12L, updateRequest));
         }
 
         @DisplayName("'UPDATE' works")
@@ -1553,7 +1553,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                 .build();
 
             // WHEN
-            val comment = client.updateComment(12L, updateRequest);
+            val comment = client.comments().update(12L, updateRequest);
 
             // THEN
             WordPressAssertions.assertThat(comment)
@@ -1592,7 +1592,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                              .build();
 
             // WHEN/THEN
-            assertThrowsWpBadRequest(() -> client.createPost(createRequest));
+            assertThrowsWpBadRequest(() -> client.posts().create(createRequest));
         }
 
         @DisplayName("'CREATE' fails on HTTP FORBIDDEN")
@@ -1615,7 +1615,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                              .build();
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.createPost(createRequest));
+            assertThrowsWpForbidden(() -> client.posts().create(createRequest));
         }
 
         @DisplayName("'CREATE' fails on null request")
@@ -1623,7 +1623,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         void createFailsOnNullRequest() {
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.createPost(null))
+            assertThatThrownBy(() -> client.posts().create(null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("creationRequest is marked non-null but is null");
         }
@@ -1648,7 +1648,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                              .build();
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.createPost(createRequest));
+            assertThrowsWpUnauthorized(() -> client.posts().create(createRequest));
         }
 
         @DisplayName("'CREATE' works")
@@ -1670,7 +1670,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                              .withTags(Set.of(2L))
                                              .build();
 
-            final WpPost post = client.createPost(createUpdateRequest);
+            final WpPost post = client.posts().create(createUpdateRequest);
 
             // THEN
             WordPressAssertions.assertThat(post)
@@ -1719,7 +1719,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                              .withStatus(PUBLISH)
                                              .build();
 
-            final WpPost post = client.createPost(createUpdateRequest);
+            final WpPost post = client.posts().create(createUpdateRequest);
 
             // THEN
             WordPressAssertions.assertThat(post)
@@ -1755,7 +1755,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/post/delete.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.deletePost(1005L));
+            assertThrowsWpForbidden(() -> client.posts().delete(1005L));
         }
 
         @DisplayName("'DELETE' fails on HTTP NOT FOUND")
@@ -1766,7 +1766,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/post/delete.failure.not-found.json");
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> client.deletePost(1005L));
+            assertThrowsWpNotFound(() -> client.posts().delete(1005L));
         }
 
         @DisplayName("'DELETE' fails on HTTP UNAUTHORIZED")
@@ -1777,7 +1777,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/post/delete.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.deletePost(1005L));
+            assertThrowsWpUnauthorized(() -> client.posts().delete(1005L));
         }
 
         @DisplayName("'DELETE' works")
@@ -1788,7 +1788,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/post/delete.success.json");
 
             // WHEN
-            final WpPostDeletionResponse response = client.deletePost(1005L);
+            final WpPostDeletionResponse response = client.posts().delete(1005L);
 
             // THEN
 
@@ -1819,7 +1819,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/post/get.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.getPost(1005L, null));
+            assertThrowsWpForbidden(() -> client.posts().get(1005L, null));
         }
 
         @DisplayName("'GET' fails on HTTP NOT FOUND")
@@ -1830,7 +1830,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/post/get.failure.not-found.json");
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> client.getPost(1005L, null));
+            assertThrowsWpNotFound(() -> client.posts().get(1005L, null));
         }
 
         @DisplayName("'GET' fails on HTTP UNAUTHORIZED")
@@ -1841,7 +1841,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/post/get.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.getPost(1005L, null));
+            assertThrowsWpUnauthorized(() -> client.posts().get(1005L, null));
         }
 
         @DisplayName("'GET' works (with context)")
@@ -1854,7 +1854,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final Long id = 2L;
 
             // WHEN
-            final WpPost post = client.getPost(id, EDIT);
+            final WpPost post = client.posts().get(id, EDIT);
 
             // THEN
             WordPressAssertions.assertThat(post)
@@ -1873,7 +1873,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final Long id = 2L;
 
             // WHEN
-            final WpPost post = client.getPost(id, EDIT, "my-password");
+            final WpPost post = client.posts().get(id, EDIT, "my-password");
 
             // THEN
             WordPressAssertions.assertThat(post)
@@ -1892,7 +1892,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final Long id = 2L;
 
             // WHEN
-            final WpPost post = client.getPost(id, null);
+            final WpPost post = client.posts().get(id, null);
 
             // THEN
             WordPressAssertions.assertThat(post)
@@ -1909,14 +1909,14 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/post/list.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.listPosts(WpPagingQuery.of(1, 10), null));
+            assertThrowsWpForbidden(() -> client.posts().list(WpPagingQuery.of(1, 10), null));
         }
 
         @DisplayName("'LIST' fails on null pageQuery")
         @Test
         void listFailsOnNullPaging() {
             // WHEN/THEN
-            assertThatThrownBy(() -> client.listPosts(null, null))
+            assertThatThrownBy(() -> client.posts().list(null, null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("pageQuery is marked non-null but is null");
         }
@@ -1929,7 +1929,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/post/list.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.listPosts(WpPagingQuery.of(1, 10), null));
+            assertThrowsWpUnauthorized(() -> client.posts().list(WpPagingQuery.of(1, 10), null));
         }
 
         @DisplayName("'LIST' works with paging")
@@ -1940,7 +1940,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/post/list.success.just-paging.json");
 
             // WHEN
-            final WpPagedResponse<WpPost> response = client.listPosts(WpPagingQuery.of(1, 10), null);
+            final WpPagedResponse<WpPost> response = client.posts().list(WpPagingQuery.of(1, 10), null);
 
             // THEN
             WordPressAssertions.assertThat(response)
@@ -1985,7 +1985,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                      .withOrderBy(WpPostOrderFields.ID)
                                                      .build();
 
-            final WpPagedResponse<WpPost> response = client.listPosts(WpPagingQuery.of(1, 10), postQuery);
+            final WpPagedResponse<WpPost> response = client.posts().list(WpPagingQuery.of(1, 10), postQuery);
 
             // THEN
 
@@ -2016,7 +2016,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/post/trash.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.trashPost(1005L));
+            assertThrowsWpForbidden(() -> client.posts().trash(1005L));
         }
 
         @DisplayName("'TRASH' fails on HTTP NOT FOUND")
@@ -2027,7 +2027,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/post/trash.failure.not-found.json");
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> client.trashPost(1005L));
+            assertThrowsWpNotFound(() -> client.posts().trash(1005L));
         }
 
         @DisplayName("'TRASH' fails on HTTP UNAUTHORIZED")
@@ -2038,7 +2038,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/post/trash.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.trashPost(1005L));
+            assertThrowsWpUnauthorized(() -> client.posts().trash(1005L));
         }
 
         @DisplayName("'TRASH' works")
@@ -2049,7 +2049,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/post/trash.success.json");
 
             // WHEN
-            final WpPost post = client.trashPost(1005L);
+            final WpPost post = client.posts().trash(1005L);
 
             // THEN
             WordPressAssertions.assertThat(post)
@@ -2076,7 +2076,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                              .build();
 
             // WHEN/THEN
-            assertThrowsWpBadRequest(() -> client.updatePost(4L, updateRequest));
+            assertThrowsWpBadRequest(() -> client.posts().update(4L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on HTTP FORBIDDEN")
@@ -2098,7 +2098,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                              .build();
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.updatePost(4L, updateRequest));
+            assertThrowsWpForbidden(() -> client.posts().update(4L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
@@ -2120,7 +2120,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                              .build();
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> client.updatePost(4L, updateRequest));
+            assertThrowsWpNotFound(() -> client.posts().update(4L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on null request")
@@ -2128,7 +2128,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         void updateFailsOnNullRequest() {
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.updatePost(1000L, null))
+            assertThatThrownBy(() -> client.posts().update(1000L, null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("updateRequest is marked non-null but is null");
         }
@@ -2152,7 +2152,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                              .build();
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.updatePost(4L, updateRequest));
+            assertThrowsWpUnauthorized(() -> client.posts().update(4L, updateRequest));
         }
 
         @DisplayName("'UPDATE' works")
@@ -2174,7 +2174,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                              .build();
 
             // WHEN
-            val post = client.updatePost(4L, updateRequest);
+            val post = client.posts().update(4L, updateRequest);
 
             WordPressAssertions.assertThat(post)
                                .isNotNull()
@@ -2200,15 +2200,15 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         @Test
         void getFailsOnBlankOrNullParameter() {
 
-            assertThatThrownBy(() -> client.getPostType(null))
+            assertThatThrownBy(() -> client.postTypes().get(null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("name is marked non-null but is null");
 
-            assertThatThrownBy(() -> client.getPostType(""))
+            assertThatThrownBy(() -> client.postTypes().get(""))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("name cannot be blank");
 
-            assertThatThrownBy(() -> client.getPostType("    "))
+            assertThatThrownBy(() -> client.postTypes().get("    "))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("name cannot be blank");
         }
@@ -2221,7 +2221,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/post-types/get.success.json");
 
             // WHEN
-            final WpPostType postType = client.getPostType("wp_navigation");
+            final WpPostType postType = client.postTypes().get("wp_navigation");
 
             // THEN
             assertThat(postType)
@@ -2236,7 +2236,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/post-types/list.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.getPostTypes());
+            assertThrowsWpForbidden(() -> client.postTypes().list());
         }
 
         @DisplayName("'LIST' fails on HTTP UNAUTHORIZED")
@@ -2247,7 +2247,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/post-types/list.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.getPostTypes());
+            assertThrowsWpUnauthorized(() -> client.postTypes().list());
         }
 
         @DisplayName("'LIST' succeeds")
@@ -2258,7 +2258,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/post-types/list.success.json");
 
             // WHEN
-            final Map<String, WpPostType> postTypes = client.getPostTypes();
+            final Map<String, WpPostType> postTypes = client.postTypes().list();
 
             // THEN
             assertThat(postTypes)
@@ -2316,15 +2316,15 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         @Test
         void getFailsOnBlankOrNullParameter() {
 
-            assertThatThrownBy(() -> client.getStatus(null))
+            assertThatThrownBy(() -> client.postStatuses().get(null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("name is marked non-null but is null");
 
-            assertThatThrownBy(() -> client.getStatus(""))
+            assertThatThrownBy(() -> client.postStatuses().get(""))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("name cannot be blank");
 
-            assertThatThrownBy(() -> client.getStatus("    "))
+            assertThatThrownBy(() -> client.postStatuses().get("    "))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("name cannot be blank");
         }
@@ -2337,7 +2337,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/statuses/get.success.json");
 
             // WHEN
-            final WpStatus status = client.getStatus("publish");
+            final WpStatus status = client.postStatuses().get("publish");
 
             // THEN
             assertThat(status)
@@ -2352,7 +2352,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/statuses/list.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.getStatuses());
+            assertThrowsWpForbidden(() -> client.postStatuses().list());
         }
 
         @DisplayName("'LIST' fails on HTTP UNAUTHORIZED")
@@ -2363,7 +2363,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/statuses/list.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.getStatuses());
+            assertThrowsWpUnauthorized(() -> client.postStatuses().list());
         }
 
         @DisplayName("'LIST' succeeds")
@@ -2374,7 +2374,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/statuses/list.success.json");
 
             // WHEN
-            final Map<String, WpStatus> statuses = client.getStatuses();
+            final Map<String, WpStatus> statuses = client.postStatuses().list();
 
             // THEN
             assertThat(statuses)
@@ -2417,7 +2417,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                             .build();
 
             // WHEN/THEN
-            assertThrowsWpBadRequest(() -> client.createTag(createRequest));
+            assertThrowsWpBadRequest(() -> client.tags().create(createRequest));
         }
 
         @DisplayName("'CREATE' fails on blank name")
@@ -2435,7 +2435,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                             .build();
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.createTag(createRequest))
+            assertThatThrownBy(() -> client.tags().create(createRequest))
                     .isInstanceOf(IllegalArgumentException.class)
                     .hasMessage("name cannot be blank");
         }
@@ -2455,7 +2455,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                             .build();
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.createTag(createRequest));
+            assertThrowsWpForbidden(() -> client.tags().create(createRequest));
         }
 
         @DisplayName("'CREATE' fails on null request")
@@ -2463,7 +2463,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         void createFailsOnNullRequest() {
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.createTag(null))
+            assertThatThrownBy(() -> client.tags().create(null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("creationRequest is marked non-null but is null");
         }
@@ -2483,7 +2483,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                             .build();
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.createTag(createRequest));
+            assertThrowsWpUnauthorized(() -> client.tags().create(createRequest));
         }
 
         @DisplayName("'CREATE' works")
@@ -2501,7 +2501,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                             .build();
 
             // WHEN
-            final WpTag tag = client.createTag(createRequest);
+            final WpTag tag = client.tags().create(createRequest);
 
             // THEN
             WordPressAssertions.assertThat(tag)
@@ -2521,7 +2521,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/tag/delete.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.deleteTag(1005L));
+            assertThrowsWpForbidden(() -> client.tags().delete(1005L));
         }
 
         @DisplayName("'DELETE' fails on HTTP NOT FOUND")
@@ -2532,7 +2532,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/tag/delete.failure.not-found.json");
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> client.deleteTag(1005L));
+            assertThrowsWpNotFound(() -> client.tags().delete(1005L));
         }
 
         @DisplayName("'DELETE' fails on HTTP UNAUTHORIZED")
@@ -2543,7 +2543,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/tag/delete.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.deleteTag(1005L));
+            assertThrowsWpUnauthorized(() -> client.tags().delete(1005L));
         }
 
         @DisplayName("'DELETE' works")
@@ -2554,7 +2554,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/tag/delete.success.json");
 
             // WHEN
-            final WpTagDeletionResponse response = client.deleteTag(1005L);
+            final WpTagDeletionResponse response = client.tags().delete(1005L);
 
             // THEN
             WordPressAssertions.assertThat(response)
@@ -2579,7 +2579,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/tag/get.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.getTag(1005L, null));
+            assertThrowsWpForbidden(() -> client.tags().get(1005L, null));
         }
 
         @DisplayName("'GET' fails on HTTP NOT FOUND")
@@ -2590,7 +2590,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/tag/get.failure.not-found.json");
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> client.getTag(1005L, null));
+            assertThrowsWpNotFound(() -> client.tags().get(1005L, null));
         }
 
         @DisplayName("'GET' fails on HTTP UNAUTHORIZED")
@@ -2601,7 +2601,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/tag/get.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.getTag(1005L, null));
+            assertThrowsWpUnauthorized(() -> client.tags().get(1005L, null));
         }
 
         @DisplayName("'GET' works (with context)")
@@ -2614,7 +2614,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final Long tagId = 4L;
 
             // WHEN
-            final WpTag tag = client.getTag(tagId, EDIT);
+            final WpTag tag = client.tags().get(tagId, EDIT);
 
             // THEN
             WordPressAssertions.assertThat(tag)
@@ -2637,7 +2637,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             final Long tagId = 4L;
 
             // WHEN
-            final WpTag tag = client.getTag(tagId, null);
+            final WpTag tag = client.tags().get(tagId, null);
 
             // THEN
             WordPressAssertions.assertThat(tag)
@@ -2658,14 +2658,14 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/tag/list.failure.forbidden.json");
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.listTags(WpPagingQuery.of(1, 10), null));
+            assertThrowsWpForbidden(() -> client.tags().list(WpPagingQuery.of(1, 10), null));
         }
 
         @DisplayName("'LIST' fails on null pageQuery")
         @Test
         void listFailsOnNullPaging() {
             // WHEN/THEN
-            assertThatThrownBy(() -> client.listTags(null, null))
+            assertThatThrownBy(() -> client.tags().list(null, null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("pageQuery is marked non-null but is null");
         }
@@ -2678,7 +2678,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/tag/list.failure.unauthorized.json");
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.listTags(WpPagingQuery.of(1, 10), null));
+            assertThrowsWpUnauthorized(() -> client.tags().list(WpPagingQuery.of(1, 10), null));
         }
 
         @DisplayName("'LIST' works with paging")
@@ -2689,7 +2689,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/tag/list.success.just-paging.json");
 
             // WHEN
-            final WpPagedResponse<WpTag> response = client.listTags(WpPagingQuery.of(1, 10), null);
+            final WpPagedResponse<WpTag> response = client.tags().list(WpPagingQuery.of(1, 10), null);
 
             // THEN
             WordPressAssertions.assertThat(response)
@@ -2732,7 +2732,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                   .withExcludeIds(Set.of(2000L))
                                                   .build();
 
-            final WpPagedResponse<WpTag> response = client.listTags(WpPagingQuery.of(1, 10), tagQuery);
+            final WpPagedResponse<WpTag> response = client.tags().list(WpPagingQuery.of(1, 10), tagQuery);
 
             // THEN
 
@@ -2776,7 +2776,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                             .build();
 
             // WHEN/THEN
-            assertThrowsWpBadRequest(() -> client.updateTag(2L, updateRequest));
+            assertThrowsWpBadRequest(() -> client.tags().update(2L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on HTTP FORBIDDEN")
@@ -2798,7 +2798,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                             .build();
 
             // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.updateTag(2L, updateRequest));
+            assertThrowsWpForbidden(() -> client.tags().update(2L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
@@ -2820,7 +2820,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                             .build();
 
             // WHEN/THEN
-            assertThrowsWpNotFound(() -> client.updateTag(2L, updateRequest));
+            assertThrowsWpNotFound(() -> client.tags().update(2L, updateRequest));
         }
 
         @DisplayName("'UPDATE' fails on null request")
@@ -2828,7 +2828,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         void updateFailsOnNullRequest() {
 
             // WHEN/THEN
-            assertThatThrownBy(() -> client.updateTag(1000L, null))
+            assertThatThrownBy(() -> client.tags().update(1000L, null))
                     .isInstanceOf(NullPointerException.class)
                     .hasMessage("updateRequest is marked non-null but is null");
         }
@@ -2852,7 +2852,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                             .build();
 
             // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.updateTag(2L, updateRequest));
+            assertThrowsWpUnauthorized(() -> client.tags().update(2L, updateRequest));
         }
 
         @DisplayName("'UPDATE' works")
@@ -2874,7 +2874,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                             .build();
 
             // WHEN
-            final WpTag tag = client.updateTag(2L, updateRequest);
+            final WpTag tag = client.tags().update(2L, updateRequest);
 
             // THEN
             WordPressAssertions.assertThat(tag)

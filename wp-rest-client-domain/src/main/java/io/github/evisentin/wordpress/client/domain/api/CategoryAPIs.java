@@ -1,4 +1,4 @@
-package io.github.evisentin.wordpress.client.domain.api.operations;
+package io.github.evisentin.wordpress.client.domain.api;
 
 import io.github.evisentin.wordpress.client.domain.model.WpCategory;
 import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
@@ -7,7 +7,6 @@ import io.github.evisentin.wordpress.client.domain.model.query.WpCategoryQuery;
 import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpCategoryCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpCategoryDeletionResponse;
-import lombok.NonNull;
 
 /**
  * Defines operations for managing WordPress categories through the WordPress REST API.
@@ -21,7 +20,7 @@ import lombok.NonNull;
  * <p>Implementations are expected to communicate with the
  * {@code /wp-json/wp/v2/categories} endpoint or compatible APIs.</p>
  */
-public interface CategoryOperations {
+public interface CategoryAPIs {
     /**
      * Creates a new category.
      *
@@ -32,7 +31,7 @@ public interface CategoryOperations {
      *
      * @return the created {@link WpCategory}
      */
-    WpCategory createCategory(@NonNull WpCategoryCreateUpdateRequest creationRequest);
+    WpCategory create(WpCategoryCreateUpdateRequest creationRequest);
 
     /**
      * Deletes a category by its unique identifier.
@@ -42,7 +41,7 @@ public interface CategoryOperations {
      *
      * @return the category deletion response
      */
-    WpCategoryDeletionResponse deleteCategory(long id);
+    WpCategoryDeletionResponse delete(long id);
 
     /**
      * Retrieves a category by its unique identifier using the given context.
@@ -57,7 +56,7 @@ public interface CategoryOperations {
      *
      * @return the matching {@link WpCategory}
      */
-    WpCategory getCategory(long id, WpContext context);
+    WpCategory get(long id, WpContext context);
 
     /**
      * Retrieves a paginated list of categories using optional filtering and sorting criteria.
@@ -72,7 +71,7 @@ public interface CategoryOperations {
      *
      * @return a paginated response containing {@link WpCategory} items
      */
-    WpPagedResponse<WpCategory> listCategories(@NonNull WpPagingQuery pageQuery, WpCategoryQuery categoryQuery);
+    WpPagedResponse<WpCategory> list(WpPagingQuery pageQuery, WpCategoryQuery categoryQuery);
 
     /**
      * Updates an existing category.
@@ -86,5 +85,5 @@ public interface CategoryOperations {
      *
      * @return the updated {@link WpCategory}
      */
-    WpCategory updateCategory(long id, @NonNull WpCategoryCreateUpdateRequest updateRequest);
+    WpCategory update(long id, WpCategoryCreateUpdateRequest updateRequest);
 }
