@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.test.integration.base;
 
-import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
+import io.github.evisentin.wordpress.client.domain.WpRestClient;
 import io.github.evisentin.wordpress.client.domain.assertions.WordPressAssertions;
 import io.github.evisentin.wordpress.client.domain.model.WpCategory;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
@@ -74,7 +74,7 @@ public abstract class JwtAuthWordPressIntegrationTest extends BaseWordPressInteg
             final Long categoryId = givenCategoryExists(CATEGORY_1_NAME, CATEGORY_1_DESCRIPTION, CATEGORY_1_SLUG);
 
             // WHEN
-            final WpCategory category = adminClient.getCategory(categoryId, WpContext.EDIT);
+            final WpCategory category = adminClient.categories().get(categoryId, WpContext.EDIT);
 
             // THEN
             WordPressAssertions.assertThat(category)

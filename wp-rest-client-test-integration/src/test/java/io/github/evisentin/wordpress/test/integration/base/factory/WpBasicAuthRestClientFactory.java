@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.test.integration.base.factory;
 
-import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
+import io.github.evisentin.wordpress.client.domain.WpRestClient;
 import io.github.evisentin.wordpress.test.integration.BaseWordPressIntegrationTest;
 import io.github.evisentin.wordpress.test.integration.base.BasicAuthWordPressIntegrationTest;
 

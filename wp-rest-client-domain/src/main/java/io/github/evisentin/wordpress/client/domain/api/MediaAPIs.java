@@ -1,4 +1,4 @@
-package io.github.evisentin.wordpress.client.domain.api.operations;
+package io.github.evisentin.wordpress.client.domain.api;
 
 import io.github.evisentin.wordpress.client.domain.model.WpMedia;
 import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
@@ -7,7 +7,6 @@ import io.github.evisentin.wordpress.client.domain.model.query.WpMediaQuery;
 import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpMediaUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpMediaDeletionResponse;
-import lombok.NonNull;
 
 import java.io.File;
 
@@ -26,7 +25,7 @@ import java.io.File;
  * <p>Implementations are expected to communicate with the
  * {@code /wp-json/wp/v2/media} endpoint or compatible APIs.</p>
  */
-public interface MediaOperations {
+public interface MediaAPIs {
 
     /**
      * Creates a new media item.
@@ -46,7 +45,7 @@ public interface MediaOperations {
      *
      * @return the created {@link WpMedia}
      */
-    WpMedia createMedia(@NonNull File file, @NonNull String fileName, @NonNull String mimeType);
+    WpMedia create(File file, String fileName, String mimeType);
 
     /**
      * Deletes a media item by its unique identifier.
@@ -56,7 +55,7 @@ public interface MediaOperations {
      *
      * @return the media item deletion response
      */
-    WpMediaDeletionResponse deleteMedia(long id);
+    WpMediaDeletionResponse delete(long id);
 
     /**
      * Retrieves a media item by its unique identifier using the given context.
@@ -71,7 +70,7 @@ public interface MediaOperations {
      *
      * @return the matching {@link WpMedia}
      */
-    WpMedia getMedia(long id, WpContext context);
+    WpMedia get(long id, WpContext context);
 
     /**
      * Retrieves a paginated list of media items using optional filtering and sorting criteria.
@@ -86,7 +85,7 @@ public interface MediaOperations {
      *
      * @return a paginated response containing {@link WpMedia} items
      */
-    WpPagedResponse<WpMedia> listMedia(@NonNull WpPagingQuery pageQuery, WpMediaQuery mediaQuery);
+    WpPagedResponse<WpMedia> list(WpPagingQuery pageQuery, WpMediaQuery mediaQuery);
 
     /**
      * Updates an existing media item.
@@ -100,5 +99,5 @@ public interface MediaOperations {
      *
      * @return the updated {@link WpMedia}
      */
-    WpMedia updateMedia(long id, @NonNull WpMediaUpdateRequest updateRequest);
+    WpMedia update(long id, WpMediaUpdateRequest updateRequest);
 }

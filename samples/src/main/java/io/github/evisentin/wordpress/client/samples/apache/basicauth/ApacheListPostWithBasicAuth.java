@@ -1,7 +1,7 @@
 package io.github.evisentin.wordpress.client.samples.apache.basicauth;
 
 import io.github.evisentin.wordpress.client.adapter.apache.ApacheWpRestClientBuilder;
-import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
+import io.github.evisentin.wordpress.client.domain.WpRestClient;
 import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
 import io.github.evisentin.wordpress.client.domain.model.WpPost;
 import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
@@ -65,7 +65,7 @@ public class ApacheListPostWithBasicAuth {
 
         final WpPagingQuery pagingQuery = WpPagingQuery.of(1, 10);
 
-        final WpPagedResponse<WpPost> pagedResponse = restClient.listPosts(pagingQuery, postQuery);
+        final WpPagedResponse<WpPost> pagedResponse = restClient.posts().list(pagingQuery, postQuery);
 
         // Print pagination information.
         System.out.println("Page number     : " + pagedResponse.getPageNumber());

@@ -1,7 +1,6 @@
-package io.github.evisentin.wordpress.client.domain.api.operations;
+package io.github.evisentin.wordpress.client.domain.api;
 
 import io.github.evisentin.wordpress.client.domain.model.WpPostType;
-import lombok.NonNull;
 
 import java.util.Map;
 
@@ -18,7 +17,7 @@ import java.util.Map;
  * <p>Implementations are expected to communicate with the {@code /wp-json/wp/v2/types} endpoint or compatible
  * APIs.</p>
  */
-public interface PostTypesOperations {
+public interface PostTypeAPIs {
     /**
      * Retrieves a post type definition by its unique name.
      *
@@ -30,7 +29,7 @@ public interface PostTypesOperations {
      *
      * @return the matching {@link WpPostType}
      */
-    WpPostType getPostType(@NonNull String name);
+    WpPostType get(String name);
 
     /**
      * Retrieves all registered post types.
@@ -40,5 +39,5 @@ public interface PostTypesOperations {
      *
      * @return a map of post type names to post type definitions
      */
-    Map<String, WpPostType> getPostTypes();
+    Map<String, WpPostType> list();
 }

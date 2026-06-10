@@ -1,4 +1,4 @@
-package io.github.evisentin.wordpress.client.domain.api.operations;
+package io.github.evisentin.wordpress.client.domain.api;
 
 import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
 import io.github.evisentin.wordpress.client.domain.model.WpTag;
@@ -7,7 +7,6 @@ import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
 import io.github.evisentin.wordpress.client.domain.model.query.WpTagQuery;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpTagCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpTagDeletionResponse;
-import lombok.NonNull;
 
 /**
  * Defines operations for managing WordPress tags through the WordPress REST API.
@@ -20,7 +19,7 @@ import lombok.NonNull;
  *
  * <p>Implementations are expected to communicate with the {@code /wp-json/wp/v2/tags} endpoint or compatible APIs.</p>
  */
-public interface TagOperations {
+public interface TagAPIs {
     /**
      * Creates a new tag.
      *
@@ -31,7 +30,7 @@ public interface TagOperations {
      *
      * @return the created {@link WpTag}
      */
-    WpTag createTag(@NonNull WpTagCreateUpdateRequest creationRequest);
+    WpTag create(WpTagCreateUpdateRequest creationRequest);
 
     /**
      * Deletes a tag by its unique identifier.
@@ -41,7 +40,7 @@ public interface TagOperations {
      *
      * @return the tag deletion response
      */
-    WpTagDeletionResponse deleteTag(long id);
+    WpTagDeletionResponse delete(long id);
 
     /**
      * Retrieves a tag by its unique identifier using the given context.
@@ -56,7 +55,7 @@ public interface TagOperations {
      *
      * @return the matching {@link WpTag}
      */
-    WpTag getTag(long id, WpContext context);
+    WpTag get(long id, WpContext context);
 
     /**
      * Retrieves a paginated list of tags using optional filtering and sorting criteria.
@@ -71,7 +70,7 @@ public interface TagOperations {
      *
      * @return a paginated response containing {@link WpTag} items
      */
-    WpPagedResponse<WpTag> listTags(@NonNull WpPagingQuery pageQuery, WpTagQuery tagQuery);
+    WpPagedResponse<WpTag> list(WpPagingQuery pageQuery, WpTagQuery tagQuery);
 
     /**
      * Updates an existing tag.
@@ -85,5 +84,5 @@ public interface TagOperations {
      *
      * @return the updated {@link WpTag}
      */
-    WpTag updateTag(long id, @NonNull WpTagCreateUpdateRequest updateRequest);
+    WpTag update(long id, WpTagCreateUpdateRequest updateRequest);
 }

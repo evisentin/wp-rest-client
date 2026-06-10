@@ -1,4 +1,4 @@
-package io.github.evisentin.wordpress.client.domain.api.operations;
+package io.github.evisentin.wordpress.client.domain.api;
 
 import io.github.evisentin.wordpress.client.domain.model.WpComment;
 import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
@@ -7,7 +7,6 @@ import io.github.evisentin.wordpress.client.domain.model.query.WpCommentQuery;
 import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
 import io.github.evisentin.wordpress.client.domain.model.requests.WpCommentCreateUpdateRequest;
 import io.github.evisentin.wordpress.client.domain.model.responses.WpCommentDeletionResponse;
-import lombok.NonNull;
 
 /**
  * Defines operations for managing WordPress comments through the WordPress REST API.
@@ -21,7 +20,7 @@ import lombok.NonNull;
  * <p>Implementations are expected to communicate with the {@code /wp-json/wp/v2/comments} endpoint or compatible
  * APIs.</p>
  */
-public interface CommentOperations {
+public interface CommentAPIs {
 
     /**
      * Creates a new comment.
@@ -33,7 +32,7 @@ public interface CommentOperations {
      *
      * @return the created {@link WpComment}
      */
-    WpComment createComment(@NonNull WpCommentCreateUpdateRequest creationRequest);
+    WpComment create(WpCommentCreateUpdateRequest creationRequest);
 
     /**
      * Permanently deletes a comment by its unique identifier.
@@ -43,7 +42,7 @@ public interface CommentOperations {
      *
      * @return the comment deletion response
      */
-    WpCommentDeletionResponse deleteComment(long id);
+    WpCommentDeletionResponse delete(long id);
 
     /**
      * Retrieves a comment by its unique identifier using the given context.
@@ -58,7 +57,7 @@ public interface CommentOperations {
      *
      * @return the matching {@link WpComment}
      */
-    WpComment getComment(long id, WpContext context);
+    WpComment get(long id, WpContext context);
 
     /**
      * Retrieves a comment by its unique identifier using the given context and optional password.
@@ -79,7 +78,7 @@ public interface CommentOperations {
      *
      * @return the matching {@link WpComment}
      */
-    WpComment getComment(long id, WpContext context, String password);
+    WpComment get(long id, WpContext context, String password);
 
     /**
      * Retrieves a paginated list of comments using optional filtering and sorting criteria.
@@ -94,7 +93,7 @@ public interface CommentOperations {
      *
      * @return a paginated response containing {@link WpComment} items
      */
-    WpPagedResponse<WpComment> listComments(@NonNull WpPagingQuery pageQuery, WpCommentQuery commentQuery);
+    WpPagedResponse<WpComment> list(WpPagingQuery pageQuery, WpCommentQuery commentQuery);
 
     /**
      * Moves a comment to the trash by its unique identifier.
@@ -104,7 +103,7 @@ public interface CommentOperations {
      *
      * @return the trashed {@link WpComment}
      */
-    WpComment trashComment(long id);
+    WpComment trash(long id);
 
     /**
      * Updates an existing comment.
@@ -114,9 +113,9 @@ public interface CommentOperations {
      * @param id
      *         the ID of the comment to update
      * @param updateRequest
-     *         the post update request; must not be {@code null}
+     *         the comment update request; must not be {@code null}
      *
      * @return the updated {@link WpComment}
      */
-    WpComment updateComment(long id, @NonNull WpCommentCreateUpdateRequest updateRequest);
+    WpComment update(long id, WpCommentCreateUpdateRequest updateRequest);
 }
