@@ -1,5 +1,6 @@
 package io.github.evisentin.wordpress.test.integration;
 
+import io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +9,7 @@ import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
+import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.images.builder.ImageFromDockerfile;
@@ -105,8 +107,7 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
 
     private final MySQLContainer database = createDatabaseContainer();
     private final GenericContainer<?> wordpress = createWordPressContainer();
-    protected final GenericContainer<?> wpCli = createWordPressCli();
-
+    private final GenericContainer<?> wpCli = createWordPressCli();
     protected String adminApplicationPassword = "";
     protected String standardUserApplicationPassword = "";
 
@@ -133,6 +134,10 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
 
     protected String getHttpsBaseUrl() {
         return String.format("https://%s:%d", wordpress.getHost(), wordpress.getMappedPort(443));
+    }
+
+    protected String toBlock(String value) {
+        return String.format("<p>%s</p>\n", value);
     }
 
     /**
@@ -236,6 +241,139 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
                 "--porcelain"
         );
         failOnError(execResult, String.format("category creation '%s' failed", name));
+        return Long.valueOf(trimToEmpty(execResult.getStdout()));
+    }
+
+    /**
+     * Creates a new WordPress comment.
+     *
+     * <p>This method uses WP-CLI to create a comment associated with the specified post. The comment is created with
+     * the provided content, author name, and author email address. It returns the ID of the created comment.</p>
+     *
+     * <p>If the creation fails, the test is immediately failed via
+     * {@code failOnError(...)}.</p>
+     *
+     * <h3>Parameters</h3>
+     * <ul>
+     *   <li>{@code postId} – the ID of the post to which the comment belongs</li>
+     *   <li>{@code content} – the comment text</li>
+     *   <li>{@code author} – the display name of the comment author</li>
+     *   <li>{@code authorEmail} – the email address of the comment author</li>
+     * </ul>
+     *
+     * @param postId
+     *         the ID of the target post
+     * @param content
+     *         the content of the comment (must not be {@code null})
+     * @param author
+     *         the author name of the comment (must not be {@code null})
+     * @param authorEmail
+     *         the email address of the comment author (must not be {@code null})
+     *
+     * @return the ID of the created comment as a {@link Long}
+     */
+    @SneakyThrows
+    protected Long wpCreateComment(final long postId,
+                                   final @NonNull String content,
+                                   final @NonNull String author,
+                                   final @NonNull String authorEmail) {
+        val execResult = wpCli.execInContainer(
+                "wp", "--allow-root", "--path=/var/www/html",
+                "comment", "create",
+                String.format("--comment_post_ID=%d", postId),
+                String.format("--comment_content=%s", content),
+                String.format("--comment_author=%s", author),
+                String.format("--comment_author_email=%s", authorEmail),
+                "--porcelain"
+        );
+        failOnError(execResult, "post creation failed");
+        return Long.valueOf(trimToEmpty(execResult.getStdout()));
+    }
+
+    /**
+     * Creates a new password-protected WordPress post.
+     *
+     * <p>This method uses WP-CLI to create a post with the specified title, content, protectedation status, and access
+     * password. It returns the ID of the created post.</p>
+     *
+     * <p>If the creation fails, the test is immediately failed via
+     * {@code failOnError(...)}.</p>
+     *
+     * <h3>Parameters</h3>
+     * <ul>
+     *   <li>{@code title} – the title of the post</li>
+     *   <li>{@code content} – the body content of the post</li>
+     *   <li>{@code status} – the protectedation status of the post</li>
+     *   <li>{@code password} – the password required to access the post</li>
+     * </ul>
+     *
+     * @param title
+     *         the title of the post (must not be {@code null})
+     * @param content
+     *         the content of the post (must not be {@code null})
+     * @param status
+     *         the status of the post (must not be {@code null})
+     * @param password
+     *         the password protecting the post (must not be {@code null})
+     *
+     * @return the ID of the created post as a {@link Long}
+     */
+    @SneakyThrows
+    protected Long wpCreatePost(final @NonNull String title,
+                                final @NonNull String content,
+                                final @NonNull WpPostStatus status,
+                                final @NonNull String password) {
+        val execResult = wpCli.execInContainer(
+                "wp", "--allow-root", "--path=/var/www/html",
+                "post", "create",
+                String.format("--post_title=%s", title),
+                String.format("--post_content=%s", content),
+                String.format("--post_status=%s", status.getValue()),
+                String.format("--post_password=%s", password),
+                "--porcelain"
+        );
+        failOnError(execResult, "post creation failed");
+        return Long.valueOf(trimToEmpty(execResult.getStdout()));
+    }
+
+    /**
+     * Creates a new WordPress post.
+     *
+     * <p>This method uses WP-CLI to create a post with the specified title, content, and protectedation status. It
+     * returns the ID of the created post.</p>
+     *
+     * <p>If the creation fails, the test is immediately failed via
+     * {@code failOnError(...)}.</p>
+     *
+     * <h3>Parameters</h3>
+     * <ul>
+     *   <li>{@code title} – the title of the post</li>
+     *   <li>{@code content} – the body content of the post</li>
+     *   <li>{@code status} – the protectedation status of the post</li>
+     * </ul>
+     *
+     * @param title
+     *         the title of the post (must not be {@code null})
+     * @param content
+     *         the content of the post (must not be {@code null})
+     * @param status
+     *         the status of the post (must not be {@code null})
+     *
+     * @return the ID of the created post as a {@link Long}
+     */
+    @SneakyThrows
+    protected Long wpCreatePost(final @NonNull String title,
+                                final @NonNull String content,
+                                final @NonNull WpPostStatus status) {
+        val execResult = wpCli.execInContainer(
+                "wp", "--allow-root", "--path=/var/www/html",
+                "post", "create",
+                String.format("--post_title=%s", title),
+                String.format("--post_content=%s", content),
+                String.format("--post_status=%s", status.getValue()),
+                "--porcelain"
+        );
+        failOnError(execResult, "post creation failed");
         return Long.valueOf(trimToEmpty(execResult.getStdout()));
     }
 
@@ -412,7 +550,6 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
     @SuppressWarnings("resource")
     @SneakyThrows
     private GenericContainer<?> createWordPressCli() {
-
         return new GenericContainer<>(DockerImageName.parse("wordpress:cli"))
                 .withNetwork(network)
                 .dependsOn(wordpress)
@@ -420,7 +557,7 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
                 .withEnv(WORDPRESS_DB_NAME, VAL_DB_NAME)
                 .withEnv(WORDPRESS_DB_USER, VAL_DB_USER_NAME)
                 .withEnv(WORDPRESS_DB_PASSWORD, VAL_DB_PASSWORD)
-                .withFileSystemBind(wpFilesDir.toAbsolutePath().toString(), "/var/www/html", READ_WRITE)
+                .withFileSystemBind(wpFilesDir.toAbsolutePath().toString(), "/var/www/html", BindMode.READ_WRITE)
                 // official docs note cli image often needs UID alignment
                 .withCreateContainerCmdModifier(cmd -> cmd.withUser("33:33"))
                 .withCommand("tail", "-f", "/dev/null");
