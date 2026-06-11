@@ -1,19 +1,5 @@
 # wp-rest-client developer's README
 
----
-
-<!-- toc -->
-
-- [Setup & Run](#setup--run)
-  * [1. Install SDKMAN](#1-install-sdkman)
-  * [2. Enable automatic SDK switching](#2-enable-automatic-sdk-switching)
-  * [3. Use project-specific SDK settings](#3-use-project-specific-sdk-settings)
-  * [4. Build and run](#4-build-and-run)
-
-<!-- tocstop -->
-
---- 
-
 ## Setup & Run
 
 This project uses [SDKMAN](https://sdkman.io/) to manage the JDK and MAVEN version.
@@ -95,7 +81,8 @@ Using the Maven wrapper:
 ./mvnw clean install -Plocal-tests
 ```
 
-or 
+or
+
 ```shell
 ./mvnw clean install -Plocal-tests,integration-tests
 ```

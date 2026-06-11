@@ -1,0 +1,121 @@
+# Documentation site:
+#   https://evisentin.github.io/wp-rest-client/
+#
+# Coverage report:
+#   https://evisentin.github.io/wp-rest-client/coverage/
+#
+# GitHub configuration:
+#   Settings → Pages → Source = GitHub Actions
+#
+# This workflow:
+#   1. Builds the MkDocs documentation site
+#   2. Runs the Maven build and generates the JaCoCo aggregate report
+#   3. Copies the coverage report into the generated site under /coverage
+#   4. Publishes everything to GitHub Pages
+
+name: Publish GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: github-pages
+  cancel-in-progress: true
+
+jobs:
+
+  build:
+    name: Build Documentation and Coverage
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # Checkout repository source code.
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      # Install the JDK used by the Maven build.
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      # Install Python required by MkDocs.
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      # Install MkDocs.
+      # If you later switch to Material:
+      # pip install mkdocs-material
+      - name: Install MkDocs
+        run: pip install mkdocs
+
+      # Build the documentation site.
+      #
+      # Output:
+      #   site/
+      #
+      # --strict makes the build fail on broken links
+      # and documentation issues.
+      - name: Build documentation
+        run: mkdocs build --strict
+
+      # Run the Maven build and generate the JaCoCo report.
+      #
+      # Change the profile if needed:
+      #   -Plocal-tests
+      #   -Plocal-tests,integration-tests
+      #
+      # Expected output:
+      #   wp-rest-client-test-report/target/site/jacoco-aggregate
+      - name: Build project and generate coverage
+        run: mvn -B clean verify -Plocal-tests
+
+      # Copy the JaCoCo report into the generated MkDocs site.
+      #
+      # This will be published as:
+      #   /coverage/
+      #
+      # Final URL:
+      #   https://evisentin.github.io/wp-rest-client/coverage/
+      - name: Copy coverage into site
+        run: |
+          mkdir -p site/coverage
+          cp -r wp-rest-client-test-report/target/site/jacoco-aggregate/* site/coverage/
+
+      # Upload the complete static site artifact.
+      #
+      # Contents:
+      #   site/
+      #   site/coverage/
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    name: Deploy GitHub Pages
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+
+      # Publish the generated artifact to GitHub Pages.
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
