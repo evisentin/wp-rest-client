@@ -39,14 +39,14 @@ client discovers the API endpoint according to the WordPress REST API discovery 
 
 ## Documentation
 
-Start with the [Installation](installation.md) page, then continue with [Getting Started](getting-started.md).
+Start with the [Installation](getting_started/installation.md) page, then continue with [Quick Start](getting_started/quick-start.md).
 
 Useful references:
 
 - [Supported APIs](reference/supported-apis.md)
-- [Architecture](architecture.md)
-- [Contributing](contributing.md)
-- [Developer Setup](developer-setup.md)
+- [Architecture](development/architecture.md)
+- [Contributing](development/contributing.md)
+- [Developer Setup](development/developer-setup.md)
 
 ## Javadoc
 
