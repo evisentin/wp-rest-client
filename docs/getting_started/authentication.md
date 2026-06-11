@@ -4,6 +4,8 @@ WP REST Client currently provides builder methods for Basic Authentication and J
 
 Examples are available for both Apache HttpClient and OkHttp implementations.
 
+---
+
 ## Apache HttpClient
 
 ### Basic Authentication
@@ -36,6 +38,8 @@ final WpRestClient restClient =
 ```
 
 The JWT token endpoint is relative to the discovered API URL.
+
+---
 
 ## OkHttp
 
@@ -70,6 +74,9 @@ final WpRestClient restClient =
 
 The JWT token endpoint is relative to the discovered API URL.
 
+---
+
 ## Security Notes
 
-Do not hard-code production credentials in source code. Prefer environment variables, secret managers, or your application framework's configuration mechanism.
+Do not hard-code production credentials in source code. Prefer environment variables, secret managers, or your
+application framework's configuration mechanism.

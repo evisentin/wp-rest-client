@@ -6,7 +6,7 @@
 ![Java](https://img.shields.io/badge/Java-21-informational)
 ![Java](https://img.shields.io/badge/Java-25-informational)
 
-
+---
 A modular Java client for interacting with the WordPress REST API.
 
 ## Overview
@@ -19,16 +19,20 @@ API [discovery mechanism](https://developer.wordpress.org/rest-api/using-the-res
 resolve the REST API root URL from the site base URL. Users typically only need to provide the WordPress site URL; the
 client discovers the API endpoint according to the WordPress REST API discovery specification.
 
+---
+
 ## Features
 
 - Type-safe Java API for WordPress REST resources
 - Pluggable HTTP client implementations
-- Apache HttpClient 5 support
-- OkHttp support
+- Apache HttpClient 5 support ([Apache HttpClient 5.6](https://hc.apache.org/httpcomponents-client-5.6.x/index.html))
+- OkHttp support ([OkHttp](https://square.github.io/okhttp/))
 - WordPress REST API endpoint discovery
 - Basic Authentication support
 - JWT Authentication support
 - Integration-tested WordPress compatibility
+
+---
 
 ## Available Implementations
 
@@ -37,9 +41,12 @@ client discovers the API endpoint according to the WordPress REST API discovery 
 | Apache HttpClient 5 | `wp-rest-client-apache` |
 | OkHttp              | `wp-rest-client-okhttp` |
 
+---
+
 ## Documentation
 
-Start with the [Installation](getting_started/installation.md) page, then continue with [Quick Start](getting_started/quick-start.md).
+Start with the [Installation](getting_started/installation.md) page, then continue
+with [Quick Start](getting_started/quick-start.md).
 
 Useful references:
 
@@ -47,6 +54,8 @@ Useful references:
 - [Architecture](development/architecture.md)
 - [Contributing](development/contributing.md)
 - [Developer Setup](development/developer-setup.md)
+
+---
 
 ## Javadoc
 

@@ -20,13 +20,26 @@ The client discovers the REST API endpoint automatically.
 
 Add the Apache implementation dependency:
 
-```xml
-<dependency>
-    <groupId>io.github.evisentin</groupId>
-    <artifactId>wp-rest-client-apache</artifactId>
-    <version>::latest::</version>
-</dependency>
-```
+=== "Maven"
+    ```xml title="pom.xml"
+    <dependency>
+      <groupId>io.github.evisentin</groupId>
+      <artifactId>wp-rest-client-apache</artifactId>
+      <version>::latest::</version>
+    </dependency>
+    ```
+=== "Gradle (groovy)"
+    ```groovy title="build.gradle"
+    dependencies {
+        implementation 'io.github.evisentin:wp-rest-client-apache:<latest version>'
+    }
+    ```
+=== "Gradle (kotlin)"
+    ```kotlin title="build.gradle.kts"
+    dependencies {
+        implementation("io.github.evisentin:wp-rest-client-apache:<latest version>")
+    }
+    ```
 
 Then create the client and list posts:
 
@@ -64,13 +77,26 @@ final List<WpPost> posts = response.getItems();
 
 Add the OkHttp implementation dependency:
 
-```xml
-<dependency>
-    <groupId>io.github.evisentin</groupId>
-    <artifactId>wp-rest-client-okhttp</artifactId>
-    <version>::latest::</version>
-</dependency>
-```
+=== "Maven"
+    ```xml title="pom.xml"
+    <dependency>
+      <groupId>io.github.evisentin</groupId>
+      <artifactId>wp-rest-client-okhttp</artifactId>
+      <version>::latest::</version>
+    </dependency>
+    ```
+=== "Gradle (groovy)"
+    ```groovy title="build.gradle"
+    dependencies {
+        implementation 'io.github.evisentin:wp-rest-client-okhttp:<latest version>'
+    }
+    ```
+=== "Gradle (kotlin)"
+    ```kotlin title="build.gradle.kts"
+    dependencies {
+        implementation("io.github.evisentin:wp-rest-client-okhttp:<latest version>")
+    }
+    ```
 
 Then create the client and list posts:
 

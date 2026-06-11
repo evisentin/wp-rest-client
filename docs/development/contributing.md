@@ -1,8 +1,8 @@
 # Contributing
 
-
-
 This document describes how to contribute to WP REST Client.
+
+---
 
 ## Adding a New Implementation
 
@@ -18,6 +18,8 @@ A new implementation should not define its own behavioural rules.
 
 The expected behaviour is defined by the domain API and verified by the shared contract tests.
 
+---
+
 ## Implementation Requirements
 
 A compliant implementation should:
@@ -32,9 +34,11 @@ A compliant implementation should:
 
 Before opening a pull request, run the full test suite.
 
-```bash
+```shell
 mvn clean verify -Plocal-tests,integration-tests
 ```
+
+---
 
 ## Contract Tests
 
@@ -48,6 +52,8 @@ wp-rest-client-contract-tests
 
 These tests define the expected behaviour of any compliant implementation.
 
+---
+
 ## Integration Tests
 
 Integration tests are located in:
@@ -57,6 +63,8 @@ wp-rest-client-test-integration
 ```
 
 They verify compatibility against real WordPress instances using Testcontainers.
+
+---
 
 ## Internal Modules
 
@@ -68,6 +76,8 @@ The following modules are used for development and testing only:
 - `wp-rest-client-test-report`
 
 These modules are not intended for library consumers and are not deployed to Maven Central.
+
+---
 
 ## Documentation
 
