@@ -1,25 +1,4 @@
-## Supported WP REST APIs
-
----
-
-## Table of contents
-
-<!-- toc -->
-
-- [Tested WordPress Versions](#tested-wordpress-versions)
-  * [Posts](#posts)
-  * [Pages](#pages)
-  * [Media](#media)
-  * [Categories](#categories)
-  * [Tags](#tags)
-  * [Comments](#comments)
-  * [Post Types](#post-types)
-  * [Statuses](#statuses)
-
-<!-- tocstop -->
-
----
-
+# Supported WP REST APIs
 
 This page documents the WordPress REST API endpoints supported by this client.
 
@@ -42,6 +21,8 @@ module and are continuously validated against the following WordPress versions:
 
 > Integration tests are executed against all supported WordPress versions to help
 > ensure API compatibility and detect regressions across releases.
+
+## APIs
 
 | Resource       |                    Endpoint | Read | Create | Update | Delete | Notes                              |
 |----------------|----------------------------:|:----:|:------:|:------:|:------:|------------------------------------|
@@ -66,7 +47,7 @@ Legend:
 - ⬜ not implemented yet
 - N/A not applicable
 
-### Posts
+## Posts
 
 | Endpoint                   | Description     | Status |
 |----------------------------|-----------------|--------|
@@ -76,7 +57,7 @@ Legend:
 | `POST /wp/v2/posts/<id>`   | Update a Post   | ✅      |
 | `DELETE /wp/v2/posts/<id>` | Delete a Post   | ✅      |
 
-### Pages
+## Pages
 
 | Endpoint                   | Description     | Status |
 |----------------------------|-----------------|--------|
@@ -86,7 +67,7 @@ Legend:
 | `POST /wp/v2/pages/<id>`   | Update a Page   | ⬜      |
 | `DELETE /wp/v2/pages/<id>` | Delete a Page   | ⬜      |
 
-### Media
+## Media
 
 | Endpoint                   | Description           | Status |
 |----------------------------|-----------------------|--------|
@@ -96,7 +77,7 @@ Legend:
 | `POST /wp/v2/media/<id>`   | Update a Media item   | ✅      |
 | `DELETE /wp/v2/media/<id>` | Delete a Media  item  | ✅      |
 
-### Categories
+## Categories
 
 | Endpoint                        | Description         | Status |
 |---------------------------------|---------------------|--------|
@@ -106,7 +87,7 @@ Legend:
 | `POST /wp/v2/categories/<id>`   | Update a Category   | ✅      |
 | `DELETE /wp/v2/categories/<id>` | Delete a Category   | ✅      |
 
-### Tags
+## Tags
 
 | Endpoint                  | Description    | Status |
 |---------------------------|----------------|--------|
@@ -116,7 +97,7 @@ Legend:
 | `POST /wp/v2/tags/<id>`   | Update a Tag   | ✅      |
 | `DELETE /wp/v2/tags/<id>` | Delete a Tag   | ✅      |
 
-### Comments
+## Comments
 
 | Endpoint                      | Description        | Status |
 |-------------------------------|--------------------|--------|
@@ -126,14 +107,14 @@ Legend:
 | `POST /wp/v2/comments/<id>`   | Update a Comment   | ✅      |
 | `DELETE /wp/v2/comments/<id>` | Delete a Comment   | ✅      |
 
-### Post Types
+## Post Types
 
 | Endpoint                  | Description     | Status |
 |---------------------------|-----------------|--------|
 | `GET /wp/v2/types`        | List Post Types | ✅      |
 | `GET /wp/v2/types/<name>` | Get Post Type   | ✅      |
 
-### Statuses
+## Statuses
 
 | Endpoint                     | Description   | Status |
 |------------------------------|---------------|--------|

@@ -1,19 +1,5 @@
 # Architecture
 
-<!-- toc -->
-
-- [Design Goals](#design-goals)
-- [Module Structure](#module-structure)
-- [Public API](#public-api)
-- [Implementations](#implementations)
-- [Key Concept: Contract Testing](#key-concept-contract-testing)
-- [Why Contract Testing Matters](#why-contract-testing-matters)
-- [How Contract Testing Works](#how-contract-testing-works)
-- [Integration Testing](#integration-testing)
-- [Test Reports](#test-reports)
-
-<!-- tocstop -->
-
 This document describes the internal architecture and design principles of WP REST Client.
 
 ## Design Goals

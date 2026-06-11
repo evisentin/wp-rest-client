@@ -1,16 +1,6 @@
 # Contributing
 
-<!-- toc -->
 
-- [Adding a New Implementation](#adding-a-new-implementation)
-- [Implementation Requirements](#implementation-requirements)
-- [Testing](#testing)
-- [Contract Tests](#contract-tests)
-- [Integration Tests](#integration-tests)
-- [Internal Modules](#internal-modules)
-- [Documentation](#documentation)
-
-<!-- tocstop -->
 
 This document describes how to contribute to WP REST Client.
 
