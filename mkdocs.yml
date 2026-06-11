@@ -1,8 +1,8 @@
 site_name: WP REST Client
 site_description: Type-safe Java client for the WordPress REST API
 site_url: https://evisentin.github.io/wp-rest-client/
-repo_url: https://github.com/evisentin/wp-rest-client
-repo_name: evisentin/wp-rest-client
+#repo_url: https://github.com/evisentin/wp-rest-client
+#repo_name: evisentin/wp-rest-client
 
 theme:
   name: mkdocs
@@ -19,6 +19,7 @@ nav:
       - Architecture: development/architecture.md
       - Contributing: development/contributing.md
       - Developer Setup: development/developer-setup.md
+  - Test Coverage: https://evisentin.github.io/wp-rest-client/coverage/
   - License: license.md
 
 markdown_extensions:
