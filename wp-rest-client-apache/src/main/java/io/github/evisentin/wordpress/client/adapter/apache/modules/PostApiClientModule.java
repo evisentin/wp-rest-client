@@ -17,9 +17,9 @@ import org.apache.hc.core5.net.URIBuilder;
 
 import java.util.Map;
 
-import static io.github.evisentin.wordpress.client.adapter.apache.TypeReferences.WP_POST_DELETION_RESPONSE_TYPEREFERENCE;
-import static io.github.evisentin.wordpress.client.adapter.apache.TypeReferences.WP_POST_LIST_TYPEREFERENCE;
-import static io.github.evisentin.wordpress.client.adapter.apache.TypeReferences.WP_POST_TYPEREFERENCE;
+import static io.github.evisentin.wordpress.client.adapter.apache.modules.TypeReferences.WP_POST_DELETION_RESPONSE_TYPEREFERENCE;
+import static io.github.evisentin.wordpress.client.adapter.apache.modules.TypeReferences.WP_POST_LIST_TYPEREFERENCE;
+import static io.github.evisentin.wordpress.client.adapter.apache.modules.TypeReferences.WP_POST_TYPEREFERENCE;
 import static io.github.evisentin.wordpress.client.domain.model.parameters.WpQueryParameters.CONTEXT;
 import static io.github.evisentin.wordpress.client.domain.model.parameters.WpQueryParameters.FORCE;
 import static io.github.evisentin.wordpress.client.domain.model.parameters.WpQueryParameters.PAGE;
@@ -36,9 +36,9 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 public class PostApiClientModule extends ApiClientModule implements PostAPIs {
 
-    public PostApiClientModule(final @NonNull String apiUrl,
-                               final @NonNull CloseableHttpClient httpClient,
-                               final @NonNull ObjectMapper mapper) {
+    public PostApiClientModule(final String apiUrl,
+                               final CloseableHttpClient httpClient,
+                               final ObjectMapper mapper) {
         super(apiUrl, httpClient, mapper);
     }
 

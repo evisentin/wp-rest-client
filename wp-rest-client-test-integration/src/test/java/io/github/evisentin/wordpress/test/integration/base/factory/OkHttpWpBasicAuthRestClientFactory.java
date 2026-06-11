@@ -5,6 +5,8 @@ import io.github.evisentin.wordpress.client.adapter.okhttp.OkHttpWpRestClientBui
 import io.github.evisentin.wordpress.client.domain.WpRestClient;
 import io.github.evisentin.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
 import io.github.evisentin.wordpress.client.domain.configuration.SslConfiguration;
+import io.github.evisentin.wordpress.test.integration.base.factory.interceptors.OkHttpTestRequestInterceptor;
+import io.github.evisentin.wordpress.test.integration.base.factory.interceptors.OkHttpTestResponseInterceptor;
 import org.testcontainers.shaded.org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
@@ -45,6 +47,8 @@ public final class OkHttpWpBasicAuthRestClientFactory implements WpBasicAuthRest
                                final @NonNull String username,
                                final @NonNull String password) {
         return OkHttpWpRestClientBuilder.basicAuthentication(baseUrl, username, password)
+                                        .withInterceptor(new OkHttpTestRequestInterceptor())
+                                        .withInterceptor(new OkHttpTestResponseInterceptor())
                                         .withSslConfiguration(sslConfiguration)
                                         .build();
     }

@@ -1,15 +1,24 @@
+# ---------------------------------------------------------------------------------------------------------------------
+# MkDocs Configuration
+#
+# This file defines the configuration for the project documentation site, including navigation structure,
+# theme settings, plugins, markdown extensions, and build options.
+#
+# The documentation content referenced by this configuration is located in the `docs/` directory.
+# All Markdown files, assets, and navigation entries should be maintained under that folder unless otherwise configured.
+#
+# Documentation: https://www.mkdocs.org/user-guide/configuration/
+# ---------------------------------------------------------------------------------------------------------------------
 site_name: WP REST Client
 site_description: Type-safe Java client for the WordPress REST API
 site_url: https://evisentin.github.io/wp-rest-client/
-#repo_url: https://github.com/evisentin/wp-rest-client
-#repo_name: evisentin/wp-rest-client
-
+# ---------------------------------------------------------------------------------------------------------------------
 theme:
   name: material
-
+# ---------------------------------------------------------------------------------------------------------------------
 extra_css:
   - stylesheets/extra.css
-
+# ---------------------------------------------------------------------------------------------------------------------
 nav:
   - Home: index.md
   - Getting Started:
@@ -24,12 +33,8 @@ nav:
       - Developer Setup: development/developer-setup.md
   - Test Coverage: https://evisentin.github.io/wp-rest-client/coverage/
   - License: license.md
-
+# ---------------------------------------------------------------------------------------------------------------------
 markdown_extensions:
-  - tables
-  - toc:
-      permalink: true
-      toc_depth: "2-4"
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
@@ -39,3 +44,8 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: "2-4"
+# ---------------------------------------------------------------------------------------------------------------------

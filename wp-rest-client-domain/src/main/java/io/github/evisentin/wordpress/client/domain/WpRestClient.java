@@ -38,6 +38,13 @@ public interface WpRestClient {
     MediaAPIs media();
 
     /**
+     * Returns the post revisions API operations.
+     *
+     * @return post revision API operations
+     */
+    PostRevisionAPIs postRevisions();
+
+    /**
      * Returns the post status API operations.
      *
      * @return post status API operations

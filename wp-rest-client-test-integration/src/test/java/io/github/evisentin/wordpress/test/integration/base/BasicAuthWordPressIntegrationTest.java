@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -151,6 +152,10 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
     private Long givenPostExists(final String title, final String content, final WpPostStatus status, final String password) {
         return wpCreatePost(title, content, status, password);
+    }
+
+    private void givenPostIsUpdated(final long id, final String title, final String content) {
+        wpUpdatePost(id, title, content);
     }
 
     private Long givenTagExists(final String name, final String description, final String slug) {
@@ -683,6 +688,95 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
         }
     }
 
+    @DisplayName("Post Revision APIs - Integration Tests")
+    @Nested
+    class PostRevisionTests {
+
+        @DisplayName("'GET' fails on post not found")
+        @Test
+        void get__fails_on_post_not_found() {
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.postRevisions().get(1000L, 1L), "rest_post_invalid_parent", "Invalid post parent ID.");
+        }
+
+        @DisplayName("'GET' fails on post revision not found")
+        @Test
+        void get__fails_on_post_revision_not_found() {
+            // GIVEN
+            wpCleanDefaultData();
+            final Long existingPostId = givenPostExists("My post", "My content", PUBLISH);
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.postRevisions().get(existingPostId, 1L), "rest_post_invalid_id", "Invalid revision ID.");
+        }
+
+        @DisplayName("'GET' succeeds")
+        @Test
+        void get__succeeds() {
+            // GIVEN
+            wpCleanDefaultData();
+            final Long existingPostId = givenPostExists("My post", "My content", PUBLISH);
+            givenPostIsUpdated(existingPostId, "My post #1", "My content");
+            final List<Long> revisionIds = wpGetRevisionIds(existingPostId);
+
+            // WHEN/THEN
+            final WpPostRevision postRevision = adminClient.postRevisions().get(existingPostId, revisionIds.getFirst());
+
+            assertThat(postRevision).isNotNull();
+        }
+
+        @DisplayName("'LIST' returns empty on no revision")
+        @Test
+        void list__empty_on_no_revisions() {
+            // GIVEN
+            wpCleanDefaultData();
+            final Long existingPostId = givenPostExists("My post", "My content", PUBLISH);
+
+            // WHEN/THEN
+            final WpPagedResponse<WpPostRevision> response = adminClient.postRevisions().list(existingPostId, WpPagingQuery.of(1, 10), null);
+
+            WordPressAssertions.assertThat(response)
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(0)
+                               .hasTotalItems(0)
+                               .doesNotHaveNextPage();
+        }
+
+        @DisplayName("'LIST' fails on post not found")
+        @Test
+        void list__fails_on_post_found() {
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.postRevisions().list(1000L, WpPagingQuery.of(1, 10), null), "rest_post_invalid_parent", "Invalid post parent ID.");
+        }
+
+        @DisplayName("'LIST' returns revisions")
+        @Test
+        void list__returns_revisions() {
+            // GIVEN
+            wpCleanDefaultData();
+            final Long existingPostId = givenPostExists("My post", "My content", PUBLISH);
+            givenPostIsUpdated(existingPostId, "My post #1", "My content"); // first update -> first revision
+            givenPostIsUpdated(existingPostId, "My post #1", "My content #1"); // second update -> second revision
+
+            // WHEN/THEN
+            final WpPagedResponse<WpPostRevision> response = adminClient.postRevisions().list(existingPostId, WpPagingQuery.of(1, 10), null);
+
+            WordPressAssertions.assertThat(response)
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(2)
+                               .doesNotHaveNextPage();
+        }
+    }
+
     @DisplayName("Post APIs - Integration Tests")
     @Nested
     class PostTests {
@@ -1162,7 +1256,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
     @DisplayName("Post Types APIs - Integration Tests")
     @Nested
-    class PostTypesTests {
+    class PostTypeTests {
 
         @DisplayName("'LIST' works")
         @Test

@@ -17,9 +17,9 @@ import okhttp3.OkHttpClient;
 
 import java.util.Map;
 
-import static io.github.evisentin.wordpress.client.adapter.okhttp.TypeReferences.WP_TAG_DELETION_RESPONSE_TYPEREFERENCE;
-import static io.github.evisentin.wordpress.client.adapter.okhttp.TypeReferences.WP_TAG_LIST_TYPEREFERENCE;
-import static io.github.evisentin.wordpress.client.adapter.okhttp.TypeReferences.WP_TAG_TYPEREFERENCE;
+import static io.github.evisentin.wordpress.client.adapter.okhttp.modules.TypeReferences.WP_TAG_DELETION_RESPONSE_TYPEREFERENCE;
+import static io.github.evisentin.wordpress.client.adapter.okhttp.modules.TypeReferences.WP_TAG_LIST_TYPEREFERENCE;
+import static io.github.evisentin.wordpress.client.adapter.okhttp.modules.TypeReferences.WP_TAG_TYPEREFERENCE;
 import static io.github.evisentin.wordpress.client.domain.model.parameters.WpQueryParameters.CONTEXT;
 import static io.github.evisentin.wordpress.client.domain.model.parameters.WpQueryParameters.FORCE;
 import static io.github.evisentin.wordpress.client.domain.model.parameters.WpQueryParameters.PAGE;
@@ -34,9 +34,9 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  */
 public class TagApiClientModule extends ApiClientModule implements TagAPIs {
 
-    public TagApiClientModule(final @NonNull String apiUrl,
-                              final @NonNull OkHttpClient httpClient,
-                              final @NonNull ObjectMapper mapper) {
+    public TagApiClientModule(final String apiUrl,
+                              final OkHttpClient httpClient,
+                              final ObjectMapper mapper) {
         super(apiUrl, httpClient, mapper);
     }
 

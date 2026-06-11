@@ -17,9 +17,9 @@ import okhttp3.*;
 import java.io.File;
 import java.util.Map;
 
-import static io.github.evisentin.wordpress.client.adapter.okhttp.TypeReferences.WP_MEDIA_DELETION_RESPONSE_TYPEREFERENCE;
-import static io.github.evisentin.wordpress.client.adapter.okhttp.TypeReferences.WP_MEDIA_LIST_TYPEREFERENCE;
-import static io.github.evisentin.wordpress.client.adapter.okhttp.TypeReferences.WP_MEDIA_TYPEREFERENCE;
+import static io.github.evisentin.wordpress.client.adapter.okhttp.modules.TypeReferences.WP_MEDIA_DELETION_RESPONSE_TYPEREFERENCE;
+import static io.github.evisentin.wordpress.client.adapter.okhttp.modules.TypeReferences.WP_MEDIA_LIST_TYPEREFERENCE;
+import static io.github.evisentin.wordpress.client.adapter.okhttp.modules.TypeReferences.WP_MEDIA_TYPEREFERENCE;
 import static io.github.evisentin.wordpress.client.domain.model.parameters.WpQueryParameters.CONTEXT;
 import static io.github.evisentin.wordpress.client.domain.model.parameters.WpQueryParameters.FORCE;
 import static io.github.evisentin.wordpress.client.domain.model.parameters.WpQueryParameters.PAGE;
@@ -36,9 +36,9 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  */
 public class MediaApiClientModule extends ApiClientModule implements MediaAPIs {
 
-    public MediaApiClientModule(final @NonNull String apiUrl,
-                                final @NonNull OkHttpClient httpClient,
-                                final @NonNull ObjectMapper mapper) {
+    public MediaApiClientModule(final String apiUrl,
+                                final OkHttpClient httpClient,
+                                final ObjectMapper mapper) {
         super(apiUrl, httpClient, mapper);
     }
 

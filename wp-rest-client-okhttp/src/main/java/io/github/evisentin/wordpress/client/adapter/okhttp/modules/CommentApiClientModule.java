@@ -17,9 +17,9 @@ import okhttp3.OkHttpClient;
 
 import java.util.Map;
 
-import static io.github.evisentin.wordpress.client.adapter.okhttp.TypeReferences.WP_COMMENT_DELETION_RESPONSE_TYPEREFERENCE;
-import static io.github.evisentin.wordpress.client.adapter.okhttp.TypeReferences.WP_COMMENT_LIST_TYPEREFERENCE;
-import static io.github.evisentin.wordpress.client.adapter.okhttp.TypeReferences.WP_COMMENT_TYPEREFERENCE;
+import static io.github.evisentin.wordpress.client.adapter.okhttp.modules.TypeReferences.WP_COMMENT_DELETION_RESPONSE_TYPEREFERENCE;
+import static io.github.evisentin.wordpress.client.adapter.okhttp.modules.TypeReferences.WP_COMMENT_LIST_TYPEREFERENCE;
+import static io.github.evisentin.wordpress.client.adapter.okhttp.modules.TypeReferences.WP_COMMENT_TYPEREFERENCE;
 import static io.github.evisentin.wordpress.client.domain.model.parameters.WpQueryParameters.CONTEXT;
 import static io.github.evisentin.wordpress.client.domain.model.parameters.WpQueryParameters.FORCE;
 import static io.github.evisentin.wordpress.client.domain.model.parameters.WpQueryParameters.PAGE;
@@ -36,9 +36,9 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
  */
 public class CommentApiClientModule extends ApiClientModule implements CommentAPIs {
 
-    public CommentApiClientModule(final @NonNull String apiUrl,
-                                  final @NonNull OkHttpClient httpClient,
-                                  final @NonNull ObjectMapper mapper) {
+    public CommentApiClientModule(final String apiUrl,
+                                  final OkHttpClient httpClient,
+                                  final ObjectMapper mapper) {
         super(apiUrl, httpClient, mapper);
     }
 
