@@ -2,10 +2,10 @@
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.evisentin/wp-rest-client)](https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client)
 [![License](https://img.shields.io/badge/license-Apache%202.0-brightgreen)](https://github.com/evisentin/wp-rest-client/blob/main/LICENSE)
+[![Coverage](https://img.shields.io/badge/coverage-report-brightgreen)](coverage/)
 ![Java](https://img.shields.io/badge/Java-21-informational)
 ![Java](https://img.shields.io/badge/Java-25-informational)
 
-[//]: # ([![Coverage]&#40;https://img.shields.io/badge/coverage-report-brightgreen&#41;]&#40;coverage/&#41;)
 
 A modular Java client for interacting with the WordPress REST API.
 

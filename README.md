@@ -1,10 +1,8 @@
 # WP REST Client
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.evisentin/wp-rest-client)](https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client)
+[![Coverage](https://img.shields.io/badge/coverage-report-brightgreen)](https://evisentin.github.io/wp-rest-client/coverage/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-brightgreen)](LICENSE)
-
-[//]: # ([![Coverage]&#40;https://img.shields.io/badge/coverage-report-brightgreen&#41;]&#40;https://evisentin.github.io/wp-rest-client/coverage/&#41;)
-
 
 A type-safe Java client for the WordPress REST API with interchangeable HTTP client implementations.
 
