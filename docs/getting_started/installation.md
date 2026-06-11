@@ -68,5 +68,5 @@ implementation.
 
 ## Next Step
 
-After adding a dependency, continue with [Getting Started](getting-started.md) to create your first client and execute
+After adding a dependency, continue with [Quick Start](quick-start.md) to create your first client and execute
 requests against the WordPress REST API.

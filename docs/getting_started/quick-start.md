@@ -1,4 +1,4 @@
-# Getting Started
+# Quick Start
 
 This page shows how to create a WP REST Client instance and list WordPress posts.
 
