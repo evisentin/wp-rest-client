@@ -5,7 +5,7 @@ site_url: https://evisentin.github.io/wp-rest-client/
 #repo_name: evisentin/wp-rest-client
 
 theme:
-  name: mkdocs
+  name: material
 
 nav:
   - Home: index.md
@@ -26,4 +26,5 @@ markdown_extensions:
   - tables
   - toc:
       permalink: true
+      toc_depth: "2-4"
 

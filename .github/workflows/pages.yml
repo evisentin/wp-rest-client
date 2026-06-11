@@ -61,6 +61,9 @@ jobs:
       - name: Install MkDocs
         run: pip install mkdocs
 
+      - name: Install MkDocs Material
+        run: pip install mkdocs-material
+
       # Build the documentation site.
       #
       # Output:

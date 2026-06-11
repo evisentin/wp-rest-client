@@ -1,6 +1,7 @@
 # WP REST Client
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.evisentin/wp-rest-client)](https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client)
+[![Website](https://img.shields.io/badge/Website-Live-brightgreen)](https://evisentin.github.io/wp-rest-client/)
 [![Coverage](https://img.shields.io/badge/coverage-report-brightgreen)](https://evisentin.github.io/wp-rest-client/coverage/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-brightgreen)](LICENSE)
 
