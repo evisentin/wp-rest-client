@@ -8,19 +8,19 @@ This project uses [SDKMAN](https://sdkman.io/) to manage the JDK and MAVEN versi
 
 Run the following command:
 
-```bash
+```shell
 curl -s "https://get.sdkman.io" | bash
 ```
 
 Then initialize it:
 
-```bash
+```shell
 source "$HOME/.sdkman/bin/sdkman-init.sh"
 ```
 
 Verify installation:
 
-```bash
+```shell
 sdk version
 ```
 
@@ -33,7 +33,7 @@ feature.
 
 Run:
 
-```bash
+```shell
 sdk config
 ```
 
@@ -61,13 +61,13 @@ With auto-env enabled, SDKMAN will automatically:
 
 If this is your first time in the project, run:
 
-```bash
+```shell
 sdk env install
 ```
 
 After that, simply navigating into the project folder will activate the correct environment:
 
-```bash
+```shell
 cd your-project-directory
 ```
 
@@ -77,7 +77,7 @@ cd your-project-directory
 
 Using the Maven wrapper:
 
-```bash
+```shell
 ./mvnw clean install -Plocal-tests
 ```
 
@@ -89,7 +89,7 @@ or
 
 Or with a global Maven installation:
 
-```bash
+```shell
 mvn clean install -Plocal-tests
 ```
 

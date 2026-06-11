@@ -2,6 +2,8 @@
 
 This document describes the internal architecture and design principles of WP REST Client.
 
+---
+
 ## Design Goals
 
 The project is designed around the following goals:
@@ -12,6 +14,8 @@ The project is designed around the following goals:
 - Implementation-agnostic domain model
 - Behavioural consistency across implementations
 - Easy extensibility for future HTTP clients
+
+---
 
 ## Module Structure
 
@@ -34,6 +38,8 @@ The following modules are not deployed to Maven Central:
 - `wp-rest-client-test-integration`
 - `wp-rest-client-test-report`
 
+---
+
 ## Public API
 
 The `wp-rest-client-domain` module defines the public API of the client.
@@ -45,6 +51,7 @@ It contains:
 - API contracts
 
 This module is implementation-agnostic and should not depend on a specific HTTP client.
+---
 
 ## Implementations
 
@@ -63,12 +70,15 @@ Each implementation is responsible for:
 - Serialization and deserialization
 - Mapping responses to domain DTOs
 
+---
+
 ## Key Concept: Contract Testing
 
 A central design principle of this project is contract testing.
 
 Instead of duplicating tests for each implementation, the project defines a shared test suite that every implementation
 must pass.
+---
 
 ## Why Contract Testing Matters
 
@@ -82,6 +92,8 @@ It provides the following benefits:
 - Reduces duplicated test logic
 - Documents the expected behaviour of the public API
 
+---
+
 ## How Contract Testing Works
 
 Contract tests are defined in `wp-rest-client-contract-tests`.
@@ -93,12 +105,14 @@ Each implementation module:
 3. Runs the same behavioural test suite
 
 If an implementation passes the contract tests, it is considered compliant.
+---
 
 ## Integration Testing
 
 The `wp-rest-client-test-integration` module contains integration tests based on Testcontainers.
 
 These tests are used to verify compatibility with multiple WordPress versions.
+---
 
 ## Test Reports
 
