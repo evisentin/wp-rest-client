@@ -51,7 +51,7 @@ jobs:
 
       # Install Python required by MkDocs.
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.x"
 
@@ -121,4 +121,4 @@ jobs:
       # Publish the generated artifact to GitHub Pages.
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
