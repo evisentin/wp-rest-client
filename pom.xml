@@ -58,7 +58,7 @@
     <lombok.version>1.18.46</lombok.version>
 
     <httpclient5.version>5.6.1</httpclient5.version>
-    <okhttp.version>5.3.2</okhttp.version>
+    <okhttp.version>5.4.0</okhttp.version>
 
     <slf4j.version>2.0.18</slf4j.version>
 
