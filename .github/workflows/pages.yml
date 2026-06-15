@@ -40,7 +40,7 @@ jobs:
 
       # Checkout repository source code.
       - name: Checkout source code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # Install the JDK used by the Maven build.
       - name: Setup Java
@@ -51,7 +51,7 @@ jobs:
 
       # Install Python required by MkDocs.
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version: "3.x"
 
@@ -103,7 +103,7 @@ jobs:
       #   site/
       #   site/coverage/
       - name: Upload GitHub Pages artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v5
         with:
           path: site
 
@@ -121,4 +121,4 @@ jobs:
       # Publish the generated artifact to GitHub Pages.
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
