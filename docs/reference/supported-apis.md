@@ -68,7 +68,7 @@ Legend:
 |-----------------------------------------------|:--|--------------------------|:------:|
 | `GET /wp/v2/posts/<parent>/revisions`         |   | List Posts Revisions     |   ✅    |
 | `GET /wp/v2/posts/<parent>/revisions/<id>`    |   | Retrieve a Post Revision |   ✅    |
-| `DELETE /wp/v2/posts/<parent>/revisions/<id>` |   | Delete a Post Revision   |   ⬜    |
+| `DELETE /wp/v2/posts/<parent>/revisions/<id>` |   | Delete a Post Revision   |  N/A   |
 
 ### Pages
 
