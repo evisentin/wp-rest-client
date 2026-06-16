@@ -35,6 +35,26 @@ class ApiUrlDiscoveryHelperTest implements WithAssertions {
 
     @Test
     @SneakyThrows
+    void resolveApiUrlIgnoresNonWordPressLinkRelations() {
+
+        final OkHttpClient httpClient = new OkHttpClient();
+
+        final String baseUrl = "http://localhost:" + mockServer.getLocalPort();
+
+        mockServer
+                .when(request()
+                        .withMethod("HEAD")
+                        .withPath("/"))
+                .respond(response()
+                        .withStatusCode(200)
+                        .withHeader("Link", "<https://example.com/api>; rel=\"alternate\""));
+
+        assertThatThrownBy(() -> ApiUrlDiscoveryHelper.resolveApiUrl(httpClient, baseUrl))
+                .isInstanceOf(ApiUrlNotFoundException.class);
+    }
+
+    @Test
+    @SneakyThrows
     void resolveApiUrlReturnsWordPressApiUrlFromLinkHeader() {
 
         final OkHttpClient httpClient = new OkHttpClient();
@@ -53,6 +73,92 @@ class ApiUrlDiscoveryHelperTest implements WithAssertions {
 
         assertThat(ApiUrlDiscoveryHelper.resolveApiUrl(httpClient, baseUrl))
                 .isEqualTo(baseUrl + "/wp-json");
+    }
+
+    @Test
+    @SneakyThrows
+    void resolveApiUrlReturnsWordPressApiUrlFromMultipleLinksInSameHeader() {
+
+        final OkHttpClient httpClient = new OkHttpClient();
+
+        final String baseUrl = "http://localhost:" + mockServer.getLocalPort();
+        final String apiUrl = baseUrl + "/wp-json/";
+
+        mockServer
+                .when(request()
+                        .withMethod("HEAD")
+                        .withPath("/"))
+                .respond(response()
+                        .withStatusCode(200)
+                        .withHeader("Link",
+                                "<https://example.com/other>; rel=\"alternate\", " +
+                                "<" + apiUrl + ">; rel=\"https://api.w.org/\""));
+
+        assertThat(ApiUrlDiscoveryHelper.resolveApiUrl(httpClient, baseUrl))
+                .isEqualTo(baseUrl + "/wp-json");
+    }
+
+    @Test
+    @SneakyThrows
+    void resolveApiUrlReturnsWordPressApiUrlFromSecondLinkHeader() {
+
+        final OkHttpClient httpClient = new OkHttpClient();
+
+        final String baseUrl = "http://localhost:" + mockServer.getLocalPort();
+        final String apiUrl = baseUrl + "/wp-json/";
+
+        mockServer
+                .when(request()
+                        .withMethod("HEAD")
+                        .withPath("/"))
+                .respond(response()
+                        .withStatusCode(200)
+                        .withHeader("Link", "<https://example.com/other>; rel=\"alternate\"")
+                        .withHeader("Link", "<" + apiUrl + ">; rel=\"https://api.w.org/\""));
+
+        assertThat(ApiUrlDiscoveryHelper.resolveApiUrl(httpClient, baseUrl))
+                .isEqualTo(baseUrl + "/wp-json");
+    }
+
+    @Test
+    @SneakyThrows
+    void resolveApiUrlReturnsWordPressApiUrlUnchangedWhenTrailingSlashIsMissing() {
+
+        final OkHttpClient httpClient = new OkHttpClient();
+
+        final String baseUrl = "http://localhost:" + mockServer.getLocalPort();
+        final String apiUrl = baseUrl + "/wp-json";
+
+        mockServer
+                .when(request()
+                        .withMethod("HEAD")
+                        .withPath("/"))
+                .respond(response()
+                        .withStatusCode(200)
+                        .withHeader("Link", "<" + apiUrl + ">; rel=\"https://api.w.org/\""));
+
+        assertThat(ApiUrlDiscoveryHelper.resolveApiUrl(httpClient, baseUrl))
+                .isEqualTo(apiUrl);
+    }
+
+    @Test
+    @SneakyThrows
+    void resolveApiUrlThrowsApiUrlNotFoundExceptionWhenLinkHeaderIsInvalid() {
+
+        final OkHttpClient httpClient = new OkHttpClient();
+
+        final String baseUrl = "http://localhost:" + mockServer.getLocalPort();
+
+        mockServer
+                .when(request()
+                        .withMethod("HEAD")
+                        .withPath("/"))
+                .respond(response()
+                        .withStatusCode(200)
+                        .withHeader("Link", "invalid-header"));
+
+        assertThatThrownBy(() -> ApiUrlDiscoveryHelper.resolveApiUrl(httpClient, baseUrl))
+                .isInstanceOf(ApiUrlNotFoundException.class);
     }
 
     @Test
