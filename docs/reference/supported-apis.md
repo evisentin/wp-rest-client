@@ -31,24 +31,25 @@ module and are continuously validated against the following WordPress versions:
 | Resource       | Endpoint                    | Read | Create | Update | Delete | Notes                              |
 |----------------|:----------------------------|:----:|:------:|:------:|:------:|------------------------------------|
 | Posts          | `/posts`                    |  ✅   |   ✅    |   ✅    |   ✅    | Blog posts and post content.       |
-| Post Revisions | `/posts/<parent>/revisions` |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Blog posts revisions.              |
+| Post Revisions | `/posts/<parent>/revisions` |  ✅   |  N/A   |  N/A   |  N/A   | Blog posts revisions.              |
 | Pages          | `/pages`                    |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Static site pages.                 |
 | Page Revisions | `/pages/<parent>/revisions` |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Static site pages revisions.       |
 | Media          | `/media`                    |  ✅   |   ✅    |   ✅    |   ✅    | Images, files, and attachments.    |
 | Categories     | `/categories`               |  ✅   |   ✅    |   ✅    |   ✅    | Post categories.                   |
 | Tags           | `/tags`                     |  ✅   |   ✅    |   ✅    |   ✅    | Post tags.                         |
 | Comments       | `/comments`                 |  ✅   |   ✅    |   ⬜    |   ✅    | Comments and moderation workflows. |
-| Users          | `/users`                    |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Usually requires authentication.   |
+| Users          | `/users`                    |  🚫  |   🚫   |   🚫   |   🚫   | Usually requires authentication.   |
 | Search         | `/search`                   |  ⬜   |  N/A   |  N/A   |  N/A   | Search across public content.      |
 | Taxonomies     | `/taxonomies`               |  ⬜   |  N/A   |  N/A   |  N/A   | Taxonomy metadata.                 |
 | Post Types     | `/types`                    |  ✅   |  N/A   |  N/A   |  N/A   | Registered post type metadata.     |
 | Statuses       | `/statuses`                 |  ✅   |  N/A   |  N/A   |  N/A   | Registered post statuses.          |
-| Settings       | `/settings`                 |  ⬜   |  N/A   |   ⬜    |  N/A   | Requires elevated permissions.     |
+| Settings       | `/settings`                 |  🚫  |  N/A   |   🚫   |  N/A   | Requires elevated permissions.     |
 
 Legend:
 
 - ✅ supported
 - ⬜ not implemented yet
+- 🚫 not planned
 - N/A not applicable
 
 ### Posts
@@ -60,6 +61,14 @@ Legend:
 | `GET /wp/v2/posts/<id>`    | Retrieve a Post |    ✅     |
 | `POST /wp/v2/posts/<id>`   | Update a Post   |    ✅     |
 | `DELETE /wp/v2/posts/<id>` | Delete a Post   |    ✅     |
+
+### Post Revisions
+
+| Endpoint                                      |   | Description              | Status | Notes                                                                                                                 |
+|-----------------------------------------------|:--|--------------------------|:------:|-----------------------------------------------------------------------------------------------------------------------|
+| `GET /wp/v2/posts/<parent>/revisions`         |   | List Posts Revisions     |   ✅    |                                                                                                                       |
+| `GET /wp/v2/posts/<parent>/revisions/<id>`    |   | Retrieve a Post Revision |   ✅    |                                                                                                                       |
+| `DELETE /wp/v2/posts/<parent>/revisions/<id>` |   | Delete a Post Revision   |  N/A   | Although the deletion is mentioned in the reference page, WordPress actually does not allow the deletion via REST API |
 
 ### Pages
 
@@ -124,7 +133,3 @@ Legend:
 |------------------------------|---------------|:------:|
 | `GET /wp/v2/statuses`        | List Statuses |   ✅    |
 | `GET /wp/v2/statuses/<name>` | Get Status    |   ✅    |
-
-
-
-

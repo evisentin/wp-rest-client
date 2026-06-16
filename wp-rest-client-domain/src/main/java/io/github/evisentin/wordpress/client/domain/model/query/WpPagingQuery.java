@@ -6,7 +6,7 @@ import lombok.Data;
  * Represents pagination parameters with a page number and page size.
  *
  * <p>This class is immutable and validates that both {@code pageNumber}
- * and {@code pageSize} are greater than zero.
+ * and {@code pageSize} are greater than zero.</p>
  */
 @Data
 public class WpPagingQuery {
@@ -22,7 +22,7 @@ public class WpPagingQuery {
     private final int pageSize;
 
     /**
-     * Creates a new {@code PageQuery} instance.
+     * Creates a new {@code WpPagingQuery} instance.
      *
      * @param pageNumber
      *         the page number (must be greater than 0)
@@ -43,14 +43,14 @@ public class WpPagingQuery {
     }
 
     /**
-     * Creates a new {@code PageQuery} instance.
+     * Creates a new {@code WpPagingQuery} instance.
      *
      * @param pageNumber
      *         the page number (must be greater than 0)
      * @param pageSize
      *         the number of items per page (must be greater than 0)
      *
-     * @return a new {@code PageQuery} instance
+     * @return a new {@code WpPagingQuery} instance
      */
     public static WpPagingQuery of(int pageNumber, int pageSize) {
         return new WpPagingQuery(pageNumber, pageSize);

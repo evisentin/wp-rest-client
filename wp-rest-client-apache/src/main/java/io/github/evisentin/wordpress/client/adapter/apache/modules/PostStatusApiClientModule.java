@@ -10,8 +10,8 @@ import org.apache.hc.core5.net.URIBuilder;
 
 import java.util.Map;
 
-import static io.github.evisentin.wordpress.client.adapter.apache.TypeReferences.WP_STATUSES_MAP_TYPEREFERENCE;
-import static io.github.evisentin.wordpress.client.adapter.apache.TypeReferences.WP_STATUS_TYPE_REFERENCE;
+import static io.github.evisentin.wordpress.client.adapter.apache.modules.TypeReferences.WP_STATUSES_MAP_TYPEREFERENCE;
+import static io.github.evisentin.wordpress.client.adapter.apache.modules.TypeReferences.WP_STATUS_TYPE_REFERENCE;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
@@ -21,9 +21,9 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  */
 public class PostStatusApiClientModule extends ApiClientModule implements PostStatusAPIs {
 
-    public PostStatusApiClientModule(final @NonNull String apiUrl,
-                                     final @NonNull CloseableHttpClient httpClient,
-                                     final @NonNull ObjectMapper mapper) {
+    public PostStatusApiClientModule(final String apiUrl,
+                                     final CloseableHttpClient httpClient,
+                                     final ObjectMapper mapper) {
         super(apiUrl, httpClient, mapper);
     }
 

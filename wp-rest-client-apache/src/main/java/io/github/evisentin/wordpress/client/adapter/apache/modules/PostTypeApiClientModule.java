@@ -10,8 +10,8 @@ import org.apache.hc.core5.net.URIBuilder;
 
 import java.util.Map;
 
-import static io.github.evisentin.wordpress.client.adapter.apache.TypeReferences.WP_POST_TYPES_MAP_TYPEREFERENCE;
-import static io.github.evisentin.wordpress.client.adapter.apache.TypeReferences.WP_POST_TYPE_TYPEREFERENCE;
+import static io.github.evisentin.wordpress.client.adapter.apache.modules.TypeReferences.WP_POST_TYPES_MAP_TYPEREFERENCE;
+import static io.github.evisentin.wordpress.client.adapter.apache.modules.TypeReferences.WP_POST_TYPE_TYPEREFERENCE;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
@@ -21,9 +21,9 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  */
 public class PostTypeApiClientModule extends ApiClientModule implements PostTypeAPIs {
 
-    public PostTypeApiClientModule(final @NonNull String apiUrl,
-                                   final @NonNull CloseableHttpClient httpClient,
-                                   final @NonNull ObjectMapper mapper) {
+    public PostTypeApiClientModule(final String apiUrl,
+                                   final CloseableHttpClient httpClient,
+                                   final ObjectMapper mapper) {
         super(apiUrl, httpClient, mapper);
     }
 

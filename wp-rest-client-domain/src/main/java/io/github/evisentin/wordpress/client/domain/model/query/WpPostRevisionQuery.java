@@ -2,7 +2,7 @@ package io.github.evisentin.wordpress.client.domain.model.query;
 
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpSortDirection;
-import io.github.evisentin.wordpress.client.domain.model.enums.order.WpTagOrderFields;
+import io.github.evisentin.wordpress.client.domain.model.enums.order.WpPostRevisionOrderFields;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -11,16 +11,21 @@ import java.util.Set;
 import static java.util.Collections.emptySet;
 
 /**
- * Represents a query object for retrieving WordPress tags.
+ * Represents a query object for retrieving WordPress post revisions.
  *
  * <p>This class encapsulates filtering and sorting options supported by the
- * WordPress tags endpoint.</p>
+ * WordPress post revisions endpoint.</p>
  *
  * <p>Instances are immutable and should be created using the {@link Builder}.</p>
  */
 @Getter
 @Builder(setterPrefix = "with")
-public class WpTagQuery {
+public class WpPostRevisionQuery {
+
+    /**
+     * The ID for the parent of the revision.
+     */
+    private final Long parentId;
 
     /**
      * Scope under which the request is made. Defaults to {@link WpContext#VIEW}.
@@ -29,18 +34,18 @@ public class WpTagQuery {
     private final WpContext context = WpContext.VIEW;
 
     /**
-     * Limits results to tags matching the given search term.
+     * Limits results to revisions matching the given search term.
      */
     private final String search;
 
     /**
-     * Set of tag IDs to exclude from the result. Defaults to an empty set.
+     * Set of post IDs to exclude from the result. Defaults to an empty set.
      */
     @Builder.Default
     private final Set<Long> excludeIds = emptySet();
 
     /**
-     * Set of tag IDs to include in the result. Defaults to an empty set.
+     * Set of post IDs to include in the result. Defaults to an empty set.
      */
     @Builder.Default
     private final Set<Long> includeIds = emptySet();
@@ -57,23 +62,8 @@ public class WpTagQuery {
     private final WpSortDirection order = WpSortDirection.ASC;
 
     /**
-     * Field used to sort the result. Defaults to {@link WpTagOrderFields#NAME}.
+     * Field used to sort the result. Defaults to {@link WpPostRevisionOrderFields#DATE}.
      */
     @Builder.Default
-    private final WpTagOrderFields orderBy = WpTagOrderFields.NAME;
-
-    /**
-     * Whether to hide tags that are not assigned to any posts.
-     */
-    private final Boolean hideEmpty;
-
-    /**
-     * Limits results to tags with the specified slug.
-     */
-    private final String slug;
-
-    /**
-     * Limits results to tags assigned to the specified post.
-     */
-    private final Long postId;
+    private final WpPostRevisionOrderFields orderBy = WpPostRevisionOrderFields.DATE;
 }

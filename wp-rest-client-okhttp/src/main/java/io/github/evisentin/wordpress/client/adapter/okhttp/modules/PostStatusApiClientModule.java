@@ -10,8 +10,8 @@ import okhttp3.OkHttpClient;
 
 import java.util.Map;
 
-import static io.github.evisentin.wordpress.client.adapter.okhttp.TypeReferences.WP_STATUSES_MAP_TYPEREFERENCE;
-import static io.github.evisentin.wordpress.client.adapter.okhttp.TypeReferences.WP_STATUS_TYPE_REFERENCE;
+import static io.github.evisentin.wordpress.client.adapter.okhttp.modules.TypeReferences.WP_STATUSES_MAP_TYPEREFERENCE;
+import static io.github.evisentin.wordpress.client.adapter.okhttp.modules.TypeReferences.WP_STATUS_TYPE_REFERENCE;
 import static org.apache.commons.lang3.StringUtils.isBlank;
 
 /**
@@ -21,9 +21,9 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  */
 public class PostStatusApiClientModule extends ApiClientModule implements PostStatusAPIs {
 
-    public PostStatusApiClientModule(final @NonNull String apiUrl,
-                                     final @NonNull OkHttpClient httpClient,
-                                     final @NonNull ObjectMapper mapper) {
+    public PostStatusApiClientModule(final String apiUrl,
+                                     final OkHttpClient httpClient,
+                                     final ObjectMapper mapper) {
         super(apiUrl, httpClient, mapper);
     }
 

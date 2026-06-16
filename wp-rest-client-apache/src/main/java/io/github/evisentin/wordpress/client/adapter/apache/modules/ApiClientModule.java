@@ -27,7 +27,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
 import static org.apache.hc.core5.http.HttpHeaders.ACCEPT;
@@ -175,10 +174,6 @@ abstract class ApiClientModule {
 
     protected static Map<String, Object> emptyIfNull(final Map<String, Object> map) {
         return ofNullable(map).orElseGet(Collections::emptyMap);
-    }
-
-    protected static <T> List<T> emptyIfNull(final List<T> list) {
-        return Optional.ofNullable(list).orElseGet(Collections::emptyList);
     }
 
     private static void failOnEmptyResponseBody(final ClassicHttpResponse response) throws IOException {

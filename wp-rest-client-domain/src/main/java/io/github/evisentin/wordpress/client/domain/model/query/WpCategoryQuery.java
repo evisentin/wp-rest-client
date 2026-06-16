@@ -14,10 +14,9 @@ import static java.util.Collections.emptySet;
  * Represents a query object for retrieving WordPress categories.
  *
  * <p>This class encapsulates filtering and sorting options supported by the
- * WordPress categories endpoint.
+ * WordPress categories endpoint.</p>
  *
- * <p>Instances are immutable and should be created using the {@link Builder}.
- *
+ * <p>Instances are immutable and should be created using the {@link Builder}.</p>
  */
 @Getter
 @Builder(setterPrefix = "with")

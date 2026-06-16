@@ -4,7 +4,6 @@ import io.github.evisentin.wordpress.client.domain.model.enums.WpCommentStatus;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpSortDirection;
 import io.github.evisentin.wordpress.client.domain.model.enums.order.WpCommentOrderFields;
-import io.github.evisentin.wordpress.client.domain.model.enums.order.WpTagOrderFields;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -90,34 +89,40 @@ public class WpCommentQuery {
     private final WpSortDirection order = WpSortDirection.ASC;
 
     /**
-     * Field used to sort the result. Defaults to {@link WpTagOrderFields#NAME}.
+     * Field used to sort the result. Defaults to {@link WpCommentOrderFields#DATE_GMT}.
      */
     @Builder.Default
     private final WpCommentOrderFields orderBy = WpCommentOrderFields.DATE_GMT;
+
     /**
      * Excludes comments whose parent identifier matches any of the specified values. Defaults to an empty set.
      */
     @Builder.Default
     private final Set<Long> excludeParentIds = emptySet();
+
     /**
      * Limits results to comments of the specified type. Typical values include {@code comment}, {@code pingback}, and
      * {@code trackback}.
      */
     private final String type;
+
     /**
      * Limits results to comments associated with password-protected content matching the specified password.
      */
     private final String password;
+
     /**
      * Limits results to replies of the specified parent comment.
      */
-    private Long parentId;
+    private final Long parentId;
+
     /**
      * Limits results to comments belonging to the specified post.
      */
-    private Long postId;
+    private final Long postId;
+
     /**
      * Limits results to comments having the specified moderation status.
      */
-    private WpCommentStatus status;
+    private final WpCommentStatus status;
 }

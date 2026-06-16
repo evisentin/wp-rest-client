@@ -17,9 +17,9 @@ import org.apache.hc.core5.net.URIBuilder;
 
 import java.util.Map;
 
-import static io.github.evisentin.wordpress.client.adapter.apache.TypeReferences.WP_CATEGORY_DELETION_RESPONSE_TYPEREFERENCE;
-import static io.github.evisentin.wordpress.client.adapter.apache.TypeReferences.WP_CATEGORY_LIST_TYPEREFERENCE;
-import static io.github.evisentin.wordpress.client.adapter.apache.TypeReferences.WP_CATEGORY_TYPEREFERENCE;
+import static io.github.evisentin.wordpress.client.adapter.apache.modules.TypeReferences.WP_CATEGORY_DELETION_RESPONSE_TYPEREFERENCE;
+import static io.github.evisentin.wordpress.client.adapter.apache.modules.TypeReferences.WP_CATEGORY_LIST_TYPEREFERENCE;
+import static io.github.evisentin.wordpress.client.adapter.apache.modules.TypeReferences.WP_CATEGORY_TYPEREFERENCE;
 import static io.github.evisentin.wordpress.client.domain.model.parameters.WpQueryParameters.CONTEXT;
 import static io.github.evisentin.wordpress.client.domain.model.parameters.WpQueryParameters.FORCE;
 import static io.github.evisentin.wordpress.client.domain.model.parameters.WpQueryParameters.PAGE;
@@ -34,9 +34,9 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
  */
 public class CategoryApiClientModule extends ApiClientModule implements CategoryAPIs {
 
-    public CategoryApiClientModule(final @NonNull String apiUrl,
-                                   final @NonNull CloseableHttpClient httpClient,
-                                   final @NonNull ObjectMapper mapper) {
+    public CategoryApiClientModule(final String apiUrl,
+                                   final CloseableHttpClient httpClient,
+                                   final ObjectMapper mapper) {
         super(apiUrl, httpClient, mapper);
     }
 

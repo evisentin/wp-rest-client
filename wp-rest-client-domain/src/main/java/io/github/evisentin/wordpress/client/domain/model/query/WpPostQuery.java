@@ -4,7 +4,6 @@ import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus;
 import io.github.evisentin.wordpress.client.domain.model.enums.WpSortDirection;
 import io.github.evisentin.wordpress.client.domain.model.enums.order.WpPostOrderFields;
-import io.github.evisentin.wordpress.client.domain.model.enums.order.WpTagOrderFields;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -17,9 +16,9 @@ import static java.util.Collections.emptySet;
  * Represents a query object for retrieving WordPress posts.
  *
  * <p>This class encapsulates filtering and sorting options supported by the
- * WordPress posts endpoint.
+ * WordPress posts endpoint.</p>
  *
- * <p>Instances are immutable and should be created using the {@link Builder}.
+ * <p>Instances are immutable and should be created using the {@link Builder}.</p>
  */
 @Getter
 @Builder(setterPrefix = "with")
@@ -91,7 +90,7 @@ public class WpPostQuery {
     private final WpSortDirection order = WpSortDirection.ASC;
 
     /**
-     * Field used to sort the result. Defaults to {@link WpTagOrderFields#NAME}.
+     * Field used to sort the result. Defaults to {@link WpPostOrderFields#DATE}.
      */
     @Builder.Default
     private final WpPostOrderFields orderBy = WpPostOrderFields.DATE;

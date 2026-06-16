@@ -59,6 +59,130 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         return String.format("<p>%s</p>\n", text);
     }
 
+    @DisplayName("'POST REVISION' Operations")
+    @Nested
+    class PostRevisionsTests {
+
+        @DisplayName("'GET' fails on forbidden")
+        @Test
+        @SneakyThrows
+        void getFailsOnForbidden() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post-revisions/get.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.postRevisions().get(30L, 1L));
+        }
+
+        @DisplayName("'GET' fails on post not found")
+        @Test
+        @SneakyThrows
+        void getFailsOnPostNotFound() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post-revisions/get.failure.post-not-found.json");
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.postRevisions().get(30L, 1L), "rest_post_invalid_parent", "Invalid post parent ID.");
+        }
+
+        @DisplayName("'GET' fails on post review not found")
+        @Test
+        @SneakyThrows
+        void getFailsOnPostReviewNotFound() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post-revisions/get.failure.revision-not-found.json");
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.postRevisions().get(30L, 1L), "rest_post_invalid_id", "Invalid revision ID.");
+        }
+
+        @DisplayName("'GET' fails on unauthorized")
+        @Test
+        @SneakyThrows
+        void getFailsOnUnauthorized() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post-revisions/get.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.postRevisions().get(30L, 1L));
+        }
+
+        @DisplayName("'GET' succeeds")
+        @Test
+        @SneakyThrows
+        void getSucceeds() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post-revisions/get.success.json");
+
+            // WHEN/THEN
+            final WpPostRevision postRevision = client.postRevisions().get(30L, 1L);
+
+            assertThat(postRevision).isNotNull();
+            assertThat(postRevision.getParentId()).isNotNull().isEqualByComparingTo(30L);
+            assertThat(postRevision.getId()).isNotNull().isEqualByComparingTo(1L);
+        }
+
+        @DisplayName("'LIST' fails on forbidden")
+        @Test
+        @SneakyThrows
+        void listFailsOnForbidden() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post-revisions/list.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.postRevisions().list(1L, WpPagingQuery.of(1, 10), null));
+        }
+
+        @DisplayName("'LIST' fails on null or blank parameters")
+        @Test
+        @SneakyThrows
+        void listFailsOnNullParameters() {
+            assertThatThrownBy(() -> client.postRevisions().list(1L, null, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("pageQuery is marked non-null but is null");
+        }
+
+        @DisplayName("'LIST' fails on post not found")
+        @Test
+        @SneakyThrows
+        void listFailsOnPostNotFound() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post-revisions/list.failure.post-not-found.json");
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.postRevisions().list(1L, WpPagingQuery.of(1, 10), null), "rest_post_invalid_parent", "Invalid post parent ID.");
+        }
+
+        @DisplayName("'LIST' fails on unauthorized")
+        @Test
+        @SneakyThrows
+        void listFailsOnUnauthorized() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post-revisions/list.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.postRevisions().list(1L, WpPagingQuery.of(1, 10), null));
+        }
+
+        @DisplayName("'LIST' succeeds")
+        @Test
+        @SneakyThrows
+        void listSucceeds() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post-revisions/list.success.json");
+
+            // WHEN/THEN
+            final WpPagedResponse<WpPostRevision> response = client.postRevisions().list(1L, WpPagingQuery.of(1, 10), null);
+
+            WordPressAssertions.assertThat(response)
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(2)
+                               .doesNotHaveNextPage();
+        }
+    }
+
     @DisplayName("'MEDIA' Operations")
     @Nested
     class MediaTests {

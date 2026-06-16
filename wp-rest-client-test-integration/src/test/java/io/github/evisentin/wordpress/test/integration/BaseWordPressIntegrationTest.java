@@ -5,6 +5,7 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import org.apache.commons.lang3.StringUtils;
 import org.assertj.core.api.WithAssertions;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -21,6 +22,8 @@ import org.testcontainers.utility.DockerImageName;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
 
 import static io.github.evisentin.wordpress.test.integration.TestFileUtils.deleteIfExists;
 import static org.apache.commons.lang3.StringUtils.trimToEmpty;
@@ -418,6 +421,40 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
     }
 
     /**
+     * Retrieves the IDs of all revisions associated with the specified WordPress post.
+     * <p>
+     * Revisions are returned in descending order of creation date (newest first). If the post has no revisions, an
+     * empty list is returned.
+     *
+     * @param postId
+     *         the ID of the WordPress post whose revisions should be retrieved
+     *
+     * @return a list containing the IDs of all revisions for the specified post, ordered from newest to oldest
+     *
+     * @throws RuntimeException
+     *         if the WP-CLI command execution fails or returns an error
+     */
+    @SneakyThrows
+    protected List<Long> wpGetRevisionIds(final long postId) {
+        val execResult = wpCli.execInContainer(
+                "wp", "--allow-root", "--path=/var/www/html",
+                "post", "list",
+                "--post_type=revision",
+                String.format("--post_parent=%d", postId),
+                "--orderby=date",
+                "--order=DESC",
+                "--format=ids"
+        );
+
+        failOnError(execResult, "revision lookup failed");
+
+        return Arrays.stream(trimToEmpty(execResult.getStdout()).split("\\s+"))
+                     .filter(StringUtils::isNotBlank)
+                     .map(Long::valueOf)
+                     .toList();
+    }
+
+    /**
      * Initializes a fresh WordPress installation for testing.
      *
      * <p>This method performs a {@code wp core install} using the provided base URL
@@ -503,6 +540,20 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
     protected boolean wpIsWordPressInstalled() {
         val execResult = wpCli.execInContainer("wp", "--allow-root", "--path=/var/www/html", "core", "is-installed");
         return execResult.getExitCode() == 0;
+    }
+
+    @SneakyThrows
+    protected void wpUpdatePost(final long id,
+                                final @NonNull String title,
+                                final @NonNull String content) {
+        val execResult = wpCli.execInContainer(
+                "wp", "--allow-root", "--path=/var/www/html",
+                "post", "update", Long.toString(id),
+                String.format("--post_title=%s", title),
+                String.format("--post_content=%s", content),
+                "--porcelain"
+        );
+        failOnError(execResult, "post update failed");
     }
 
     @SneakyThrows

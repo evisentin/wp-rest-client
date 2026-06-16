@@ -16,10 +16,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
 
-import static java.util.Optional.ofNullable;
 import static org.apache.commons.lang3.ObjectUtils.anyNull;
 
 /**
@@ -58,6 +55,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     private final CommentAPIs commentAPIs;
     private final MediaAPIs mediaAPIs;
     private final PostAPIs postAPIs;
+    private final PostRevisionAPIs postRevisionAPIs;
     private final PostStatusAPIs postStatusAPIs;
     private final PostTypeAPIs postTypeAPIs;
     private final TagAPIs tagAPIs;
@@ -121,6 +119,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         commentAPIs = new CommentApiClientModule(apiUrl, httpClient, mapper);
         mediaAPIs = new MediaApiClientModule(apiUrl, httpClient, mapper);
         postAPIs = new PostApiClientModule(apiUrl, httpClient, mapper);
+        postRevisionAPIs = new PostRevisionApiClientModule(apiUrl, httpClient, mapper);
         postStatusAPIs = new PostStatusApiClientModule(apiUrl, httpClient, mapper);
         postTypeAPIs = new PostTypeApiClientModule(apiUrl, httpClient, mapper);
         tagAPIs = new TagApiClientModule(apiUrl, httpClient, mapper);
@@ -139,6 +138,11 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @Override
     public MediaAPIs media() {
         return mediaAPIs;
+    }
+
+    @Override
+    public PostRevisionAPIs postRevisions() {
+        return postRevisionAPIs;
     }
 
     @Override
@@ -190,10 +194,6 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
                 clientBuilder.hostnameVerifier(sslConfiguration.getHostnameVerifier());
             }
         }
-    }
-
-    private static Map<String, Object> emptyIfNull(final Map<String, Object> map) {
-        return ofNullable(map).orElseGet(Collections::emptyMap);
     }
 
     private static void failOnInvalidConfiguration(final SslConfiguration sslConfiguration) {
