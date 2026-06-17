@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.test.integration.base.factory;
 
-import io.github.evisentin.wordpress.client.domain.configuration.SslConfiguration;
+import io.github.evisentin.wordpress.rest.client.domain.configuration.SslConfiguration;
 import lombok.SneakyThrows;
 
 import javax.net.ssl.SSLContext;

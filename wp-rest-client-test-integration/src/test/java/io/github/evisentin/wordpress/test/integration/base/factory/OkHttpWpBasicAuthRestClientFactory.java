@@ -1,10 +1,10 @@
 package io.github.evisentin.wordpress.test.integration.base.factory;
 
-import io.github.evisentin.wordpress.client.adapter.okhttp.OkHttpWpRestClient;
-import io.github.evisentin.wordpress.client.adapter.okhttp.OkHttpWpRestClientBuilder;
-import io.github.evisentin.wordpress.client.domain.WpRestClient;
-import io.github.evisentin.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
-import io.github.evisentin.wordpress.client.domain.configuration.SslConfiguration;
+import io.github.evisentin.wordpress.rest.client.adapter.okhttp.OkHttpWpRestClient;
+import io.github.evisentin.wordpress.rest.client.adapter.okhttp.OkHttpWpRestClientBuilder;
+import io.github.evisentin.wordpress.rest.client.domain.WpRestClient;
+import io.github.evisentin.wordpress.rest.client.domain.auth.WpBasicAuthenticationStrategy;
+import io.github.evisentin.wordpress.rest.client.domain.configuration.SslConfiguration;
 import io.github.evisentin.wordpress.test.integration.base.factory.interceptors.OkHttpTestRequestInterceptor;
 import io.github.evisentin.wordpress.test.integration.base.factory.interceptors.OkHttpTestResponseInterceptor;
 import org.testcontainers.shaded.org.checkerframework.checker.nullness.qual.NonNull;

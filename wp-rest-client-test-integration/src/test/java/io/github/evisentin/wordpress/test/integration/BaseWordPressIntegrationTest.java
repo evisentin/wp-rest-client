@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.test.integration;
 
-import io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus;
+import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpPostStatus;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;

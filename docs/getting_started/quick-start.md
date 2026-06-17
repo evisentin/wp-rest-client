@@ -44,18 +44,18 @@ Add the Apache implementation dependency:
 Then create the client and list posts:
 
 ```java
-import io.github.evisentin.wordpress.client.adapter.apache.ApacheWpRestClientBuilder;
-import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
-import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
-import io.github.evisentin.wordpress.client.domain.model.WpPost;
-import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
-import io.github.evisentin.wordpress.client.domain.model.query.WpPostQuery;
+import io.github.evisentin.wordpress.rest.client.adapter.apache.ApacheWpRestClientBuilder;
+import io.github.evisentin.wordpress.rest.client.domain.api.WpRestClient;
+import io.github.evisentin.wordpress.rest.client.domain.model.WpPagedResponse;
+import io.github.evisentin.wordpress.rest.client.domain.model.WpPost;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPostQuery;
 
 import java.util.List;
 import java.util.Set;
 
-import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.DRAFT;
-import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.PUBLISH;
+import static io.github.evisentin.wordpress.rest.client.domain.model.enums.WpPostStatus.DRAFT;
+import static io.github.evisentin.wordpress.rest.client.domain.model.enums.WpPostStatus.PUBLISH;
 
 final WpRestClient restClient =
         ApacheWpRestClientBuilder.basicAuthentication(
@@ -101,18 +101,18 @@ Add the OkHttp implementation dependency:
 Then create the client and list posts:
 
 ```java
-import io.github.evisentin.wordpress.client.adapter.okhttp.OkHttpWpRestClientBuilder;
-import io.github.evisentin.wordpress.client.domain.api.WpRestClient;
-import io.github.evisentin.wordpress.client.domain.model.WpPagedResponse;
-import io.github.evisentin.wordpress.client.domain.model.WpPost;
-import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
-import io.github.evisentin.wordpress.client.domain.model.query.WpPostQuery;
+import io.github.evisentin.wordpress.rest.client.adapter.okhttp.OkHttpWpRestClientBuilder;
+import io.github.evisentin.wordpress.rest.client.domain.api.WpRestClient;
+import io.github.evisentin.wordpress.rest.client.domain.model.WpPagedResponse;
+import io.github.evisentin.wordpress.rest.client.domain.model.WpPost;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPostQuery;
 
 import java.util.List;
 import java.util.Set;
 
-import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.DRAFT;
-import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.PUBLISH;
+import static io.github.evisentin.wordpress.rest.client.domain.model.enums.WpPostStatus.DRAFT;
+import static io.github.evisentin.wordpress.rest.client.domain.model.enums.WpPostStatus.PUBLISH;
 
 final WpRestClient restClient =
         OkHttpWpRestClientBuilder.basicAuthentication(

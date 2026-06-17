@@ -1,9 +1,9 @@
 package io.github.evisentin.wordpress.test.integration.base;
 
-import io.github.evisentin.wordpress.client.domain.exception.WpBadRequestException;
-import io.github.evisentin.wordpress.client.domain.exception.WpForbiddenException;
-import io.github.evisentin.wordpress.client.domain.exception.WpNotFoundException;
-import io.github.evisentin.wordpress.client.domain.exception.WpUnauthorizedException;
+import io.github.evisentin.wordpress.rest.client.domain.exception.WpBadRequestException;
+import io.github.evisentin.wordpress.rest.client.domain.exception.WpForbiddenException;
+import io.github.evisentin.wordpress.rest.client.domain.exception.WpNotFoundException;
+import io.github.evisentin.wordpress.rest.client.domain.exception.WpUnauthorizedException;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;

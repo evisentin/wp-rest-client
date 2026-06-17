@@ -1,9 +1,9 @@
 package io.github.evisentin.wordpress.test.integration.base;
 
-import io.github.evisentin.wordpress.client.domain.WpRestClient;
-import io.github.evisentin.wordpress.client.domain.assertions.WordPressAssertions;
-import io.github.evisentin.wordpress.client.domain.model.WpCategory;
-import io.github.evisentin.wordpress.client.domain.model.enums.WpContext;
+import io.github.evisentin.wordpress.rest.client.domain.WpRestClient;
+import io.github.evisentin.wordpress.rest.client.domain.assertions.WordPressAssertions;
+import io.github.evisentin.wordpress.rest.client.domain.model.WpCategory;
+import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.test.integration.BaseWordPressIntegrationTest;
 import io.github.evisentin.wordpress.test.integration.base.factory.WpJwtAuthRestClientFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import static io.github.evisentin.wordpress.client.domain.model.enums.WpTaxonomy.CATEGORY;
+import static io.github.evisentin.wordpress.rest.client.domain.model.enums.WpTaxonomy.CATEGORY;
 
 @Slf4j
 public abstract class JwtAuthWordPressIntegrationTest extends BaseWordPressIntegrationTest {
