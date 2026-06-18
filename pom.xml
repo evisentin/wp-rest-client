@@ -9,7 +9,7 @@
   <packaging>pom</packaging>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <name>WP REST Client</name>
-  <description>Multi-module WordPress REST client with pluggable HTTP adapters</description>
+  <description>Multi-module WordPress Java REST client with pluggable HTTP adapters</description>
   <url>https://github.com/evisentin/wp-rest-client</url>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <modules>
@@ -67,7 +67,7 @@
     <junit.version>6.1.0</junit.version>
     <assertj.version>3.27.7</assertj.version>
     <mockito.version>5.23.0</mockito.version>
-    <mockserver-junit-jupiter.version>7.0.0</mockserver-junit-jupiter.version>
+    <mockserver-junit-jupiter.version>7.1.0</mockserver-junit-jupiter.version>
   </properties>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <licenses>

@@ -1,16 +1,16 @@
 package io.github.evisentin.wordpress.test.integration.base;
 
-import io.github.evisentin.wordpress.client.domain.WpRestClient;
-import io.github.evisentin.wordpress.client.domain.assertions.WordPressAssertions;
-import io.github.evisentin.wordpress.client.domain.model.*;
-import io.github.evisentin.wordpress.client.domain.model.enums.*;
-import io.github.evisentin.wordpress.client.domain.model.enums.order.WpPostOrderFields;
-import io.github.evisentin.wordpress.client.domain.model.query.WpCategoryQuery;
-import io.github.evisentin.wordpress.client.domain.model.query.WpPagingQuery;
-import io.github.evisentin.wordpress.client.domain.model.query.WpPostQuery;
-import io.github.evisentin.wordpress.client.domain.model.query.WpTagQuery;
-import io.github.evisentin.wordpress.client.domain.model.requests.*;
-import io.github.evisentin.wordpress.client.domain.model.responses.*;
+import io.github.evisentin.wordpress.rest.client.domain.WpRestClient;
+import io.github.evisentin.wordpress.rest.client.domain.assertions.WordPressAssertions;
+import io.github.evisentin.wordpress.rest.client.domain.model.*;
+import io.github.evisentin.wordpress.rest.client.domain.model.enums.*;
+import io.github.evisentin.wordpress.rest.client.domain.model.enums.order.WpPostOrderFields;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpCategoryQuery;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPostQuery;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpTagQuery;
+import io.github.evisentin.wordpress.rest.client.domain.model.requests.*;
+import io.github.evisentin.wordpress.rest.client.domain.model.responses.*;
 import io.github.evisentin.wordpress.test.integration.BaseWordPressIntegrationTest;
 import io.github.evisentin.wordpress.test.integration.base.factory.WpBasicAuthRestClientFactory;
 import lombok.NonNull;
@@ -30,15 +30,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static io.github.evisentin.wordpress.client.domain.model.enums.WpOpenClosed.CLOSED;
-import static io.github.evisentin.wordpress.client.domain.model.enums.WpOpenClosed.OPEN;
-import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.DRAFT;
-import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.PRIVATE;
-import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.PUBLISH;
-import static io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus.TRASH;
-import static io.github.evisentin.wordpress.client.domain.model.enums.WpSortDirection.ASC;
-import static io.github.evisentin.wordpress.client.domain.model.enums.WpTaxonomy.CATEGORY;
-import static io.github.evisentin.wordpress.client.domain.model.enums.WpTaxonomy.POST_TAG;
+import static io.github.evisentin.wordpress.rest.client.domain.model.enums.WpOpenClosed.CLOSED;
+import static io.github.evisentin.wordpress.rest.client.domain.model.enums.WpOpenClosed.OPEN;
+import static io.github.evisentin.wordpress.rest.client.domain.model.enums.WpPostStatus.DRAFT;
+import static io.github.evisentin.wordpress.rest.client.domain.model.enums.WpPostStatus.PRIVATE;
+import static io.github.evisentin.wordpress.rest.client.domain.model.enums.WpPostStatus.PUBLISH;
+import static io.github.evisentin.wordpress.rest.client.domain.model.enums.WpPostStatus.TRASH;
+import static io.github.evisentin.wordpress.rest.client.domain.model.enums.WpSortDirection.ASC;
+import static io.github.evisentin.wordpress.rest.client.domain.model.enums.WpTaxonomy.CATEGORY;
+import static io.github.evisentin.wordpress.rest.client.domain.model.enums.WpTaxonomy.POST_TAG;
 import static io.github.evisentin.wordpress.test.integration.base.SlugUtils.toWordPressSlug;
 import static io.github.evisentin.wordpress.test.integration.base.WpAssertions.assertThrowsWpBadRequest;
 import static io.github.evisentin.wordpress.test.integration.base.WpAssertions.assertThrowsWpForbidden;
@@ -415,7 +415,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // GIVEN
             wpCleanDefaultData();
-            Long nonExistingCategoryId = 1000L;
+            long nonExistingCategoryId = 1000L;
 
             // WHEN/THEN
             final WpCategoryCreateUpdateRequest updateRequest = categoryCreateUpdateRequest().build();
@@ -642,7 +642,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // GIVEN
             wpCleanDefaultData();
-            Long nonExistingMediaId = 9L;
+            long nonExistingMediaId = 9L;
 
             // WHEN/THEN
             final WpMediaUpdateRequest updateRequest = WpMediaUpdateRequest.builder().build();
@@ -1541,7 +1541,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // GIVEN
             wpCleanDefaultData();
-            Long nonExistingTagId = 1000L;
+            long nonExistingTagId = 1000L;
 
             // WHEN/THEN
             final WpTagCreateUpdateRequest updateRequest = tagCreateUpdateRequest().build();

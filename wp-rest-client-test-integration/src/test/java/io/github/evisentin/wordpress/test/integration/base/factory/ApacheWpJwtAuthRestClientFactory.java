@@ -1,8 +1,8 @@
 package io.github.evisentin.wordpress.test.integration.base.factory;
 
-import io.github.evisentin.wordpress.client.adapter.apache.ApacheWpRestClientBuilder;
-import io.github.evisentin.wordpress.client.domain.WpRestClient;
-import io.github.evisentin.wordpress.client.domain.configuration.SslConfiguration;
+import io.github.evisentin.wordpress.rest.client.adapter.apache.ApacheWpRestClientBuilder;
+import io.github.evisentin.wordpress.rest.client.domain.WpRestClient;
+import io.github.evisentin.wordpress.rest.client.domain.configuration.SslConfiguration;
 import org.testcontainers.shaded.org.checkerframework.checker.nullness.qual.NonNull;
 
 public final class ApacheWpJwtAuthRestClientFactory implements WpJwtAuthRestClientFactory {
