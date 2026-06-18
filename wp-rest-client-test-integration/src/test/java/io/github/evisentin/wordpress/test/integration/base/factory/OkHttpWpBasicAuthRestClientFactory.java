@@ -25,7 +25,7 @@ import org.testcontainers.shaded.org.checkerframework.checker.nullness.qual.NonN
  * <h2>Use cases</h2>
  * <ul>
  *   <li>Testing OkHttp-based client implementations</li>
- *   <li>Comparing behavior across different HTTP client stacks</li>
+ *   <li>Comparing behaviour across different HTTP client stacks</li>
  *   <li>Integration testing against containerized WordPress instances</li>
  * </ul>
  *

@@ -76,7 +76,7 @@ public final class TestSslConfigurations {
      * <p><strong>Security warning:</strong> This implementation disables all
      * certificate validation and must never be used in production code.</p>
      *
-     * <h2>Behavior</h2>
+     * <h2>behaviour</h2>
      * <ul>
      *   <li>{@link #checkClientTrusted(X509Certificate[], String)} - no-op</li>
      *   <li>{@link #checkServerTrusted(X509Certificate[], String)} - no-op</li>

@@ -44,7 +44,17 @@ public class PostApiClientModule extends ApiClientModule implements PostAPIs {
     @Override
     @SneakyThrows
     public WpPost create(final @NonNull WpPostCreateUpdateRequest creationRequest) {
+        return create(creationRequest, null);
+    }
+
+    @Override
+    @SneakyThrows
+    public WpPost create(final @NonNull WpPostCreateUpdateRequest creationRequest,
+                         final Map<String, String> extraQueryParams) {
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/posts", Map.of(API_URL, apiUrl));
+
+        emptyIfNull(extraQueryParams)
+                .forEach(builder::addQueryParameter);
 
         return performPostWithBody(builder, creationRequest, WP_POST_TYPEREFERENCE);
     }

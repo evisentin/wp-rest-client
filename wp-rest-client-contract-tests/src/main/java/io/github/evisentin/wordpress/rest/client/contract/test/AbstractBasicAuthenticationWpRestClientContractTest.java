@@ -3010,4 +3010,100 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasTaxonomy(POST_TAG);
         }
     }
+
+    @DisplayName("'TAXONOMY' Operations")
+    @Nested
+    class TaxonomyTests {
+
+        @DisplayName("'GET' succeeds")
+        @Test
+        void getFailsOnBlankOrNullParameter() {
+
+            assertThatThrownBy(() -> client.taxonomies().get(null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("name is marked non-null but is null");
+
+            assertThatThrownBy(() -> client.taxonomies().get(""))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("name cannot be blank");
+
+            assertThatThrownBy(() -> client.taxonomies().get("    "))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("name cannot be blank");
+        }
+
+        @DisplayName("'GET' succeeds")
+        @Test
+        void getSucceeds() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/taxonomies/get.success.json");
+
+            // WHEN
+            final WpTaxonomyInfo taxonomyInfo = client.taxonomies().get("post_tag");
+
+            // THEN
+            assertThat(taxonomyInfo)
+                    .isNotNull();
+        }
+
+        @DisplayName("'LIST' fails on HTTP FORBIDDEN")
+        @Test
+        void listFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/taxonomies/list.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.taxonomies().list());
+        }
+
+        @DisplayName("'LIST' fails on HTTP UNAUTHORIZED")
+        @Test
+        void listFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/taxonomies/list.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.taxonomies().list());
+        }
+
+        @DisplayName("'LIST' succeeds")
+        @Test
+        void listSucceeds() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/taxonomies/list.success.json");
+
+            // WHEN
+            final Map<String, WpTaxonomyInfo> taxonomies = client.taxonomies().list();
+
+            // THEN
+            assertThat(taxonomies)
+                    .containsOnlyKeys(
+                            "category",
+                            "post_tag",
+                            "nav_menu",
+                            "wp_pattern_category"
+                    );
+
+            final List<String> names = taxonomies.keySet().stream().map(key -> taxonomies.get(key).getName()).toList();
+            final List<String> restBases = taxonomies.keySet().stream().map(key -> taxonomies.get(key).getRestBase()).toList();
+
+            assertThat(names)
+                    .containsOnly(
+                            "Categories",
+                            "Tags",
+                            "Navigation Menus",
+                            "Pattern Categories");
+
+            assertThat(restBases)
+                    .containsOnly(
+                            "categories",
+                            "tags",
+                            "menus",
+                            "wp_pattern_category");
+        }
+    }
 }

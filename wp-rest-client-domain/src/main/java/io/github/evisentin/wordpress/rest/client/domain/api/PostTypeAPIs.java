@@ -10,9 +10,9 @@ import java.util.Map;
  * <p>This interface provides methods for retrieving individual post type definitions as well as the complete
  * collection of registered post types available on a WordPress site.</p>
  *
- * <p>Post types describe the structure and behavior of content resources such as posts, pages, attachments, and custom
- * post types. Returned metadata may include labels, capabilities, taxonomies, supported features, visibility settings,
- * and REST API configuration.</p>
+ * <p>Post types describe the structure and behaviour of content resources such as posts, pages, attachments, and
+ * custom post types. Returned metadata may include labels, capabilities, taxonomies, supported features, visibility
+ * settings, and REST API configuration.</p>
  *
  * <p>Implementations are expected to communicate with the {@code /wp-json/wp/v2/types} endpoint or compatible
  * APIs.</p>
