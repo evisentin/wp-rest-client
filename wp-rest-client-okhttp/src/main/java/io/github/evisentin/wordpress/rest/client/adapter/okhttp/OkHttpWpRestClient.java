@@ -59,6 +59,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     private final PostStatusAPIs postStatusAPIs;
     private final PostTypeAPIs postTypeAPIs;
     private final TagAPIs tagAPIs;
+    private final TaxonomyAPIs taxonomyAPIs;
 
     /**
      * Creates a new {@code OkHttpWpRestClient}.
@@ -123,6 +124,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         postStatusAPIs = new PostStatusApiClientModule(apiUrl, httpClient, mapper);
         postTypeAPIs = new PostTypeApiClientModule(apiUrl, httpClient, mapper);
         tagAPIs = new TagApiClientModule(apiUrl, httpClient, mapper);
+        taxonomyAPIs = new TaxonomyApiClientModule(apiUrl, httpClient, mapper);
     }
 
     @Override
@@ -163,6 +165,11 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @Override
     public TagAPIs tags() {
         return tagAPIs;
+    }
+
+    @Override
+    public TaxonomyAPIs taxonomies() {
+        return taxonomyAPIs;
     }
 
     private void applyTimeoutConfigurationIfPresent(final OkHttpClient.Builder clientBuilder,

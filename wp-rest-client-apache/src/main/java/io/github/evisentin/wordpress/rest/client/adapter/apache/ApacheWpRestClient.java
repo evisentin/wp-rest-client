@@ -69,6 +69,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     private final PostStatusAPIs postStatusAPIs;
     private final PostTypeAPIs postTypesAPIs;
     private final TagAPIs tagAPIs;
+    private final TaxonomyAPIs taxonomyAPIs;
 
     /**
      * Creates a new {@code ApacheWpRestClient}.
@@ -140,6 +141,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         postStatusAPIs = new PostStatusApiClientModule(apiUrl, httpClient, mapper);
         postTypesAPIs = new PostTypeApiClientModule(apiUrl, httpClient, mapper);
         tagAPIs = new TagApiClientModule(apiUrl, httpClient, mapper);
+        taxonomyAPIs = new TaxonomyApiClientModule(apiUrl, httpClient, mapper);
     }
 
     @Override
@@ -180,6 +182,11 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     @Override
     public TagAPIs tags() {
         return tagAPIs;
+    }
+
+    @Override
+    public TaxonomyAPIs taxonomies() {
+        return taxonomyAPIs;
     }
 
     private static void applySslConfigurationIfPresent(final HttpClientBuilder httpClientBuilder,

@@ -1258,9 +1258,27 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
     @Nested
     class PostTypeTests {
 
+        @DisplayName("'GET' works")
+        @Test
+        void get__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN
+            final WpPostType postType = adminClient.postTypes().get("post");
+
+            // THEN
+            assertThat(postType).isNotNull();
+            assertThat(postType.getName()).isEqualTo("Posts");
+            assertThat(postType.getDescription()).isEmpty();
+            assertThat(postType.getSlug()).isEqualTo("post");
+            assertThat(postType.getTaxonomies()).containsExactlyInAnyOrder(CATEGORY, POST_TAG);
+        }
+
         @DisplayName("'LIST' works")
         @Test
-        void list__works_with_just_paging() {
+        void list__works() {
 
             // GIVEN
             wpCleanDefaultData();
@@ -1741,6 +1759,47 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
             // WHEN/THEN
             assertThrowsWpNotFound(() -> adminClient.comments().update(1000L, WpCommentCreateUpdateRequest.builder().build()),
                     "rest_comment_invalid_id", "Invalid comment ID.");
+        }
+    }
+
+    @DisplayName("Taxonomies APIs - Integration Tests")
+    @Nested
+    class TaxonomyTests {
+
+        @DisplayName("'GET' works")
+        @Test
+        void get__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN
+            final WpTaxonomyInfo taxonomy = adminClient.taxonomies().get("post_tag");
+
+            // THEN
+            assertThat(taxonomy).isNotNull();
+            assertThat(taxonomy.getName()).isEqualTo("Tags");
+            assertThat(taxonomy.getDescription()).isEmpty();
+            assertThat(taxonomy.getSlug()).isEqualTo("post_tag");
+        }
+
+        @DisplayName("'LIST' works")
+        @Test
+        void list__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN
+            final Map<String, WpTaxonomyInfo> response = adminClient.taxonomies().list();
+
+            // THEN
+            assertThat(response)
+                    .containsKeys(
+                            "category",
+                            "post_tag",
+                            "nav_menu",
+                            "wp_pattern_category"); // we might have others, but we are not testing that here
         }
     }
 }

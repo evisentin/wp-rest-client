@@ -172,7 +172,7 @@ abstract class ApiClientModule {
         return new URIBuilder(substituted);
     }
 
-    protected static Map<String, Object> emptyIfNull(final Map<String, Object> map) {
+    protected static <K, V> Map<K, V> emptyIfNull(final Map<K, V> map) {
         return ofNullable(map).orElseGet(Collections::emptyMap);
     }
 

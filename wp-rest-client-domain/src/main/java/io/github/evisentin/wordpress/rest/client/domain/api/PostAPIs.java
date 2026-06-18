@@ -8,6 +8,8 @@ import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPostQuery;
 import io.github.evisentin.wordpress.rest.client.domain.model.requests.WpPostCreateUpdateRequest;
 import io.github.evisentin.wordpress.rest.client.domain.model.responses.WpPostDeletionResponse;
 
+import java.util.Map;
+
 /**
  * Defines operations for managing WordPress posts through the WordPress REST API.
  *
@@ -32,6 +34,21 @@ public interface PostAPIs {
      * @return the created {@link WpPost}
      */
     WpPost create(WpPostCreateUpdateRequest creationRequest);
+
+    /**
+     * /**
+     * <p>
+     * Creates a new post.
+     *
+     * @param creationRequest
+     *         the post creation request; must not be {@code null}
+     * @param extraQueryParams
+     *         additional query parameters to include in the request. Some plugins  require these parameters (for
+     *         example, PolyLang).
+     *
+     * @return the created {@link WpPost}
+     */
+    WpPost create(WpPostCreateUpdateRequest creationRequest, Map<String, String> extraQueryParams);
 
     /**
      * Permanently deletes a post by its unique identifier.

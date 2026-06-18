@@ -71,4 +71,11 @@ public interface WpRestClient {
      * @return tag API operations
      */
     TagAPIs tags();
+
+    /**
+     * Returns the taxonomy API operations.
+     *
+     * @return taxonomy API operations
+     */
+    TaxonomyAPIs taxonomies();
 }

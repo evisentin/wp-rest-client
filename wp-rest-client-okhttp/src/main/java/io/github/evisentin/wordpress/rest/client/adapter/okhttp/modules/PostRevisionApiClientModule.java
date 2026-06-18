@@ -15,8 +15,9 @@ import okhttp3.OkHttpClient;
 
 import java.util.Map;
 
+import static io.github.evisentin.wordpress.rest.client.adapter.okhttp.modules.TypeReferences.WP_POST_REVISION_LIST_TYPEREFERENCE;
 import static io.github.evisentin.wordpress.rest.client.adapter.okhttp.modules.TypeReferences.WP_POST_REVISION_TYPEREFERENCE;
-import static io.github.evisentin.wordpress.rest.client.adapter.okhttp.modules.TypeReferences.WP_POST_REVISTION_LIST_TYPEREFERENCE;
+
 import static io.github.evisentin.wordpress.rest.client.domain.model.parameters.WpQueryParameters.PAGE;
 import static io.github.evisentin.wordpress.rest.client.domain.model.parameters.WpQueryParameters.PER_PAGE;
 
@@ -52,6 +53,6 @@ public class PostRevisionApiClientModule extends ApiClientModule implements Post
 
         PostRevisionQueryParamMapper.map(builder, postQuery);
 
-        return performPagingRequest(builder, pageQuery, WP_POST_REVISTION_LIST_TYPEREFERENCE);
+        return performPagingRequest(builder, pageQuery, WP_POST_REVISION_LIST_TYPEREFERENCE);
     }
 }

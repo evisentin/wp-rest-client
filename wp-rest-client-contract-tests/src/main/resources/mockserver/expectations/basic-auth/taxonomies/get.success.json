@@ -1,0 +1,67 @@
+[
+    {
+        "httpRequest": {
+            "method": "GET",
+            "path": "/wp-json/wp/v2/taxonomies/post_tag",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ]
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "name": "Tags",
+                    "slug": "post_tag",
+                    "description": "",
+                    "types": [
+                        "post"
+                    ],
+                    "hierarchical": false,
+                    "rest_base": "tags",
+                    "rest_namespace": "wp\/v2",
+                    "_links": {
+                        "collection": [
+                            {
+                                "href": "https:\/\/localhost:51051\/wp-json\/wp\/v2\/taxonomies"
+                            }
+                        ],
+                        "wp:items": [
+                            {
+                                "href": "https:\/\/localhost:51051\/wp-json\/wp\/v2\/tags"
+                            }
+                        ],
+                        "curies": [
+                            {
+                                "name": "wp",
+                                "href": "https:\/\/api.w.org\/{rel}",
+                                "templated": true
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+]

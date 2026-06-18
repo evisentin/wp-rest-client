@@ -3,10 +3,12 @@ package io.github.evisentin.wordpress.rest.client.adapter.apache;
 import io.github.evisentin.wordpress.rest.client.contract.test.AbstractBasicAuthenticationWpRestClientContractTest;
 import io.github.evisentin.wordpress.rest.client.domain.WpBaseRestClient;
 import io.github.evisentin.wordpress.rest.client.domain.configuration.SslConfiguration;
+import io.github.evisentin.wordpress.rest.client.domain.configuration.TimeoutConfiguration;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.X509TrustManager;
 import java.security.cert.X509Certificate;
+import java.time.Duration;
 
 class ApacheWpRestClientBasicAuthTest extends AbstractBasicAuthenticationWpRestClientContractTest {
 
@@ -14,6 +16,13 @@ class ApacheWpRestClientBasicAuthTest extends AbstractBasicAuthenticationWpRestC
     protected WpBaseRestClient client() {
 
         return ApacheWpRestClientBuilder.basicAuthentication(mockServerUrl(), "user", "password")
+                                        .withTimeoutConfiguration(TimeoutConfiguration.builder()
+                                                                                      .callTimeout(Duration.ofSeconds(10))
+                                                                                      .connectTimeout(Duration.ofSeconds(10))
+                                                                                      .connectionRequestTimeout(Duration.ofSeconds(10))
+                                                                                      .readTimeout(Duration.ofSeconds(10))
+                                                                                      .writeTimeout(Duration.ofSeconds(10))
+                                                                                      .build())
                                         .withSslConfiguration(insecure())
                                         .build();
     }
@@ -41,7 +50,7 @@ class ApacheWpRestClientBasicAuthTest extends AbstractBasicAuthenticationWpRestC
      * <p><strong>Security warning:</strong> This implementation disables all
      * certificate validation and must never be used in production code.</p>
      *
-     * <h2>Behavior</h2>
+     * <h2>behaviour</h2>
      * <ul>
      *   <li>{@link #checkClientTrusted(X509Certificate[], String)} - no-op</li>
      *   <li>{@link #checkServerTrusted(X509Certificate[], String)} - no-op</li>
