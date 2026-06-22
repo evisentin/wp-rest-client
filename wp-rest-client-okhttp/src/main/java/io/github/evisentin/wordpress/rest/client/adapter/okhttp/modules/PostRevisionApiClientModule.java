@@ -6,7 +6,7 @@ import io.github.evisentin.wordpress.rest.client.adapter.okhttp.query.mappers.Po
 import io.github.evisentin.wordpress.rest.client.domain.api.PostRevisionAPIs;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPagedResponse;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPostRevision;
-import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPaginationQuery;
 import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPostRevisionQuery;
 import lombok.NonNull;
 import lombok.SneakyThrows;
@@ -42,17 +42,17 @@ public class PostRevisionApiClientModule extends ApiClientModule implements Post
     @Override
     @SneakyThrows
     public WpPagedResponse<WpPostRevision> list(final long postId,
-                                                final @NonNull WpPagingQuery pageQuery,
+                                                final @NonNull WpPaginationQuery paginationQuery,
                                                 final WpPostRevisionQuery postQuery) {
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/posts/${postId}/revisions",
                 Map.of(API_URL, apiUrl,
                         "postId", postId));
 
-        builder.addQueryParameter(PAGE, Integer.toString(pageQuery.getPageNumber()));
-        builder.addQueryParameter(PER_PAGE, Integer.toString(pageQuery.getPageSize()));
+        builder.addQueryParameter(PAGE, Integer.toString(paginationQuery.pageNumber()));
+        builder.addQueryParameter(PER_PAGE, Integer.toString(paginationQuery.pageSize()));
 
         PostRevisionQueryParamMapper.map(builder, postQuery);
 
-        return performPagingRequest(builder, pageQuery, WP_POST_REVISION_LIST_TYPEREFERENCE);
+        return performPagingRequest(builder, paginationQuery, WP_POST_REVISION_LIST_TYPEREFERENCE);
     }
 }

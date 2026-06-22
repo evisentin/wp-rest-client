@@ -52,7 +52,7 @@ final WpRestClient client =
 
 final List<WpPost> posts =
         client.posts()
-                .list(WpPagingQuery.of(1, 10), WpPostQuery.builder().build())
+                .list(WpPaginationQuery.of(1, 10), WpPostQuery.builder().build())
                 .getItems();
 ```
 

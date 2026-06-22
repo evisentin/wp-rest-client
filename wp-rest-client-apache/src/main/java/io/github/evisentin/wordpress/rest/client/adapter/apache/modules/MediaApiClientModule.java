@@ -7,7 +7,7 @@ import io.github.evisentin.wordpress.rest.client.domain.model.WpMedia;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPagedResponse;
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.rest.client.domain.model.query.WpMediaQuery;
-import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPaginationQuery;
 import io.github.evisentin.wordpress.rest.client.domain.model.requests.WpMediaUpdateRequest;
 import io.github.evisentin.wordpress.rest.client.domain.model.responses.WpMediaDeletionResponse;
 import lombok.NonNull;
@@ -78,16 +78,16 @@ public class MediaApiClientModule extends ApiClientModule implements MediaAPIs {
 
     @Override
     @SneakyThrows
-    public WpPagedResponse<WpMedia> list(final @NonNull WpPagingQuery pageQuery,
+    public WpPagedResponse<WpMedia> list(final @NonNull WpPaginationQuery paginationQuery,
                                          final WpMediaQuery mediaQuery) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/media", Map.of(API_URL, apiUrl));
 
-        builder.addParameter(PAGE, Integer.toString(pageQuery.getPageNumber()));
-        builder.addParameter(PER_PAGE, Integer.toString(pageQuery.getPageSize()));
+        builder.addParameter(PAGE, Integer.toString(paginationQuery.pageNumber()));
+        builder.addParameter(PER_PAGE, Integer.toString(paginationQuery.pageSize()));
 
         MediaQueryParamMapper.map(builder, mediaQuery);
 
-        return performPagingRequest(builder, pageQuery, WP_MEDIA_LIST_TYPEREFERENCE);
+        return performPagingRequest(builder, paginationQuery, WP_MEDIA_LIST_TYPEREFERENCE);
     }
 
     @Override

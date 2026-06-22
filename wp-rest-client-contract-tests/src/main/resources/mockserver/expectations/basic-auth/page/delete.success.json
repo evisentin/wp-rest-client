@@ -1,0 +1,95 @@
+[
+    {
+        "httpRequest": {
+            "method": "DELETE",
+            "path": "/wp-json/wp/v2/pages/1005",
+            "queryStringParameters": {
+                "force": [
+                    "true"
+                ]
+            },
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ]
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "deleted": true,
+                    "previous": {
+                        "id": 1005,
+                        "date": "2026-06-22T10:13:06",
+                        "date_gmt": "2026-06-22T10:13:06",
+                        "guid": {
+                            "rendered": "https:\/\/localhost:55015\/page-1\/",
+                            "raw": "https:\/\/localhost:55015\/page-1\/"
+                        },
+                        "modified": "2026-06-22T10:13:06",
+                        "modified_gmt": "2026-06-22T10:13:06",
+                        "password": "",
+                        "slug": "page-1",
+                        "status": "publish",
+                        "type": "page",
+                        "link": "https:\/\/localhost:55015\/page-1\/",
+                        "title": {
+                            "raw": "Page #1",
+                            "rendered": "Page #1"
+                        },
+                        "content": {
+                            "raw": "My first page",
+                            "rendered": "<p>My first page<\/p>\n",
+                            "protected": false,
+                            "block_version": 0
+                        },
+                        "excerpt": {
+                            "raw": "",
+                            "rendered": "<p>My first page<\/p>\n",
+                            "protected": false
+                        },
+                        "author": 0,
+                        "featured_media": 0,
+                        "parent": 0,
+                        "menu_order": 0,
+                        "comment_status": "closed",
+                        "ping_status": "closed",
+                        "template": "",
+                        "meta": {
+                            "footnotes": ""
+                        },
+                        "permalink_template": "https:\/\/localhost:55015\/%pagename%\/",
+                        "generated_slug": "page-1",
+                        "class_list": [
+                            "post-1005",
+                            "page",
+                            "type-page",
+                            "status-publish",
+                            "hentry"
+                        ]
+                    }
+                }
+            }
+        }
+    }
+]

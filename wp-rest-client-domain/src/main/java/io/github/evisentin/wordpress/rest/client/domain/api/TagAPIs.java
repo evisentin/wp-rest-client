@@ -3,7 +3,7 @@ package io.github.evisentin.wordpress.rest.client.domain.api;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPagedResponse;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpTag;
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpContext;
-import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPaginationQuery;
 import io.github.evisentin.wordpress.rest.client.domain.model.query.WpTagQuery;
 import io.github.evisentin.wordpress.rest.client.domain.model.requests.WpTagCreateUpdateRequest;
 import io.github.evisentin.wordpress.rest.client.domain.model.responses.WpTagDeletionResponse;
@@ -63,14 +63,14 @@ public interface TagAPIs {
      * <p>The result set can be refined using {@link WpTagQuery}, for example by filtering on search criteria,
      * include or exclude lists, or sort order.</p>
      *
-     * @param pageQuery
+     * @param paginationQuery
      *         the pagination settings, including page number and page size; must not be {@code null}
      * @param tagQuery
      *         additional tag query parameters; may be {@code null} when no extra filtering is needed
      *
      * @return a paginated response containing {@link WpTag} items
      */
-    WpPagedResponse<WpTag> list(WpPagingQuery pageQuery, WpTagQuery tagQuery);
+    WpPagedResponse<WpTag> list(WpPaginationQuery paginationQuery, WpTagQuery tagQuery);
 
     /**
      * Updates an existing tag.

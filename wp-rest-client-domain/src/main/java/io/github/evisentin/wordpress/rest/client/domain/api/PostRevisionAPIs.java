@@ -2,7 +2,7 @@ package io.github.evisentin.wordpress.rest.client.domain.api;
 
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPagedResponse;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPostRevision;
-import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPaginationQuery;
 import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPostRevisionQuery;
 
 /**
@@ -36,12 +36,12 @@ public interface PostRevisionAPIs {
      *
      * @param postId
      *         the ID of the parent post whose revisions should be listed
-     * @param pageQuery
+     * @param paginationQuery
      *         the pagination settings, including page number and page size; must not be {@code null}
      * @param postQuery
      *         additional revision query parameters; may be {@code null} when no extra filtering is needed
      *
      * @return a paginated response containing {@link WpPostRevision} items
      */
-    WpPagedResponse<WpPostRevision> list(long postId, WpPagingQuery pageQuery, WpPostRevisionQuery postQuery);
+    WpPagedResponse<WpPostRevision> list(long postId, WpPaginationQuery paginationQuery, WpPostRevisionQuery postQuery);
 }

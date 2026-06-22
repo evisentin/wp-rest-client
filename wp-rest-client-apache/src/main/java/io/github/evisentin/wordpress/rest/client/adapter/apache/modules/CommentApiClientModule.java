@@ -7,7 +7,7 @@ import io.github.evisentin.wordpress.rest.client.domain.model.WpComment;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPagedResponse;
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.rest.client.domain.model.query.WpCommentQuery;
-import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPaginationQuery;
 import io.github.evisentin.wordpress.rest.client.domain.model.requests.WpCommentCreateUpdateRequest;
 import io.github.evisentin.wordpress.rest.client.domain.model.responses.WpCommentDeletionResponse;
 import lombok.NonNull;
@@ -83,16 +83,16 @@ public class CommentApiClientModule extends ApiClientModule implements CommentAP
 
     @Override
     @SneakyThrows
-    public WpPagedResponse<WpComment> list(final @NonNull WpPagingQuery pageQuery,
+    public WpPagedResponse<WpComment> list(final @NonNull WpPaginationQuery paginationQuery,
                                            final WpCommentQuery commentQuery) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/comments", Map.of(API_URL, apiUrl));
 
-        builder.addParameter(PAGE, Integer.toString(pageQuery.getPageNumber()));
-        builder.addParameter(PER_PAGE, Integer.toString(pageQuery.getPageSize()));
+        builder.addParameter(PAGE, Integer.toString(paginationQuery.pageNumber()));
+        builder.addParameter(PER_PAGE, Integer.toString(paginationQuery.pageSize()));
 
         CommentQueryParamMapper.map(builder, commentQuery);
 
-        return performPagingRequest(builder, pageQuery, WP_COMMENT_LIST_TYPEREFERENCE);
+        return performPagingRequest(builder, paginationQuery, WP_COMMENT_LIST_TYPEREFERENCE);
     }
 
     @Override

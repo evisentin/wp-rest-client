@@ -3,7 +3,7 @@ package io.github.evisentin.wordpress.rest.client.adapter.apache.modules;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPagedResponse;
-import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPaginationQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.commons.text.StringSubstitutor;
@@ -82,7 +82,7 @@ abstract class ApiClientModule {
 
     @SneakyThrows
     protected <T> WpPagedResponse<T> performPagingRequest(final URIBuilder uriBuilder,
-                                                          final WpPagingQuery pageQuery,
+                                                          final WpPaginationQuery paginationQuery,
                                                           final TypeReference<List<T>> responseType) {
         URI uri = uriBuilder.build();
 
@@ -105,10 +105,10 @@ abstract class ApiClientModule {
 
             return new WpPagedResponse<>(
                     items,
-                    pageQuery.getPageSize(),
+                    paginationQuery.pageSize(),
                     totalItems,
                     totalPages,
-                    pageQuery.getPageNumber()
+                    paginationQuery.pageNumber()
             );
         });
     }

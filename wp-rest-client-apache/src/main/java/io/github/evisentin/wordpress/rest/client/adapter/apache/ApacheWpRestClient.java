@@ -64,6 +64,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     private final CategoryAPIs categoryAPIs;
     private final CommentAPIs commentAPIs;
     private final MediaAPIs mediaPIs;
+    private final PageAPIs pageAPIs;
     private final PostAPIs postAPIs;
     private final PostRevisionAPIs postRevisionAPIs;
     private final PostStatusAPIs postStatusAPIs;
@@ -136,6 +137,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         categoryAPIs = new CategoryApiClientModule(apiUrl, httpClient, mapper);
         commentAPIs = new CommentApiClientModule(apiUrl, httpClient, mapper);
         mediaPIs = new MediaApiClientModule(apiUrl, httpClient, mapper);
+        pageAPIs = new PageApiClientModule(apiUrl, httpClient, mapper);
         postAPIs = new PostApiClientModule(apiUrl, httpClient, mapper);
         postRevisionAPIs = new PostRevisionApiClientModule(apiUrl, httpClient, mapper);
         postStatusAPIs = new PostStatusApiClientModule(apiUrl, httpClient, mapper);
@@ -157,6 +159,11 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     @Override
     public MediaAPIs media() {
         return mediaPIs;
+    }
+
+    @Override
+    public PageAPIs pages() {
+        return pageAPIs;
     }
 
     @Override

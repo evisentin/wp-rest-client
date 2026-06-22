@@ -4,7 +4,7 @@ import io.github.evisentin.wordpress.rest.client.domain.model.WpComment;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPagedResponse;
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.rest.client.domain.model.query.WpCommentQuery;
-import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPaginationQuery;
 import io.github.evisentin.wordpress.rest.client.domain.model.requests.WpCommentCreateUpdateRequest;
 import io.github.evisentin.wordpress.rest.client.domain.model.responses.WpCommentDeletionResponse;
 
@@ -86,14 +86,14 @@ public interface CommentAPIs {
      * <p>The result set can be refined using {@link WpCommentQuery}, for example by filtering on search criteria,
      * include or exclude lists, or sort order.</p>
      *
-     * @param pageQuery
+     * @param paginationQuery
      *         the pagination settings, including page number and page size; must not be {@code null}
      * @param commentQuery
      *         additional comment query parameters; may be {@code null} when no extra filtering is needed
      *
      * @return a paginated response containing {@link WpComment} items
      */
-    WpPagedResponse<WpComment> list(WpPagingQuery pageQuery, WpCommentQuery commentQuery);
+    WpPagedResponse<WpComment> list(WpPaginationQuery paginationQuery, WpCommentQuery commentQuery);
 
     /**
      * Moves a comment to the trash by its unique identifier.
