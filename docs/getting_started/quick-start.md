@@ -48,7 +48,7 @@ import io.github.evisentin.wordpress.rest.client.adapter.apache.ApacheWpRestClie
 import io.github.evisentin.wordpress.rest.client.domain.api.WpRestClient;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPagedResponse;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPost;
-import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPaginationQuery;
 import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPostQuery;
 
 import java.util.List;
@@ -64,7 +64,7 @@ final WpRestClient restClient =
                 "admin"
         ).build();
 
-final WpPagingQuery pageQuery = WpPagingQuery.of(1, 10);
+final WpPaginationQuery pageQuery = new WpPaginationQuery(1, 10);
 final WpPostQuery postQuery = WpPostQuery.builder()
         .withStatuses(Set.of(DRAFT, PUBLISH))
         .build();
@@ -105,7 +105,7 @@ import io.github.evisentin.wordpress.rest.client.adapter.okhttp.OkHttpWpRestClie
 import io.github.evisentin.wordpress.rest.client.domain.api.WpRestClient;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPagedResponse;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPost;
-import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPaginationQuery;
 import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPostQuery;
 
 import java.util.List;
@@ -121,7 +121,7 @@ final WpRestClient restClient =
                 "admin"
         ).build();
 
-final WpPagingQuery pageQuery = WpPagingQuery.of(1, 10);
+final WpPaginationQuery pageQuery = new WpPaginationQuery(1, 10);
 final WpPostQuery postQuery = WpPostQuery.builder()
         .withStatuses(Set.of(DRAFT, PUBLISH))
         .build();

@@ -1,0 +1,160 @@
+[
+    {
+        "httpRequest": {
+            "method": "GET",
+            "path": "/wp-json/wp/v2/pages/39",
+            "queryStringParameters": [
+                {
+                    "name": "context",
+                    "values": [
+                        "edit"
+                    ]
+                }
+            ],
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ]
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json; charset=UTF-8"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "id": 39,
+                    "date": "2026-06-22T09:31:55",
+                    "date_gmt": "2026-06-22T09:31:55",
+                    "guid": {
+                        "rendered": "https:\/\/localhost:63107\/page-1\/",
+                        "raw": "https:\/\/localhost:63107\/page-1\/"
+                    },
+                    "modified": "2026-06-22T09:31:55",
+                    "modified_gmt": "2026-06-22T09:31:55",
+                    "password": "",
+                    "slug": "page-1",
+                    "status": "publish",
+                    "type": "page",
+                    "link": "https:\/\/localhost:63107\/page-1\/",
+                    "title": {
+                        "raw": "Page #1",
+                        "rendered": "Page #1"
+                    },
+                    "content": {
+                        "raw": "My first page",
+                        "rendered": "<p>My first page<\/p>\n",
+                        "protected": false,
+                        "block_version": 0
+                    },
+                    "excerpt": {
+                        "raw": "",
+                        "rendered": "<p>My first page<\/p>\n",
+                        "protected": false
+                    },
+                    "author": 0,
+                    "featured_media": 0,
+                    "parent": 0,
+                    "menu_order": 0,
+                    "comment_status": "closed",
+                    "ping_status": "closed",
+                    "template": "",
+                    "meta": {
+                        "footnotes": ""
+                    },
+                    "permalink_template": "https:\/\/localhost:63107\/%pagename%\/",
+                    "generated_slug": "page-1",
+                    "class_list": [
+                        "post-39",
+                        "page",
+                        "type-page",
+                        "status-publish",
+                        "hentry"
+                    ],
+                    "_links": {
+                        "self": [
+                            {
+                                "href": "https:\/\/localhost:63107\/wp-json\/wp\/v2\/pages\/39",
+                                "targetHints": {
+                                    "allow": [
+                                        "GET",
+                                        "POST",
+                                        "PUT",
+                                        "PATCH",
+                                        "DELETE"
+                                    ]
+                                }
+                            }
+                        ],
+                        "collection": [
+                            {
+                                "href": "https:\/\/localhost:63107\/wp-json\/wp\/v2\/pages"
+                            }
+                        ],
+                        "about": [
+                            {
+                                "href": "https:\/\/localhost:63107\/wp-json\/wp\/v2\/types\/page"
+                            }
+                        ],
+                        "replies": [
+                            {
+                                "embeddable": true,
+                                "href": "https:\/\/localhost:63107\/wp-json\/wp\/v2\/comments?post=39"
+                            }
+                        ],
+                        "version-history": [
+                            {
+                                "count": 0,
+                                "href": "https:\/\/localhost:63107\/wp-json\/wp\/v2\/pages\/39\/revisions"
+                            }
+                        ],
+                        "wp:attachment": [
+                            {
+                                "href": "https:\/\/localhost:63107\/wp-json\/wp\/v2\/media?parent=39"
+                            }
+                        ],
+                        "wp:action-publish": [
+                            {
+                                "href": "https:\/\/localhost:63107\/wp-json\/wp\/v2\/pages\/39"
+                            }
+                        ],
+                        "wp:action-unfiltered-html": [
+                            {
+                                "href": "https:\/\/localhost:63107\/wp-json\/wp\/v2\/pages\/39"
+                            }
+                        ],
+                        "wp:action-assign-author": [
+                            {
+                                "href": "https:\/\/localhost:63107\/wp-json\/wp\/v2\/pages\/39"
+                            }
+                        ],
+                        "curies": [
+                            {
+                                "name": "wp",
+                                "href": "https:\/\/api.w.org\/{rel}",
+                                "templated": true
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+]

@@ -6,7 +6,7 @@ import io.github.evisentin.wordpress.rest.client.domain.api.TagAPIs;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPagedResponse;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpTag;
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpContext;
-import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPaginationQuery;
 import io.github.evisentin.wordpress.rest.client.domain.model.query.WpTagQuery;
 import io.github.evisentin.wordpress.rest.client.domain.model.requests.WpTagCreateUpdateRequest;
 import io.github.evisentin.wordpress.rest.client.domain.model.responses.WpTagDeletionResponse;
@@ -78,16 +78,16 @@ public class TagApiClientModule extends ApiClientModule implements TagAPIs {
 
     @Override
     @SneakyThrows
-    public WpPagedResponse<WpTag> list(final @NonNull WpPagingQuery pageQuery, final WpTagQuery tagQuery) {
+    public WpPagedResponse<WpTag> list(final @NonNull WpPaginationQuery paginationQuery, final WpTagQuery tagQuery) {
 
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/tags", Map.of(API_URL, apiUrl));
 
-        builder.addQueryParameter(PAGE, Integer.toString(pageQuery.getPageNumber()))
-               .addQueryParameter(PER_PAGE, Integer.toString(pageQuery.getPageSize()));
+        builder.addQueryParameter(PAGE, Integer.toString(paginationQuery.pageNumber()))
+               .addQueryParameter(PER_PAGE, Integer.toString(paginationQuery.pageSize()));
 
         TagQueryParamMapper.map(builder, tagQuery);
 
-        return performPagingRequest(builder, pageQuery, WP_TAG_LIST_TYPEREFERENCE);
+        return performPagingRequest(builder, paginationQuery, WP_TAG_LIST_TYPEREFERENCE);
     }
 
     @Override

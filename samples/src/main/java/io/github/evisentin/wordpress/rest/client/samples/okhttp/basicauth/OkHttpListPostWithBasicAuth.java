@@ -4,7 +4,7 @@ import io.github.evisentin.wordpress.rest.client.adapter.okhttp.OkHttpWpRestClie
 import io.github.evisentin.wordpress.rest.client.domain.WpRestClient;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPagedResponse;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPost;
-import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPaginationQuery;
 import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPostQuery;
 import io.github.evisentin.wordpress.rest.client.samples.okhttp.SampleHttpRequestInterceptor;
 import io.github.evisentin.wordpress.rest.client.samples.okhttp.SampleHttpResponseInterceptor;
@@ -63,7 +63,7 @@ public class OkHttpListPostWithBasicAuth {
                                                  .withStatuses(Set.of(DRAFT, PUBLISH, PENDING))
                                                  .build();
 
-        final WpPagingQuery pagingQuery = WpPagingQuery.of(1, 10);
+        final WpPaginationQuery pagingQuery = new WpPaginationQuery(1, 10);
 
         final WpPagedResponse<WpPost> pagedResponse = restClient.posts().list(pagingQuery, postQuery);
 

@@ -1,6 +1,7 @@
-package io.github.evisentin.wordpress.rest.client.domain.model.enums;
+package io.github.evisentin.wordpress.rest.client.domain.model.enums.order;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpHasValueEnum;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 

@@ -1,9 +1,9 @@
 package io.github.evisentin.wordpress.rest.client.adapter.apache.query.mappers;
 
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpContext;
-import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpMediaOrderFields;
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpMediaStatus;
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpSortDirection;
+import io.github.evisentin.wordpress.rest.client.domain.model.enums.order.WpMediaOrderFields;
 import io.github.evisentin.wordpress.rest.client.domain.model.query.WpMediaQuery;
 import org.junit.jupiter.api.Test;
 

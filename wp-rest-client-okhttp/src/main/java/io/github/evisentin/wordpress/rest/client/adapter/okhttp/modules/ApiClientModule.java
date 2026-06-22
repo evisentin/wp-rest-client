@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPagedResponse;
-import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPaginationQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import okhttp3.*;
@@ -71,7 +71,7 @@ abstract class ApiClientModule {
     }
 
     protected <T> WpPagedResponse<T> performPagingRequest(final HttpUrl.Builder urlBuilder,
-                                                          final WpPagingQuery pageQuery,
+                                                          final WpPaginationQuery paginationQuery,
                                                           final TypeReference<List<T>> responseType) throws IOException {
         final Request request = new Request.Builder()
                 .url(urlBuilder.build())
@@ -88,10 +88,10 @@ abstract class ApiClientModule {
 
             return new WpPagedResponse<>(
                     items,
-                    pageQuery.getPageSize(),
+                    paginationQuery.pageSize(),
                     totalItems,
                     totalPages,
-                    pageQuery.getPageNumber()
+                    paginationQuery.pageNumber()
             );
         }
     }

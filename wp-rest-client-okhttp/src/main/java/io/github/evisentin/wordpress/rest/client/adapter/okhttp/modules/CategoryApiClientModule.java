@@ -7,7 +7,7 @@ import io.github.evisentin.wordpress.rest.client.domain.model.WpCategory;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPagedResponse;
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.rest.client.domain.model.query.WpCategoryQuery;
-import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPaginationQuery;
 import io.github.evisentin.wordpress.rest.client.domain.model.requests.WpCategoryCreateUpdateRequest;
 import io.github.evisentin.wordpress.rest.client.domain.model.responses.WpCategoryDeletionResponse;
 import lombok.NonNull;
@@ -75,16 +75,16 @@ public class CategoryApiClientModule extends ApiClientModule implements Category
 
     @Override
     @SneakyThrows
-    public WpPagedResponse<WpCategory> list(final @NonNull WpPagingQuery pageQuery,
+    public WpPagedResponse<WpCategory> list(final @NonNull WpPaginationQuery paginationQuery,
                                             final WpCategoryQuery categoryQuery) {
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/categories", Map.of(API_URL, apiUrl));
 
-        builder.addQueryParameter(PAGE, Integer.toString(pageQuery.getPageNumber()))
-               .addQueryParameter(PER_PAGE, Integer.toString(pageQuery.getPageSize()));
+        builder.addQueryParameter(PAGE, Integer.toString(paginationQuery.pageNumber()))
+               .addQueryParameter(PER_PAGE, Integer.toString(paginationQuery.pageSize()));
 
         CategoryQueryParamMapper.map(builder, categoryQuery);
 
-        return performPagingRequest(builder, pageQuery, WP_CATEGORY_LIST_TYPEREFERENCE);
+        return performPagingRequest(builder, paginationQuery, WP_CATEGORY_LIST_TYPEREFERENCE);
     }
 
     @Override

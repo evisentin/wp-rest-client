@@ -28,6 +28,10 @@ public final class WordPressAssertions {
         return new WpTagAssert(actual);
     }
 
+    public static WpPageAssert assertThat(final WpPage actual) {
+        return new WpPageAssert(actual);
+    }
+
     public static WpPostAssert assertThat(final WpPost actual) {
         return new WpPostAssert(actual);
     }
@@ -62,5 +66,9 @@ public final class WordPressAssertions {
 
     public static WpPostDeletionResponseAssert assertThat(final WpPostDeletionResponse actual) {
         return new WpPostDeletionResponseAssert(actual);
+    }
+
+    public static WpPageDeletionResponseAssert assertThat(final WpPageDeletionResponse actual) {
+        return new WpPageDeletionResponseAssert(actual);
     }
 }

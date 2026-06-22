@@ -1,6 +1,10 @@
 package io.github.evisentin.wordpress.rest.client.domain.model.query;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.enums.*;
+import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpContext;
+import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpMediaStatus;
+import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpMediaType;
+import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpSortDirection;
+import io.github.evisentin.wordpress.rest.client.domain.model.enums.order.WpMediaOrderFields;
 import lombok.Builder;
 import lombok.Getter;
 

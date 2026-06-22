@@ -3,7 +3,7 @@ package io.github.evisentin.wordpress.rest.client.domain.api;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPagedResponse;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPost;
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpContext;
-import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPaginationQuery;
 import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPostQuery;
 import io.github.evisentin.wordpress.rest.client.domain.model.requests.WpPostCreateUpdateRequest;
 import io.github.evisentin.wordpress.rest.client.domain.model.responses.WpPostDeletionResponse;
@@ -102,14 +102,14 @@ public interface PostAPIs {
      * <p>The result set can be refined using {@link WpPostQuery}, for example by filtering on search criteria,
      * include or exclude lists, or sort order.</p>
      *
-     * @param pageQuery
+     * @param paginationQuery
      *         the pagination settings, including page number and page size; must not be {@code null}
      * @param postQuery
      *         additional post query parameters; may be {@code null} when no extra filtering is needed
      *
      * @return a paginated response containing {@link WpPost} items
      */
-    WpPagedResponse<WpPost> list(WpPagingQuery pageQuery, WpPostQuery postQuery);
+    WpPagedResponse<WpPost> list(WpPaginationQuery paginationQuery, WpPostQuery postQuery);
 
     /**
      * Moves a post to the trash by its unique identifier.

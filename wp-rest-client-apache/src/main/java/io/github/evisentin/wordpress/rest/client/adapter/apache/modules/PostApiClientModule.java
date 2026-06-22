@@ -6,7 +6,7 @@ import io.github.evisentin.wordpress.rest.client.domain.api.PostAPIs;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPagedResponse;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPost;
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpContext;
-import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPaginationQuery;
 import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPostQuery;
 import io.github.evisentin.wordpress.rest.client.domain.model.requests.WpPostCreateUpdateRequest;
 import io.github.evisentin.wordpress.rest.client.domain.model.responses.WpPostDeletionResponse;
@@ -90,16 +90,16 @@ public class PostApiClientModule extends ApiClientModule implements PostAPIs {
 
     @Override
     @SneakyThrows
-    public WpPagedResponse<WpPost> list(final @NonNull WpPagingQuery pageQuery,
+    public WpPagedResponse<WpPost> list(final @NonNull WpPaginationQuery paginationQuery,
                                         final WpPostQuery postQuery) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/posts", Map.of(API_URL, apiUrl));
 
-        builder.addParameter(PAGE, Integer.toString(pageQuery.getPageNumber()));
-        builder.addParameter(PER_PAGE, Integer.toString(pageQuery.getPageSize()));
+        builder.addParameter(PAGE, Integer.toString(paginationQuery.pageNumber()));
+        builder.addParameter(PER_PAGE, Integer.toString(paginationQuery.pageSize()));
 
         PostQueryParamMapper.map(builder, postQuery);
 
-        return performPagingRequest(builder, pageQuery, WP_POST_LIST_TYPEREFERENCE);
+        return performPagingRequest(builder, paginationQuery, WP_POST_LIST_TYPEREFERENCE);
     }
 
     @Override

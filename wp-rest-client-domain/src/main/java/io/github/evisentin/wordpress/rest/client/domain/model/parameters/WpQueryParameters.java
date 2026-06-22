@@ -28,6 +28,8 @@ public final class WpQueryParameters {
     public static final String MEDIA_TYPE = "media_type";
     public static final String MIME_TYPE = "mime_type";
 
+    public static final String MENU_ORDER = "menu_order";
+
     public static final String MODIFIED_AFTER = "modified_after";
     public static final String MODIFIED_BEFORE = "modified_before";
 

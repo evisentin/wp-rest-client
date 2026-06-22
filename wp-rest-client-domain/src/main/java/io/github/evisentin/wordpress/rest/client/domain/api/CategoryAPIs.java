@@ -4,7 +4,7 @@ import io.github.evisentin.wordpress.rest.client.domain.model.WpCategory;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPagedResponse;
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.rest.client.domain.model.query.WpCategoryQuery;
-import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPaginationQuery;
 import io.github.evisentin.wordpress.rest.client.domain.model.requests.WpCategoryCreateUpdateRequest;
 import io.github.evisentin.wordpress.rest.client.domain.model.responses.WpCategoryDeletionResponse;
 
@@ -64,14 +64,14 @@ public interface CategoryAPIs {
      * <p>The result set can be refined using {@link WpCategoryQuery}, for example by filtering on parent, search term,
      * include or exclude lists, or sort order.</p>
      *
-     * @param pageQuery
+     * @param paginationQuery
      *         the pagination settings, including page number and page size; must not be {@code null}
      * @param categoryQuery
      *         additional category query parameters; may be {@code null} when no extra filtering is needed
      *
      * @return a paginated response containing {@link WpCategory} items
      */
-    WpPagedResponse<WpCategory> list(WpPagingQuery pageQuery, WpCategoryQuery categoryQuery);
+    WpPagedResponse<WpCategory> list(WpPaginationQuery paginationQuery, WpCategoryQuery categoryQuery);
 
     /**
      * Updates an existing category.

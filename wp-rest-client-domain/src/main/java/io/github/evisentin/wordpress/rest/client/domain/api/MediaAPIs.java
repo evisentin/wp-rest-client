@@ -4,7 +4,7 @@ import io.github.evisentin.wordpress.rest.client.domain.model.WpMedia;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPagedResponse;
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.rest.client.domain.model.query.WpMediaQuery;
-import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPagingQuery;
+import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPaginationQuery;
 import io.github.evisentin.wordpress.rest.client.domain.model.requests.WpMediaUpdateRequest;
 import io.github.evisentin.wordpress.rest.client.domain.model.responses.WpMediaDeletionResponse;
 
@@ -78,14 +78,14 @@ public interface MediaAPIs {
      * <p>The result set can be refined using {@link WpMediaQuery}, for example by filtering on parent, search term,
      * include or exclude lists, or sort order.</p>
      *
-     * @param pageQuery
+     * @param paginationQuery
      *         the pagination settings, including page number and page size; must not be {@code null}
      * @param mediaQuery
      *         additional media query parameters; may be {@code null} when no extra filtering is needed
      *
      * @return a paginated response containing {@link WpMedia} items
      */
-    WpPagedResponse<WpMedia> list(WpPagingQuery pageQuery, WpMediaQuery mediaQuery);
+    WpPagedResponse<WpMedia> list(WpPaginationQuery paginationQuery, WpMediaQuery mediaQuery);
 
     /**
      * Updates an existing media item.
