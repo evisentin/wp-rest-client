@@ -1,14 +1,10 @@
 package io.github.evisentin.wordpress.rest.client.domain.model.requests;
 
-import com.fasterxml.jackson.annotation.JsonAnySetter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Request body used to create or update a WordPress category.
@@ -46,8 +42,4 @@ public class WpCategoryCreateUpdateRequest {
      * URL-friendly slug of the category.
      */
     private String slug;
-
-    @JsonAnySetter
-    @Builder.Default
-    private Map<String, Object> meta = new HashMap<>();
 }

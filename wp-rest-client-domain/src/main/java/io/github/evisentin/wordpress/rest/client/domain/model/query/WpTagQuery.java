@@ -5,10 +5,9 @@ import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpSortDirect
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.order.WpTagOrderFields;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Singular;
 
 import java.util.Set;
-
-import static java.util.Collections.emptySet;
 
 /**
  * Represents a query object for retrieving WordPress tags.
@@ -36,14 +35,14 @@ public class WpTagQuery {
     /**
      * Set of tag IDs to exclude from the result. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<Long> excludeIds = emptySet();
+    @Singular
+    private final Set<Long> excludeIds;
 
     /**
      * Set of tag IDs to include in the result. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<Long> includeIds = emptySet();
+    @Singular
+    private final Set<Long> includeIds;
 
     /**
      * Number of items to skip before starting to collect the result set.

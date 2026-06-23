@@ -9,8 +9,6 @@ import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPostQuery;
 import io.github.evisentin.wordpress.rest.client.samples.okhttp.SampleHttpRequestInterceptor;
 import io.github.evisentin.wordpress.rest.client.samples.okhttp.SampleHttpResponseInterceptor;
 
-import java.util.Set;
-
 import static io.github.evisentin.wordpress.rest.client.domain.model.enums.WpPostStatus.DRAFT;
 import static io.github.evisentin.wordpress.rest.client.domain.model.enums.WpPostStatus.PENDING;
 import static io.github.evisentin.wordpress.rest.client.domain.model.enums.WpPostStatus.PUBLISH;
@@ -60,7 +58,9 @@ public class OkHttpListPostWithBasicAuth {
                                          .build();
 
         final WpPostQuery postQuery = WpPostQuery.builder()
-                                                 .withStatuses(Set.of(DRAFT, PUBLISH, PENDING))
+                                                 .withStatus(DRAFT)
+                                                 .withStatus(PUBLISH)
+                                                 .withStatus(PENDING)
                                                  .build();
 
         final WpPaginationQuery pagingQuery = new WpPaginationQuery(1, 10);

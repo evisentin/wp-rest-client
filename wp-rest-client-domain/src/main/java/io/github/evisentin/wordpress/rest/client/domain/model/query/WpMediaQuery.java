@@ -7,11 +7,10 @@ import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpSortDirect
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.order.WpMediaOrderFields;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Singular;
 
 import java.time.LocalDate;
 import java.util.Set;
-
-import static java.util.Collections.emptySet;
 
 /**
  * Query parameters for listing WordPress media items.
@@ -32,8 +31,8 @@ public class WpMediaQuery {
     /**
      * Set of author IDs to exclude from the result. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<Long> excludeAuthorIds = emptySet();
+    @Singular
+    private final Set<Long> excludeAuthorIds;
 
     /**
      * Number of items to skip before starting to collect the result set.
@@ -79,14 +78,14 @@ public class WpMediaQuery {
     /**
      * Set of media item IDs to exclude from the result. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<Long> excludeIds = emptySet();
+    @Singular
+    private final Set<Long> excludeIds;
 
     /**
      * Set of media item IDs to include in the result. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<Long> includeIds = emptySet();
+    @Singular
+    private final Set<Long> includeIds;
 
     /**
      * Sort direction of the result. Defaults to {@link WpSortDirection#ASC}.
@@ -97,26 +96,26 @@ public class WpMediaQuery {
     /**
      * Set of media item slugs to include in the result. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<String> slugs = emptySet();
+    @Singular
+    private final Set<String> slugs;
 
     /**
      * Set of media item statuses to include in the result. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<WpMediaStatus> statuses = emptySet();
+    @Singular
+    private final Set<WpMediaStatus> statuses;
 
     /**
      * Set of parent post IDs that media items must be attached to. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<Long> includeParents = emptySet();
+    @Singular
+    private final Set<Long> includeParents;
 
     /**
      * Set of parent post IDs that media items must not be attached to. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<Long> excludeParents = emptySet();
+    @Singular
+    private final Set<Long> excludeParents;
 
     /**
      * Limits results to attachments of the specified media type.

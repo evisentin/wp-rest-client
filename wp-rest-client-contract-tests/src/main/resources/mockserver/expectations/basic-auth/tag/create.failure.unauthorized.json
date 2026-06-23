@@ -23,8 +23,7 @@
                 "json": {
                     "description": "my description",
                     "name": "my tag",
-                    "slug": "my-tag",
-                    "meta": {}
+                    "slug": "my-tag"
                 }
             }
         },

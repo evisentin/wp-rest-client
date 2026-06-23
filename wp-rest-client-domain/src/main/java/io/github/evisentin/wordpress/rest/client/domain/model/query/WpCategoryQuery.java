@@ -5,10 +5,9 @@ import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpSortDirect
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.order.WpCategoryOrderFields;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Singular;
 
 import java.util.Set;
-
-import static java.util.Collections.emptySet;
 
 /**
  * Represents a query object for retrieving WordPress categories.
@@ -36,14 +35,14 @@ public class WpCategoryQuery {
     /**
      * Set of category IDs to exclude from the result. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<Long> excludeIds = emptySet();
+    @Singular
+    private final Set<Long> excludeIds;
 
     /**
      * Set of category IDs to include in the result. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<Long> includeIds = emptySet();
+    @Singular
+    private final Set<Long> includeIds;
 
     /**
      * Sort direction of the result. Defaults to {@link WpSortDirection#ASC}.

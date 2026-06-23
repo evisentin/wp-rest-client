@@ -6,11 +6,10 @@ import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpSortDirect
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.order.WpCommentOrderFields;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Singular;
 
 import java.time.LocalDate;
 import java.util.Set;
-
-import static java.util.Collections.emptySet;
 
 /**
  * Represents a query object for retrieving WordPress comments.
@@ -57,8 +56,8 @@ public class WpCommentQuery {
     /**
      * Excludes comments authored by any of the specified users. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<Long> authorExcludeIds = emptySet();
+    @Singular
+    private final Set<Long> authorExcludeIds;
 
     /**
      * Limits results to comments authored using the specified email address.
@@ -68,14 +67,14 @@ public class WpCommentQuery {
     /**
      * Excludes comments with the specified identifiers. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<Long> excludeIds = emptySet();
+    @Singular
+    private final Set<Long> excludeIds;
 
     /**
      * Limits results to comments with the specified identifiers. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<Long> includeIds = emptySet();
+    @Singular
+    private final Set<Long> includeIds;
 
     /**
      * Number of comments to skip before collecting the result set.
@@ -97,8 +96,8 @@ public class WpCommentQuery {
     /**
      * Excludes comments whose parent identifier matches any of the specified values. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<Long> excludeParentIds = emptySet();
+    @Singular
+    private final Set<Long> excludeParentIds;
 
     /**
      * Limits results to comments of the specified type. Typical values include {@code comment}, {@code pingback}, and

@@ -23,8 +23,7 @@
                 "json": {
                     "description": "Tag #1_updated",
                     "name": "tag1_updated",
-                    "slug": "tag-1updated",
-                    "meta": {}
+                    "slug": "tag-1updated"
                 }
             }
         },

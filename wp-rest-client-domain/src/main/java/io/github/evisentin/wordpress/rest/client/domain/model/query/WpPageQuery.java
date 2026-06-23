@@ -6,11 +6,10 @@ import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpSortDirect
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.order.WpPageOrderFields;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Singular;
 
 import java.time.LocalDate;
 import java.util.Set;
-
-import static java.util.Collections.emptySet;
 
 /**
  * Represents a query object for retrieving WordPress pages.
@@ -63,20 +62,20 @@ public class WpPageQuery {
     /**
      * Set of author IDs to exclude from the result. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<Long> excludeAuthorIds = emptySet();
+    @Singular
+    private final Set<Long> excludeAuthorIds;
 
     /**
      * Set of page IDs to exclude from the result. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<Long> excludeIds = emptySet();
+    @Singular
+    private final Set<Long> excludeIds;
 
     /**
      * Set of page IDs to include in the result. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<Long> includeIds = emptySet();
+    @Singular
+    private final Set<Long> includeIds;
 
     /**
      * Number of items to skip before starting to collect the result set.
@@ -98,18 +97,18 @@ public class WpPageQuery {
     /**
      * Set of page slugs to include in the result. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<String> slugs = emptySet();
+    @Singular
+    private final Set<String> slugs;
 
     private final Long parent;
     private final Long menuOrder;
 
-    @Builder.Default
-    private final Set<Long> excludeParentIds = emptySet();
+    @Singular
+    private final Set<Long> excludeParentIds;
 
     /**
      * Set of page statuses to include in the result. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<WpPageStatus> statuses = emptySet();
+    @Singular
+    private final Set<WpPageStatus> statuses;
 }
