@@ -6,11 +6,10 @@ import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpSortDirect
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.order.WpPostOrderFields;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Singular;
 
 import java.time.LocalDate;
 import java.util.Set;
-
-import static java.util.Collections.emptySet;
 
 /**
  * Represents a query object for retrieving WordPress posts.
@@ -63,21 +62,20 @@ public class WpPostQuery {
     /**
      * Set of author IDs to exclude from the result. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<Long> excludeAuthorIds = emptySet();
+    @Singular
+    private final Set<Long> excludeAuthorIds;
 
     /**
      * Set of post IDs to exclude from the result. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<Long> excludeIds = emptySet();
+    @Singular
+    private final Set<Long> excludeIds;
 
     /**
      * Set of post IDs to include in the result. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<Long> includeIds = emptySet();
-
+    @Singular
+    private final Set<Long> includeIds;
     /**
      * Number of items to skip before starting to collect the result set.
      */
@@ -98,14 +96,14 @@ public class WpPostQuery {
     /**
      * Set of post slugs to include in the result. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<String> slugs = emptySet();
+    @Singular
+    private final Set<String> slugs;
 
     /**
      * Set of post statuses to include in the result. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<WpPostStatus> statuses = emptySet();
+    @Singular
+    private final Set<WpPostStatus> statuses;
 
     // tax_relation
     // search_columns
@@ -113,26 +111,26 @@ public class WpPostQuery {
     /**
      * Set of category IDs that posts must belong to. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<Long> includeCategories = emptySet();
+    @Singular
+    private final Set<Long> includeCategories;
 
     /**
      * Set of category IDs that posts must not belong to. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<Long> excludeCategories = emptySet();
+    @Singular
+    private final Set<Long> excludeCategories;
 
     /**
      * Set of tag IDs that posts must have. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<Long> includeTags = emptySet();
+    @Singular
+    private final Set<Long> includeTags;
 
     /**
      * Set of tag IDs that posts must not have. Defaults to an empty set.
      */
-    @Builder.Default
-    private final Set<Long> excludeTags = emptySet();
+    @Singular
+    private final Set<Long> excludeTags;
 
     /**
      * Whether to limit results to sticky posts.

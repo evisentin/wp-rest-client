@@ -9,6 +9,7 @@ import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpPostStatus
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.Singular;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -116,10 +117,12 @@ public class WpPostCreateUpdateRequest {
     /**
      * Set of category IDs associated with the post.
      */
+    @Singular
     private Set<Long> categories;
 
     /**
      * Set of tag IDs associated with the post.
      */
+    @Singular
     private Set<Long> tags;
 }

@@ -43,8 +43,7 @@ public interface PostAPIs {
      * @param creationRequest
      *         the post creation request; must not be {@code null}
      * @param extraQueryParams
-     *         additional query parameters to include in the request. Some plugins  require these parameters (for
-     *         example, PolyLang).
+     *         additional query parameters to include in the request.
      *
      * @return the created {@link WpPost}
      */

@@ -1094,7 +1094,8 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // WHEN
             final WpPageQuery query = WpPageQuery.builder()
-                                                 .withStatuses(Set.of(WpPageStatus.DRAFT, WpPageStatus.PRIVATE))
+                                                 .withStatus(WpPageStatus.DRAFT)
+                                                 .withStatus(WpPageStatus.PRIVATE)
                                                  .withOrder(ASC)
                                                  .withOrderBy(WpPageOrderFields.ID)
                                                  .build();
@@ -1223,8 +1224,8 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                     postCreateUpdateRequest()
                             .withTitle(POST_1_TITLE)
                             .withContent(POST_1_CONTENT)
-                            .withCategories(Set.of(categoryNews))
-                            .withTags(Set.of(tagCH))
+                            .withCategory(categoryNews)
+                            .withTag(tagCH)
                             .build();
 
             final WpPost post = adminClient.posts().create(createUpdateRequest);
@@ -1271,8 +1272,12 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                     postCreateUpdateRequest()
                             .withTitle(POST_1_TITLE)
                             .withContent(POST_1_CONTENT)
-                            .withCategories(Set.of(nonExistingCategory1, nonExistingCategory2, nonExistingCategory3))
-                            .withTags(Set.of(nonExistingTag1, nonExistingTag2, nonExistingTag3))
+                            .withCategory(nonExistingCategory1)
+                            .withCategory(nonExistingCategory2)
+                            .withCategory(nonExistingCategory3)
+                            .withTag(nonExistingTag1)
+                            .withTag(nonExistingTag2)
+                            .withTag(nonExistingTag3)
                             .withStatus(WpPostStatus.PUBLISH)
                             .withCommentStatus(WpOpenClosed.CLOSED)
                             .withPingStatus(WpOpenClosed.CLOSED)
@@ -1322,8 +1327,8 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                     postCreateUpdateRequest()
                             .withTitle(POST_1_TITLE)
                             .withContent(POST_1_CONTENT)
-                            .withCategories(Set.of(categoryNews))
-                            .withTags(Set.of(tagCH))
+                            .withCategory(categoryNews)
+                            .withTag(tagCH)
                             .withPassword("my password")
                             .withStatus(WpPostStatus.PUBLISH)
                             .build();
@@ -1571,7 +1576,8 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
             // WHEN
             final WpPostQuery postQuery = WpPostQuery.builder()
-                                                     .withStatuses(Set.of(WpPostStatus.DRAFT, WpPostStatus.PRIVATE))
+                                                     .withStatus(WpPostStatus.DRAFT)
+                                                     .withStatus(WpPostStatus.PRIVATE)
                                                      .withOrder(ASC)
                                                      .withOrderBy(WpPostOrderFields.ID)
                                                      .build();

@@ -9,8 +9,6 @@ import io.github.evisentin.wordpress.rest.client.domain.model.query.WpPostQuery;
 import io.github.evisentin.wordpress.rest.client.samples.apache.SampleHttpRequestInterceptor;
 import io.github.evisentin.wordpress.rest.client.samples.apache.SampleHttpResponseInterceptor;
 
-import java.util.Set;
-
 import static io.github.evisentin.wordpress.rest.client.domain.model.enums.WpPostStatus.DRAFT;
 import static io.github.evisentin.wordpress.rest.client.domain.model.enums.WpPostStatus.PENDING;
 import static io.github.evisentin.wordpress.rest.client.domain.model.enums.WpPostStatus.PUBLISH;
@@ -76,7 +74,9 @@ public class ApacheListPostWithJwt {
                                          .build();
 
         final WpPostQuery postQuery = WpPostQuery.builder()
-                                                 .withStatuses(Set.of(DRAFT, PUBLISH, PENDING))
+                                                 .withStatus(DRAFT)
+                                                 .withStatus(PUBLISH)
+                                                 .withStatus(PENDING)
                                                  .build();
 
         final WpPaginationQuery pagingQuery = new WpPaginationQuery(1, 10);

@@ -32,7 +32,7 @@ module and are continuously validated against the following WordPress versions:
 |----------------|:----------------------------|:----:|:------:|:------:|:------:|------------------------------------|
 | Posts          | `/posts`                    |  ✅   |   ✅    |   ✅    |   ✅    | Blog posts and post content.       |
 | Post Revisions | `/posts/<parent>/revisions` |  ✅   |  N/A   |  N/A   |  N/A   | Blog posts revisions.              |
-| Pages          | `/pages`                    |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Static site pages.                 |
+| Pages          | `/pages`                    |  ✅   |   ✅    |   ✅    |   ✅    | Static site pages.                 |
 | Page Revisions | `/pages/<parent>/revisions` |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Static site pages revisions.       |
 | Media          | `/media`                    |  ✅   |   ✅    |   ✅    |   ✅    | Images, files, and attachments.    |
 | Categories     | `/categories`               |  ✅   |   ✅    |   ✅    |   ✅    | Post categories.                   |
@@ -74,11 +74,11 @@ Legend:
 
 | Endpoint                   | Description     | Status |
 |----------------------------|-----------------|:------:|
-| `GET /wp/v2/pages`         | List Pages      |   ⬜    |
-| `POST /wp/v2/pages`        | Create a Page   |   ⬜    |
-| `GET /wp/v2/pages/<id>`    | Retrieve a Page |   ⬜    |
-| `POST /wp/v2/pages/<id>`   | Update a Page   |   ⬜    |
-| `DELETE /wp/v2/pages/<id>` | Delete a Page   |   ⬜    |
+| `GET /wp/v2/pages`         | List Pages      |   ✅    |
+| `POST /wp/v2/pages`        | Create a Page   |   ✅    |
+| `GET /wp/v2/pages/<id>`    | Retrieve a Page |   ✅    |
+| `POST /wp/v2/pages/<id>`   | Update a Page   |   ✅    |
+| `DELETE /wp/v2/pages/<id>` | Delete a Page   |   ✅    |
 
 ### Media
 

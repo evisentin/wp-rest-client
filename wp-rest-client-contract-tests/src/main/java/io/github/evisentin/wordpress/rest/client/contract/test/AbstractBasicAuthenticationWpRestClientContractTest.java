@@ -443,7 +443,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/media/list.success.paging-and-query.json");
 
             final WpMediaQuery mediaQuery = WpMediaQuery.builder()
-                                                        .withSlugs(Set.of("slug-1"))
+                                                        .withSlug("slug-1")
                                                         .build();
 
             // WHEN
@@ -2092,7 +2092,8 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
             // WHEN
             final WpPageQuery query = WpPageQuery.builder()
-                                                 .withStatuses(Set.of(WpPageStatus.DRAFT, WpPageStatus.PRIVATE))
+                                                 .withStatus(WpPageStatus.DRAFT)
+                                                 .withStatus(WpPageStatus.PRIVATE)
                                                  .withOrder(ASC)
                                                  .withOrderBy(WpPageOrderFields.ID)
                                                  .build();
@@ -2323,8 +2324,8 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                              .withTitle(TITLE)
                                              .withContent(CONTENT)
                                              .withSticky(false)
-                                             .withCategories(Set.of(3L))
-                                             .withTags(Set.of(2L))
+                                             .withCategory(3L)
+                                             .withTag(2L)
                                              .build();
 
             // WHEN/THEN
@@ -2346,8 +2347,8 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                              .withTitle(TITLE)
                                              .withContent(CONTENT)
                                              .withSticky(false)
-                                             .withCategories(Set.of(3L))
-                                             .withTags(Set.of(2L))
+                                             .withCategory(3L)
+                                             .withTag(2L)
                                              .build();
 
             // WHEN/THEN
@@ -2383,8 +2384,8 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                              .withTitle(TITLE)
                                              .withContent(CONTENT)
                                              .withSticky(false)
-                                             .withCategories(Set.of(3L))
-                                             .withTags(Set.of(2L))
+                                             .withCategory(3L)
+                                             .withTag(2L)
                                              .build();
 
             // WHEN/THEN
@@ -2406,8 +2407,8 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                     WpPostCreateUpdateRequest.builder()
                                              .withTitle(TITLE)
                                              .withContent(CONTENT)
-                                             .withCategories(Set.of(3L))
-                                             .withTags(Set.of(2L))
+                                             .withCategory(3L)
+                                             .withTag(2L)
                                              .build();
 
             final WpPost post = client.posts().create(createUpdateRequest);
@@ -2720,7 +2721,8 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
 
             // WHEN
             final WpPostQuery postQuery = WpPostQuery.builder()
-                                                     .withStatuses(Set.of(DRAFT, PRIVATE))
+                                                     .withStatus(DRAFT)
+                                                     .withStatus(PRIVATE)
                                                      .withOrder(ASC)
                                                      .withOrderBy(WpPostOrderFields.ID)
                                                      .build();
@@ -3469,7 +3471,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             // WHEN
             final WpTagQuery tagQuery = WpTagQuery.builder()
                                                   .withSlug(TAG_2_SLUG)
-                                                  .withExcludeIds(Set.of(2000L))
+                                                  .withExcludeId(2000L)
                                                   .build();
 
             final WpPagedResponse<WpTag> response = client.tags().list(new WpPaginationQuery(1, 10), tagQuery);
