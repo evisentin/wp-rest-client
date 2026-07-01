@@ -38,6 +38,13 @@ public interface WpRestClient {
     MediaAPIs media();
 
     /**
+     * Returns the page revisions API operations.
+     *
+     * @return page revision API operations
+     */
+    PageRevisionAPIs pageRevisions();
+
+    /**
      * Returns the page API operations.
      *
      * @return page API operations

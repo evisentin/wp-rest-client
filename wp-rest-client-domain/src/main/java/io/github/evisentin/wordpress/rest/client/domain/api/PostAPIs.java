@@ -103,12 +103,12 @@ public interface PostAPIs {
      *
      * @param paginationQuery
      *         the pagination settings, including page number and page size; must not be {@code null}
-     * @param postQuery
+     * @param query
      *         additional post query parameters; may be {@code null} when no extra filtering is needed
      *
      * @return a paginated response containing {@link WpPost} items
      */
-    WpPagedResponse<WpPost> list(WpPaginationQuery paginationQuery, WpPostQuery postQuery);
+    WpPagedResponse<WpPost> list(WpPaginationQuery paginationQuery, WpPostQuery query);
 
     /**
      * Moves a post to the trash by its unique identifier.

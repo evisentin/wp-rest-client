@@ -148,12 +148,16 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
         return wpCreatePage(title, content, status, password);
     }
 
-    private Long givenPostExists(final String title, final String content, final WpPostStatus status) {
-        return wpCreatePost(title, content, status);
+    private void givenPageIsUpdated(final long id, final String title, final String content) {
+        wpUpdatePage(id, title, content);
     }
 
     private Long givenPostExists(final String title, final String content, final WpPostStatus status, final String password) {
         return wpCreatePost(title, content, status, password);
+    }
+
+    private Long givenPostExists(final String title, final String content, final WpPostStatus status) {
+        return wpCreatePost(title, content, status);
     }
 
     private void givenPostIsUpdated(final long id, final String title, final String content) {
@@ -357,7 +361,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                .hasTotalItems(3)
                                .doesNotHaveNextPage();
 
-            assertThat(response.getItems())
+            assertThat(response.items())
                     .isNotNull()
                     .hasSize(3)
                     .extracting(
@@ -401,7 +405,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                .hasTotalItems(1)
                                .doesNotHaveNextPage();
 
-            assertThat(response.getItems())
+            assertThat(response.items())
                     .isNotNull()
                     .hasSize(1)
                     .extracting(
@@ -1064,7 +1068,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                .hasTotalPages(1)
                                .hasTotalItems(1)
                                .doesNotHaveNextPage();
-            assertThat(response.getItems())
+            assertThat(response.items())
                     .isNotNull()
                     .hasSize(1)
                     .first()
@@ -1109,7 +1113,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                .hasTotalPages(1)
                                .hasTotalItems(2)// TWO POSTS (FILTER)
                                .doesNotHaveNextPage();
-            assertThat(response.getItems())
+            assertThat(response.items())
                     .isNotNull()
                     .hasSize(2) // TWO POSTS (FILTER)
                     .extracting(WpPage::getId)
@@ -1195,6 +1199,95 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
         private String linkForPage(final @NonNull String slug) {
             return String.format("%s/%s/", getHttpsBaseUrl(), slug);
+        }
+    }
+
+    @DisplayName("Page Revision APIs - Integration Tests")
+    @Nested
+    class PageRevisionTests {
+
+        @DisplayName("'GET' fails on page not found")
+        @Test
+        void get__fails_on_page_not_found() {
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.pageRevisions().get(1000L, 1L), "rest_post_invalid_parent", "Invalid post parent ID.");
+        }
+
+        @DisplayName("'GET' fails on page revision not found")
+        @Test
+        void get__fails_on_page_revision_not_found() {
+            // GIVEN
+            wpCleanDefaultData();
+            final Long existingPostId = givenPageExists("My page", "My content", WpPageStatus.PUBLISH);
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.pageRevisions().get(existingPostId, 1L), "rest_post_invalid_id", "Invalid revision ID.");
+        }
+
+        @DisplayName("'GET' succeeds")
+        @Test
+        void get__succeeds() {
+            // GIVEN
+            wpCleanDefaultData();
+            final Long existingPaged = givenPageExists("My Page", "My content", WpPageStatus.PUBLISH);
+            givenPageIsUpdated(existingPaged, "My page #1", "My content");
+            final List<Long> revisionIds = wpGetRevisionIds(existingPaged);
+
+            // WHEN/THEN
+            final WpPageRevision pageRevision = adminClient.pageRevisions().get(existingPaged, revisionIds.getFirst());
+
+            assertThat(pageRevision).isNotNull();
+        }
+
+        @DisplayName("'LIST' returns empty on no revision")
+        @Test
+        void list__empty_on_no_revisions() {
+            // GIVEN
+            wpCleanDefaultData();
+            final Long existingPageId = givenPageExists("My page", "My content", WpPageStatus.PUBLISH);
+
+            // WHEN/THEN
+            final WpPagedResponse<WpPageRevision> response = adminClient.pageRevisions().list(existingPageId, new WpPaginationQuery(1, 10), null);
+
+            WordPressAssertions.assertThat(response)
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(0)
+                               .hasTotalItems(0)
+                               .doesNotHaveNextPage();
+        }
+
+        @DisplayName("'LIST' fails on page not found")
+        @Test
+        void list__fails_on_page_found() {
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.pageRevisions().list(1000L, new WpPaginationQuery(1, 10), null), "rest_post_invalid_parent", "Invalid post parent ID.");
+        }
+
+        @DisplayName("'LIST' returns revisions")
+        @Test
+        void list__returns_revisions() {
+            // GIVEN
+            wpCleanDefaultData();
+            final Long existingPageId = givenPageExists("My page", "My content", WpPageStatus.PUBLISH);
+            givenPageIsUpdated(existingPageId, "My page #1", "My content"); // first update -> first revision
+            givenPageIsUpdated(existingPageId, "My page #1", "My content #1"); // second update -> second revision
+
+            // WHEN/THEN
+            final WpPagedResponse<WpPageRevision> response = adminClient.pageRevisions().list(existingPageId, new WpPaginationQuery(1, 10), null);
+
+            WordPressAssertions.assertThat(response)
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(2)
+                               .doesNotHaveNextPage();
         }
     }
 
@@ -1546,7 +1639,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                .hasTotalPages(1)
                                .hasTotalItems(1)
                                .doesNotHaveNextPage();
-            assertThat(response.getItems())
+            assertThat(response.items())
                     .isNotNull()
                     .hasSize(1)
                     .first()
@@ -1591,7 +1684,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                .hasTotalPages(1)
                                .hasTotalItems(2)// TWO POSTS (FILTER)
                                .doesNotHaveNextPage();
-            assertThat(response.getItems())
+            assertThat(response.items())
                     .isNotNull()
                     .hasSize(2) // TWO POSTS (FILTER)
                     .extracting(WpPost::getId)
@@ -1921,7 +2014,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                .hasTotalItems(2)
                                .doesNotHaveNextPage();
 
-            assertThat(response.getItems())
+            assertThat(response.items())
                     .isNotNull()
                     .hasSize(2)
                     .extracting(
@@ -1964,7 +2057,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                .hasTotalItems(1)
                                .doesNotHaveNextPage();
 
-            assertThat(response.getItems())
+            assertThat(response.items())
                     .isNotNull()
                     .hasSize(1)
                     .extracting(

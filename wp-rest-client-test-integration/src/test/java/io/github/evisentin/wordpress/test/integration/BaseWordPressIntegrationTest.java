@@ -512,26 +512,26 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
     }
 
     /**
-     * Retrieves the IDs of all revisions associated with the specified WordPress post.
+     * Retrieves the IDs of all revisions associated with the specified WordPress content item.
      * <p>
-     * Revisions are returned in descending order of creation date (newest first). If the post has no revisions, an
-     * empty list is returned.
+     * Works for both posts and pages. Revisions are returned in descending order of creation date (newest first). If
+     * the content item has no revisions, an empty list is returned.
      *
-     * @param postId
-     *         the ID of the WordPress post whose revisions should be retrieved
+     * @param id
+     *         the ID of the WordPress post or page whose revisions should be retrieved
      *
-     * @return a list containing the IDs of all revisions for the specified post, ordered from newest to oldest
+     * @return a list containing the IDs of all revisions for the specified post or page, ordered from newest to oldest
      *
      * @throws RuntimeException
      *         if the WP-CLI command execution fails or returns an error
      */
     @SneakyThrows
-    protected List<Long> wpGetRevisionIds(final long postId) {
+    protected List<Long> wpGetRevisionIds(final long id) {
         val execResult = wpCli.execInContainer(
                 "wp", "--allow-root", "--path=/var/www/html",
                 "post", "list",
                 "--post_type=revision",
-                String.format("--post_parent=%d", postId),
+                String.format("--post_parent=%d", id),
                 "--orderby=date",
                 "--order=DESC",
                 "--format=ids"
@@ -631,6 +631,20 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
     protected boolean wpIsWordPressInstalled() {
         val execResult = wpCli.execInContainer("wp", "--allow-root", "--path=/var/www/html", "core", "is-installed");
         return execResult.getExitCode() == 0;
+    }
+
+    @SneakyThrows
+    protected void wpUpdatePage(final long id,
+                                final @NonNull String title,
+                                final @NonNull String content) {
+        val execResult = wpCli.execInContainer(
+                "wp", "--allow-root", "--path=/var/www/html",
+                "post", "update", Long.toString(id),
+                String.format("--post_title=%s", title),
+                String.format("--post_content=%s", content),
+                "--porcelain"
+        );
+        failOnError(execResult, "page update failed");
     }
 
     @SneakyThrows

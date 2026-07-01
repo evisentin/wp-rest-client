@@ -89,13 +89,13 @@ public class PageApiClientModule extends ApiClientModule implements PageAPIs {
     @Override
     @SneakyThrows
     public WpPagedResponse<WpPage> list(final @NonNull WpPaginationQuery paginationQuery,
-                                        final WpPageQuery pageQuery) {
+                                        final WpPageQuery query) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/pages", Map.of(API_URL, apiUrl));
 
         builder.addParameter(PAGE, Integer.toString(paginationQuery.pageNumber()));
         builder.addParameter(PER_PAGE, Integer.toString(paginationQuery.pageSize()));
 
-        PageQueryParamMapper.map(builder, pageQuery);
+        PageQueryParamMapper.map(builder, query);
 
         return performPagingRequest(builder, paginationQuery, WP_PAGE_LIST_TYPEREFERENCE);
     }

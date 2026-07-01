@@ -60,6 +60,130 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         return String.format("<p>%s</p>\n", text);
     }
 
+    @DisplayName("'PAGE REVISION' Operations")
+    @Nested
+    class PageRevisionsTests {
+
+        @DisplayName("'GET' fails on forbidden")
+        @Test
+        @SneakyThrows
+        void getFailsOnForbidden() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/page-revisions/get.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.pageRevisions().get(30L, 1L));
+        }
+
+        @DisplayName("'GET' fails on page not found")
+        @Test
+        @SneakyThrows
+        void getFailsOnPageNotFound() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/page-revisions/get.failure.page-not-found.json");
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.pageRevisions().get(30L, 1L), "rest_post_invalid_parent", "Invalid post parent ID.");
+        }
+
+        @DisplayName("'GET' fails on page review not found")
+        @Test
+        @SneakyThrows
+        void getFailsOnPageReviewNotFound() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/page-revisions/get.failure.revision-not-found.json");
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.pageRevisions().get(30L, 1L), "rest_post_invalid_id", "Invalid revision ID.");
+        }
+
+        @DisplayName("'GET' fails on unauthorized")
+        @Test
+        @SneakyThrows
+        void getFailsOnUnauthorized() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/page-revisions/get.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.pageRevisions().get(30L, 1L));
+        }
+
+        @DisplayName("'GET' succeeds")
+        @Test
+        @SneakyThrows
+        void getSucceeds() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/page-revisions/get.success.json");
+
+            // WHEN/THEN
+            final WpPageRevision pageRevision = client.pageRevisions().get(30L, 1L);
+
+            assertThat(pageRevision).isNotNull();
+            assertThat(pageRevision.getParentId()).isNotNull().isEqualByComparingTo(30L);
+            assertThat(pageRevision.getId()).isNotNull().isEqualByComparingTo(1L);
+        }
+
+        @DisplayName("'LIST' fails on forbidden")
+        @Test
+        @SneakyThrows
+        void listFailsOnForbidden() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/page-revisions/list.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.pageRevisions().list(1L, new WpPaginationQuery(1, 10), null));
+        }
+
+        @DisplayName("'LIST' fails on null or blank parameters")
+        @Test
+        @SneakyThrows
+        void listFailsOnNullParameters() {
+            assertThatThrownBy(() -> client.pageRevisions().list(1L, null, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("paginationQuery is marked non-null but is null");
+        }
+
+        @DisplayName("'LIST' fails on page not found")
+        @Test
+        @SneakyThrows
+        void listFailsOnPageNotFound() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/page-revisions/list.failure.page-not-found.json");
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.pageRevisions().list(1L, new WpPaginationQuery(1, 10), null), "rest_post_invalid_parent", "Invalid post parent ID.");
+        }
+
+        @DisplayName("'LIST' fails on unauthorized")
+        @Test
+        @SneakyThrows
+        void listFailsOnUnauthorized() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/page-revisions/list.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.pageRevisions().list(1L, new WpPaginationQuery(1, 10), null));
+        }
+
+        @DisplayName("'LIST' succeeds")
+        @Test
+        @SneakyThrows
+        void listSucceeds() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/page-revisions/list.success.json");
+
+            // WHEN/THEN
+            final WpPagedResponse<WpPageRevision> response = client.pageRevisions().list(1L, new WpPaginationQuery(1, 10), null);
+
+            WordPressAssertions.assertThat(response)
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(2)
+                               .doesNotHaveNextPage();
+        }
+    }
+
     @DisplayName("'POST REVISION' Operations")
     @Nested
     class PostRevisionsTests {
@@ -423,7 +547,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasTotalItems(1)
                                .doesNotHaveNextPage()
                                .satisfies(r ->
-                                       assertThat(r.getItems())
+                                       assertThat(r.items())
                                                .hasSize(1)
                                                .satisfiesExactly(
                                                        media ->
@@ -458,7 +582,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasTotalItems(1)
                                .doesNotHaveNextPage()
                                .satisfies(r ->
-                                       assertThat(r.getItems())
+                                       assertThat(r.items())
                                                .hasSize(1)
                                                .satisfiesExactly(
                                                        media ->
@@ -900,7 +1024,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasTotalItems(3) // 2 items created here, plus the default category (id=1) which cannot be deleted
                                .doesNotHaveNextPage()
                                .satisfies(r ->
-                                       assertThat(r.getItems())
+                                       assertThat(r.items())
                                                .hasSize(3)
                                                .satisfiesExactly(
                                                        cat -> WordPressAssertions.assertThat(cat)
@@ -953,7 +1077,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasTotalItems(1)
                                .doesNotHaveNextPage()
                                .satisfies(r ->
-                                       assertThat(r.getItems())
+                                       assertThat(r.items())
                                                .hasSize(1)
                                                .satisfiesExactly(
                                                        cat -> WordPressAssertions.assertThat(cat)
@@ -1456,7 +1580,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasTotalItems(2)
                                .doesNotHaveNextPage()
                                .satisfies(r ->
-                                       WordPressAssertions.assertThat(r.getItems().get(0))
+                                       WordPressAssertions.assertThat(r.items().get(0))
                                                           .isNotNull()
                                                           .hasId(4L)
                                                           .hasPost(8L)
@@ -1467,7 +1591,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                           .hasStatus(APPROVED)
                                                           .hasType("comment")
                                ).satisfies(r ->
-                                       WordPressAssertions.assertThat(r.getItems().get(1))
+                                       WordPressAssertions.assertThat(r.items().get(1))
                                                           .isNotNull()
                                                           .hasId(3L)
                                                           .hasPost(8L)
@@ -1507,7 +1631,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .doesNotHaveNextPage()
 
                                .satisfies(r ->
-                                       WordPressAssertions.assertThat(r.getItems().get(0))
+                                       WordPressAssertions.assertThat(r.items().get(0))
                                                           .isNotNull()
                                                           .hasId(3L)
                                                           .hasPost(8L)
@@ -1519,7 +1643,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                           .hasType("comment")
                                )
                                .satisfies(r ->
-                                       WordPressAssertions.assertThat(r.getItems().get(1))
+                                       WordPressAssertions.assertThat(r.items().get(1))
                                                           .isNotNull()
                                                           .hasId(4L)
                                                           .hasPost(8L)
@@ -2065,7 +2189,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasTotalItems(1)
                                .doesNotHaveNextPage()
                                .satisfies(r ->
-                                       WordPressAssertions.assertThat(r.getItems().get(0))
+                                       WordPressAssertions.assertThat(r.items().get(0))
                                                           .isNotNull()
                                                           .hasId(39L)
                                                           .hasLink("https://localhost:63870/page-1/")
@@ -2110,11 +2234,11 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasTotalItems(2)
                                .doesNotHaveNextPage()
                                .satisfies(r -> {
-                                   WordPressAssertions.assertThat(r.getItems().get(0))
+                                   WordPressAssertions.assertThat(r.items().get(0))
                                                       .isNotNull()
                                                       .hasId(36L)
                                                       .hasStatus(WpPageStatus.DRAFT);
-                                   WordPressAssertions.assertThat(r.getItems().get(1))
+                                   WordPressAssertions.assertThat(r.items().get(1))
                                                       .isNotNull()
                                                       .hasId(37L)
                                                       .hasStatus(WpPageStatus.PRIVATE);
@@ -2692,7 +2816,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasTotalItems(1)
                                .doesNotHaveNextPage()
                                .satisfies(r ->
-                                       WordPressAssertions.assertThat(r.getItems().get(0))
+                                       WordPressAssertions.assertThat(r.items().get(0))
                                                           .isNotNull()
                                                           .hasId(4L)
                                                           .hasLink("https://localhost:61975/my-first-post/")
@@ -2739,11 +2863,11 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasTotalItems(2)
                                .doesNotHaveNextPage()
                                .satisfies(r -> {
-                                   WordPressAssertions.assertThat(r.getItems().get(0))
+                                   WordPressAssertions.assertThat(r.items().get(0))
                                                       .isNotNull()
                                                       .hasId(4L)
                                                       .hasStatus(DRAFT);
-                                   WordPressAssertions.assertThat(r.getItems().get(1))
+                                   WordPressAssertions.assertThat(r.items().get(1))
                                                       .isNotNull()
                                                       .hasId(5L)
                                                       .hasStatus(PRIVATE);
@@ -3442,7 +3566,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasTotalItems(2)
                                .doesNotHaveNextPage()
                                .satisfies(r ->
-                                       assertThat(r.getItems())
+                                       assertThat(r.items())
                                                .hasSize(2)
                                                .satisfiesExactly(
                                                        tag ->
@@ -3486,7 +3610,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasTotalItems(1)
                                .doesNotHaveNextPage()
                                .satisfies(r ->
-                                       assertThat(r.getItems())
+                                       assertThat(r.items())
                                                .hasSize(1)
                                                .satisfiesExactly(
 

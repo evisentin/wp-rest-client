@@ -84,14 +84,14 @@ public class ApacheListPostWithJwt {
         final WpPagedResponse<WpPost> pagedResponse = restClient.posts().list(pagingQuery, postQuery);
 
         // Print pagination information.
-        System.out.println("Page number     : " + pagedResponse.getPageNumber());
-        System.out.println("Items per page  : " + pagedResponse.getItemsPerPage());
-        System.out.println("Total items     : " + pagedResponse.getTotalItems());
+        System.out.println("Page number     : " + pagedResponse.pageNumber());
+        System.out.println("Items per page  : " + pagedResponse.itemsPerPage());
+        System.out.println("Total items     : " + pagedResponse.totalItems());
         System.out.println("Has next page   : " + pagedResponse.hasNextPage());
         System.out.println("Is empty        : " + pagedResponse.isEmpty());
 
         // Print returned posts.
-        pagedResponse.getItems()
+        pagedResponse.items()
                      .forEach(post ->
                              System.out.printf(
                                      "[id=%d] [title='%s'] [slug='%s'] [status='%s'] %n",

@@ -55,6 +55,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     private final CommentAPIs commentAPIs;
     private final MediaAPIs mediaAPIs;
     private final PageAPIs pageAPIs;
+    private final PageRevisionAPIs pageRevisionAPIs;
     private final PostAPIs postAPIs;
     private final PostRevisionAPIs postRevisionAPIs;
     private final PostStatusAPIs postStatusAPIs;
@@ -121,6 +122,7 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
         commentAPIs = new CommentApiClientModule(apiUrl, httpClient, mapper);
         mediaAPIs = new MediaApiClientModule(apiUrl, httpClient, mapper);
         pageAPIs = new PageApiClientModule(apiUrl, httpClient, mapper);
+        pageRevisionAPIs = new PageRevisionApiClientModule(apiUrl, httpClient, mapper);
         postAPIs = new PostApiClientModule(apiUrl, httpClient, mapper);
         postRevisionAPIs = new PostRevisionApiClientModule(apiUrl, httpClient, mapper);
         postStatusAPIs = new PostStatusApiClientModule(apiUrl, httpClient, mapper);
@@ -142,6 +144,11 @@ public class OkHttpWpRestClient extends WpBaseRestClient {
     @Override
     public MediaAPIs media() {
         return mediaAPIs;
+    }
+
+    @Override
+    public PageRevisionAPIs pageRevisions() {
+        return pageRevisionAPIs;
     }
 
     @Override

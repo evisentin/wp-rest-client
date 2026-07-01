@@ -15,11 +15,11 @@ class WpPagedResponseTest implements WithAssertions {
 
         WpPagedResponse<String> response = new WpPagedResponse<>(items, 10, 25, 3, 1);
 
-        assertThat(response.getItems()).containsExactly("one", "two");
-        assertThat(response.getItemsPerPage()).isEqualTo(10);
-        assertThat(response.getTotalItems()).isEqualTo(25);
-        assertThat(response.getTotalPages()).isEqualTo(3);
-        assertThat(response.getPageNumber()).isEqualTo(1);
+        assertThat(response.items()).containsExactly("one", "two");
+        assertThat(response.itemsPerPage()).isEqualTo(10);
+        assertThat(response.totalItems()).isEqualTo(25);
+        assertThat(response.totalPages()).isEqualTo(3);
+        assertThat(response.pageNumber()).isEqualTo(1);
     }
 
     @Test
@@ -66,7 +66,7 @@ class WpPagedResponseTest implements WithAssertions {
     void shouldReplaceNullItemsWithEmptyList() {
         WpPagedResponse<String> response = new WpPagedResponse<>(null, 10, 0, 0, 1);
 
-        assertThat(response.getItems()).isEmpty();
+        assertThat(response.items()).isEmpty();
         assertThat(response.isEmpty()).isTrue();
     }
 

@@ -1,7 +1,5 @@
 package io.github.evisentin.wordpress.rest.client.domain.model;
 
-import lombok.Getter;
-
 import java.util.List;
 
 import static java.util.Collections.emptyList;
@@ -15,34 +13,18 @@ import static java.util.Optional.ofNullable;
  *
  * @param <T>
  *         the type of items contained in the response
+ * @param items
+ *         List of items returned for the current page.
+ * @param itemsPerPage
+ *         Number of items requested per page.
+ * @param totalItems
+ *         Total number of items available across all pages.
+ * @param totalPages
+ *         Total number of pages available.
+ * @param pageNumber
+ *         Current page number (1-based index).
  */
-@Getter
-public class WpPagedResponse<T> {
-
-    /**
-     * List of items returned for the current page.
-     */
-    private final List<T> items;
-
-    /**
-     * Number of items requested per page.
-     */
-    private final int itemsPerPage;
-
-    /**
-     * Total number of items available across all pages.
-     */
-    private final int totalItems;
-
-    /**
-     * Total number of pages available.
-     */
-    private final int totalPages;
-
-    /**
-     * Current page number (1-based index).
-     */
-    private final int pageNumber;
+public record WpPagedResponse<T>(List<T> items, int itemsPerPage, int totalItems, int totalPages, int pageNumber) {
 
     /**
      * Creates a new paged response wrapper.

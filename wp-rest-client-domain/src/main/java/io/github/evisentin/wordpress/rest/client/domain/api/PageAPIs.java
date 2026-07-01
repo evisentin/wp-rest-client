@@ -103,12 +103,12 @@ public interface PageAPIs {
      *
      * @param paginationQuery
      *         the pagination settings, including page number and page size; must not be {@code null}
-     * @param pageQuery
+     * @param query
      *         additional page query parameters; may be {@code null} when no extra filtering is needed
      *
      * @return a paginated response containing {@link WpPage} items
      */
-    WpPagedResponse<WpPage> list(WpPaginationQuery paginationQuery, WpPageQuery pageQuery);
+    WpPagedResponse<WpPage> list(WpPaginationQuery paginationQuery, WpPageQuery query);
 
     /**
      * Moves a page to the trash by its unique identifier.

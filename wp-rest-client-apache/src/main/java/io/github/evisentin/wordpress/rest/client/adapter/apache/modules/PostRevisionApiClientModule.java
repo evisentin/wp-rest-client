@@ -42,7 +42,7 @@ public class PostRevisionApiClientModule extends ApiClientModule implements Post
     @SneakyThrows
     public WpPagedResponse<WpPostRevision> list(final long postId,
                                                 final @NonNull WpPaginationQuery paginationQuery,
-                                                final WpPostRevisionQuery postQuery) {
+                                                final WpPostRevisionQuery query) {
         final URIBuilder builder = urlBuilder("${apiUrl}/wp/v2/posts/${postId}/revisions",
                 Map.of(API_URL, apiUrl,
                         "postId", postId));
@@ -50,7 +50,7 @@ public class PostRevisionApiClientModule extends ApiClientModule implements Post
         builder.addParameter(PAGE, Integer.toString(paginationQuery.pageNumber()));
         builder.addParameter(PER_PAGE, Integer.toString(paginationQuery.pageSize()));
 
-        PostRevisionQueryParamMapper.map(builder, postQuery);
+        PostRevisionQueryParamMapper.map(builder, query);
 
         return performPagingRequest(builder, paginationQuery, WP_POST_REVISION_LIST_TYPEREFERENCE);
     }
