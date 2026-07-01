@@ -33,11 +33,11 @@ module and are continuously validated against the following WordPress versions:
 | Posts          | `/posts`                    |  ✅   |   ✅    |   ✅    |   ✅    | Blog posts and post content.       |
 | Post Revisions | `/posts/<parent>/revisions` |  ✅   |  N/A   |  N/A   |  N/A   | Blog posts revisions.              |
 | Pages          | `/pages`                    |  ✅   |   ✅    |   ✅    |   ✅    | Static site pages.                 |
-| Page Revisions | `/pages/<parent>/revisions` |  ⬜   |   ⬜    |   ⬜    |   ⬜    | Static site pages revisions.       |
+| Page Revisions | `/pages/<parent>/revisions` |  ✅   |  N/A   |  N/A   |  N/A   | Static site pages revisions.       |
 | Media          | `/media`                    |  ✅   |   ✅    |   ✅    |   ✅    | Images, files, and attachments.    |
 | Categories     | `/categories`               |  ✅   |   ✅    |   ✅    |   ✅    | Post categories.                   |
 | Tags           | `/tags`                     |  ✅   |   ✅    |   ✅    |   ✅    | Post tags.                         |
-| Comments       | `/comments`                 |  ✅   |   ✅    |   ⬜    |   ✅    | Comments and moderation workflows. |
+| Comments       | `/comments`                 |  ✅   |   ✅    |   ✅    |   ✅    | Comments and moderation workflows. |
 | Users          | `/users`                    |  🚫  |   🚫   |   🚫   |   🚫   | Usually requires authentication.   |
 | Search         | `/search`                   |  ⬜   |  N/A   |  N/A   |  N/A   | Search across public content.      |
 | Taxonomies     | `/taxonomies`               |  ✅   |  N/A   |  N/A   |  N/A   | Taxonomy metadata.                 |
@@ -54,13 +54,13 @@ Legend:
 
 ### Posts
 
-| Endpoint                   | Description     |  Status  |
-|----------------------------|-----------------|:--------:|
-| `GET /wp/v2/posts`         | List Posts      |    ✅     |
-| `POST /wp/v2/posts`        | Create a Post   |    ✅     |
-| `GET /wp/v2/posts/<id>`    | Retrieve a Post |    ✅     |
-| `POST /wp/v2/posts/<id>`   | Update a Post   |    ✅     |
-| `DELETE /wp/v2/posts/<id>` | Delete a Post   |    ✅     |
+| Endpoint                   | Description     | Status |
+|----------------------------|-----------------|:------:|
+| `GET /wp/v2/posts`         | List Posts      |   ✅    |
+| `POST /wp/v2/posts`        | Create a Post   |   ✅    |
+| `GET /wp/v2/posts/<id>`    | Retrieve a Post |   ✅    |
+| `POST /wp/v2/posts/<id>`   | Update a Post   |   ✅    |
+| `DELETE /wp/v2/posts/<id>` | Delete a Post   |   ✅    |
 
 ### Post Revisions
 
@@ -79,6 +79,14 @@ Legend:
 | `GET /wp/v2/pages/<id>`    | Retrieve a Page |   ✅    |
 | `POST /wp/v2/pages/<id>`   | Update a Page   |   ✅    |
 | `DELETE /wp/v2/pages/<id>` | Delete a Page   |   ✅    |
+
+### Page Revisions
+
+| Endpoint                                      |   | Description              | Status | Notes                                                                                                                 |
+|-----------------------------------------------|:--|--------------------------|:------:|-----------------------------------------------------------------------------------------------------------------------|
+| `GET /wp/v2/pages/<parent>/revisions`         |   | List Page Revisions      |   ✅    |                                                                                                                       |
+| `GET /wp/v2/pages/<parent>/revisions/<id>`    |   | Retrieve a Page Revision |   ✅    |                                                                                                                       |
+| `DELETE /wp/v2/pages/<parent>/revisions/<id>` |   | Delete a Page Revision   |  N/A   | Although the deletion is mentioned in the reference page, WordPress actually does not allow the deletion via REST API |
 
 ### Media
 
@@ -120,19 +128,19 @@ Legend:
 | `POST /wp/v2/comments/<id>`   | Update a Comment   |   ✅    |
 | `DELETE /wp/v2/comments/<id>` | Delete a Comment   |   ✅    |
 
-### Post Types
-
-| Endpoint                  | Description     | Status |
-|---------------------------|-----------------|:------:|
-| `GET /wp/v2/types`        | List Post Types |   ✅    |
-| `GET /wp/v2/types/<name>` | Get Post Type   |   ✅    |
-
 ### Taxonomies
 
 | Endpoint                       | Description     | Status |
 |--------------------------------|-----------------|:------:|
 | `GET /wp/v2/taxonomies`        | List Taxonomies |   ✅    |
 | `GET /wp/v2/taxonomies/<name>` | Get Taxonomy    |   ✅    |
+
+### Post Types
+
+| Endpoint                  | Description     | Status |
+|---------------------------|-----------------|:------:|
+| `GET /wp/v2/types`        | List Post Types |   ✅    |
+| `GET /wp/v2/types/<name>` | Get Post Type   |   ✅    |
 
 ### Statuses
 

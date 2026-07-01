@@ -10,25 +10,25 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 /**
- * Represents a revision of a WordPress post as returned by the WordPress REST API.
+ * Represents a revision of a WordPress page as returned by the WordPress REST API.
  *
- * <p>A post revision is a snapshot of a post's content, title, and excerpt at a specific point in time. Revisions are
- * automatically created by WordPress when a post is updated and can be used to inspect or restore previous versions of
- * the post.</p>
+ * <p>A page revision is a snapshot of a page's content, title, and excerpt at a specific point in time. Revisions are
+ * automatically created by WordPress when a page is updated and can be used to inspect or restore previous versions of
+ * the page.</p>
  *
  * <p>This model maps the JSON structure of a revision object, including metadata such as identifiers, author
- * information, creation and modification dates, rendered content fields, and the parent post reference.</p>
+ * information, creation and modification dates, rendered content fields, and the parent page reference.</p>
  *
  * <p>Unknown JSON properties are ignored during deserialization to ensure forward compatibility with the API.</p>
  *
- * @see <a href="https://developer.wordpress.org/rest-api/reference/post-revisions/">WordPress REST API - Post
+ * @see <a href="https://developer.wordpress.org/rest-api/reference/page-revisions/">WordPress REST API - Page
  * Revisions</a>
  */
 @Getter
 @Setter
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class WpPostRevision {
+public class WpPageRevision {
 
     /**
      * Unique identifier.

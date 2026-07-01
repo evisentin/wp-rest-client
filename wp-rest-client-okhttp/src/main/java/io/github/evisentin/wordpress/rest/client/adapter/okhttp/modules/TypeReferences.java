@@ -29,6 +29,10 @@ interface TypeReferences {
     TypeReference<List<WpPage>> WP_PAGE_LIST_TYPEREFERENCE = new TypeReference<>() {};
     TypeReference<WpPageDeletionResponse> WP_PAGE_DELETION_RESPONSE_TYPEREFERENCE = new TypeReference<>() {};
 
+    // Page revisions
+    TypeReference<WpPageRevision> WP_PAGE_REVISION_TYPEREFERENCE = new TypeReference<>() {};
+    TypeReference<List<WpPageRevision>> WP_PAGE_REVISION_LIST_TYPEREFERENCE = new TypeReference<>() {};
+
     // Posts
     TypeReference<WpPost> WP_POST_TYPEREFERENCE = new TypeReference<>() {};
     TypeReference<List<WpPost>> WP_POST_LIST_TYPEREFERENCE = new TypeReference<>() {};

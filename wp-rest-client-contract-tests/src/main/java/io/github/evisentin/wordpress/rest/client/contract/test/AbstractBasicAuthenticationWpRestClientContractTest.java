@@ -60,524 +60,6 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
         return String.format("<p>%s</p>\n", text);
     }
 
-    @DisplayName("'POST REVISION' Operations")
-    @Nested
-    class PostRevisionsTests {
-
-        @DisplayName("'GET' fails on forbidden")
-        @Test
-        @SneakyThrows
-        void getFailsOnForbidden() {
-            // GIVEN
-            givenExpectationFromFile("basic-auth/post-revisions/get.failure.forbidden.json");
-
-            // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.postRevisions().get(30L, 1L));
-        }
-
-        @DisplayName("'GET' fails on post not found")
-        @Test
-        @SneakyThrows
-        void getFailsOnPostNotFound() {
-            // GIVEN
-            givenExpectationFromFile("basic-auth/post-revisions/get.failure.post-not-found.json");
-
-            // WHEN/THEN
-            assertThrowsWpNotFound(() -> client.postRevisions().get(30L, 1L), "rest_post_invalid_parent", "Invalid post parent ID.");
-        }
-
-        @DisplayName("'GET' fails on post review not found")
-        @Test
-        @SneakyThrows
-        void getFailsOnPostReviewNotFound() {
-            // GIVEN
-            givenExpectationFromFile("basic-auth/post-revisions/get.failure.revision-not-found.json");
-
-            // WHEN/THEN
-            assertThrowsWpNotFound(() -> client.postRevisions().get(30L, 1L), "rest_post_invalid_id", "Invalid revision ID.");
-        }
-
-        @DisplayName("'GET' fails on unauthorized")
-        @Test
-        @SneakyThrows
-        void getFailsOnUnauthorized() {
-            // GIVEN
-            givenExpectationFromFile("basic-auth/post-revisions/get.failure.unauthorized.json");
-
-            // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.postRevisions().get(30L, 1L));
-        }
-
-        @DisplayName("'GET' succeeds")
-        @Test
-        @SneakyThrows
-        void getSucceeds() {
-            // GIVEN
-            givenExpectationFromFile("basic-auth/post-revisions/get.success.json");
-
-            // WHEN/THEN
-            final WpPostRevision postRevision = client.postRevisions().get(30L, 1L);
-
-            assertThat(postRevision).isNotNull();
-            assertThat(postRevision.getParentId()).isNotNull().isEqualByComparingTo(30L);
-            assertThat(postRevision.getId()).isNotNull().isEqualByComparingTo(1L);
-        }
-
-        @DisplayName("'LIST' fails on forbidden")
-        @Test
-        @SneakyThrows
-        void listFailsOnForbidden() {
-            // GIVEN
-            givenExpectationFromFile("basic-auth/post-revisions/list.failure.forbidden.json");
-
-            // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.postRevisions().list(1L, new WpPaginationQuery(1, 10), null));
-        }
-
-        @DisplayName("'LIST' fails on null or blank parameters")
-        @Test
-        @SneakyThrows
-        void listFailsOnNullParameters() {
-            assertThatThrownBy(() -> client.postRevisions().list(1L, null, null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("paginationQuery is marked non-null but is null");
-        }
-
-        @DisplayName("'LIST' fails on post not found")
-        @Test
-        @SneakyThrows
-        void listFailsOnPostNotFound() {
-            // GIVEN
-            givenExpectationFromFile("basic-auth/post-revisions/list.failure.post-not-found.json");
-
-            // WHEN/THEN
-            assertThrowsWpNotFound(() -> client.postRevisions().list(1L, new WpPaginationQuery(1, 10), null), "rest_post_invalid_parent", "Invalid post parent ID.");
-        }
-
-        @DisplayName("'LIST' fails on unauthorized")
-        @Test
-        @SneakyThrows
-        void listFailsOnUnauthorized() {
-            // GIVEN
-            givenExpectationFromFile("basic-auth/post-revisions/list.failure.unauthorized.json");
-
-            // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.postRevisions().list(1L, new WpPaginationQuery(1, 10), null));
-        }
-
-        @DisplayName("'LIST' succeeds")
-        @Test
-        @SneakyThrows
-        void listSucceeds() {
-            // GIVEN
-            givenExpectationFromFile("basic-auth/post-revisions/list.success.json");
-
-            // WHEN/THEN
-            final WpPagedResponse<WpPostRevision> response = client.postRevisions().list(1L, new WpPaginationQuery(1, 10), null);
-
-            WordPressAssertions.assertThat(response)
-                               .hasPageNumber(1)
-                               .hasItemsPerPage(10)
-                               .hasTotalPages(1)
-                               .hasTotalItems(2)
-                               .doesNotHaveNextPage();
-        }
-    }
-
-    @DisplayName("'MEDIA' Operations")
-    @Nested
-    class MediaTests {
-
-        @DisplayName("'CREATE' fails on null or blank parameters")
-        @Test
-        @SneakyThrows
-        void createFailsOnNullParameters() {
-            assertThatThrownBy(() -> client.media().create(null, null, null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("file is marked non-null but is null");
-
-            assertThatThrownBy(() -> client.media().create(new File(""), null, null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("fileName is marked non-null but is null");
-
-            assertThatThrownBy(() -> client.media().create(new File(""), "some name", null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("mimeType is marked non-null but is null");
-
-            assertThatThrownBy(() -> client.media().create(new File(""), " ", " "))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("fileName cannot be blank");
-
-            assertThatThrownBy(() -> client.media().create(new File(""), "some name", " "))
-                    .isInstanceOf(IllegalArgumentException.class)
-                    .hasMessage("mimeType cannot be blank");
-        }
-
-        @DisplayName("'CREATE' works")
-        @Test
-        @SneakyThrows
-        void createWorks() {
-
-            // GIVEN
-            givenExpectationFromFile("basic-auth/media/create.success.json");
-
-            InputStream is = getClass()
-                    .getClassLoader()
-                    .getResourceAsStream("files/sample.png");
-
-            Path tempFile = Files.createTempFile("sample", ".png");
-
-            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
-
-            File file = tempFile.toFile();
-
-            // WHEN
-            final WpMedia media = client.media().create(file, "sample.png", "image/png");
-
-            // THEN
-            WordPressAssertions.assertThat(media)
-                               .isNotNull()
-                               .hasId(9L)
-                               .hasStatus(WpMediaStatus.INHERIT)
-                               .hasSlug("sample-1")
-                               .hasType("attachment")
-                               .hasTitleSatisfying(t ->
-                                       t.hasRaw("sample-1")
-                                        .hasRendered("sample-1"))
-                               .hasAuthorId(1L)
-                               .hasCommentStatus(WpOpenClosed.OPEN)
-                               .hasPingStatus(WpOpenClosed.CLOSED)
-                               .hasMediaType(WpMediaType.IMAGE)
-                               .hasMimeType("image/png");
-        }
-
-        @DisplayName("'DELETE' fails on HTTP FORBIDDEN")
-        @Test
-        void deleteFailsOnForbidden() {
-
-            // GIVEN
-            givenExpectationFromFile("basic-auth/media/delete.failure.forbidden.json");
-
-            // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.media().delete(9L));
-        }
-
-        @DisplayName("'DELETE' fails on HTTP NOT FOUND")
-        @Test
-        void deleteFailsOnNotFound() {
-
-            // GIVEN
-            givenExpectationFromFile("basic-auth/media/delete.failure.not-found.json");
-
-            // WHEN/THEN
-            assertThrowsWpNotFound(() -> client.media().delete(9L));
-        }
-
-        @DisplayName("'DELETE' fails on HTTP UNAUTHORIZED")
-        @Test
-        void deleteFailsOnUnauthorized() {
-
-            // GIVEN
-            givenExpectationFromFile("basic-auth/media/delete.failure.unauthorized.json");
-
-            // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.media().delete(9L));
-        }
-
-        @DisplayName("'DELETE' works")
-        @Test
-        void deleteWorks() {
-
-            // GIVEN
-            givenExpectationFromFile("basic-auth/media/delete.success.json");
-
-            // WHEN
-            final WpMediaDeletionResponse response = client.media().delete(9L);
-
-            // THEN
-            WordPressAssertions.assertThat(response)
-                               .isNotNull()
-                               .isDeleted()
-                               .hasPreviousSatisfying(summary ->
-                                       summary.isNotNull()
-                                              .hasId(9L)
-                               );
-        }
-
-        @DisplayName("'GET' fails on HTTP FORBIDDEN")
-        @Test
-        void getFailsOnForbidden() {
-
-            // GIVEN
-            givenExpectationFromFile("basic-auth/media/get.failure.forbidden.json");
-
-            // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.media().get(9L, null));
-        }
-
-        @DisplayName("'GET' fails on HTTP NOT FOUND")
-        @Test
-        void getFailsOnNotFound() {
-
-            // GIVEN
-            givenExpectationFromFile("basic-auth/media/get.failure.not-found.json");
-
-            // WHEN/THEN
-            assertThrowsWpNotFound(() -> client.media().get(9L, null));
-        }
-
-        @DisplayName("'GET' fails on HTTP UNAUTHORIZED")
-        @Test
-        void getFailsOnUnauthorized() {
-
-            // GIVEN
-            givenExpectationFromFile("basic-auth/media/get.failure.unauthorized.json");
-
-            // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.media().get(9L, null));
-        }
-
-        @DisplayName("'GET' works with context")
-        @Test
-        void getWorksWithContext() {
-
-            // GIVEN
-            givenExpectationFromFile("basic-auth/media/get.success.with-context.json");
-
-            final long id = 9L;
-
-            // WHEN
-            final WpMedia media = client.media().get(id, WpContext.VIEW);
-
-            // THEN
-            WordPressAssertions.assertThat(media)
-                               .isNotNull()
-                               .hasId(id);
-        }
-
-        @DisplayName("'GET' works without context")
-        @Test
-        void getWorksWithoutContext() {
-
-            // GIVEN
-            givenExpectationFromFile("basic-auth/media/get.success.without-context.json");
-
-            final long id = 9L;
-
-            // WHEN
-            final WpMedia media = client.media().get(id, null);
-
-            // THEN
-            WordPressAssertions.assertThat(media)
-                               .isNotNull()
-                               .hasId(id);
-        }
-
-        @DisplayName("'LIST' fails on HTTP FORBIDDEN")
-        @Test
-        void listFailsOnForbidden() {
-
-            // GIVEN
-            givenExpectationFromFile("basic-auth/media/list.failure.forbidden.json");
-
-            // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.media().list(new WpPaginationQuery(1, 10), null));
-        }
-
-        @DisplayName("'LIST' fails on null pageQuery")
-        @Test
-        void listFailsOnNullPaging() {
-            // WHEN/THEN
-            assertThatThrownBy(() -> client.media().list(null, null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("paginationQuery is marked non-null but is null");
-        }
-
-        @DisplayName("'LIST' fails on HTTP UNAUTHORIZED")
-        @Test
-        void listFailsOnUnauthorized() {
-
-            // GIVEN
-            givenExpectationFromFile("basic-auth/media/list.failure.unauthorized.json");
-
-            // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.media().list(new WpPaginationQuery(1, 10), null));
-        }
-
-        @DisplayName("'LIST' works with paging")
-        @Test
-        void listWorksWithJustPaging() {
-
-            // GIVEN
-            givenExpectationFromFile("basic-auth/media/list.success.just-paging.json");
-
-            // WHEN
-            final WpPagedResponse<WpMedia> response = client.media().list(new WpPaginationQuery(1, 10), null);
-
-            // THEN
-            WordPressAssertions.assertThat(response)
-                               .isNotNull()
-                               .hasPageNumber(1)
-                               .hasItemsPerPage(10)
-                               .hasTotalPages(1)
-                               .hasTotalItems(1)
-                               .doesNotHaveNextPage()
-                               .satisfies(r ->
-                                       assertThat(r.getItems())
-                                               .hasSize(1)
-                                               .satisfiesExactly(
-                                                       media ->
-                                                               WordPressAssertions.assertThat(media)
-                                                                                  .isNotNull()
-                                                                                  .hasId(9L)
-                                                                                  .hasTitleSatisfying(title -> title.hasRaw("sample-1")
-                                                                                                                    .hasRendered("sample-1"))
-                                               ));
-        }
-
-        @DisplayName("'LIST' works with paging and query")
-        @Test
-        void listWorksWithPagingAndQuery() {
-
-            // GIVEN
-            givenExpectationFromFile("basic-auth/media/list.success.paging-and-query.json");
-
-            final WpMediaQuery mediaQuery = WpMediaQuery.builder()
-                                                        .withSlug("slug-1")
-                                                        .build();
-
-            // WHEN
-            final WpPagedResponse<WpMedia> response = client.media().list(new WpPaginationQuery(1, 10), mediaQuery);
-
-            // THEN
-            WordPressAssertions.assertThat(response)
-                               .isNotNull()
-                               .hasPageNumber(1)
-                               .hasItemsPerPage(10)
-                               .hasTotalPages(1)
-                               .hasTotalItems(1)
-                               .doesNotHaveNextPage()
-                               .satisfies(r ->
-                                       assertThat(r.getItems())
-                                               .hasSize(1)
-                                               .satisfiesExactly(
-                                                       media ->
-                                                               WordPressAssertions.assertThat(media)
-                                                                                  .isNotNull()
-                                                                                  .hasId(9L)
-                                                                                  .hasTitleSatisfying(title -> title.hasRaw("sample-1")
-                                                                                                                    .hasRendered("sample-1"))
-                                               ));
-        }
-
-        @DisplayName("'UPDATE' fails on HTTP BAD REQUEST")
-        @Test
-        void updateFailsOnBadRequest() {
-
-            // GIVEN
-            givenExpectationFromFile("basic-auth/media/update.failure.bad-request.json");
-
-            final WpMediaUpdateRequest updateRequest =
-                    WpMediaUpdateRequest.builder()
-                                        .withCaption("Caption updated")
-                                        .withDescription("Description updated")
-                                        .withTitle("Title updated")
-                                        .build();
-
-            // WHEN/THEN
-            assertThrowsWpBadRequest(() -> client.media().update(9L, updateRequest));
-        }
-
-        @DisplayName("'UPDATE' fails on HTTP FORBIDDEN")
-        @Test
-        void updateFailsOnForbidden() {
-
-            // GIVEN
-            givenExpectationFromFile("basic-auth/media/update.failure.forbidden.json");
-
-            final WpMediaUpdateRequest updateRequest =
-                    WpMediaUpdateRequest.builder()
-                                        .withCaption("Caption updated")
-                                        .withDescription("Description updated")
-                                        .withTitle("Title updated")
-                                        .build();
-
-            // WHEN/THEN
-            assertThrowsWpForbidden(() -> client.media().update(9L, updateRequest));
-        }
-
-        @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
-        @Test
-        void updateFailsOnNotFound() {
-
-            // GIVEN
-            givenExpectationFromFile("basic-auth/media/update.failure.not-found.json");
-
-            final WpMediaUpdateRequest updateRequest =
-                    WpMediaUpdateRequest.builder()
-                                        .withCaption("Caption updated")
-                                        .withDescription("Description updated")
-                                        .withTitle("Title updated")
-                                        .build();
-
-            // WHEN/THEN
-            assertThrowsWpNotFound(() -> client.media().update(9L, updateRequest));
-        }
-
-        @DisplayName("'UPDATE' fails on null request")
-        @Test
-        void updateFailsOnNullRequest() {
-
-            // WHEN/THEN
-            assertThatThrownBy(() -> client.media().update(1000L, null))
-                    .isInstanceOf(NullPointerException.class)
-                    .hasMessage("updateRequest is marked non-null but is null");
-        }
-
-        @DisplayName("'UPDATE' fails on HTTP UNAUTHORIZED")
-        @Test
-        void updateFailsOnUnauthorized() {
-
-            // GIVEN
-            givenExpectationFromFile("basic-auth/media/update.failure.unauthorized.json");
-
-            final WpMediaUpdateRequest updateRequest =
-                    WpMediaUpdateRequest.builder()
-                                        .withCaption("Caption updated")
-                                        .withDescription("Description updated")
-                                        .withTitle("Title updated")
-                                        .build();
-
-            // WHEN/THEN
-            assertThrowsWpUnauthorized(() -> client.media().update(9L, updateRequest));
-        }
-
-        @DisplayName("UPDATE' works")
-        @Test
-        void updateWorks() {
-
-            // GIVEN
-            givenExpectationFromFile("basic-auth/media/update.success.json");
-
-            final WpMediaUpdateRequest updateRequest =
-                    WpMediaUpdateRequest.builder()
-                                        .withCaption("Caption updated")
-                                        .withDescription("Description updated")
-                                        .withTitle("Title updated")
-                                        .build();
-
-            // WHEN
-            final WpMedia media = client.media().update(9L, updateRequest);
-
-            WordPressAssertions.assertThat(media)
-                               .isNotNull()
-                               .hasId(9L)
-                               .hasCaptionSatisfying(caption -> caption.hasRaw("Caption updated").hasRendered("Caption updated"))
-                               .hasDescriptionSatisfying(description -> description.hasRaw("Description updated").hasRendered("Description updated"))
-                               .hasTitleSatisfying(title -> title.hasRaw("Title updated").hasRendered("Title updated"));
-        }
-    }
-
     @DisplayName("'CATEGORY' Operations")
     @Nested
     class CategoryTests {
@@ -900,7 +382,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasTotalItems(3) // 2 items created here, plus the default category (id=1) which cannot be deleted
                                .doesNotHaveNextPage()
                                .satisfies(r ->
-                                       assertThat(r.getItems())
+                                       assertThat(r.items())
                                                .hasSize(3)
                                                .satisfiesExactly(
                                                        cat -> WordPressAssertions.assertThat(cat)
@@ -953,7 +435,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasTotalItems(1)
                                .doesNotHaveNextPage()
                                .satisfies(r ->
-                                       assertThat(r.getItems())
+                                       assertThat(r.items())
                                                .hasSize(1)
                                                .satisfiesExactly(
                                                        cat -> WordPressAssertions.assertThat(cat)
@@ -1456,7 +938,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasTotalItems(2)
                                .doesNotHaveNextPage()
                                .satisfies(r ->
-                                       WordPressAssertions.assertThat(r.getItems().get(0))
+                                       WordPressAssertions.assertThat(r.items().get(0))
                                                           .isNotNull()
                                                           .hasId(4L)
                                                           .hasPost(8L)
@@ -1467,7 +949,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                           .hasStatus(APPROVED)
                                                           .hasType("comment")
                                ).satisfies(r ->
-                                       WordPressAssertions.assertThat(r.getItems().get(1))
+                                       WordPressAssertions.assertThat(r.items().get(1))
                                                           .isNotNull()
                                                           .hasId(3L)
                                                           .hasPost(8L)
@@ -1507,7 +989,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .doesNotHaveNextPage()
 
                                .satisfies(r ->
-                                       WordPressAssertions.assertThat(r.getItems().get(0))
+                                       WordPressAssertions.assertThat(r.items().get(0))
                                                           .isNotNull()
                                                           .hasId(3L)
                                                           .hasPost(8L)
@@ -1519,7 +1001,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                                           .hasType("comment")
                                )
                                .satisfies(r ->
-                                       WordPressAssertions.assertThat(r.getItems().get(1))
+                                       WordPressAssertions.assertThat(r.items().get(1))
                                                           .isNotNull()
                                                           .hasId(4L)
                                                           .hasPost(8L)
@@ -1690,6 +1172,400 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasAuthorName("admin")
                                .hasStatus(APPROVED)
                                .hasContentSatisfying(c -> c.hasRaw(CONTENT_UPDATED));
+        }
+    }
+
+    @DisplayName("'MEDIA' Operations")
+    @Nested
+    class MediaTests {
+
+        @DisplayName("'CREATE' fails on null or blank parameters")
+        @Test
+        @SneakyThrows
+        void createFailsOnNullParameters() {
+            assertThatThrownBy(() -> client.media().create(null, null, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("file is marked non-null but is null");
+
+            assertThatThrownBy(() -> client.media().create(new File(""), null, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("fileName is marked non-null but is null");
+
+            assertThatThrownBy(() -> client.media().create(new File(""), "some name", null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("mimeType is marked non-null but is null");
+
+            assertThatThrownBy(() -> client.media().create(new File(""), " ", " "))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("fileName cannot be blank");
+
+            assertThatThrownBy(() -> client.media().create(new File(""), "some name", " "))
+                    .isInstanceOf(IllegalArgumentException.class)
+                    .hasMessage("mimeType cannot be blank");
+        }
+
+        @DisplayName("'CREATE' works")
+        @Test
+        @SneakyThrows
+        void createWorks() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/create.success.json");
+
+            InputStream is = getClass()
+                    .getClassLoader()
+                    .getResourceAsStream("files/sample.png");
+
+            Path tempFile = Files.createTempFile("sample", ".png");
+
+            Files.copy(is, tempFile, StandardCopyOption.REPLACE_EXISTING);
+
+            File file = tempFile.toFile();
+
+            // WHEN
+            final WpMedia media = client.media().create(file, "sample.png", "image/png");
+
+            // THEN
+            WordPressAssertions.assertThat(media)
+                               .isNotNull()
+                               .hasId(9L)
+                               .hasStatus(WpMediaStatus.INHERIT)
+                               .hasSlug("sample-1")
+                               .hasType("attachment")
+                               .hasTitleSatisfying(t ->
+                                       t.hasRaw("sample-1")
+                                        .hasRendered("sample-1"))
+                               .hasAuthorId(1L)
+                               .hasCommentStatus(WpOpenClosed.OPEN)
+                               .hasPingStatus(WpOpenClosed.CLOSED)
+                               .hasMediaType(WpMediaType.IMAGE)
+                               .hasMimeType("image/png");
+        }
+
+        @DisplayName("'DELETE' fails on HTTP FORBIDDEN")
+        @Test
+        void deleteFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/delete.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.media().delete(9L));
+        }
+
+        @DisplayName("'DELETE' fails on HTTP NOT FOUND")
+        @Test
+        void deleteFailsOnNotFound() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/delete.failure.not-found.json");
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.media().delete(9L));
+        }
+
+        @DisplayName("'DELETE' fails on HTTP UNAUTHORIZED")
+        @Test
+        void deleteFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/delete.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.media().delete(9L));
+        }
+
+        @DisplayName("'DELETE' works")
+        @Test
+        void deleteWorks() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/delete.success.json");
+
+            // WHEN
+            final WpMediaDeletionResponse response = client.media().delete(9L);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .isDeleted()
+                               .hasPreviousSatisfying(summary ->
+                                       summary.isNotNull()
+                                              .hasId(9L)
+                               );
+        }
+
+        @DisplayName("'GET' fails on HTTP FORBIDDEN")
+        @Test
+        void getFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/get.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.media().get(9L, null));
+        }
+
+        @DisplayName("'GET' fails on HTTP NOT FOUND")
+        @Test
+        void getFailsOnNotFound() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/get.failure.not-found.json");
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.media().get(9L, null));
+        }
+
+        @DisplayName("'GET' fails on HTTP UNAUTHORIZED")
+        @Test
+        void getFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/get.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.media().get(9L, null));
+        }
+
+        @DisplayName("'GET' works with context")
+        @Test
+        void getWorksWithContext() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/get.success.with-context.json");
+
+            final long id = 9L;
+
+            // WHEN
+            final WpMedia media = client.media().get(id, WpContext.VIEW);
+
+            // THEN
+            WordPressAssertions.assertThat(media)
+                               .isNotNull()
+                               .hasId(id);
+        }
+
+        @DisplayName("'GET' works without context")
+        @Test
+        void getWorksWithoutContext() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/get.success.without-context.json");
+
+            final long id = 9L;
+
+            // WHEN
+            final WpMedia media = client.media().get(id, null);
+
+            // THEN
+            WordPressAssertions.assertThat(media)
+                               .isNotNull()
+                               .hasId(id);
+        }
+
+        @DisplayName("'LIST' fails on HTTP FORBIDDEN")
+        @Test
+        void listFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/list.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.media().list(new WpPaginationQuery(1, 10), null));
+        }
+
+        @DisplayName("'LIST' fails on null pageQuery")
+        @Test
+        void listFailsOnNullPaging() {
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.media().list(null, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("paginationQuery is marked non-null but is null");
+        }
+
+        @DisplayName("'LIST' fails on HTTP UNAUTHORIZED")
+        @Test
+        void listFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/list.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.media().list(new WpPaginationQuery(1, 10), null));
+        }
+
+        @DisplayName("'LIST' works with paging")
+        @Test
+        void listWorksWithJustPaging() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/list.success.just-paging.json");
+
+            // WHEN
+            final WpPagedResponse<WpMedia> response = client.media().list(new WpPaginationQuery(1, 10), null);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(1)
+                               .doesNotHaveNextPage()
+                               .satisfies(r ->
+                                       assertThat(r.items())
+                                               .hasSize(1)
+                                               .satisfiesExactly(
+                                                       media ->
+                                                               WordPressAssertions.assertThat(media)
+                                                                                  .isNotNull()
+                                                                                  .hasId(9L)
+                                                                                  .hasTitleSatisfying(title -> title.hasRaw("sample-1")
+                                                                                                                    .hasRendered("sample-1"))
+                                               ));
+        }
+
+        @DisplayName("'LIST' works with paging and query")
+        @Test
+        void listWorksWithPagingAndQuery() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/list.success.paging-and-query.json");
+
+            final WpMediaQuery mediaQuery = WpMediaQuery.builder()
+                                                        .withSlug("slug-1")
+                                                        .build();
+
+            // WHEN
+            final WpPagedResponse<WpMedia> response = client.media().list(new WpPaginationQuery(1, 10), mediaQuery);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .isNotNull()
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(1)
+                               .doesNotHaveNextPage()
+                               .satisfies(r ->
+                                       assertThat(r.items())
+                                               .hasSize(1)
+                                               .satisfiesExactly(
+                                                       media ->
+                                                               WordPressAssertions.assertThat(media)
+                                                                                  .isNotNull()
+                                                                                  .hasId(9L)
+                                                                                  .hasTitleSatisfying(title -> title.hasRaw("sample-1")
+                                                                                                                    .hasRendered("sample-1"))
+                                               ));
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP BAD REQUEST")
+        @Test
+        void updateFailsOnBadRequest() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/update.failure.bad-request.json");
+
+            final WpMediaUpdateRequest updateRequest =
+                    WpMediaUpdateRequest.builder()
+                                        .withCaption("Caption updated")
+                                        .withDescription("Description updated")
+                                        .withTitle("Title updated")
+                                        .build();
+
+            // WHEN/THEN
+            assertThrowsWpBadRequest(() -> client.media().update(9L, updateRequest));
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP FORBIDDEN")
+        @Test
+        void updateFailsOnForbidden() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/update.failure.forbidden.json");
+
+            final WpMediaUpdateRequest updateRequest =
+                    WpMediaUpdateRequest.builder()
+                                        .withCaption("Caption updated")
+                                        .withDescription("Description updated")
+                                        .withTitle("Title updated")
+                                        .build();
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.media().update(9L, updateRequest));
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
+        @Test
+        void updateFailsOnNotFound() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/update.failure.not-found.json");
+
+            final WpMediaUpdateRequest updateRequest =
+                    WpMediaUpdateRequest.builder()
+                                        .withCaption("Caption updated")
+                                        .withDescription("Description updated")
+                                        .withTitle("Title updated")
+                                        .build();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.media().update(9L, updateRequest));
+        }
+
+        @DisplayName("'UPDATE' fails on null request")
+        @Test
+        void updateFailsOnNullRequest() {
+
+            // WHEN/THEN
+            assertThatThrownBy(() -> client.media().update(1000L, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("updateRequest is marked non-null but is null");
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP UNAUTHORIZED")
+        @Test
+        void updateFailsOnUnauthorized() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/update.failure.unauthorized.json");
+
+            final WpMediaUpdateRequest updateRequest =
+                    WpMediaUpdateRequest.builder()
+                                        .withCaption("Caption updated")
+                                        .withDescription("Description updated")
+                                        .withTitle("Title updated")
+                                        .build();
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.media().update(9L, updateRequest));
+        }
+
+        @DisplayName("UPDATE' works")
+        @Test
+        void updateWorks() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/media/update.success.json");
+
+            final WpMediaUpdateRequest updateRequest =
+                    WpMediaUpdateRequest.builder()
+                                        .withCaption("Caption updated")
+                                        .withDescription("Description updated")
+                                        .withTitle("Title updated")
+                                        .build();
+
+            // WHEN
+            final WpMedia media = client.media().update(9L, updateRequest);
+
+            WordPressAssertions.assertThat(media)
+                               .isNotNull()
+                               .hasId(9L)
+                               .hasCaptionSatisfying(caption -> caption.hasRaw("Caption updated").hasRendered("Caption updated"))
+                               .hasDescriptionSatisfying(description -> description.hasRaw("Description updated").hasRendered("Description updated"))
+                               .hasTitleSatisfying(title -> title.hasRaw("Title updated").hasRendered("Title updated"));
         }
     }
 
@@ -2065,7 +1941,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasTotalItems(1)
                                .doesNotHaveNextPage()
                                .satisfies(r ->
-                                       WordPressAssertions.assertThat(r.getItems().get(0))
+                                       WordPressAssertions.assertThat(r.items().get(0))
                                                           .isNotNull()
                                                           .hasId(39L)
                                                           .hasLink("https://localhost:63870/page-1/")
@@ -2110,11 +1986,11 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasTotalItems(2)
                                .doesNotHaveNextPage()
                                .satisfies(r -> {
-                                   WordPressAssertions.assertThat(r.getItems().get(0))
+                                   WordPressAssertions.assertThat(r.items().get(0))
                                                       .isNotNull()
                                                       .hasId(36L)
                                                       .hasStatus(WpPageStatus.DRAFT);
-                                   WordPressAssertions.assertThat(r.getItems().get(1))
+                                   WordPressAssertions.assertThat(r.items().get(1))
                                                       .isNotNull()
                                                       .hasId(37L)
                                                       .hasStatus(WpPageStatus.PRIVATE);
@@ -2302,6 +2178,130 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasExcerptSatisfying(excerpt ->
                                        excerpt.hasRaw(CONTENT + " UPDATED")
                                               .hasRendered(toBlock(CONTENT + " UPDATED")));
+        }
+    }
+
+    @DisplayName("'PAGE REVISION' Operations")
+    @Nested
+    class PageRevisionsTests {
+
+        @DisplayName("'GET' fails on forbidden")
+        @Test
+        @SneakyThrows
+        void getFailsOnForbidden() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/page-revisions/get.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.pageRevisions().get(30L, 1L));
+        }
+
+        @DisplayName("'GET' fails on page not found")
+        @Test
+        @SneakyThrows
+        void getFailsOnPageNotFound() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/page-revisions/get.failure.page-not-found.json");
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.pageRevisions().get(30L, 1L), "rest_post_invalid_parent", "Invalid post parent ID.");
+        }
+
+        @DisplayName("'GET' fails on page review not found")
+        @Test
+        @SneakyThrows
+        void getFailsOnPageReviewNotFound() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/page-revisions/get.failure.revision-not-found.json");
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.pageRevisions().get(30L, 1L), "rest_post_invalid_id", "Invalid revision ID.");
+        }
+
+        @DisplayName("'GET' fails on unauthorized")
+        @Test
+        @SneakyThrows
+        void getFailsOnUnauthorized() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/page-revisions/get.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.pageRevisions().get(30L, 1L));
+        }
+
+        @DisplayName("'GET' succeeds")
+        @Test
+        @SneakyThrows
+        void getSucceeds() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/page-revisions/get.success.json");
+
+            // WHEN/THEN
+            final WpPageRevision pageRevision = client.pageRevisions().get(30L, 1L);
+
+            assertThat(pageRevision).isNotNull();
+            assertThat(pageRevision.getParentId()).isNotNull().isEqualByComparingTo(30L);
+            assertThat(pageRevision.getId()).isNotNull().isEqualByComparingTo(1L);
+        }
+
+        @DisplayName("'LIST' fails on forbidden")
+        @Test
+        @SneakyThrows
+        void listFailsOnForbidden() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/page-revisions/list.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.pageRevisions().list(1L, new WpPaginationQuery(1, 10), null));
+        }
+
+        @DisplayName("'LIST' fails on null or blank parameters")
+        @Test
+        @SneakyThrows
+        void listFailsOnNullParameters() {
+            assertThatThrownBy(() -> client.pageRevisions().list(1L, null, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("paginationQuery is marked non-null but is null");
+        }
+
+        @DisplayName("'LIST' fails on page not found")
+        @Test
+        @SneakyThrows
+        void listFailsOnPageNotFound() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/page-revisions/list.failure.page-not-found.json");
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.pageRevisions().list(1L, new WpPaginationQuery(1, 10), null), "rest_post_invalid_parent", "Invalid post parent ID.");
+        }
+
+        @DisplayName("'LIST' fails on unauthorized")
+        @Test
+        @SneakyThrows
+        void listFailsOnUnauthorized() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/page-revisions/list.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.pageRevisions().list(1L, new WpPaginationQuery(1, 10), null));
+        }
+
+        @DisplayName("'LIST' succeeds")
+        @Test
+        @SneakyThrows
+        void listSucceeds() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/page-revisions/list.success.json");
+
+            // WHEN/THEN
+            final WpPagedResponse<WpPageRevision> response = client.pageRevisions().list(1L, new WpPaginationQuery(1, 10), null);
+
+            WordPressAssertions.assertThat(response)
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(2)
+                               .doesNotHaveNextPage();
         }
     }
 
@@ -2692,7 +2692,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasTotalItems(1)
                                .doesNotHaveNextPage()
                                .satisfies(r ->
-                                       WordPressAssertions.assertThat(r.getItems().get(0))
+                                       WordPressAssertions.assertThat(r.items().get(0))
                                                           .isNotNull()
                                                           .hasId(4L)
                                                           .hasLink("https://localhost:61975/my-first-post/")
@@ -2739,11 +2739,11 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasTotalItems(2)
                                .doesNotHaveNextPage()
                                .satisfies(r -> {
-                                   WordPressAssertions.assertThat(r.getItems().get(0))
+                                   WordPressAssertions.assertThat(r.items().get(0))
                                                       .isNotNull()
                                                       .hasId(4L)
                                                       .hasStatus(DRAFT);
-                                   WordPressAssertions.assertThat(r.getItems().get(1))
+                                   WordPressAssertions.assertThat(r.items().get(1))
                                                       .isNotNull()
                                                       .hasId(5L)
                                                       .hasStatus(PRIVATE);
@@ -2931,6 +2931,130 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasExcerptSatisfying(excerpt ->
                                        excerpt.hasRaw(CONTENT + " UPDATED")
                                               .hasRendered(toBlock(CONTENT + " UPDATED")));
+        }
+    }
+
+    @DisplayName("'POST REVISION' Operations")
+    @Nested
+    class PostRevisionsTests {
+
+        @DisplayName("'GET' fails on forbidden")
+        @Test
+        @SneakyThrows
+        void getFailsOnForbidden() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post-revisions/get.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.postRevisions().get(30L, 1L));
+        }
+
+        @DisplayName("'GET' fails on post not found")
+        @Test
+        @SneakyThrows
+        void getFailsOnPostNotFound() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post-revisions/get.failure.post-not-found.json");
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.postRevisions().get(30L, 1L), "rest_post_invalid_parent", "Invalid post parent ID.");
+        }
+
+        @DisplayName("'GET' fails on post review not found")
+        @Test
+        @SneakyThrows
+        void getFailsOnPostReviewNotFound() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post-revisions/get.failure.revision-not-found.json");
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.postRevisions().get(30L, 1L), "rest_post_invalid_id", "Invalid revision ID.");
+        }
+
+        @DisplayName("'GET' fails on unauthorized")
+        @Test
+        @SneakyThrows
+        void getFailsOnUnauthorized() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post-revisions/get.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.postRevisions().get(30L, 1L));
+        }
+
+        @DisplayName("'GET' succeeds")
+        @Test
+        @SneakyThrows
+        void getSucceeds() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post-revisions/get.success.json");
+
+            // WHEN/THEN
+            final WpPostRevision postRevision = client.postRevisions().get(30L, 1L);
+
+            assertThat(postRevision).isNotNull();
+            assertThat(postRevision.getParentId()).isNotNull().isEqualByComparingTo(30L);
+            assertThat(postRevision.getId()).isNotNull().isEqualByComparingTo(1L);
+        }
+
+        @DisplayName("'LIST' fails on forbidden")
+        @Test
+        @SneakyThrows
+        void listFailsOnForbidden() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post-revisions/list.failure.forbidden.json");
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> client.postRevisions().list(1L, new WpPaginationQuery(1, 10), null));
+        }
+
+        @DisplayName("'LIST' fails on null or blank parameters")
+        @Test
+        @SneakyThrows
+        void listFailsOnNullParameters() {
+            assertThatThrownBy(() -> client.postRevisions().list(1L, null, null))
+                    .isInstanceOf(NullPointerException.class)
+                    .hasMessage("paginationQuery is marked non-null but is null");
+        }
+
+        @DisplayName("'LIST' fails on post not found")
+        @Test
+        @SneakyThrows
+        void listFailsOnPostNotFound() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post-revisions/list.failure.post-not-found.json");
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> client.postRevisions().list(1L, new WpPaginationQuery(1, 10), null), "rest_post_invalid_parent", "Invalid post parent ID.");
+        }
+
+        @DisplayName("'LIST' fails on unauthorized")
+        @Test
+        @SneakyThrows
+        void listFailsOnUnauthorized() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post-revisions/list.failure.unauthorized.json");
+
+            // WHEN/THEN
+            assertThrowsWpUnauthorized(() -> client.postRevisions().list(1L, new WpPaginationQuery(1, 10), null));
+        }
+
+        @DisplayName("'LIST' succeeds")
+        @Test
+        @SneakyThrows
+        void listSucceeds() {
+            // GIVEN
+            givenExpectationFromFile("basic-auth/post-revisions/list.success.json");
+
+            // WHEN/THEN
+            final WpPagedResponse<WpPostRevision> response = client.postRevisions().list(1L, new WpPaginationQuery(1, 10), null);
+
+            WordPressAssertions.assertThat(response)
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(2)
+                               .doesNotHaveNextPage();
         }
     }
 
@@ -3442,7 +3566,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasTotalItems(2)
                                .doesNotHaveNextPage()
                                .satisfies(r ->
-                                       assertThat(r.getItems())
+                                       assertThat(r.items())
                                                .hasSize(2)
                                                .satisfiesExactly(
                                                        tag ->
@@ -3486,7 +3610,7 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
                                .hasTotalItems(1)
                                .doesNotHaveNextPage()
                                .satisfies(r ->
-                                       assertThat(r.getItems())
+                                       assertThat(r.items())
                                                .hasSize(1)
                                                .satisfiesExactly(
 

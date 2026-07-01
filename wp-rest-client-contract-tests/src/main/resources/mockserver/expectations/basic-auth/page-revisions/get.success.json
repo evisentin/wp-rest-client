@@ -1,0 +1,69 @@
+[
+    {
+        "httpRequest": {
+            "method": "GET",
+            "path": "/wp-json/wp/v2/pages/30/revisions/1",
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ]
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": {
+                    "author": 0,
+                    "date": "2026-07-01T10:20:22",
+                    "date_gmt": "2026-07-01T10:20:22",
+                    "id": 1,
+                    "modified": "2026-07-01T10:20:22",
+                    "modified_gmt": "2026-07-01T10:20:22",
+                    "parent": 30,
+                    "slug": "30-revision-v1",
+                    "guid": {
+                        "rendered": "https:\/\/localhost:63397\/?p=1"
+                    },
+                    "title": {
+                        "rendered": "My page #1"
+                    },
+                    "content": {
+                        "rendered": "<p>My content<\/p>\n"
+                    },
+                    "excerpt": {
+                        "rendered": ""
+                    },
+                    "meta": {
+                        "footnotes": ""
+                    },
+                    "_links": {
+                        "parent": [
+                            {
+                                "href": "https:\/\/localhost:63397\/wp-json\/wp\/v2\/pages\/30"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    }
+]

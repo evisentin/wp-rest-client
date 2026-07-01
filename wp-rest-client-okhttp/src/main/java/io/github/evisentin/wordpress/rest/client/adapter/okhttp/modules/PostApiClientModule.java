@@ -89,13 +89,13 @@ public class PostApiClientModule extends ApiClientModule implements PostAPIs {
 
     @Override
     @SneakyThrows
-    public WpPagedResponse<WpPost> list(final @NonNull WpPaginationQuery paginationQuery, final WpPostQuery postQuery) {
+    public WpPagedResponse<WpPost> list(final @NonNull WpPaginationQuery paginationQuery, final WpPostQuery query) {
         final HttpUrl.Builder builder = urlBuilder("${apiUrl}/wp/v2/posts", Map.of(API_URL, apiUrl));
 
         builder.addQueryParameter(PAGE, Integer.toString(paginationQuery.pageNumber()))
                .addQueryParameter(PER_PAGE, Integer.toString(paginationQuery.pageSize()));
 
-        PostQueryParamMapper.map(builder, postQuery);
+        PostQueryParamMapper.map(builder, query);
 
         return performPagingRequest(builder, paginationQuery, WP_POST_LIST_TYPEREFERENCE);
     }
