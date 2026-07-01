@@ -67,7 +67,7 @@
     <junit.version>6.1.1</junit.version>
     <assertj.version>3.27.7</assertj.version>
     <mockito.version>5.23.0</mockito.version>
-    <mockserver-junit-jupiter.version>7.2.0</mockserver-junit-jupiter.version>
+    <mockserver-junit-jupiter.version>7.3.0</mockserver-junit-jupiter.version>
   </properties>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <licenses>
