@@ -1,0 +1,76 @@
+package io.github.evisentin.wordpress.rest.client.adapter.apache;
+
+import io.github.evisentin.wordpress.rest.client.contract.test.AbstractBasicAuthenticationWpRestClientContractTest;
+import io.github.evisentin.wordpress.rest.client.domain.WpBaseRestClient;
+import io.github.evisentin.wordpress.rest.client.domain.configuration.SslConfiguration;
+import io.github.evisentin.wordpress.rest.client.domain.configuration.TimeoutConfiguration;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.X509TrustManager;
+import java.security.cert.X509Certificate;
+import java.time.Duration;
+
+class ApacheWpRestClientBasicAuthTest extends AbstractBasicAuthenticationWpRestClientContractTest {
+
+    @Override
+    protected WpBaseRestClient client() {
+
+        return ApacheWpRestClientBuilder.basicAuthentication(mockServerUrl(), "user", "password")
+                                        .withTimeoutConfiguration(TimeoutConfiguration.builder()
+                                                                                      .callTimeout(Duration.ofSeconds(10))
+                                                                                      .connectTimeout(Duration.ofSeconds(10))
+                                                                                      .connectionRequestTimeout(Duration.ofSeconds(10))
+                                                                                      .readTimeout(Duration.ofSeconds(10))
+                                                                                      .writeTimeout(Duration.ofSeconds(10))
+                                                                                      .build())
+                                        .withSslConfiguration(insecure())
+                                        .build();
+    }
+
+    private SslConfiguration insecure() {
+        final X509TrustManager trustAllManager = new TestX509TrustManager();
+
+        final HostnameVerifier trustAllHosts = (hostname, session) -> true;
+
+        return SslConfiguration.builder()
+                               .trustManager(trustAllManager)
+                               .hostnameVerifier(trustAllHosts)
+                               .build();
+    }
+
+    /**
+     * Insecure {@link X509TrustManager} implementation for testing purposes.
+     *
+     * <p>This trust manager performs no validation of client or server
+     * certificates, effectively trusting all certificates presented during SSL/TLS handshakes.</p>
+     *
+     * <p>It is intended solely for use in test environments where certificate
+     * validation would otherwise fail (e.g. self-signed certificates in containerized setups).</p>
+     *
+     * <p><strong>Security warning:</strong> This implementation disables all
+     * certificate validation and must never be used in production code.</p>
+     *
+     * <h2>behaviour</h2>
+     * <ul>
+     *   <li>{@link #checkClientTrusted(X509Certificate[], String)} - no-op</li>
+     *   <li>{@link #checkServerTrusted(X509Certificate[], String)} - no-op</li>
+     *   <li>{@link #getAcceptedIssuers()} - returns an empty array</li>
+     * </ul>
+     */
+    public static class TestX509TrustManager implements X509TrustManager {
+        @Override
+        public void checkClientTrusted(X509Certificate[] chain, String authType) {
+
+        }
+
+        @Override
+        public void checkServerTrusted(X509Certificate[] chain, String authType) {
+
+        }
+
+        @Override
+        public X509Certificate[] getAcceptedIssuers() {
+            return new X509Certificate[0];
+        }
+    }
+}

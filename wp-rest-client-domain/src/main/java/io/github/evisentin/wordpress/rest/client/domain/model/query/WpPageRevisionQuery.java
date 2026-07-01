@@ -1,0 +1,68 @@
+package io.github.evisentin.wordpress.rest.client.domain.model.query;
+
+import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpContext;
+import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpSortDirection;
+import io.github.evisentin.wordpress.rest.client.domain.model.enums.order.WpPageRevisionOrderFields;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Singular;
+
+import java.util.Set;
+
+/**
+ * Represents a query object for retrieving WordPress post revisions.
+ *
+ * <p>This class encapsulates filtering and sorting options supported by the
+ * WordPress post revisions endpoint.</p>
+ *
+ * <p>Instances are immutable and should be created using the {@link Builder}.</p>
+ */
+@Getter
+@Builder(setterPrefix = "with")
+public class WpPageRevisionQuery {
+
+    /**
+     * The ID for the parent of the revision.
+     */
+    private final Long parentId;
+
+    /**
+     * Scope under which the request is made. Defaults to {@link WpContext#VIEW}.
+     */
+    @Builder.Default
+    private final WpContext context = WpContext.VIEW;
+
+    /**
+     * Limits results to revisions matching the given search term.
+     */
+    private final String search;
+
+    /**
+     * Set of post IDs to exclude from the result. Defaults to an empty set.
+     */
+    @Singular
+    private final Set<Long> excludeIds;
+
+    /**
+     * Set of post IDs to include in the result. Defaults to an empty set.
+     */
+    @Singular
+    private final Set<Long> includeIds;
+
+    /**
+     * Number of items to skip before starting to collect the result set.
+     */
+    private final Integer offset;
+
+    /**
+     * Sort direction of the result. Defaults to {@link WpSortDirection#ASC}.
+     */
+    @Builder.Default
+    private final WpSortDirection order = WpSortDirection.ASC;
+
+    /**
+     * Field used to sort the result. Defaults to {@link WpPageRevisionOrderFields#DATE}.
+     */
+    @Builder.Default
+    private final WpPageRevisionOrderFields orderBy = WpPageRevisionOrderFields.DATE;
+}

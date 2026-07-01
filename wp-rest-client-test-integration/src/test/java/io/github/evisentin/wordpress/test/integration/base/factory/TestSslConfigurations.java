@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.test.integration.base.factory;
 
-import io.github.evisentin.wordpress.client.domain.configuration.SslConfiguration;
+import io.github.evisentin.wordpress.rest.client.domain.configuration.SslConfiguration;
 import lombok.SneakyThrows;
 
 import javax.net.ssl.SSLContext;
@@ -76,7 +76,7 @@ public final class TestSslConfigurations {
      * <p><strong>Security warning:</strong> This implementation disables all
      * certificate validation and must never be used in production code.</p>
      *
-     * <h2>Behavior</h2>
+     * <h2>behaviour</h2>
      * <ul>
      *   <li>{@link #checkClientTrusted(X509Certificate[], String)} - no-op</li>
      *   <li>{@link #checkServerTrusted(X509Certificate[], String)} - no-op</li>

@@ -1,10 +1,10 @@
 package io.github.evisentin.wordpress.test.integration.base.factory;
 
-import io.github.evisentin.wordpress.client.adapter.okhttp.OkHttpWpRestClient;
-import io.github.evisentin.wordpress.client.adapter.okhttp.OkHttpWpRestClientBuilder;
-import io.github.evisentin.wordpress.client.domain.WpRestClient;
-import io.github.evisentin.wordpress.client.domain.auth.WpBasicAuthenticationStrategy;
-import io.github.evisentin.wordpress.client.domain.configuration.SslConfiguration;
+import io.github.evisentin.wordpress.rest.client.adapter.okhttp.OkHttpWpRestClient;
+import io.github.evisentin.wordpress.rest.client.adapter.okhttp.OkHttpWpRestClientBuilder;
+import io.github.evisentin.wordpress.rest.client.domain.WpRestClient;
+import io.github.evisentin.wordpress.rest.client.domain.auth.WpBasicAuthenticationStrategy;
+import io.github.evisentin.wordpress.rest.client.domain.configuration.SslConfiguration;
 import io.github.evisentin.wordpress.test.integration.base.factory.interceptors.OkHttpTestRequestInterceptor;
 import io.github.evisentin.wordpress.test.integration.base.factory.interceptors.OkHttpTestResponseInterceptor;
 import org.testcontainers.shaded.org.checkerframework.checker.nullness.qual.NonNull;
@@ -25,7 +25,7 @@ import org.testcontainers.shaded.org.checkerframework.checker.nullness.qual.NonN
  * <h2>Use cases</h2>
  * <ul>
  *   <li>Testing OkHttp-based client implementations</li>
- *   <li>Comparing behavior across different HTTP client stacks</li>
+ *   <li>Comparing behaviour across different HTTP client stacks</li>
  *   <li>Integration testing against containerized WordPress instances</li>
  * </ul>
  *

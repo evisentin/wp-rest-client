@@ -23,8 +23,7 @@
                 "json": {
                     "description": "Category 1 UPDATED",
                     "name": "Category #1 UPDATED",
-                    "slug": "cat-1-updated",
-                    "meta": {}
+                    "slug": "cat-1-updated"
                 }
             }
         },

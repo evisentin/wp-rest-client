@@ -1,6 +1,7 @@
 package io.github.evisentin.wordpress.test.integration;
 
-import io.github.evisentin.wordpress.client.domain.model.enums.WpPostStatus;
+import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpPageStatus;
+import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpPostStatus;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -183,10 +184,11 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
      */
     @SneakyThrows
     protected void wpCleanDefaultData() {
-        wpCli.execInContainer("sh", "-c", "wp --allow-root --path=/var/www/html post delete $(wp post list --format=ids) --force");
+        wpCli.execInContainer("sh", "-c", "wp --allow-root --path=/var/www/html post delete $(wp post list --post_type=post       --format=ids) --force");
+        wpCli.execInContainer("sh", "-c", "wp --allow-root --path=/var/www/html post delete $(wp post list --post_type=page       --format=ids) --force");
+        wpCli.execInContainer("sh", "-c", "wp --allow-root --path=/var/www/html post delete $(wp post list --post_type=attachment --format=ids) --force");
         wpCli.execInContainer("sh", "-c", "wp --allow-root --path=/var/www/html term delete category $(wp term list category --field=term_id --exclude=1)");
         wpCli.execInContainer("sh", "-c", "wp --allow-root --path=/var/www/html term delete post_tag $(wp term list post_tag --field=term_id)");
-        wpCli.execInContainer("sh", "-c", "wp --allow-root --path=/var/www/html post delete $(wp post list --post_type=attachment --format=ids) --force");
     }
 
     /**
@@ -294,9 +296,98 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
     }
 
     /**
+     * Creates a new password-protected WordPress page.
+     *
+     * <p>This method uses WP-CLI to create a page with the specified title, content,  status, and access
+     * password. It returns the ID of the created post.</p>
+     *
+     * <p>If the creation fails, the test is immediately failed via
+     * {@code failOnError(...)}.</p>
+     *
+     * <h3>Parameters</h3>
+     * <ul>
+     *   <li>{@code title} – the title of the page</li>
+     *   <li>{@code content} – the body content of the page</li>
+     *   <li>{@code status} – the  status of the page</li>
+     *   <li>{@code password} – the password required to access the page</li>
+     * </ul>
+     *
+     * @param title
+     *         the title of the page (must not be {@code null})
+     * @param content
+     *         the content of the page (must not be {@code null})
+     * @param status
+     *         the status of the page (must not be {@code null})
+     * @param password
+     *         the password protecting the page (must not be {@code null})
+     *
+     * @return the ID of the created page as a {@link Long}
+     */
+    @SneakyThrows
+    protected Long wpCreatePage(final @NonNull String title,
+                                final @NonNull String content,
+                                final @NonNull WpPageStatus status,
+                                final @NonNull String password) {
+        val execResult = wpCli.execInContainer(
+                "wp", "--allow-root", "--path=/var/www/html",
+                "post", "create",
+                "--post_type=page",
+                String.format("--post_title=%s", title),
+                String.format("--post_content=%s", content),
+                String.format("--post_status=%s", status.getValue()),
+                String.format("--post_password=%s", password),
+                "--porcelain"
+        );
+        failOnError(execResult, "page creation failed");
+        return Long.valueOf(trimToEmpty(execResult.getStdout()));
+    }
+
+    /**
+     * Creates a new WordPress page.
+     *
+     * <p>This method uses WP-CLI to create a page with the specified title, content, and  status. It
+     * returns the ID of the created page.</p>
+     *
+     * <p>If the creation fails, the test is immediately failed via
+     * {@code failOnError(...)}.</p>
+     *
+     * <h3>Parameters</h3>
+     * <ul>
+     *   <li>{@code title} – the title of the page</li>
+     *   <li>{@code content} – the body content of the page</li>
+     *   <li>{@code status} – the  status of the page</li>
+     * </ul>
+     *
+     * @param title
+     *         the title of the page (must not be {@code null})
+     * @param content
+     *         the content of the page (must not be {@code null})
+     * @param status
+     *         the status of the page (must not be {@code null})
+     *
+     * @return the ID of the created post as a {@link Long}
+     */
+    @SneakyThrows
+    protected Long wpCreatePage(final @NonNull String title,
+                                final @NonNull String content,
+                                final @NonNull WpPageStatus status) {
+        val execResult = wpCli.execInContainer(
+                "wp", "--allow-root", "--path=/var/www/html",
+                "post", "create",
+                "--post_type=page",
+                String.format("--post_title=%s", title),
+                String.format("--post_content=%s", content),
+                String.format("--post_status=%s", status.getValue()),
+                "--porcelain"
+        );
+        failOnError(execResult, "post creation failed");
+        return Long.valueOf(trimToEmpty(execResult.getStdout()));
+    }
+
+    /**
      * Creates a new password-protected WordPress post.
      *
-     * <p>This method uses WP-CLI to create a post with the specified title, content, protectedation status, and access
+     * <p>This method uses WP-CLI to create a post with the specified title, content,  status, and access
      * password. It returns the ID of the created post.</p>
      *
      * <p>If the creation fails, the test is immediately failed via
@@ -306,7 +397,7 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
      * <ul>
      *   <li>{@code title} – the title of the post</li>
      *   <li>{@code content} – the body content of the post</li>
-     *   <li>{@code status} – the protectedation status of the post</li>
+     *   <li>{@code status} – the  status of the post</li>
      *   <li>{@code password} – the password required to access the post</li>
      * </ul>
      *
@@ -342,7 +433,7 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
     /**
      * Creates a new WordPress post.
      *
-     * <p>This method uses WP-CLI to create a post with the specified title, content, and protectedation status. It
+     * <p>This method uses WP-CLI to create a post with the specified title, content, and  status. It
      * returns the ID of the created post.</p>
      *
      * <p>If the creation fails, the test is immediately failed via
@@ -352,7 +443,7 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
      * <ul>
      *   <li>{@code title} – the title of the post</li>
      *   <li>{@code content} – the body content of the post</li>
-     *   <li>{@code status} – the protectedation status of the post</li>
+     *   <li>{@code status} – the  status of the post</li>
      * </ul>
      *
      * @param title
@@ -421,26 +512,26 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
     }
 
     /**
-     * Retrieves the IDs of all revisions associated with the specified WordPress post.
+     * Retrieves the IDs of all revisions associated with the specified WordPress content item.
      * <p>
-     * Revisions are returned in descending order of creation date (newest first). If the post has no revisions, an
-     * empty list is returned.
+     * Works for both posts and pages. Revisions are returned in descending order of creation date (newest first). If
+     * the content item has no revisions, an empty list is returned.
      *
-     * @param postId
-     *         the ID of the WordPress post whose revisions should be retrieved
+     * @param id
+     *         the ID of the WordPress post or page whose revisions should be retrieved
      *
-     * @return a list containing the IDs of all revisions for the specified post, ordered from newest to oldest
+     * @return a list containing the IDs of all revisions for the specified post or page, ordered from newest to oldest
      *
      * @throws RuntimeException
      *         if the WP-CLI command execution fails or returns an error
      */
     @SneakyThrows
-    protected List<Long> wpGetRevisionIds(final long postId) {
+    protected List<Long> wpGetRevisionIds(final long id) {
         val execResult = wpCli.execInContainer(
                 "wp", "--allow-root", "--path=/var/www/html",
                 "post", "list",
                 "--post_type=revision",
-                String.format("--post_parent=%d", postId),
+                String.format("--post_parent=%d", id),
                 "--orderby=date",
                 "--order=DESC",
                 "--format=ids"
@@ -540,6 +631,20 @@ public abstract class BaseWordPressIntegrationTest implements WithAssertions {
     protected boolean wpIsWordPressInstalled() {
         val execResult = wpCli.execInContainer("wp", "--allow-root", "--path=/var/www/html", "core", "is-installed");
         return execResult.getExitCode() == 0;
+    }
+
+    @SneakyThrows
+    protected void wpUpdatePage(final long id,
+                                final @NonNull String title,
+                                final @NonNull String content) {
+        val execResult = wpCli.execInContainer(
+                "wp", "--allow-root", "--path=/var/www/html",
+                "post", "update", Long.toString(id),
+                String.format("--post_title=%s", title),
+                String.format("--post_content=%s", content),
+                "--porcelain"
+        );
+        failOnError(execResult, "page update failed");
     }
 
     @SneakyThrows

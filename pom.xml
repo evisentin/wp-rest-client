@@ -9,7 +9,7 @@
   <packaging>pom</packaging>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <name>WP REST Client</name>
-  <description>Multi-module WordPress REST client with pluggable HTTP adapters</description>
+  <description>Multi-module WordPress Java REST client with pluggable HTTP adapters</description>
   <url>https://github.com/evisentin/wp-rest-client</url>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <modules>
@@ -53,21 +53,21 @@
     <commons-lang3.version>3.20.0</commons-lang3.version>
     <commons-text.version>1.15.0</commons-text.version>
 
-    <jackson.version>2.21.4</jackson.version>
+    <jackson.version>2.22.0</jackson.version>
     <java-jwt.version>4.5.2</java-jwt.version>
     <lombok.version>1.18.46</lombok.version>
 
-    <httpclient5.version>5.6.1</httpclient5.version>
+    <httpclient5.version>5.6.2</httpclient5.version>
     <okhttp.version>5.4.0</okhttp.version>
 
     <slf4j.version>2.0.18</slf4j.version>
 
     <!-- [TEST LIBRARY VERSIONS] -->
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-    <junit.version>6.1.0</junit.version>
+    <junit.version>6.1.1</junit.version>
     <assertj.version>3.27.7</assertj.version>
     <mockito.version>5.23.0</mockito.version>
-    <mockserver-junit-jupiter.version>7.0.0</mockserver-junit-jupiter.version>
+    <mockserver-junit-jupiter.version>7.2.0</mockserver-junit-jupiter.version>
   </properties>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <licenses>
@@ -569,7 +569,7 @@
       <plugin>
         <groupId>org.sonatype.central</groupId>
         <artifactId>central-publishing-maven-plugin</artifactId>
-        <version>0.10.0</version>
+        <version>0.11.0</version>
         <extensions>true</extensions>
         <configuration>
           <publishingServerId>central</publishingServerId>

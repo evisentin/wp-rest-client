@@ -17,7 +17,7 @@ theme:
   name: material
 # ---------------------------------------------------------------------------------------------------------------------
 extra_css:
-  - stylesheets/extra.css
+  - assets/stylesheets/extra.css
 # ---------------------------------------------------------------------------------------------------------------------
 nav:
   - Home: index.md
@@ -31,6 +31,8 @@ nav:
       - Architecture: development/architecture.md
       - Contributing: development/contributing.md
       - Developer Setup: development/developer-setup.md
+  - Use cases:
+      - miniOrange REST API Authentication Plugin: use_cases/miniorange/miniorange-rest-api-authentication-plugin.md
   - Test Coverage: https://evisentin.github.io/wp-rest-client/coverage/
   - License: license.md
 # ---------------------------------------------------------------------------------------------------------------------
