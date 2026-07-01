@@ -491,6 +491,168 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
         }
     }
 
+    @DisplayName("Comment APIs - Integration Tests")
+    @Nested
+    class CommentTests {
+
+        @DisplayName("'CREATE' fails on non-existing parent post")
+        @Test
+        void create__fails_on_non_existing_parent_post() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN
+            final WpCommentCreateUpdateRequest createUpdateRequest =
+                    WpCommentCreateUpdateRequest.builder()
+                                                .withPostId(1000L) // NON EXISTENT POST
+                                                .withContent("This is my comment")
+                                                .build();
+
+            // WHEN/THEN
+            assertThrowsWpForbidden(() -> adminClient.comments().create(createUpdateRequest),
+                    "rest_comment_invalid_post_id",
+                    "Sorry, you are not allowed to create this comment without a post.");
+        }
+
+        @DisplayName("'CREATE' works")
+        @Test
+        void create__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            final Long existingPostId = givenPostExists("My post", "My content", WpPostStatus.PUBLISH);
+
+            // WHEN
+            WpCommentCreateUpdateRequest createUpdateRequest =
+                    WpCommentCreateUpdateRequest.builder()
+                                                .withPostId(existingPostId)
+                                                .withContent("My Comment")
+                                                .build();
+
+            final WpComment comment = adminClient.comments().create(createUpdateRequest);
+
+            // THEN
+            WordPressAssertions.assertThat(comment)
+                               .isNotNull()
+                               .hasId()
+                               .hasPost(existingPostId)
+                               .hasContentSatisfying(c -> c.hasRaw("My Comment"));
+        }
+
+        @DisplayName("'CREATE' works with password")
+        @Test
+        void create__works_with_password() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long existingPostId = givenPostExists("My post", "My content", WpPostStatus.PUBLISH);
+
+            // WHEN
+            WpCommentCreateUpdateRequest createUpdateRequest =
+                    WpCommentCreateUpdateRequest.builder()
+                                                .withPostId(existingPostId)
+                                                .withContent("My Comment")
+                                                .withPassword("mypassword")
+                                                .build();
+
+            final WpComment comment = adminClient.comments().create(createUpdateRequest);
+
+            // THEN
+            WordPressAssertions.assertThat(comment)
+                               .isNotNull()
+                               .hasId()
+                               .hasPost(existingPostId)
+                               .hasContentSatisfying(c -> c.hasRaw("My Comment"));
+        }
+
+        @DisplayName("'DELETE' fails on HTTP NOT FOUND")
+        @Test
+        void delete__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.comments().delete(1000L), "rest_comment_invalid_id", "Invalid comment ID.");
+        }
+
+        @DisplayName("'DELETE' works")
+        @Test
+        void delete__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long existingPostId = givenPostExists("My post", "My content", WpPostStatus.PUBLISH);
+            final Long existingCommentId = givenCommentExists(existingPostId, "My Comment", "enrico", "enrico@some.email.com");
+
+            // WHEN
+            final WpCommentDeletionResponse deletionResponse = adminClient.comments().delete(existingCommentId);
+
+            // THEN
+            WordPressAssertions.assertThat(deletionResponse)
+                               .isNotNull()
+                               .isDeleted()
+                               .hasPreviousSatisfying(summary ->
+                                       summary.isNotNull()
+                                              .hasId(existingCommentId)
+                               );
+        }
+
+        @DisplayName("'GET' fails on HTTP NOT FOUND")
+        @Test
+        void get__fails_on_not_found() {
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.comments().get(1000L, null), "rest_comment_invalid_id", "Invalid comment ID.");
+        }
+
+        @DisplayName("'GET' works")
+        @Test
+        void get__works() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long existingPostId = givenPostExists("My post", "My content", WpPostStatus.PUBLISH);
+            final Long existingCommentId = givenCommentExists(existingPostId, "My Comment", "enrico", "enrico@some.email.com");
+
+            // WHEN
+            final WpComment comment = adminClient.comments().get(existingCommentId, WpContext.EDIT);
+
+            // THEN
+            WordPressAssertions.assertThat(comment)
+                               .isNotNull()
+                               .hasId(existingCommentId)
+                               .hasAuthorName("enrico")
+                               .hasContentSatisfying(c -> c.hasRaw("My Comment"));
+        }
+
+        @DisplayName("'TRASH' fails on HTTP NOT FOUND")
+        @Test
+        void trash__fails_on_not_found() {
+
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.comments().trash(1000L), "rest_comment_invalid_id", "Invalid comment ID.");
+        }
+
+        @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
+        @Test
+        void update__fails_on_not_found() {
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.comments().update(1000L, WpCommentCreateUpdateRequest.builder().build()),
+                    "rest_comment_invalid_id", "Invalid comment ID.");
+        }
+    }
+
     @DisplayName("Media APIs - Integration Tests")
     @Nested
     class MediaTests {
@@ -695,95 +857,6 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                .hasDescriptionSatisfying(t -> t.hasRaw("Description updated"))
                                .hasTitleSatisfying(t -> t.hasRaw("Title updated"))
                                .hasSlug("slug-updated");
-        }
-    }
-
-    @DisplayName("Post Revision APIs - Integration Tests")
-    @Nested
-    class PostRevisionTests {
-
-        @DisplayName("'GET' fails on post not found")
-        @Test
-        void get__fails_on_post_not_found() {
-            // GIVEN
-            wpCleanDefaultData();
-
-            // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.postRevisions().get(1000L, 1L), "rest_post_invalid_parent", "Invalid post parent ID.");
-        }
-
-        @DisplayName("'GET' fails on post revision not found")
-        @Test
-        void get__fails_on_post_revision_not_found() {
-            // GIVEN
-            wpCleanDefaultData();
-            final Long existingPostId = givenPostExists("My post", "My content", WpPostStatus.PUBLISH);
-
-            // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.postRevisions().get(existingPostId, 1L), "rest_post_invalid_id", "Invalid revision ID.");
-        }
-
-        @DisplayName("'GET' succeeds")
-        @Test
-        void get__succeeds() {
-            // GIVEN
-            wpCleanDefaultData();
-            final Long existingPostId = givenPostExists("My post", "My content", WpPostStatus.PUBLISH);
-            givenPostIsUpdated(existingPostId, "My post #1", "My content");
-            final List<Long> revisionIds = wpGetRevisionIds(existingPostId);
-
-            // WHEN/THEN
-            final WpPostRevision postRevision = adminClient.postRevisions().get(existingPostId, revisionIds.getFirst());
-
-            assertThat(postRevision).isNotNull();
-        }
-
-        @DisplayName("'LIST' returns empty on no revision")
-        @Test
-        void list__empty_on_no_revisions() {
-            // GIVEN
-            wpCleanDefaultData();
-            final Long existingPostId = givenPostExists("My post", "My content", WpPostStatus.PUBLISH);
-
-            // WHEN/THEN
-            final WpPagedResponse<WpPostRevision> response = adminClient.postRevisions().list(existingPostId, new WpPaginationQuery(1, 10), null);
-
-            WordPressAssertions.assertThat(response)
-                               .hasPageNumber(1)
-                               .hasItemsPerPage(10)
-                               .hasTotalPages(0)
-                               .hasTotalItems(0)
-                               .doesNotHaveNextPage();
-        }
-
-        @DisplayName("'LIST' fails on post not found")
-        @Test
-        void list__fails_on_post_found() {
-            // GIVEN
-            wpCleanDefaultData();
-
-            // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.postRevisions().list(1000L, new WpPaginationQuery(1, 10), null), "rest_post_invalid_parent", "Invalid post parent ID.");
-        }
-
-        @DisplayName("'LIST' returns revisions")
-        @Test
-        void list__returns_revisions() {
-            // GIVEN
-            wpCleanDefaultData();
-            final Long existingPostId = givenPostExists("My post", "My content", WpPostStatus.PUBLISH);
-            givenPostIsUpdated(existingPostId, "My post #1", "My content"); // first update -> first revision
-            givenPostIsUpdated(existingPostId, "My post #1", "My content #1"); // second update -> second revision
-
-            // WHEN/THEN
-            final WpPagedResponse<WpPostRevision> response = adminClient.postRevisions().list(existingPostId, new WpPaginationQuery(1, 10), null);
-
-            WordPressAssertions.assertThat(response)
-                               .hasPageNumber(1)
-                               .hasItemsPerPage(10)
-                               .hasTotalPages(1)
-                               .hasTotalItems(2)
-                               .doesNotHaveNextPage();
         }
     }
 
@@ -1773,6 +1846,95 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
         }
     }
 
+    @DisplayName("Post Revision APIs - Integration Tests")
+    @Nested
+    class PostRevisionTests {
+
+        @DisplayName("'GET' fails on post not found")
+        @Test
+        void get__fails_on_post_not_found() {
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.postRevisions().get(1000L, 1L), "rest_post_invalid_parent", "Invalid post parent ID.");
+        }
+
+        @DisplayName("'GET' fails on post revision not found")
+        @Test
+        void get__fails_on_post_revision_not_found() {
+            // GIVEN
+            wpCleanDefaultData();
+            final Long existingPostId = givenPostExists("My post", "My content", WpPostStatus.PUBLISH);
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.postRevisions().get(existingPostId, 1L), "rest_post_invalid_id", "Invalid revision ID.");
+        }
+
+        @DisplayName("'GET' succeeds")
+        @Test
+        void get__succeeds() {
+            // GIVEN
+            wpCleanDefaultData();
+            final Long existingPostId = givenPostExists("My post", "My content", WpPostStatus.PUBLISH);
+            givenPostIsUpdated(existingPostId, "My post #1", "My content");
+            final List<Long> revisionIds = wpGetRevisionIds(existingPostId);
+
+            // WHEN/THEN
+            final WpPostRevision postRevision = adminClient.postRevisions().get(existingPostId, revisionIds.getFirst());
+
+            assertThat(postRevision).isNotNull();
+        }
+
+        @DisplayName("'LIST' returns empty on no revision")
+        @Test
+        void list__empty_on_no_revisions() {
+            // GIVEN
+            wpCleanDefaultData();
+            final Long existingPostId = givenPostExists("My post", "My content", WpPostStatus.PUBLISH);
+
+            // WHEN/THEN
+            final WpPagedResponse<WpPostRevision> response = adminClient.postRevisions().list(existingPostId, new WpPaginationQuery(1, 10), null);
+
+            WordPressAssertions.assertThat(response)
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(0)
+                               .hasTotalItems(0)
+                               .doesNotHaveNextPage();
+        }
+
+        @DisplayName("'LIST' fails on post not found")
+        @Test
+        void list__fails_on_post_found() {
+            // GIVEN
+            wpCleanDefaultData();
+
+            // WHEN/THEN
+            assertThrowsWpNotFound(() -> adminClient.postRevisions().list(1000L, new WpPaginationQuery(1, 10), null), "rest_post_invalid_parent", "Invalid post parent ID.");
+        }
+
+        @DisplayName("'LIST' returns revisions")
+        @Test
+        void list__returns_revisions() {
+            // GIVEN
+            wpCleanDefaultData();
+            final Long existingPostId = givenPostExists("My post", "My content", WpPostStatus.PUBLISH);
+            givenPostIsUpdated(existingPostId, "My post #1", "My content"); // first update -> first revision
+            givenPostIsUpdated(existingPostId, "My post #1", "My content #1"); // second update -> second revision
+
+            // WHEN/THEN
+            final WpPagedResponse<WpPostRevision> response = adminClient.postRevisions().list(existingPostId, new WpPaginationQuery(1, 10), null);
+
+            WordPressAssertions.assertThat(response)
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(2)
+                               .doesNotHaveNextPage();
+        }
+    }
+
     @DisplayName("Post Types APIs - Integration Tests")
     @Nested
     class PostTypeTests {
@@ -2117,168 +2279,6 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
         private String linkForTag(final @NonNull String slug) {
             return String.format("%s/tag/%s/", getHttpsBaseUrl(), slug);
-        }
-    }
-
-    @DisplayName("Comment APIs - Integration Tests")
-    @Nested
-    class CommentTests {
-
-        @DisplayName("'CREATE' fails on non-existing parent post")
-        @Test
-        void create__fails_on_non_existing_parent_post() {
-
-            // GIVEN
-            wpCleanDefaultData();
-
-            // WHEN
-            final WpCommentCreateUpdateRequest createUpdateRequest =
-                    WpCommentCreateUpdateRequest.builder()
-                                                .withPostId(1000L) // NON EXISTENT POST
-                                                .withContent("This is my comment")
-                                                .build();
-
-            // WHEN/THEN
-            assertThrowsWpForbidden(() -> adminClient.comments().create(createUpdateRequest),
-                    "rest_comment_invalid_post_id",
-                    "Sorry, you are not allowed to create this comment without a post.");
-        }
-
-        @DisplayName("'CREATE' works")
-        @Test
-        void create__works() {
-
-            // GIVEN
-            wpCleanDefaultData();
-
-            final Long existingPostId = givenPostExists("My post", "My content", WpPostStatus.PUBLISH);
-
-            // WHEN
-            WpCommentCreateUpdateRequest createUpdateRequest =
-                    WpCommentCreateUpdateRequest.builder()
-                                                .withPostId(existingPostId)
-                                                .withContent("My Comment")
-                                                .build();
-
-            final WpComment comment = adminClient.comments().create(createUpdateRequest);
-
-            // THEN
-            WordPressAssertions.assertThat(comment)
-                               .isNotNull()
-                               .hasId()
-                               .hasPost(existingPostId)
-                               .hasContentSatisfying(c -> c.hasRaw("My Comment"));
-        }
-
-        @DisplayName("'CREATE' works with password")
-        @Test
-        void create__works_with_password() {
-
-            // GIVEN
-            wpCleanDefaultData();
-            final Long existingPostId = givenPostExists("My post", "My content", WpPostStatus.PUBLISH);
-
-            // WHEN
-            WpCommentCreateUpdateRequest createUpdateRequest =
-                    WpCommentCreateUpdateRequest.builder()
-                                                .withPostId(existingPostId)
-                                                .withContent("My Comment")
-                                                .withPassword("mypassword")
-                                                .build();
-
-            final WpComment comment = adminClient.comments().create(createUpdateRequest);
-
-            // THEN
-            WordPressAssertions.assertThat(comment)
-                               .isNotNull()
-                               .hasId()
-                               .hasPost(existingPostId)
-                               .hasContentSatisfying(c -> c.hasRaw("My Comment"));
-        }
-
-        @DisplayName("'DELETE' fails on HTTP NOT FOUND")
-        @Test
-        void delete__fails_on_not_found() {
-
-            // GIVEN
-            wpCleanDefaultData();
-
-            // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.comments().delete(1000L), "rest_comment_invalid_id", "Invalid comment ID.");
-        }
-
-        @DisplayName("'DELETE' works")
-        @Test
-        void delete__works() {
-
-            // GIVEN
-            wpCleanDefaultData();
-            final Long existingPostId = givenPostExists("My post", "My content", WpPostStatus.PUBLISH);
-            final Long existingCommentId = givenCommentExists(existingPostId, "My Comment", "enrico", "enrico@some.email.com");
-
-            // WHEN
-            final WpCommentDeletionResponse deletionResponse = adminClient.comments().delete(existingCommentId);
-
-            // THEN
-            WordPressAssertions.assertThat(deletionResponse)
-                               .isNotNull()
-                               .isDeleted()
-                               .hasPreviousSatisfying(summary ->
-                                       summary.isNotNull()
-                                              .hasId(existingCommentId)
-                               );
-        }
-
-        @DisplayName("'GET' fails on HTTP NOT FOUND")
-        @Test
-        void get__fails_on_not_found() {
-            // GIVEN
-            wpCleanDefaultData();
-
-            // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.comments().get(1000L, null), "rest_comment_invalid_id", "Invalid comment ID.");
-        }
-
-        @DisplayName("'GET' works")
-        @Test
-        void get__works() {
-
-            // GIVEN
-            wpCleanDefaultData();
-            final Long existingPostId = givenPostExists("My post", "My content", WpPostStatus.PUBLISH);
-            final Long existingCommentId = givenCommentExists(existingPostId, "My Comment", "enrico", "enrico@some.email.com");
-
-            // WHEN
-            final WpComment comment = adminClient.comments().get(existingCommentId, WpContext.EDIT);
-
-            // THEN
-            WordPressAssertions.assertThat(comment)
-                               .isNotNull()
-                               .hasId(existingCommentId)
-                               .hasAuthorName("enrico")
-                               .hasContentSatisfying(c -> c.hasRaw("My Comment"));
-        }
-
-        @DisplayName("'TRASH' fails on HTTP NOT FOUND")
-        @Test
-        void trash__fails_on_not_found() {
-
-            // GIVEN
-            wpCleanDefaultData();
-
-            // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.comments().trash(1000L), "rest_comment_invalid_id", "Invalid comment ID.");
-        }
-
-        @DisplayName("'UPDATE' fails on HTTP NOT FOUND")
-        @Test
-        void update__fails_on_not_found() {
-            // GIVEN
-            wpCleanDefaultData();
-
-            // WHEN/THEN
-            assertThrowsWpNotFound(() -> adminClient.comments().update(1000L, WpCommentCreateUpdateRequest.builder().build()),
-                    "rest_comment_invalid_id", "Invalid comment ID.");
         }
     }
 
