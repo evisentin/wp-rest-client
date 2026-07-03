@@ -1,4 +1,4 @@
-# WordPress REST API Client for Java - Samples - Category Operations
+# WordPress REST API Client for Java - Samples
 
 ## Creating a Category
 

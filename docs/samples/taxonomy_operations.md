@@ -1,4 +1,4 @@
-# WordPress REST API Client for Java - Samples - Taxonomy Operations
+# WordPress REST API Client for Java - Samples
 
 ## Retrieving a Taxonomy
 
