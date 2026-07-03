@@ -1,4 +1,4 @@
-# Supported WP REST APIs
+# Supported WordPress REST APIs
 
 This page documents the WordPress REST API endpoints supported by this client.
 

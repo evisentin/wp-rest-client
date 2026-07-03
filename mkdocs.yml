@@ -14,12 +14,57 @@ site_description: wp-rest-client is an open-source WordPress REST API client for
 site_url: https://evisentin.github.io/wp-rest-client/
 repo_url: https://github.com/evisentin/wp-rest-client
 # ---------------------------------------------------------------------------------------------------------------------
+extra:
+  social:
+    - icon: fontawesome/solid/book
+      link: https://javadoc.io/doc/io.github.evisentin/wp-rest-client
+      name: Javadoc
+# ---------------------------------------------------------------------------------------------------------------------
+extra_css:
+  - assets/stylesheets/extra.css
+# ---------------------------------------------------------------------------------------------------------------------
+nav:
+  - Home: index.md
+  - Getting Started:
+      - Installation: getting_started/installation.md
+      - Quick Start: getting_started/quick-start.md
+      - Authentication: getting_started/authentication.md
+  - Supported WP REST APIs: reference/supported-apis.md
+  - Development:
+      - Architecture: development/architecture.md
+      - Contributing: development/contributing.md
+      - Developer Setup: development/developer-setup.md
+  - Use cases:
+      - miniOrange REST API Authentication Plugin: use_cases/miniorange/miniorange-rest-api-authentication-plugin.md
+  - Samples:
+    - Introduction: samples/index.md
+    - Category Operations: samples/category_operations.md
+    - Page Operations: samples/page_operations.md
+    - Post Operations: samples/post_operations.md
+    - Taxonomy Operations: samples/taxonomy_operations.md
+  - Test Coverage: test_coverage.md
+  - License: license.md
+# ---------------------------------------------------------------------------------------------------------------------
+markdown_extensions:
+  - pymdownx.snippets
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: "2-4"
+# ---------------------------------------------------------------------------------------------------------------------
 theme:
   features:
     - navigation.instant
   name: material
-  plugins:
-    - optimize
   palette:
     # Palette toggle for automatic mode
     - media: "(prefers-color-scheme)"
@@ -40,46 +85,4 @@ theme:
       toggle:
         icon: material/brightness-4
         name: Switch to system preference
-# ---------------------------------------------------------------------------------------------------------------------
-extra_css:
-  - assets/stylesheets/extra.css
-# ---------------------------------------------------------------------------------------------------------------------
-nav:
-  - Home: index.md
-  - Getting Started:
-      - Installation: getting_started/installation.md
-      - Quick Start: getting_started/quick-start.md
-      - Authentication: getting_started/authentication.md
-  - Reference:
-      - Supported APIs: reference/supported-apis.md
-  - Development:
-      - Architecture: development/architecture.md
-      - Contributing: development/contributing.md
-      - Developer Setup: development/developer-setup.md
-  - Use cases:
-      - miniOrange REST API Authentication Plugin: use_cases/miniorange/miniorange-rest-api-authentication-plugin.md
-  - Samples:
-    - Introduction: samples/index.md
-    - Category Operations: samples/category_operations.md
-    - Page Operations: samples/page_operations.md
-    - Post Operations: samples/post_operations.md
-    - Taxonomy Operations: samples/taxonomy_operations.md
-  - Test Coverage: https://evisentin.github.io/wp-rest-client/coverage/
-  - License: license.md
-# ---------------------------------------------------------------------------------------------------------------------
-markdown_extensions:
-  - pymdownx.snippets
-  - pymdownx.highlight:
-      anchor_linenums: true
-      line_spans: __span
-      pygments_lang_class: true
-  - pymdownx.inlinehilite
-  - pymdownx.snippets
-  - pymdownx.superfences
-  - pymdownx.tabbed:
-      alternate_style: true
-  - tables
-  - toc:
-      permalink: true
-      toc_depth: "2-4"
 # ---------------------------------------------------------------------------------------------------------------------
