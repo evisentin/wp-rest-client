@@ -14,7 +14,7 @@ import java.io.IOException;
  * <p>This implementation is intentionally simple and intended for demonstration purposes only. Production applications
  * should use a logging framework such as SLF4J together with Logback or Log4j.</p>
  */
-public class SampleHttpResponseInterceptor implements Interceptor {
+public class SampleOkHttpResponseInterceptor implements Interceptor {
 
     @Override
     public Response intercept(final Chain chain) throws IOException {

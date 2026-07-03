@@ -409,6 +409,39 @@
     </pluginManagement>
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <plugins>
+      <plugin>
+        <groupId>com.google.code.maven-replacer-plugin</groupId>
+        <artifactId>replacer</artifactId>
+        <version>1.5.3</version>
+
+        <executions>
+          <execution>
+            <id>fix-mkdocs-snippets</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>replace</goal>
+            </goals>
+
+            <configuration>
+              <includes>
+                <include>**/*.md</include>
+              </includes>
+
+              <basedir>${project.basedir}</basedir>
+
+              <regex>true</regex>
+
+              <replacements>
+                <replacement>
+                  <token>--8&lt;--"</token>
+                  <value>--8&lt;-- "</value>
+                </replacement>
+              </replacements>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
       <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
       <!--
         Maven Enforcer Plugin

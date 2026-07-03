@@ -1,13 +1,16 @@
-# WP REST Client
+# WordPress REST API Client for Java
 
 [![Maven Central](https://img.shields.io/maven-central/v/io.github.evisentin/wp-rest-client)](https://central.sonatype.com/artifact/io.github.evisentin/wp-rest-client)
+[![GitHub](https://img.shields.io/badge/GitHub-wp--rest--client-blue?logo=github)](https://github.com/evisentin/wp-rest-client)
+[![Javadoc](https://img.shields.io/badge/Javadoc-Online-green)](https://javadoc.io/doc/io.github.evisentin/wp-rest-client)
 [![License](https://img.shields.io/badge/license-Apache%202.0-brightgreen)](https://github.com/evisentin/wp-rest-client/blob/main/LICENSE)
 [![Coverage](https://img.shields.io/badge/coverage-report-brightgreen)](coverage/)
 ![Java](https://img.shields.io/badge/Java-21-informational)
 ![Java](https://img.shields.io/badge/Java-25-informational)
 
 ---
-A modular Java client for interacting with the WordPress REST API.
+An open-source WordPress REST API client for Java. It provides a modern, type-safe Java API for
+interacting with the WordPress REST API, including posts, pages, media, categories, tags, users and custom endpoints.
 
 ## Overview
 

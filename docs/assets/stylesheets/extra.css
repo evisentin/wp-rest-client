@@ -1,4 +1,12 @@
 .md-typeset table:not([class]) th,
 .md-typeset table:not([class]) td {
-  white-space: nowrap;
+    white-space: nowrap;
+}
+
+.md-grid {
+    max-width: 90%;
+}
+
+.md-sidebar--secondary {
+    flex: 0 0 15%;
 }

@@ -9,12 +9,37 @@
 #
 # Documentation: https://www.mkdocs.org/user-guide/configuration/
 # ---------------------------------------------------------------------------------------------------------------------
-site_name: WP REST Client
-site_description: Type-safe Java client for the WordPress REST API
+site_name: WordPress REST API Client for Java
+site_description: wp-rest-client is an open-source WordPress REST API client for Java. It provides a modern, type-safe Java API for interacting with the WordPress REST API, including posts, pages, media, categories, tags, users and custom endpoints.
 site_url: https://evisentin.github.io/wp-rest-client/
+repo_url: https://github.com/evisentin/wp-rest-client
 # ---------------------------------------------------------------------------------------------------------------------
 theme:
+  features:
+    - navigation.instant
   name: material
+  plugins:
+    - optimize
+  palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to system preference
 # ---------------------------------------------------------------------------------------------------------------------
 extra_css:
   - assets/stylesheets/extra.css
@@ -33,10 +58,17 @@ nav:
       - Developer Setup: development/developer-setup.md
   - Use cases:
       - miniOrange REST API Authentication Plugin: use_cases/miniorange/miniorange-rest-api-authentication-plugin.md
+  - Samples:
+    - Introduction: samples/index.md
+    - Category Operations: samples/category_operations.md
+    - Page Operations: samples/page_operations.md
+    - Post Operations: samples/post_operations.md
+    - Taxonomy Operations: samples/taxonomy_operations.md
   - Test Coverage: https://evisentin.github.io/wp-rest-client/coverage/
   - License: license.md
 # ---------------------------------------------------------------------------------------------------------------------
 markdown_extensions:
+  - pymdownx.snippets
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span

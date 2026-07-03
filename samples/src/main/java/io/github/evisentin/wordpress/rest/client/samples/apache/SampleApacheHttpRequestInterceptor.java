@@ -12,7 +12,7 @@ import org.apache.hc.core5.http.protocol.HttpContext;
  * demonstration purposes only. Production applications should use a logging framework such as SLF4J together with
  * Logback or Log4j.
  */
-public class SampleHttpRequestInterceptor implements HttpRequestInterceptor {
+public class SampleApacheHttpRequestInterceptor implements HttpRequestInterceptor {
 
     @Override
     public void process(final HttpRequest request, final EntityDetails entity, final HttpContext context) {
