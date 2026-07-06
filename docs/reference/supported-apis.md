@@ -14,6 +14,7 @@ module and are continuously validated against the following WordPress versions:
 
 | WordPress Version | Tested |
 |-------------------|:------:|
+| 6.3.x             |   ✅    |
 | 6.4.x             |   ✅    |
 | 6.5.x             |   ✅    |
 | 6.6.x             |   ✅    |

@@ -78,19 +78,19 @@ cd your-project-directory
 Using the Maven wrapper:
 
 ```shell
-./mvnw clean install -Plocal-tests
+./mvnw clean install -Punit-tests
 ```
 
 or
 
 ```shell
-./mvnw clean install -Plocal-tests,integration-tests
+./mvnw clean install -Pintegration-tests
 ```
 
 Or with a global Maven installation:
 
 ```shell
-mvn clean install -Plocal-tests
+mvn clean install -Punit-tests
 ```
 
 

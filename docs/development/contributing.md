@@ -35,7 +35,11 @@ A compliant implementation should:
 Before opening a pull request, run the full test suite.
 
 ```shell
-mvn clean verify -Plocal-tests,integration-tests
+# this runs unit tests AND integration tests
+mvn clean verify -Pintegration-tests
+
+# or just the unit tests
+mvn clean verify -Punit-tests
 ```
 
 ---

@@ -13,7 +13,7 @@
   <artifactId>wp-rest-client-contract-tests</artifactId>
   <name>WP REST Client - Contract Tests</name>
   <description>Reusable contract testing utilities for WP REST Client using JUnit and MockServer</description>
-  <packaging>jar</packaging>
+  <packaging>pom</packaging>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <dependencies>
     <!-- [PROJECT MODULES] -->
@@ -72,16 +72,47 @@
       <version>${lombok.version}</version>
       <scope>provided</scope>
     </dependency>
-
   </dependencies>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <build>
     <plugins>
+      <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>compile-test-classes</id>
+            <phase>test-compile</phase>
+            <goals>
+              <goal>testCompile</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>process-test-resources</id>
+            <phase>process-test-resources</phase>
+            <goals>
+              <goal>testResources</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
+        <executions>
+          <execution>
+            <id>tests</id>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
       <plugin>
