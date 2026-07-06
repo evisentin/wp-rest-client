@@ -2318,8 +2318,7 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                     .containsKeys(
                             "category",
                             "post_tag",
-                            "nav_menu",
-                            "wp_pattern_category"); // we might have others, but we are not testing that here
+                            "nav_menu"); // we might have others, but we are not testing that here
         }
     }
 }

@@ -77,13 +77,13 @@ jobs:
       # Run the Maven build and generate the JaCoCo report.
       #
       # Change the profile if needed:
-      #   -Plocal-tests
-      #   -Plocal-tests,integration-tests
+      #   -Punit-tests
+      #   -Punit-tests,integration-tests
       #
       # Expected output:
       #   wp-rest-client-test-report/target/site/jacoco-aggregate
       - name: Build project and generate coverage
-        run: mvn -B clean verify -Plocal-tests
+        run: mvn -B clean verify -Punit-tests
 
       # Copy the JaCoCo report into the generated MkDocs site.
       #
