@@ -1980,6 +1980,95 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
         }
     }
 
+    @DisplayName("Search APIs - Integration Tests")
+    @Nested
+    class SearchTests {
+
+        @DisplayName("'SEARCH' works with pages")
+        @Test
+        void search__works_with_pages() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long post1 = givenPostExists("My First Post", "my content", WpPostStatus.PUBLISH);
+            final Long post2 = givenPostExists("My Second Post", "my content", WpPostStatus.PUBLISH);
+            final Long page1 = givenPageExists("My First Page", "my content", WpPageStatus.PUBLISH);
+            final Long page2 = givenPageExists("My Second Page", "my content", WpPageStatus.PUBLISH);
+
+            // WHEN
+            final WpSearchQuery query = WpSearchQuery.builder()
+                                                     .withType(WpSearchItemType.POST)
+                                                     .withSearch("first")
+                                                     .withSubType(WpSearchItemSubType.PAGE)
+                                                     .build();
+
+            final WpPagedResponse<WpSearchResult> response = adminClient.search().search(new WpPaginationQuery(1, 10), query);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(1)
+                               .doesNotHaveNextPage();
+
+            assertThat(response.items())
+                    .isNotNull()
+                    .hasSize(1)
+                    .first()
+                    .satisfies(item -> {
+                                assertThat(item.getId()).isEqualTo(page1);
+                                assertThat(item.getTitle()).isEqualTo("My First Page");
+                                assertThat(item.getType()).isEqualTo("post");
+                                assertThat(item.getSubType()).isEqualTo("page");
+                                assertThat(item.getUrl()).isNotBlank();
+                            }
+                    );
+        }
+
+        @DisplayName("'SEARCH' works with posts")
+        @Test
+        void search__works_with_posts() {
+
+            // GIVEN
+            wpCleanDefaultData();
+            final Long post1 = givenPostExists("My First Post", "my content", WpPostStatus.PUBLISH);
+            final Long post2 = givenPostExists("My Second Post", "my content", WpPostStatus.PUBLISH);
+            final Long page1 = givenPageExists("My First Page", "my content", WpPageStatus.PUBLISH);
+            final Long page2 = givenPageExists("My Second Page", "my content", WpPageStatus.PUBLISH);
+
+            // WHEN
+            final WpSearchQuery query = WpSearchQuery.builder()
+                                                     .withType(WpSearchItemType.POST)
+                                                     .withSubType(WpSearchItemSubType.POST)
+                                                     .withSearch("first")
+                                                     .build();
+
+            final WpPagedResponse<WpSearchResult> response = adminClient.search().search(new WpPaginationQuery(1, 10), query);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(1)
+                               .doesNotHaveNextPage();
+
+            assertThat(response.items())
+                    .isNotNull()
+                    .hasSize(1)
+                    .first()
+                    .satisfies(item -> {
+                                assertThat(item.getId()).isEqualTo(post1);
+                                assertThat(item.getTitle()).isEqualTo("My First Post");
+                                assertThat(item.getType()).isEqualTo("post");
+                                assertThat(item.getSubType()).isEqualTo("post");
+                                assertThat(item.getUrl()).isNotBlank();
+                            }
+                    );
+        }
+    }
+
     @DisplayName("Post Status APIs - Integration Tests")
     @Nested
     class StatusTests {

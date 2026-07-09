@@ -49,6 +49,7 @@ public final class WpQueryParameters {
     public static final String SLUG = "slug";
     public static final String STATUS = "status";
     public static final String STICKY = "sticky";
+    public static final String SUBTYPE = "subtype";
 
     public static final String TYPE = "type";
     public static final String TAGS = "tags";

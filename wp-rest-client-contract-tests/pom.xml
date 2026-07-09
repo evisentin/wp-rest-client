@@ -13,7 +13,7 @@
   <artifactId>wp-rest-client-contract-tests</artifactId>
   <name>WP REST Client - Contract Tests</name>
   <description>Reusable contract testing utilities for WP REST Client using JUnit and MockServer</description>
-  <packaging>pom</packaging>
+  <packaging>jar</packaging>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <dependencies>
     <!-- [PROJECT MODULES] -->

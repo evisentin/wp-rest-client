@@ -80,6 +80,13 @@ public interface WpRestClient {
     PostAPIs posts();
 
     /**
+     * Returns the search API operations.
+     *
+     * @return search API operations
+     */
+    SearchAPIs search();
+
+    /**
      * Returns the tag API operations.
      *
      * @return tag API operations

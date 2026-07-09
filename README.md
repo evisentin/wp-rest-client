@@ -4,6 +4,7 @@
 [![Website](https://img.shields.io/badge/Website-Live-brightgreen)](https://evisentin.github.io/wp-rest-client/)
 [![Javadoc](https://img.shields.io/badge/Javadoc-Online-green)](https://javadoc.io/doc/io.github.evisentin/wp-rest-client)
 [![License](https://img.shields.io/badge/license-Apache%202.0-brightgreen)](LICENSE)
+[![Build](https://github.com/evisentin/wp-rest-client/actions/workflows/build.yml/badge.svg)](https://github.com/evisentin/wp-rest-client/actions/workflows/build.yml)
 [![Coverage](https://img.shields.io/badge/coverage-report-brightgreen)](https://evisentin.github.io/wp-rest-client/coverage/)
 ![Java](https://img.shields.io/badge/Java-21-informational)
 ![Java](https://img.shields.io/badge/Java-25-informational)
@@ -78,7 +79,7 @@ Topics covered include:
 
 ## Compatibility
 
-WP REST Client is continuously tested against WordPress versions 6.4 through 7.0.
+WP REST Client is continuously tested against WordPress versions 6.3 through 7.0.
 
 ## License
 

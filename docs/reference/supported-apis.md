@@ -40,7 +40,7 @@ module and are continuously validated against the following WordPress versions:
 | Tags           | `/tags`                     |  ✅   |   ✅    |   ✅    |   ✅    | Post tags.                         |
 | Comments       | `/comments`                 |  ✅   |   ✅    |   ✅    |   ✅    | Comments and moderation workflows. |
 | Users          | `/users`                    |  🚫  |   🚫   |   🚫   |   🚫   | Usually requires authentication.   |
-| Search         | `/search`                   |  ⬜   |  N/A   |  N/A   |  N/A   | Search across public content.      |
+| Search         | `/search`                   |  ✅   |  N/A   |  N/A   |  N/A   | Search across public content.      |
 | Taxonomies     | `/taxonomies`               |  ✅   |  N/A   |  N/A   |  N/A   | Taxonomy metadata.                 |
 | Post Types     | `/types`                    |  ✅   |  N/A   |  N/A   |  N/A   | Registered post type metadata.     |
 | Statuses       | `/statuses`                 |  ✅   |  N/A   |  N/A   |  N/A   | Registered post statuses.          |
