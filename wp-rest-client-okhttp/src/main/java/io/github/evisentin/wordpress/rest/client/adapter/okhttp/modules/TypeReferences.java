@@ -55,6 +55,9 @@ interface TypeReferences {
     TypeReference<WpStatus> WP_STATUS_TYPE_REFERENCE = new TypeReference<>() {};
     TypeReference<Map<String, WpStatus>> WP_STATUSES_MAP_TYPEREFERENCE = new TypeReference<>() {};
 
+    // Search result
+    TypeReference<List<WpSearchResult>> WP_SEARCH_REULT_LIST_TYPEREFERENCE = new TypeReference<>() {};
+
     // Taxonomies
     TypeReference<WpTaxonomyInfo> WP_TAXONOMY_TYPE_REFERENCE = new TypeReference<>() {};
     TypeReference<Map<String, WpTaxonomyInfo>> WP_TAXONOMIES_MAP_TYPEREFERENCE = new TypeReference<>() {};

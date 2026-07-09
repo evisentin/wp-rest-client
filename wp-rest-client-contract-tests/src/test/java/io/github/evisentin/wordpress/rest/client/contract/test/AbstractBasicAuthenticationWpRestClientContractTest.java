@@ -2294,7 +2294,9 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             givenExpectationFromFile("basic-auth/page-revisions/list.success.json");
 
             // WHEN/THEN
-            final WpPagedResponse<WpPageRevision> response = client.pageRevisions().list(1L, new WpPaginationQuery(1, 10), null);
+            final WpPageRevisionQuery query = WpPageRevisionQuery.builder().build();
+            final WpPagedResponse<WpPageRevision> response = client.pageRevisions()
+                                                                   .list(1L, new WpPaginationQuery(1, 10), query);
 
             WordPressAssertions.assertThat(response)
                                .hasPageNumber(1)
@@ -3245,6 +3247,87 @@ public abstract class AbstractBasicAuthenticationWpRestClientContractTest extend
             // THEN
             assertThat(statuses)
                     .containsOnlyKeys("publish", "future", "draft", "pending", "private", "trash");
+        }
+    }
+
+    @DisplayName("'SEARCH' Operations")
+    @Nested
+    class SearchTests {
+
+        @DisplayName("'SEARCH' works with pages")
+        @Test
+        void search__works_with_pages() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/search/search.success.with-page.json");
+
+            // WHEN
+            final WpSearchQuery query = WpSearchQuery.builder()
+                                                     .withType(WpSearchItemType.POST)
+                                                     .withSearch("first")
+                                                     .withSubType(WpSearchItemSubType.PAGE)
+                                                     .build();
+
+            final WpPagedResponse<WpSearchResult> response = client.search().search(new WpPaginationQuery(1, 10), query);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(1)
+                               .doesNotHaveNextPage();
+
+            assertThat(response.items())
+                    .isNotNull()
+                    .hasSize(1)
+                    .first()
+                    .satisfies(item -> {
+                                assertThat(item.getId()).isEqualTo(22);
+                                assertThat(item.getTitle()).isEqualTo("My First Page");
+                                assertThat(item.getType()).isEqualTo("post");
+                                assertThat(item.getSubType()).isEqualTo("page");
+                                assertThat(item.getUrl()).isNotBlank();
+                            }
+                    );
+        }
+
+        @DisplayName("'SEARCH' works with posts")
+        @Test
+        void search__works_with_posts() {
+
+            // GIVEN
+            givenExpectationFromFile("basic-auth/search/search.success.with-post.json");
+
+            // WHEN
+            final WpSearchQuery query = WpSearchQuery.builder()
+                                                     .withType(WpSearchItemType.POST)
+                                                     .withSubType(WpSearchItemSubType.POST)
+                                                     .withSearch("first")
+                                                     .build();
+
+            final WpPagedResponse<WpSearchResult> response = client.search().search(new WpPaginationQuery(1, 10), query);
+
+            // THEN
+            WordPressAssertions.assertThat(response)
+                               .hasPageNumber(1)
+                               .hasItemsPerPage(10)
+                               .hasTotalPages(1)
+                               .hasTotalItems(1)
+                               .doesNotHaveNextPage();
+
+            assertThat(response.items())
+                    .isNotNull()
+                    .hasSize(1)
+                    .first()
+                    .satisfies(item -> {
+                                assertThat(item.getId()).isEqualTo(24);
+                                assertThat(item.getTitle()).isEqualTo("My First Post");
+                                assertThat(item.getType()).isEqualTo("post");
+                                assertThat(item.getSubType()).isEqualTo("post");
+                                assertThat(item.getUrl()).isNotBlank();
+                            }
+                    );
         }
     }
 

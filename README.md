@@ -78,7 +78,7 @@ Topics covered include:
 
 ## Compatibility
 
-WP REST Client is continuously tested against WordPress versions 6.4 through 7.0.
+WP REST Client is continuously tested against WordPress versions 6.3 through 7.0.
 
 ## License
 

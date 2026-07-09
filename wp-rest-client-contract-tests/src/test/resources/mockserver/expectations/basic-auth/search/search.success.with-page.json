@@ -1,0 +1,123 @@
+[
+    {
+        "httpRequest": {
+            "method": "GET",
+            "path": "/wp-json/wp/v2/search",
+            "queryStringParameters": [
+                {
+                    "name": "page",
+                    "values": [
+                        "1"
+                    ]
+                },
+                {
+                    "name": "per_page",
+                    "values": [
+                        "10"
+                    ]
+                },
+                {
+                    "name": "context",
+                    "values": [
+                        "view"
+                    ]
+                },
+                {
+                    "name": "search",
+                    "values": [
+                        "first"
+                    ]
+                },
+                {
+                    "name": "type",
+                    "values": [
+                        "post"
+                    ]
+                },
+                {
+                    "name": "subtype",
+                    "values": [
+                        "page"
+                    ]
+                }
+            ],
+            "headers": [
+                {
+                    "name": "Accept",
+                    "values": [
+                        "application/json"
+                    ]
+                },
+                {
+                    "name": "Authorization",
+                    "values": [
+                        "Basic dXNlcjpwYXNzd29yZA=="
+                    ]
+                }
+            ]
+        },
+        "httpResponse": {
+            "statusCode": 200,
+            "headers": [
+                {
+                    "name": "Content-Type",
+                    "values": [
+                        "application/json; charset=UTF-8"
+                    ]
+                },
+                {
+                    "name": "X-WP-Total",
+                    "values": [
+                        "1"
+                    ]
+                },
+                {
+                    "name": "X-WP-TotalPages",
+                    "values": [
+                        "1"
+                    ]
+                }
+            ],
+            "body": {
+                "type": "JSON",
+                "matchType": "ONLY_MATCHING_FIELDS",
+                "json": [
+                    {
+                        "id": 22,
+                        "title": "My First Page",
+                        "url": "https:\/\/localhost:50446\/my-first-page\/",
+                        "type": "post",
+                        "subtype": "page",
+                        "_links": {
+                            "self": [
+                                {
+                                    "embeddable": true,
+                                    "href": "https:\/\/localhost:50446\/wp-json\/wp\/v2\/pages\/22",
+                                    "targetHints": {
+                                        "allow": [
+                                            "GET",
+                                            "POST",
+                                            "PUT",
+                                            "PATCH",
+                                            "DELETE"
+                                        ]
+                                    }
+                                }
+                            ],
+                            "about": [
+                                {
+                                    "href": "https:\/\/localhost:50446\/wp-json\/wp\/v2\/types\/page"
+                                }
+                            ],
+                            "collection": [
+                                {
+                                    "href": "https:\/\/localhost:50446\/wp-json\/wp\/v2\/search"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        }
+    }
+]

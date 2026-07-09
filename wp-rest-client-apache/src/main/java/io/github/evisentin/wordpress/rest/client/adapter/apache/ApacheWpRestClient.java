@@ -70,6 +70,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     private final PostRevisionAPIs postRevisionAPIs;
     private final PostStatusAPIs postStatusAPIs;
     private final PostTypeAPIs postTypesAPIs;
+    private final SearchAPIs searchAPIs;
     private final TagAPIs tagAPIs;
     private final TaxonomyAPIs taxonomyAPIs;
 
@@ -144,6 +145,7 @@ public class ApacheWpRestClient extends WpBaseRestClient {
         postRevisionAPIs = new PostRevisionApiClientModule(apiUrl, httpClient, mapper);
         postStatusAPIs = new PostStatusApiClientModule(apiUrl, httpClient, mapper);
         postTypesAPIs = new PostTypeApiClientModule(apiUrl, httpClient, mapper);
+        searchAPIs = new SearchApiClientModule(apiUrl, httpClient, mapper);
         tagAPIs = new TagApiClientModule(apiUrl, httpClient, mapper);
         taxonomyAPIs = new TaxonomyApiClientModule(apiUrl, httpClient, mapper);
     }
@@ -191,6 +193,11 @@ public class ApacheWpRestClient extends WpBaseRestClient {
     @Override
     public PostAPIs posts() {
         return postAPIs;
+    }
+
+    @Override
+    public SearchAPIs search() {
+        return searchAPIs;
     }
 
     @Override
