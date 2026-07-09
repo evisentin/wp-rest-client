@@ -37,11 +37,11 @@ nav:
   - Use cases:
       - miniOrange REST API Authentication Plugin: use_cases/miniorange/miniorange-rest-api-authentication-plugin.md
   - Samples:
-    - Introduction: samples/index.md
-    - Category Operations: samples/category_operations.md
-    - Page Operations: samples/page_operations.md
-    - Post Operations: samples/post_operations.md
-    - Taxonomy Operations: samples/taxonomy_operations.md
+      - Introduction: samples/index.md
+      - Category Operations: samples/category_operations.md
+      - Page Operations: samples/page_operations.md
+      - Post Operations: samples/post_operations.md
+      - Taxonomy Operations: samples/taxonomy_operations.md
   - Test Coverage: test_coverage.md
   - License: license.md
 # ---------------------------------------------------------------------------------------------------------------------
