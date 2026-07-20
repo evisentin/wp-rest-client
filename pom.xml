@@ -54,7 +54,7 @@
     <commons-text.version>1.15.0</commons-text.version>
 
     <jackson-2x.version>2.22.1</jackson-2x.version>
-    <java-jwt.version>4.5.2</java-jwt.version>
+    <java-jwt.version>4.6.0</java-jwt.version>
     <lombok.version>1.18.46</lombok.version>
 
     <httpclient5.version>5.6.2</httpclient5.version>
