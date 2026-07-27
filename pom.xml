@@ -8,8 +8,10 @@
   <version>1.4.7-SNAPSHOT</version>
   <packaging>pom</packaging>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-  <name>WP REST Client</name>
-  <description>Multi-module WordPress Java REST client with pluggable HTTP adapters</description>
+  <name>WordPress REST API Client for Java</name>
+  <description>A type-safe Java client library for the WordPress REST API, with Apache HttpClient and OkHttp
+    implementations.
+  </description>
   <url>https://github.com/evisentin/wp-rest-client</url>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <modules>

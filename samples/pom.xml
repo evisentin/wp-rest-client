@@ -12,7 +12,7 @@
   </parent>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <artifactId>samples</artifactId>
-  <name>WP REST Client - Samples</name>
+  <name>WordPress REST API Client for Java - Samples</name>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <dependencies>
     <!-- [PROJECT MODULES] -->
