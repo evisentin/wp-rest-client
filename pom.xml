@@ -48,6 +48,7 @@
     <!-- [MAVEN PLUGIN VERSIONS USED WHEN PUBLISHING TO MAVEN CENTRAL] -->
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <maven.gpg.plugin.version>3.2.8</maven.gpg.plugin.version>
+    <central-publishing-maven-plugin.version>0.11.0</central-publishing-maven-plugin.version>
 
     <!-- [LIBRARY VERSIONS] -->
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -610,7 +611,7 @@
       <plugin>
         <groupId>org.sonatype.central</groupId>
         <artifactId>central-publishing-maven-plugin</artifactId>
-        <version>0.11.0</version>
+        <version>${central-publishing-maven-plugin.version}</version>
         <extensions>true</extensions>
         <configuration>
           <publishingServerId>central</publishingServerId>
