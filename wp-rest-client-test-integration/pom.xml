@@ -12,7 +12,7 @@
   </parent>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <artifactId>wp-rest-client-test-integration</artifactId>
-  <name>WP REST Client - WordPress integration tests</name>
+  <name>WordPress REST API Client for Java - WordPress integration tests</name>
   <description>
     Integration test suite for the WP REST Client using Testcontainers, executing tests against multiple WordPress
     versions to ensure cross-version compatibility.

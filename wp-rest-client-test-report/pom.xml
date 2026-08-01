@@ -13,7 +13,7 @@
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <artifactId>wp-rest-client-test-report</artifactId>
   <packaging>pom</packaging>
-  <name>WP REST Client - Test Report Aggregation</name>
+  <name>WordPress REST API Client for Java - Test Report Aggregation</name>
   <description>Aggregated test coverage and reporting module for WP REST Client</description>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <dependencies>
@@ -43,6 +43,7 @@
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco-maven-plugin.version}</version>
         <configuration>
           <excludes>
             <exclude>**/wp-rest-client-domain-assertions/**</exclude>

@@ -8,8 +8,10 @@
   <version>1.4.7-SNAPSHOT</version>
   <packaging>pom</packaging>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
-  <name>WP REST Client</name>
-  <description>Multi-module WordPress Java REST client with pluggable HTTP adapters</description>
+  <name>WordPress REST API Client for Java</name>
+  <description>A type-safe Java client library for the WordPress REST API, with Apache HttpClient and OkHttp
+    implementations.
+  </description>
   <url>https://github.com/evisentin/wp-rest-client</url>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <modules>
@@ -33,19 +35,20 @@
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <!-- [MAVEN PLUGIN VERSIONS] -->
     <jacoco-maven-plugin.version>0.8.15</jacoco-maven-plugin.version>
-    <maven.compiler.plugin.version>3.15.0</maven.compiler.plugin.version>
+    <maven-compiler-plugin.version>3.15.0</maven-compiler-plugin.version>
     <maven-enforcer-plugin.version>3.6.3</maven-enforcer-plugin.version>
-    <maven.failsafe.plugin.version>3.5.6</maven.failsafe.plugin.version>
+    <maven-failsafe-plugin.version>3.5.6</maven-failsafe-plugin.version>
     <maven-javadoc-plugin.version>3.12.0</maven-javadoc-plugin.version>
-    <maven.jar.plugin.version>3.5.1</maven.jar.plugin.version>
+    <maven-jar-plugin.version>3.5.1</maven-jar-plugin.version>
     <maven-resources-plugin.version>3.5.0</maven-resources-plugin.version>
-    <maven.source.plugin.version>3.4.0</maven.source.plugin.version>
-    <maven.surefire.plugin.version>3.5.6</maven.surefire.plugin.version>
+    <maven-source-plugin.version>3.4.0</maven-source-plugin.version>
+    <maven-surefire-plugin.version>3.5.6</maven-surefire-plugin.version>
     <maven-surefire-report-plugin.version>3.5.6</maven-surefire-report-plugin.version>
 
     <!-- [MAVEN PLUGIN VERSIONS USED WHEN PUBLISHING TO MAVEN CENTRAL] -->
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <maven.gpg.plugin.version>3.2.8</maven.gpg.plugin.version>
+    <central-publishing-maven-plugin.version>0.11.0</central-publishing-maven-plugin.version>
 
     <!-- [LIBRARY VERSIONS] -->
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -212,7 +215,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
-          <version>${maven.compiler.plugin.version}</version>
+          <version>${maven-compiler-plugin.version}</version>
           <configuration>
             <release>${maven.compiler.release}</release>
             <annotationProcessorPaths>
@@ -248,7 +251,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-surefire-plugin</artifactId>
-          <version>${maven.surefire.plugin.version}</version>
+          <version>${maven-surefire-plugin.version}</version>
           <configuration>
             <argLine>@{argLine} -XX:+EnableDynamicAgentLoading</argLine>
           </configuration>
@@ -289,7 +292,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
-          <version>${maven.failsafe.plugin.version}</version>
+          <version>${maven-failsafe-plugin.version}</version>
           <configuration>
             <argLine>@{argLine} -XX:+EnableDynamicAgentLoading</argLine>
           </configuration>
@@ -307,7 +310,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-jar-plugin</artifactId>
-          <version>${maven.jar.plugin.version}</version>
+          <version>${maven-jar-plugin.version}</version>
           <executions>
             <execution>
               <id>default-jar</id>
@@ -334,7 +337,7 @@
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
-          <version>${maven.source.plugin.version}</version>
+          <version>${maven-source-plugin.version}</version>
           <executions>
             <execution>
               <id>attach-sources</id>
@@ -608,7 +611,7 @@
       <plugin>
         <groupId>org.sonatype.central</groupId>
         <artifactId>central-publishing-maven-plugin</artifactId>
-        <version>0.11.0</version>
+        <version>${central-publishing-maven-plugin.version}</version>
         <extensions>true</extensions>
         <configuration>
           <publishingServerId>central</publishingServerId>

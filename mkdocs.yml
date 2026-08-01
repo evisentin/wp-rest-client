@@ -41,6 +41,7 @@ nav:
       - Category Operations: samples/category_operations.md
       - Page Operations: samples/page_operations.md
       - Post Operations: samples/post_operations.md
+      - Tag Operations: samples/tag_operations.md
       - Taxonomy Operations: samples/taxonomy_operations.md
   - Test Coverage: test_coverage.md
   - License: license.md
