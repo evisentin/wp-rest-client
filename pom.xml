@@ -60,7 +60,7 @@
     <java-jwt.version>4.6.0</java-jwt.version>
     <lombok.version>1.18.46</lombok.version>
 
-    <httpclient5.version>5.6.2</httpclient5.version>
+    <httpclient5.version>5.6.3</httpclient5.version>
     <okhttp.version>5.4.0</okhttp.version>
 
     <slf4j.version>2.0.18</slf4j.version>
@@ -70,7 +70,7 @@
     <junit.version>6.1.2</junit.version>
     <assertj.version>3.27.7</assertj.version>
     <mockito.version>5.23.0</mockito.version>
-    <mockserver-junit-jupiter.version>7.4.0</mockserver-junit-jupiter.version>
+    <mockserver-junit-jupiter.version>7.5.0</mockserver-junit-jupiter.version>
   </properties>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <licenses>
