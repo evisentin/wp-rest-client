@@ -1,6 +1,6 @@
 # Architecture
 
-This document describes the internal architecture and design principles of WP REST Client.
+This document describes the internal architecture and design principles of WordPress REST Client.
 
 ---
 

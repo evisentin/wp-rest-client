@@ -1,6 +1,6 @@
 # Contributing
 
-This document describes how to contribute to WP REST Client.
+This document describes how to contribute to WordPress REST Client.
 
 ---
 

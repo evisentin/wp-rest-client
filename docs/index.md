@@ -14,7 +14,7 @@ interacting with the WordPress REST API, including posts, pages, media, categori
 
 ## Overview
 
-WP REST Client provides a type-safe Java API for WordPress REST endpoints, with interchangeable HTTP client
+WordPress REST Client provides a type-safe Java API for WordPress REST endpoints, with interchangeable HTTP client
 implementations.
 
 The client uses the WordPress REST

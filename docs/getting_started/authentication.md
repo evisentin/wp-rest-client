@@ -1,8 +1,12 @@
 # Authentication
 
-WP REST Client currently provides builder methods for Basic Authentication and JWT Authentication.
+WordPress REST Client currently provides builder methods for Basic Authentication and JWT Authentication.
 
 Examples are available for both Apache HttpClient and OkHttp implementations.
+
+!!! note "Please note"
+
+    Before you can use the WordPress REST Client, your WordPress must have the REST API authentication configured.
 
 ---
 

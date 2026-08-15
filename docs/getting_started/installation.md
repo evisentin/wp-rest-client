@@ -2,7 +2,7 @@
 
 Artifacts are available on Maven Central.
 
-WP REST Client is organized into a modular architecture:
+WordPress REST Client is organized into a modular architecture:
 
 - **Domain API**: public interfaces, models, DTOs, and abstractions.
 - **HTTP client implementations**: concrete clients based on Apache HttpClient or OkHttp.

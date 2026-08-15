@@ -1,12 +1,17 @@
 # Quick Start
 
-This page shows how to create a WP REST Client instance and list WordPress posts.
+This page shows how to create a WordPress REST Client instance and list WordPress posts.
+
+!!! note "Please note"
+
+    Before you can use the WordPress REST Client, your WordPress must have the REST API authentication configured.
 
 ## Endpoint Discovery
 
-WP REST Client accepts a WordPress site URL rather than a REST API URL.
+WordPress REST Client accepts a WordPress site URL rather than a REST API URL.
 
-The client automatically discovers the REST API root using the standard WordPress REST API discovery mechanism and resolves all endpoint URLs from the discovered API index.
+The client automatically discovers the REST API root using the standard WordPress REST API discovery mechanism and
+resolves all endpoint URLs from the discovered API index.
 
 For example, provide the base site URL:
 
@@ -21,25 +26,31 @@ The client discovers the REST API endpoint automatically.
 Add the Apache implementation dependency:
 
 === "Maven"
-    ```xml title="pom.xml"
-    <dependency>
-      <groupId>io.github.evisentin</groupId>
-      <artifactId>wp-rest-client-apache</artifactId>
-      <version>::latest::</version>
-    </dependency>
-    ```
+
+```xml title="pom.xml"
+
+<dependency>
+    <groupId>io.github.evisentin</groupId>
+    <artifactId>wp-rest-client-apache</artifactId>
+    <version>::latest::</version>
+</dependency>
+```
+
 === "Gradle (groovy)"
-    ```groovy title="build.gradle"
-    dependencies {
-        implementation 'io.github.evisentin:wp-rest-client-apache:<latest version>'
-    }
-    ```
+
+```groovy title="build.gradle"
+dependencies {
+    implementation 'io.github.evisentin:wp-rest-client-apache:<latest version>'
+}
+```
+
 === "Gradle (kotlin)"
-    ```kotlin title="build.gradle.kts"
-    dependencies {
-        implementation("io.github.evisentin:wp-rest-client-apache:<latest version>")
-    }
-    ```
+
+```kotlin title="build.gradle.kts"
+dependencies {
+    implementation("io.github.evisentin:wp-rest-client-apache:<latest version>")
+}
+```
 
 Then create the client and list posts:
 
@@ -78,25 +89,31 @@ final List<WpPost> posts = response.getItems();
 Add the OkHttp implementation dependency:
 
 === "Maven"
-    ```xml title="pom.xml"
-    <dependency>
-      <groupId>io.github.evisentin</groupId>
-      <artifactId>wp-rest-client-okhttp</artifactId>
-      <version>::latest::</version>
-    </dependency>
-    ```
+
+```xml title="pom.xml"
+
+<dependency>
+    <groupId>io.github.evisentin</groupId>
+    <artifactId>wp-rest-client-okhttp</artifactId>
+    <version>::latest::</version>
+</dependency>
+```
+
 === "Gradle (groovy)"
-    ```groovy title="build.gradle"
-    dependencies {
-        implementation 'io.github.evisentin:wp-rest-client-okhttp:<latest version>'
-    }
-    ```
+
+```groovy title="build.gradle"
+dependencies {
+    implementation 'io.github.evisentin:wp-rest-client-okhttp:<latest version>'
+}
+```
+
 === "Gradle (kotlin)"
-    ```kotlin title="build.gradle.kts"
-    dependencies {
-        implementation("io.github.evisentin:wp-rest-client-okhttp:<latest version>")
-    }
-    ```
+
+```kotlin title="build.gradle.kts"
+dependencies {
+    implementation("io.github.evisentin:wp-rest-client-okhttp:<latest version>")
+}
+```
 
 Then create the client and list posts:
 
