@@ -8,7 +8,7 @@ FROM wordpress:${WORDPRESS_VERSION}
 RUN echo "Using base image: wordpress:${WORDPRESS_VERSION}"
 
 # Install OpenSSL so we can generate a self-signed certificate.
-RUN apt-get update && \
+RUN apt-get -o Acquire::Check-Valid-Until=false update && \
     apt-get install -y --no-install-recommends openssl
 
 # Enable Apache's SSL module so the server can handle HTTPS (port 443).
