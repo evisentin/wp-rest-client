@@ -3,6 +3,9 @@ package io.github.evisentin.wordpress.test.integration.base;
 import io.github.evisentin.wordpress.rest.client.domain.WpRestClient;
 import io.github.evisentin.wordpress.rest.client.domain.assertions.WordPressAssertions;
 import io.github.evisentin.wordpress.rest.client.domain.model.*;
+import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.*;
+import io.github.evisentin.wordpress.rest.client.gutenberg.DefaultWpGutenbergCodec;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.*;
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.*;
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.order.WpPageOrderFields;
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.order.WpPostOrderFields;
@@ -18,6 +21,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Tag;
 
 import java.io.File;
 import java.io.InputStream;
@@ -134,6 +138,57 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
     private Long givenCategoryExists(final String name, final String description, final String slug) {
         return wpCreateCategory(name, description, slug);
+    }
+
+    /** Common saved blocks, using basic markup supported across the WordPress test matrix. */
+    private WpBlockDocument commonGutenbergContent() {
+        WpBlock heading = new HeadingBlockAdapter().toBlock(new WpHeadingBlock("Gutenberg introduction", 2, Map.of()));
+        WpBlock paragraph = new ParagraphBlockAdapter().toBlock(
+                new WpParagraphBlock("Hello <strong>WordPress</strong> &amp; Gutenberg.", Map.of()));
+        WpBlock image = new ImageBlockAdapter().toBlock(new WpImageBlock(null,
+                "https://example.com/photo.jpg", "A mountain", "Mountain caption", Map.of()));
+        WpBlock listItem = new ListItemBlockAdapter().toBlock(new WpListItemBlock(Map.of(),
+                List.of(new WpHtmlFragment("<li>First item</li>")), WpBlockSyntax.PAIRED));
+        WpBlock list = new ListBlockAdapter().toBlock(new WpListBlock(Map.of(), List.of(
+                new WpHtmlFragment("<ul class=\"wp-block-list\">"), listItem, new WpHtmlFragment("</ul>")), WpBlockSyntax.PAIRED));
+        WpBlock quote = new QuoteBlockAdapter().toBlock(new WpQuoteBlock(Map.of(), List.of(
+                new WpHtmlFragment("<blockquote class=\"wp-block-quote\">"),
+                new ParagraphBlockAdapter().toBlock(new WpParagraphBlock("A quoted thought.", Map.of())),
+                new WpHtmlFragment("<cite>Author</cite></blockquote>")), WpBlockSyntax.PAIRED));
+        WpBlock group = new GroupBlockAdapter().toBlock(new WpGroupBlock(List.of(
+                new WpHtmlFragment("<div class=\"wp-block-group\">"), paragraph, list, quote,
+                new WpHtmlFragment("</div>")), Map.of()));
+        return new WpBlockDocument(List.of(heading, image, group));
+    }
+
+    private void assertCommonGutenbergContent(WpRenderedField content, WpBlockDocument expected) {
+        assertThat(content).isNotNull();
+        assertThat(content.getRaw()).isNotBlank();
+        assertThat(content.getBlockVersion()).isEqualTo(1);
+        var codec = new DefaultWpGutenbergCodec();
+        WpBlockDocument parsed = codec.parse(content.getRaw());
+        // Compare the tree rather than relying on comment spacing or rendered HTML formatting.
+        assertThat(parsed).isEqualTo(expected);
+        assertThat(codec.parse(codec.serialize(parsed))).isEqualTo(parsed);
+        var heading = new HeadingBlockAdapter().fromBlock((WpBlock) parsed.nodes().get(0));
+        assertThat(heading.level()).isEqualTo(2);
+        assertThat(heading.contentHtml()).isEqualTo("Gutenberg introduction");
+        var image = new ImageBlockAdapter().fromBlock((WpBlock) parsed.nodes().get(1));
+        assertThat(image.url()).isEqualTo("https://example.com/photo.jpg");
+        assertThat(image.altText()).isEqualTo("A mountain");
+        assertThat(image.captionHtml()).isEqualTo("Mountain caption");
+        var group = new GroupBlockAdapter().fromBlock((WpBlock) parsed.nodes().get(2));
+        assertThat(group.content()).hasSize(5);
+        var paragraph = new ParagraphBlockAdapter().fromBlock((WpBlock) group.content().get(1));
+        assertThat(paragraph.contentHtml()).isEqualTo("Hello <strong>WordPress</strong> &amp; Gutenberg.");
+        var list = new ListBlockAdapter().fromBlock((WpBlock) group.content().get(2));
+        var item = new ListItemBlockAdapter().fromBlock((WpBlock) list.content().get(1));
+        assertThat(item.content()).containsExactly(new WpHtmlFragment("<li>First item</li>"));
+        var quote = new QuoteBlockAdapter().fromBlock((WpBlock) group.content().get(3));
+        assertThat(new ParagraphBlockAdapter().fromBlock((WpBlock) quote.content().get(1)).contentHtml())
+                .isEqualTo("A quoted thought.");
+        assertThat(content.getRendered()).contains("Gutenberg introduction", "<strong>WordPress</strong>",
+                "photo.jpg", "First item", "A quoted thought.").doesNotContain("<!-- wp:", "<!-- /wp:");
     }
 
     private Long givenCommentExists(final long postId, final String content, final String author, final String authorEmail) {
@@ -864,6 +919,33 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
     @Nested
     class PageTests {
 
+        @DisplayName("'CREATE' and 'GET' preserve common Gutenberg blocks")
+        @Tag("gutenberg")
+        @Test
+        void create_and_get__preserve_common_gutenberg_blocks() {
+            // GIVEN
+            WpBlockDocument expected = commonGutenbergContent();
+            String rawContent = new DefaultWpGutenbergCodec().serialize(expected);
+
+            // WHEN
+            WpPage created = adminClient.pages().create(
+                    pageCreateUpdateRequest()
+                            .withTitle("Gutenberg page")
+                            .withStatus(WpPageStatus.DRAFT)
+                            .withContent(rawContent)
+                            .build());
+            try {
+                // THEN: validate the create response and a separate persisted read in edit context.
+                assertThat(created.getId()).isNotNull();
+                assertCommonGutenbergContent(created.getContent(), expected);
+                WpPage fetched = adminClient.pages().get(created.getId(), WpContext.EDIT);
+                assertThat(fetched.getId()).isEqualTo(created.getId());
+                assertCommonGutenbergContent(fetched.getContent(), expected);
+            } finally {
+                adminClient.pages().delete(created.getId());
+            }
+        }
+
         private static final String PAGE_1_TITLE = "Page #1";
         private static final String PAGE_1_CONTENT = "My first page";
         private static final String PAGE_1_SLUG = "page-1";
@@ -1367,6 +1449,33 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
     @DisplayName("Post APIs - Integration Tests")
     @Nested
     class PostTests {
+
+        @DisplayName("'CREATE' and 'GET' preserve common Gutenberg blocks")
+        @Tag("gutenberg")
+        @Test
+        void create_and_get__preserve_common_gutenberg_blocks() {
+            // GIVEN
+            WpBlockDocument expected = commonGutenbergContent();
+            String rawContent = new DefaultWpGutenbergCodec().serialize(expected);
+
+            // WHEN
+            WpPost created = adminClient.posts().create(
+                    postCreateUpdateRequest()
+                            .withTitle("Gutenberg post")
+                            .withStatus(WpPostStatus.DRAFT)
+                            .withContent(rawContent)
+                            .build());
+            try {
+                // THEN: validate the create response and a separate persisted read in edit context.
+                assertThat(created.getId()).isNotNull();
+                assertCommonGutenbergContent(created.getContent(), expected);
+                WpPost fetched = adminClient.posts().get(created.getId(), WpContext.EDIT);
+                assertThat(fetched.getId()).isEqualTo(created.getId());
+                assertCommonGutenbergContent(fetched.getContent(), expected);
+            } finally {
+                adminClient.posts().delete(created.getId());
+            }
+        }
 
         private static final String POST_1_TITLE = "Post #1";
         private static final String POST_1_CONTENT = "My first post";
