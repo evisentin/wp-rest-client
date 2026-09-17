@@ -3,11 +3,13 @@ package io.github.evisentin.wordpress.rest.client.gutenberg;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.github.evisentin.wordpress.rest.client.gutenberg.model.*;
+import lombok.NonNull;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.Iterator;
-import java.util.Objects;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -16,16 +18,16 @@ import java.util.regex.Pattern;
 final class GutenbergSerializer implements WpBlockSerializer {
 
     private static final Pattern BLOCK_NAME = Pattern.compile("[a-z][a-z0-9_-]*/[a-z][a-z0-9_-]*");
+    private static final String CORE_NAMESPACE = "core/";
 
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
-    public String serialize(WpBlockDocument document) {
-        Objects.requireNonNull(document, "document");
-
-        StringBuilder output = new StringBuilder();
+    public String serialize(@NonNull WpBlockDocument document) {
         Deque<Frame> stack = new ArrayDeque<>();
-        stack.push(Frame.root(Objects.requireNonNull(document.nodes(), "nodes").iterator()));
+        StringBuilder output = new StringBuilder();
+
+        stack.push(Frame.root(document.nodes().iterator()));
 
         while (!stack.isEmpty()) {
             processFrame(stack, output);
@@ -34,19 +36,13 @@ final class GutenbergSerializer implements WpBlockSerializer {
         return output.toString();
     }
 
-    private void appendAttributes(WpBlock block, StringBuilder output) {
-        if (block.attributes().isEmpty()) {
-            return;
-        }
+    private void appendAttributes(Map<String, Object> attributes, StringBuilder output) {
+        if (attributes.isEmpty()) return;
 
         output.append(' ');
-        appendAttributesJson(block.attributes(), output);
-    }
 
-    private void appendAttributesJson(Object attributes, StringBuilder output) {
         try {
-            String json = mapper.writeValueAsString(attributes);
-            appendEscapedJson(json, output);
+            appendEscapedJson(mapper.writeValueAsString(attributes), output);
         } catch (JsonProcessingException exception) {
             throw new IllegalArgumentException("Block attributes cannot be serialized as JSON", exception);
         }
@@ -58,7 +54,7 @@ final class GutenbergSerializer implements WpBlockSerializer {
         String name = serializedName(block.name());
 
         output.append("<!-- wp:").append(name);
-        appendAttributes(block, output);
+        appendAttributes(block.attributes(), output);
 
         if (block.syntax() == WpBlockSyntax.SELF_CLOSING) {
             output.append(" /-->");
@@ -77,13 +73,12 @@ final class GutenbergSerializer implements WpBlockSerializer {
             return;
         }
 
-        WpContentNode node = Objects.requireNonNull(frame.nodes().next(), "node");
-        serializeNode(node, stack, output);
+        serializeNode(frame.nodes().next(), stack, output);
     }
 
-    private void serializeNode(WpContentNode node, Deque<Frame> stack, StringBuilder output) {
+    private void serializeNode(@NonNull WpContentNode node, Deque<Frame> stack, StringBuilder output) {
         if (node instanceof WpHtmlFragment fragment) {
-            appendHtml(fragment, output);
+            output.append(fragment.html());
             return;
         }
 
@@ -124,10 +119,6 @@ final class GutenbergSerializer implements WpBlockSerializer {
         }
     }
 
-    private static void appendHtml(WpHtmlFragment fragment, StringBuilder output) {
-        output.append(Objects.requireNonNull(fragment.html(), "html"));
-    }
-
     private static void closeFrame(Deque<Frame> stack, StringBuilder output) {
         Frame frame = stack.pop();
 
@@ -141,28 +132,31 @@ final class GutenbergSerializer implements WpBlockSerializer {
     }
 
     private static boolean isEscapedBackslashOrQuote(String json, int index) {
-        if (json.charAt(index) != '\\' || index + 1 >= json.length()) {
-            return false;
-        }
-
-        char next = json.charAt(index + 1);
-        return next == '\\' || next == '"';
+        return json.charAt(index) == '\\'
+               && index + 1 < json.length()
+               && (json.charAt(index + 1) == '\\' || json.charAt(index + 1) == '"');
     }
 
     private static String serializedName(String name) {
-        return name.startsWith("core/") ? name.substring(5) : name;
+        return StringUtils.removeStart(name, CORE_NAMESPACE);
     }
 
     private static void validateBlock(WpBlock block) {
-        String name = block.name();
-
-        if (name == null || !BLOCK_NAME.matcher(name).matches()) {
-            throw new IllegalArgumentException("Block name must be namespace/name: " + name);
+        if (!BLOCK_NAME.matcher(StringUtils.defaultString(block.name())).matches()) {
+            throw new IllegalArgumentException("Block name must be namespace/name: " + block.name());
         }
 
-        Objects.requireNonNull(block.attributes(), "attributes");
-        Objects.requireNonNull(block.content(), "content");
-        Objects.requireNonNull(block.syntax(), "syntax");
+        if (block.attributes() == null) {
+            throw new IllegalArgumentException("Block attributes cannot be null");
+        }
+
+        if (block.content() == null) {
+            throw new IllegalArgumentException("Block content cannot be null");
+        }
+
+        if (block.syntax() == null) {
+            throw new IllegalArgumentException("Block syntax cannot be null");
+        }
 
         if (block.syntax() == WpBlockSyntax.SELF_CLOSING && !block.content().isEmpty()) {
             throw new IllegalArgumentException("Self-closing block cannot contain content");
@@ -174,7 +168,7 @@ final class GutenbergSerializer implements WpBlockSerializer {
      */
     private record Frame(Iterator<WpContentNode> nodes, String blockName) {
 
-        private static Frame root(Iterator<WpContentNode> nodes) {
+        static Frame root(Iterator<WpContentNode> nodes) {
             return new Frame(nodes, null);
         }
     }
