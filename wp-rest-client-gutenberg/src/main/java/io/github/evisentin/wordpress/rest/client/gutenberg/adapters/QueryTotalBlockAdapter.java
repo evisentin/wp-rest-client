@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpQueryTotalBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpQueryTotalBlock;
 
 /**
  * Saved-content adapter for {@code core/query-total}; preserves markup without running its save function.

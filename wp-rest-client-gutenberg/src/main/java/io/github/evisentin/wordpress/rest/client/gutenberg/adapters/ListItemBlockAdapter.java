@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpListItemBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpListItemBlock;
 
 /**
  * Saved-content adapter for {@code core/list-item}; preserves markup without running its save function.

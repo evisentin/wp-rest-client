@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpPostAuthorBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpPostAuthorBlock;
 
 /**
  * Saved-content adapter for {@code core/post-author}; preserves markup without running its save function.

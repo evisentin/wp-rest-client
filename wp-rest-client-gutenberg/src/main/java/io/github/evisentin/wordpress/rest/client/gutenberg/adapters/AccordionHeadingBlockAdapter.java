@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpAccordionHeadingBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpAccordionHeadingBlock;
 
 /**
  * Saved-content adapter for {@code core/accordion-heading}; preserves markup without running its save function.

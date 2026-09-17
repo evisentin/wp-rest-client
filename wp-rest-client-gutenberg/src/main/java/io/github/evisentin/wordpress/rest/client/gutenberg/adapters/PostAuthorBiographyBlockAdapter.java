@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpPostAuthorBiographyBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpPostAuthorBiographyBlock;
 
 /**
  * Saved-content adapter for {@code core/post-author-biography}; preserves markup without running its save function.

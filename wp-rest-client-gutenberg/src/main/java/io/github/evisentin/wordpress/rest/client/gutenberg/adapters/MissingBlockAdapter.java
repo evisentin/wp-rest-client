@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpMissingBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpMissingBlock;
 
 /**
  * Saved-content adapter for {@code core/missing}; preserves markup without running its save function.

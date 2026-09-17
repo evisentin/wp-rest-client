@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.*;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;

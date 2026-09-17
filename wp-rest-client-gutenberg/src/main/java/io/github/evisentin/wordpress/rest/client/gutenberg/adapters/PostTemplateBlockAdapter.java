@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpPostTemplateBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpPostTemplateBlock;
 
 /**
  * Saved-content adapter for {@code core/post-template}; preserves markup without running its save function.

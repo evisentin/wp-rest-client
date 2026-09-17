@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpTermCountBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpTermCountBlock;
 
 /**
  * Saved-content adapter for {@code core/term-count}; preserves markup without running its save function.

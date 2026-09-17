@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpTabPanelsBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpTabPanelsBlock;
 
 /**
  * Saved-content adapter for {@code core/tab-panels}; preserves markup without running its save function.

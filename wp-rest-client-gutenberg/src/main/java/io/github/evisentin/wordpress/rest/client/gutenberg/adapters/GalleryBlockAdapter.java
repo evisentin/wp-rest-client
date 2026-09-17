@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpGalleryBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpGalleryBlock;
 
 /**
  * Saved-content adapter for {@code core/gallery}; preserves markup without running its save function.

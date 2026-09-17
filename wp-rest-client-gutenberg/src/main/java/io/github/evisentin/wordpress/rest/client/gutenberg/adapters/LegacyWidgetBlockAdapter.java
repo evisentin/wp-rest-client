@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpLegacyWidgetBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpLegacyWidgetBlock;
 
 /**
  * Saved-content adapter for {@code core/legacy-widget}; preserves markup without running its save function.

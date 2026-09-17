@@ -3,7 +3,6 @@ package io.github.evisentin.wordpress.test.integration.base;
 import io.github.evisentin.wordpress.rest.client.domain.WpRestClient;
 import io.github.evisentin.wordpress.rest.client.domain.assertions.WordPressAssertions;
 import io.github.evisentin.wordpress.rest.client.domain.model.*;
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.*;
 import io.github.evisentin.wordpress.rest.client.gutenberg.DefaultWpGutenbergCodec;
 import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.*;
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.*;
@@ -12,6 +11,7 @@ import io.github.evisentin.wordpress.rest.client.domain.model.enums.order.WpPost
 import io.github.evisentin.wordpress.rest.client.domain.model.query.*;
 import io.github.evisentin.wordpress.rest.client.domain.model.requests.*;
 import io.github.evisentin.wordpress.rest.client.domain.model.responses.*;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.*;
 import io.github.evisentin.wordpress.test.integration.BaseWordPressIntegrationTest;
 import io.github.evisentin.wordpress.test.integration.base.factory.WpBasicAuthRestClientFactory;
 import lombok.NonNull;

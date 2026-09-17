@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpWidgetGroupBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpWidgetGroupBlock;
 
 /**
  * Saved-content adapter for {@code core/widget-group}; preserves markup without running its save function.

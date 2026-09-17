@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpPlaylistBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpPlaylistBlock;
 
 /**
  * Saved-content adapter for {@code core/playlist}; preserves markup without running its save function.

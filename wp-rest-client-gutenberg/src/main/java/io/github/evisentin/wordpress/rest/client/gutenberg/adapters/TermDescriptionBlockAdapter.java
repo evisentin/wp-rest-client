@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpTermDescriptionBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpTermDescriptionBlock;
 
 /**
  * Saved-content adapter for {@code core/term-description}; preserves markup without running its save function.

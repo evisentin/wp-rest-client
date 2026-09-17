@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpPostExcerptBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpPostExcerptBlock;
 
 /**
  * Saved-content adapter for {@code core/post-excerpt}; preserves markup without running its save function.

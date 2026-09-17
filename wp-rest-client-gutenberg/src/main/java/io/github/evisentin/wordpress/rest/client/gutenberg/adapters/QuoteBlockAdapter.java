@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpQuoteBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpQuoteBlock;
 
 /**
  * Saved-content adapter for {@code core/quote}; preserves markup without running its save function.

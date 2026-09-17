@@ -1,9 +1,9 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpBlock;
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpBlockAdapter;
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpBlockSyntax;
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpGroupBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockAdapter;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockSyntax;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpGroupBlock;
 
 import java.util.List;
 import java.util.Objects;

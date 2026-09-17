@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpPostTimeToReadBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpPostTimeToReadBlock;
 
 /**
  * Saved-content adapter for {@code core/post-time-to-read}; preserves markup without running its save function.

@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpSiteTitleBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpSiteTitleBlock;
 
 /**
  * Saved-content adapter for {@code core/site-title}; preserves markup without running its save function.

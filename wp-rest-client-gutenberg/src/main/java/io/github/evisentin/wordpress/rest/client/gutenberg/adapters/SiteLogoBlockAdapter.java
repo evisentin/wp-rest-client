@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpSiteLogoBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpSiteLogoBlock;
 
 /**
  * Saved-content adapter for {@code core/site-logo}; preserves markup without running its save function.

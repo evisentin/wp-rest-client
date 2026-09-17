@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpPostFeaturedImageBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpPostFeaturedImageBlock;
 
 /**
  * Saved-content adapter for {@code core/post-featured-image}; preserves markup without running its save function.

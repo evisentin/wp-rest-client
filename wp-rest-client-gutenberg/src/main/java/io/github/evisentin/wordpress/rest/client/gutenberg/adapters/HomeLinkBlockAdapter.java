@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpHomeLinkBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpHomeLinkBlock;
 
 /**
  * Saved-content adapter for {@code core/home-link}; preserves markup without running its save function.

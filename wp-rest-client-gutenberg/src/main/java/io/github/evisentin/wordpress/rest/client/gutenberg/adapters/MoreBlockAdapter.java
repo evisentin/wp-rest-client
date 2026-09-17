@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpMoreBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpMoreBlock;
 
 /**
  * Saved-content adapter for {@code core/more}; preserves markup without running its save function.

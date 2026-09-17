@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpEmbedBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpEmbedBlock;
 
 /**
  * Saved-content adapter for {@code core/embed}; preserves markup without running its save function.

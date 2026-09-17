@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpSocialLinkBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpSocialLinkBlock;
 
 /**
  * Saved-content adapter for {@code core/social-link}; preserves markup without running its save function.

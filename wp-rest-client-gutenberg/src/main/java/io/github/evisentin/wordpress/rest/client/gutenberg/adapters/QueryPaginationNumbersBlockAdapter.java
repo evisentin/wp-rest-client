@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpQueryPaginationNumbersBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpQueryPaginationNumbersBlock;
 
 /**
  * Saved-content adapter for {@code core/query-pagination-numbers}; preserves markup without running its save function.

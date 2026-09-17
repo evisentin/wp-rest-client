@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpFootnotesBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpFootnotesBlock;
 
 /**
  * Saved-content adapter for {@code core/footnotes}; preserves markup without running its save function.

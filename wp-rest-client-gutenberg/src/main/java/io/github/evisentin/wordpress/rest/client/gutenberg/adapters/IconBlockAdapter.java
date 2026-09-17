@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpIconBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpIconBlock;
 
 /**
  * Saved-content adapter for {@code core/icon}; preserves markup without running its save function.

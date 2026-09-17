@@ -1,9 +1,9 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.*;
 import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.HeadingBlockAdapter;
 import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.ImageBlockAdapter;
 import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.ParagraphBlockAdapter;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.*;
 import org.jsoup.Jsoup;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;

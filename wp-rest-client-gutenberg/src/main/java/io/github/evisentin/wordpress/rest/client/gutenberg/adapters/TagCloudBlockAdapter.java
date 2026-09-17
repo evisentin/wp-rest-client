@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpTagCloudBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpTagCloudBlock;
 
 /**
  * Saved-content adapter for {@code core/tag-cloud}; preserves markup without running its save function.

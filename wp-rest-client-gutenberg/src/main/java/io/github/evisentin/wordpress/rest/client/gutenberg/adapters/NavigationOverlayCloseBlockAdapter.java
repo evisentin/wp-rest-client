@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpNavigationOverlayCloseBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpNavigationOverlayCloseBlock;
 
 /**
  * Saved-content adapter for {@code core/navigation-overlay-close}; preserves markup without running its save function.

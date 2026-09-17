@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpPatternBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpPatternBlock;
 
 /**
  * Saved-content adapter for {@code core/pattern}; preserves markup without running its save function.

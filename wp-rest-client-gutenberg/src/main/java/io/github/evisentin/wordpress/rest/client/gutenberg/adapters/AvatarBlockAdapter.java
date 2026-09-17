@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpAvatarBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpAvatarBlock;
 
 /**
  * Saved-content adapter for {@code core/avatar}; preserves markup without running its save function.

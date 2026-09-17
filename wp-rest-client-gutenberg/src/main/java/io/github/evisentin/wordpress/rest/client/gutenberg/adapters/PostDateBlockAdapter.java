@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpPostDateBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpPostDateBlock;
 
 /**
  * Saved-content adapter for {@code core/post-date}; preserves markup without running its save function.

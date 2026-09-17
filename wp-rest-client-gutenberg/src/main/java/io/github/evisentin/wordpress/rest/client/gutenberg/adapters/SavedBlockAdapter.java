@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.*;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.*;
 
 import java.util.List;
 import java.util.Map;

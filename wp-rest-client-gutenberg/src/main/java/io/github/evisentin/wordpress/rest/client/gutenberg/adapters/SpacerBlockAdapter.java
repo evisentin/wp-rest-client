@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpSpacerBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpSpacerBlock;
 
 /**
  * Saved-content adapter for {@code core/spacer}; preserves markup without running its save function.

@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpVideoBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpVideoBlock;
 
 /**
  * Saved-content adapter for {@code core/video}; preserves markup without running its save function.

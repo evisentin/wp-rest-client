@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpCommentAuthorNameBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpCommentAuthorNameBlock;
 
 /**
  * Saved-content adapter for {@code core/comment-author-name}; preserves markup without running its save function.

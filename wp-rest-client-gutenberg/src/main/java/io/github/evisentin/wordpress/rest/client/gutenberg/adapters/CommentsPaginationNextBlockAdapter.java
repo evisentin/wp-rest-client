@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpCommentsPaginationNextBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpCommentsPaginationNextBlock;
 
 /**
  * Saved-content adapter for {@code core/comments-pagination-next}; preserves markup without running its save function.

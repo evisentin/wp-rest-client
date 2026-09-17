@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpSearchBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpSearchBlock;
 
 /**
  * Saved-content adapter for {@code core/search}; preserves markup without running its save function.

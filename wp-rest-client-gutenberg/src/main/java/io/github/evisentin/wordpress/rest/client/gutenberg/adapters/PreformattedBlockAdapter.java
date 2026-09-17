@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpPreformattedBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpPreformattedBlock;
 
 /**
  * Saved-content adapter for {@code core/preformatted}; preserves markup without running its save function.

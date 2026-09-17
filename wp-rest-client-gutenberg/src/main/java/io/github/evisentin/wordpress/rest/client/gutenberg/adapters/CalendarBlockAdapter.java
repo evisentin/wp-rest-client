@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpCalendarBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpCalendarBlock;
 
 /**
  * Saved-content adapter for {@code core/calendar}; preserves markup without running its save function.

@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpSiteTaglineBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpSiteTaglineBlock;
 
 /**
  * Saved-content adapter for {@code core/site-tagline}; preserves markup without running its save function.

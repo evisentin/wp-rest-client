@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpLatestPostsBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpLatestPostsBlock;
 
 /**
  * Saved-content adapter for {@code core/latest-posts}; preserves markup without running its save function.

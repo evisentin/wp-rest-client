@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpColumnsBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpColumnsBlock;
 
 /**
  * Saved-content adapter for {@code core/columns}; preserves markup without running its save function.

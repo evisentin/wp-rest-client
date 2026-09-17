@@ -1,9 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpBlockDocument;
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpGutenbergCodec;
-import io.github.evisentin.wordpress.rest.client.gutenberg.internal.GutenbergParser;
-import io.github.evisentin.wordpress.rest.client.gutenberg.internal.GutenbergSerializer;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockDocument;
 
 /**
  * Parses and serializes raw Gutenberg content without rendering HTML or running block save functions. Instances can be

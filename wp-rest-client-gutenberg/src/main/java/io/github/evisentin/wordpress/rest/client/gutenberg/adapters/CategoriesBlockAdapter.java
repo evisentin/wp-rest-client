@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpCategoriesBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpCategoriesBlock;
 
 /**
  * Saved-content adapter for {@code core/categories}; preserves markup without running its save function.

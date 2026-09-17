@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpMediaTextBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpMediaTextBlock;
 
 /**
  * Saved-content adapter for {@code core/media-text}; preserves markup without running its save function.

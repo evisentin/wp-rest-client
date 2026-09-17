@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpNavigationBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpNavigationBlock;
 
 /**
  * Saved-content adapter for {@code core/navigation}; preserves markup without running its save function.

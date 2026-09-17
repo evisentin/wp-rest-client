@@ -1,9 +1,9 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpBlock;
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpBlockSyntax;
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpContentNode;
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpHtmlFragment;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockSyntax;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpContentNode;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpHtmlFragment;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

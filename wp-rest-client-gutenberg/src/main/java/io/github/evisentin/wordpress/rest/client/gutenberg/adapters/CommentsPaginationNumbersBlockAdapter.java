@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpCommentsPaginationNumbersBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpCommentsPaginationNumbersBlock;
 
 /**
  * Saved-content adapter for {@code core/comments-pagination-numbers}; preserves markup without running its save

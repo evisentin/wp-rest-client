@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpPostNavigationLinkBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpPostNavigationLinkBlock;
 
 /**
  * Saved-content adapter for {@code core/post-navigation-link}; preserves markup without running its save function.

@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpCommentEditLinkBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpCommentEditLinkBlock;
 
 /**
  * Saved-content adapter for {@code core/comment-edit-link}; preserves markup without running its save function.

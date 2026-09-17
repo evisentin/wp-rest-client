@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpCommentReplyLinkBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpCommentReplyLinkBlock;
 
 /**
  * Saved-content adapter for {@code core/comment-reply-link}; preserves markup without running its save function.

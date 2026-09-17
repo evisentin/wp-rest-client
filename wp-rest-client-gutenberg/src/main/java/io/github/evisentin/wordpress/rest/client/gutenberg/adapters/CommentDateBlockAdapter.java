@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpCommentDateBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpCommentDateBlock;
 
 /**
  * Saved-content adapter for {@code core/comment-date}; preserves markup without running its save function.

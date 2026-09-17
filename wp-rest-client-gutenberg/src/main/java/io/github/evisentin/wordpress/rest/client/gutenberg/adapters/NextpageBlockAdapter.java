@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpNextpageBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpNextpageBlock;
 
 /**
  * Saved-content adapter for {@code core/nextpage}; preserves markup without running its save function.

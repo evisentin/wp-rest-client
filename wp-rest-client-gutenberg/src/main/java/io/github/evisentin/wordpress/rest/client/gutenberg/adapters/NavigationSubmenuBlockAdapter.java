@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpNavigationSubmenuBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpNavigationSubmenuBlock;
 
 /**
  * Saved-content adapter for {@code core/navigation-submenu}; preserves markup without running its save function.

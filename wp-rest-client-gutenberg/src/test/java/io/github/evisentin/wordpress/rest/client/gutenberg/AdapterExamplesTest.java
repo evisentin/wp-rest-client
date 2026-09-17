@@ -1,11 +1,11 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpBlock;
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpBlockAdapter;
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpBlockDocument;
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpBlockSyntax;
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpContentNode;
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpHtmlFragment;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockAdapter;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockDocument;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockSyntax;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpContentNode;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpHtmlFragment;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;

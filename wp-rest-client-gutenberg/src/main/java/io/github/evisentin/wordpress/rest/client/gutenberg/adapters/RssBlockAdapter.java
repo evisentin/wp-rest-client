@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpRssBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpRssBlock;
 
 /**
  * Saved-content adapter for {@code core/rss}; preserves markup without running its save function.

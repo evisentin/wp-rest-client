@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpPostCommentsCountBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpPostCommentsCountBlock;
 
 /**
  * Saved-content adapter for {@code core/post-comments-count}; preserves markup without running its save function.

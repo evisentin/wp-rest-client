@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpButtonsBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpButtonsBlock;
 
 /**
  * Saved-content adapter for {@code core/buttons}; preserves markup without running its save function.

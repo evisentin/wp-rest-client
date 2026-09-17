@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpQueryTitleBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpQueryTitleBlock;
 
 /**
  * Saved-content adapter for {@code core/query-title}; preserves markup without running its save function.

@@ -1,6 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
-import io.github.evisentin.wordpress.rest.client.domain.model.gutenberg.WpTermTemplateBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpTermTemplateBlock;
 
 /**
  * Saved-content adapter for {@code core/term-template}; preserves markup without running its save function.
