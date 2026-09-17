@@ -3,25 +3,29 @@ package io.github.evisentin.wordpress.test.integration.base;
 import io.github.evisentin.wordpress.rest.client.domain.WpRestClient;
 import io.github.evisentin.wordpress.rest.client.domain.assertions.WordPressAssertions;
 import io.github.evisentin.wordpress.rest.client.domain.model.*;
-import io.github.evisentin.wordpress.rest.client.gutenberg.DefaultWpGutenbergCodec;
-import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.*;
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.*;
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.order.WpPageOrderFields;
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.order.WpPostOrderFields;
 import io.github.evisentin.wordpress.rest.client.domain.model.query.*;
 import io.github.evisentin.wordpress.rest.client.domain.model.requests.*;
 import io.github.evisentin.wordpress.rest.client.domain.model.responses.*;
-import io.github.evisentin.wordpress.rest.client.gutenberg.model.*;
+import io.github.evisentin.wordpress.rest.client.gutenberg.DefaultWpGutenbergCodec;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.content.*;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.layout.GroupBlockAdapter;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.media.ImageBlockAdapter;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockDocument;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockSyntax;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpHtmlFragment;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.content.*;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.layout.WpGroupBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.media.WpImageBlock;
 import io.github.evisentin.wordpress.test.integration.BaseWordPressIntegrationTest;
 import io.github.evisentin.wordpress.test.integration.base.factory.WpBasicAuthRestClientFactory;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.io.InputStream;
@@ -140,7 +144,9 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
         return wpCreateCategory(name, description, slug);
     }
 
-    /** Common saved blocks, using basic markup supported across the WordPress test matrix. */
+    /**
+     * Common saved blocks, using basic markup supported across the WordPress test matrix.
+     */
     private WpBlockDocument commonGutenbergContent() {
         WpBlock heading = new HeadingBlockAdapter().toBlock(new WpHeadingBlock("Gutenberg introduction", 2, Map.of()));
         WpBlock paragraph = new ParagraphBlockAdapter().toBlock(

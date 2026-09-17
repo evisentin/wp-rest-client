@@ -1,5 +1,6 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.reusable.SavedBlockAdapter;
 import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpMissingBlock;
 
 /**

@@ -1,5 +1,7 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.model;
 
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.reusable.WpSavedBlockModel;
+
 import java.util.List;
 import java.util.Map;
 

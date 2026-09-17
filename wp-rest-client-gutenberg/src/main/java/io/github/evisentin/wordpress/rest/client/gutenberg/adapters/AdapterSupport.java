@@ -4,6 +4,8 @@ import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlock;
 import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockSyntax;
 import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpContentNode;
 import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpHtmlFragment;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,25 +15,25 @@ import java.util.*;
 /**
  * Shared saved-markup handling; deliberately does not emulate all Gutenberg block supports.
  */
-final class AdapterSupport {
-    private AdapterSupport() {}
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class AdapterSupport {
 
-    static Map<String, Object> attributes(Map<String, Object> attributes) {
+    public static Map<String, Object> attributes(Map<String, Object> attributes) {
         return new LinkedHashMap<>(Objects.requireNonNull(attributes, "attributes"));
     }
 
-    static WpBlock block(String name, Map<String, Object> attributes, String html) {
+    public static WpBlock block(String name, Map<String, Object> attributes, String html) {
         return new WpBlock(name, attributes(attributes), List.of(new WpHtmlFragment(html)), WpBlockSyntax.PAIRED);
     }
 
-    static void check(WpBlock block, String name) {
+    public static void check(WpBlock block, String name) {
         Objects.requireNonNull(block, "block");
         if (!name.equals(block.name()) || block.syntax() != WpBlockSyntax.PAIRED) {
             throw new IllegalArgumentException("Expected paired " + name + " block");
         }
     }
 
-    static void common(Element element, Map<String, Object> attributes) {
+    public static void common(Element element, Map<String, Object> attributes) {
         Object className = attributes.get("className");
         if (className != null && !className.toString().isBlank()) {
             for (String name : className.toString().split("\\s+")) {
@@ -43,13 +45,13 @@ final class AdapterSupport {
         }
     }
 
-    static Document document(String html) {
+    public static Document document(String html) {
         Document document = Jsoup.parseBodyFragment(html);
         document.outputSettings().prettyPrint(false);
         return document;
     }
 
-    static String html(WpBlock block) {
+    public static String html(WpBlock block) {
         StringBuilder html = new StringBuilder();
         for (WpContentNode node : block.content()) {
             if (!(node instanceof WpHtmlFragment(String html1))) {
@@ -60,7 +62,7 @@ final class AdapterSupport {
         return html.toString();
     }
 
-    static void newAttributes(Map<String, Object> attributes, Set<String> supported) {
+    public static void newAttributes(Map<String, Object> attributes, Set<String> supported) {
         for (String key : attributes.keySet()) {
             if (!supported.contains(key)) {
                 throw new IllegalArgumentException("Unsupported option for new block: " + key);
@@ -68,14 +70,14 @@ final class AdapterSupport {
         }
     }
 
-    static Element root(Document document, String selector) {
+    public static Element root(Document document, String selector) {
         if (document.body().childrenSize() != 1 || !document.body().child(0).is(selector)) {
             throw new IllegalArgumentException("Expected one " + selector + " root element");
         }
         return document.body().child(0);
     }
 
-    static String textAlign(Element element, Map<String, Object> attributes) {
+    public static String textAlign(Element element, Map<String, Object> attributes) {
         Object style = attributes.get("style");
         if (style == null) {
             return null;
@@ -93,7 +95,7 @@ final class AdapterSupport {
         return value;
     }
 
-    static void unchangedAttributes(Map<String, Object> current, Map<String, Object> original) {
+    public static void unchangedAttributes(Map<String, Object> current, Map<String, Object> original) {
         if (!current.equals(original)) {
             throw new IllegalArgumentException("Changing saved block options requires regenerating their markup; "
                                                + "edit the generic WpBlock or create a new supported block instead");

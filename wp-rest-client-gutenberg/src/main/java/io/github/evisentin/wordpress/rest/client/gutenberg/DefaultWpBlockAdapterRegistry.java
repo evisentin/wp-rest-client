@@ -1,7 +1,20 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg;
 
-import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.*;
-import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockAdapter;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.MissingBlockAdapter;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.WpBlockAdapter;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.comments.*;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.content.*;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.interactive.*;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.layout.*;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.media.*;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.navigation.*;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.post.*;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.query.*;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.reusable.PatternBlockAdapter;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.reusable.SyncedPatternBlockAdapter;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.site.*;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.widgets.LegacyWidgetBlockAdapter;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.widgets.WidgetGroupBlockAdapter;
 
 import java.util.*;
 

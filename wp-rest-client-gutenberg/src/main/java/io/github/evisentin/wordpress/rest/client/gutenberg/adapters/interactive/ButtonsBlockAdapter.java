@@ -1,0 +1,28 @@
+package io.github.evisentin.wordpress.rest.client.gutenberg.adapters.interactive;
+
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.reusable.SavedBlockAdapter;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.interactive.WpButtonsBlock;
+
+/**
+ * Saved-content adapter for {@code core/buttons}; preserves markup without running its save function.
+ *
+ * <p>Example stored block representation (illustrative saved markup):</p>
+ * <pre>{@code
+ * <!-- wp:buttons -->
+ * <div class="wp-block-buttons">
+ * <!-- wp:button -->
+ * <div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="https://example.com">Learn more</a></div>
+ * <!-- /wp:button -->
+ * </div>
+ * <!-- /wp:buttons -->
+ * }</pre>
+ * <p>The adapter preserves supplied content; it does not generate this markup or render the block.</p>
+ */
+public final class ButtonsBlockAdapter extends SavedBlockAdapter<WpButtonsBlock> {
+    /**
+     * Creates an adapter for {@code core/buttons}.
+     */
+    public ButtonsBlockAdapter() {
+        super("core/buttons", WpButtonsBlock.class, WpButtonsBlock::new);
+    }
+}

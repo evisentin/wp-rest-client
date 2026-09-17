@@ -1,11 +1,7 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg;
 
-import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlock;
-import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockAdapter;
-import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockDocument;
-import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockSyntax;
-import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpContentNode;
-import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpHtmlFragment;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.WpBlockAdapter;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -24,6 +20,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class AdapterExamplesTest {
     private static final DefaultWpBlockAdapterRegistry REGISTRY = new DefaultWpBlockAdapterRegistry();
     private final DefaultWpGutenbergCodec codec = new DefaultWpGutenbergCodec();
+
+    @Test
+    void preservesWhitespaceBeforeAndAfterTheExampleBlock() {
+        assertStoredExampleRoundTrip("core/paragraph",
+                " \r\n\t<!-- wp:paragraph --><p>Hello</p><!-- /wp:paragraph -->\r\n ");
+    }
 
     @ParameterizedTest(name = "{0}: rejects another block type")
     @MethodSource("blockNames")
@@ -44,12 +46,6 @@ class AdapterExamplesTest {
         assertStoredExampleRoundTrip(name, raw);
     }
 
-    @Test
-    void preservesWhitespaceBeforeAndAfterTheExampleBlock() {
-        assertStoredExampleRoundTrip("core/paragraph",
-                " \r\n\t<!-- wp:paragraph --><p>Hello</p><!-- /wp:paragraph -->\r\n ");
-    }
-
     private void assertStoredExampleRoundTrip(String name, String raw) {
         var document = codec.parse(raw);
         var blocks = document.nodes().stream().filter(WpBlock.class::isInstance).map(WpBlock.class::cast).toList();
@@ -62,8 +58,8 @@ class AdapterExamplesTest {
         WpBlock result = roundTrip(adapter, block);
         assertThat(result).isEqualTo(block);
         List<WpContentNode> roundTrippedNodes = document.nodes().stream()
-                .map(node -> node instanceof WpBlock ? result : node)
-                .toList();
+                                                        .map(node -> node instanceof WpBlock ? result : node)
+                                                        .toList();
         assertThat(codec.serialize(new WpBlockDocument(roundTrippedNodes))).isEqualTo(raw);
     }
 

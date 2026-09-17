@@ -1,8 +1,13 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg;
 
-import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.AudioBlockAdapter;
-import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.ParagraphBlockAdapter;
-import io.github.evisentin.wordpress.rest.client.gutenberg.model.*;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.WpBlockAdapter;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.content.ParagraphBlockAdapter;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.media.AudioBlockAdapter;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockSyntax;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpHtmlFragment;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.content.WpParagraphBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.media.WpAudioBlock;
 import org.junit.jupiter.api.Test;
 
 import java.io.BufferedReader;

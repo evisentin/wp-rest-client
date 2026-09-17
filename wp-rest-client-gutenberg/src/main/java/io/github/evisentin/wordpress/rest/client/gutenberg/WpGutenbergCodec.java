@@ -1,8 +1,5 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg;
 
-import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockParser;
-import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockSerializer;
-
 /**
  * Combined parsing and serialization contract. Implementations supply Gutenberg syntax handling; this domain API
  * supplies no parser implementation.

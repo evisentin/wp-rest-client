@@ -1,9 +1,13 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg;
 
-import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.HeadingBlockAdapter;
-import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.ImageBlockAdapter;
-import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.ParagraphBlockAdapter;
-import io.github.evisentin.wordpress.rest.client.gutenberg.model.*;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.content.HeadingBlockAdapter;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.content.ParagraphBlockAdapter;
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.media.ImageBlockAdapter;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockDocument;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.content.WpHeadingBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.content.WpParagraphBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.media.WpImageBlock;
 import org.jsoup.Jsoup;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
