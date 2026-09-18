@@ -96,6 +96,36 @@ class GutenbergSerializerTest {
         assertThat(serializer.serialize(new WpBlockDocument(List.of()))).isEmpty();
     }
 
+    @Test
+    @DisplayName("serialize keeps adjacent HTML fragments together and ignores empty fragments in pretty mode")
+    void serialize__succeeds__when_prettyContentContainsAdjacentFragments() {
+        var block = new WpBlock("core/paragraph", Map.of(), List.of(new WpHtmlFragment(""),
+                new WpHtmlFragment("<p>Hello "), new WpHtmlFragment("<em>world</em></p>")), WpBlockSyntax.PAIRED);
+        assertThat(new GutenbergSerializer().serialize(new WpBlockDocument(List.of(block)), true))
+                .isEqualTo("<!-- wp:paragraph -->\n<p>Hello <em>world</em></p>\n<!-- /wp:paragraph -->");
+    }
+
+    @Test
+    @DisplayName("serialize pretty prints deeply nested blocks without recursive traversal")
+    void serialize__succeeds__when_prettyContentIsDeeplyNested() {
+        String raw = "<!-- wp:group -->".repeat(2000) + "x" + "<!-- /wp:group -->".repeat(2000);
+        var document = new GutenbergParser().parse(raw);
+        assertThat(new GutenbergSerializer().serialize(document, true))
+                .isEqualTo("<!-- wp:group -->\n".repeat(2000) + "x" + "\n<!-- /wp:group -->".repeat(2000));
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("prettyDocuments")
+    @DisplayName("serialize formats block boundaries without rewriting saved HTML or adding trailing newlines")
+    void serialize__succeeds__when_prettyPrintIsEnabled(String raw, String expected) {
+        var parser = new GutenbergParser();
+        var pretty = new GutenbergSerializer();
+        var document = parser.parse(raw);
+        assertThat(pretty.serialize(document, true)).isEqualTo(expected);
+        assertThat(pretty.serialize(parser.parse(expected), true)).isEqualTo(expected);
+        assertThat(pretty.serialize(document, false)).isEqualTo(raw);
+    }
+
     static Stream<Arguments> escapedValues() {
         return Stream.of(
                 Arguments.of("--", "\\u002d\\u002d"),
@@ -124,5 +154,30 @@ class GutenbergSerializerTest {
     static Stream<Arguments> nullDocuments() {
         return Stream.of(Arguments.of((Object) null), Arguments.of(new WpBlockDocument(null)),
                 Arguments.of(new WpBlockDocument(Arrays.asList((WpContentNode) null))));
+    }
+
+    static Stream<Arguments> prettyDocuments() {
+        return Stream.of(
+                Arguments.of("", ""),
+                Arguments.of("<p>Classic <em>HTML</em></p>", "<p>Classic <em>HTML</em></p>"),
+                Arguments.of("<!-- wp:paragraph --><p>Hello <strong>world</strong>!</p><!-- /wp:paragraph -->",
+                        "<!-- wp:paragraph -->\n<p>Hello <strong>world</strong>!</p>\n<!-- /wp:paragraph -->"),
+                Arguments.of("<!-- wp:group --><!-- /wp:group -->", "<!-- wp:group -->\n<!-- /wp:group -->"),
+                Arguments.of("<!-- wp:latest-posts /--><!-- wp:latest-comments /-->",
+                        "<!-- wp:latest-posts /-->\n<!-- wp:latest-comments /-->"),
+                Arguments.of("<!-- wp:group --><div><!-- wp:paragraph --><p>x</p><!-- /wp:paragraph -->"
+                             + "<!-- wp:vendor/widget {\"items\":[1,2]} /--></div><!-- /wp:group -->",
+                        "<!-- wp:group -->\n<div>\n<!-- wp:paragraph -->\n<p>x</p>\n<!-- /wp:paragraph -->\n"
+                        + "<!-- wp:vendor/widget {\"items\":[1,2]} /-->\n</div>\n<!-- /wp:group -->"),
+                Arguments.of("before<!-- wp:paragraph --><p>x</p><!-- /wp:paragraph -->after",
+                        "before\n<!-- wp:paragraph -->\n<p>x</p>\n<!-- /wp:paragraph -->\nafter"),
+                Arguments.of("<!-- wp:paragraph -->\n<p>x</p>\n<!-- /wp:paragraph -->\n",
+                        "<!-- wp:paragraph -->\n<p>x</p>\n<!-- /wp:paragraph -->\n"),
+                Arguments.of("<!-- wp:paragraph -->\r\n<p>x</p>\r\n<!-- /wp:paragraph -->\r\n",
+                        "<!-- wp:paragraph -->\r\n<p>x</p>\r\n<!-- /wp:paragraph -->\r\n"),
+                Arguments.of("<!-- wp:paragraph -->\r<p>x</p>\r<!-- /wp:paragraph -->",
+                        "<!-- wp:paragraph -->\r<p>x</p>\r<!-- /wp:paragraph -->"),
+                Arguments.of("<!-- wp:preformatted --><pre>  a\n    b\n</pre><!-- /wp:preformatted -->",
+                        "<!-- wp:preformatted -->\n<pre>  a\n    b\n</pre>\n<!-- /wp:preformatted -->"));
     }
 }

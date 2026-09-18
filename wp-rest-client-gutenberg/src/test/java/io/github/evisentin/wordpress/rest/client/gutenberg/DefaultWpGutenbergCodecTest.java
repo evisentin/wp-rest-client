@@ -51,4 +51,17 @@ class DefaultWpGutenbergCodecTest {
         String raw = "<!-- wp:group -->".repeat(2000) + "x" + "<!-- /wp:group -->".repeat(2000);
         assertThat(codec.serialize(codec.parse(raw))).isEqualTo(raw);
     }
+
+    @Test
+    @DisplayName("serialize enables pretty printing per call through the public codec interface")
+    void serialize__succeeds__when_prettyPrintIsEnabled() {
+        WpGutenbergCodec pretty = new DefaultWpGutenbergCodec();
+        String raw = "<!-- wp:paragraph --><p>Hello</p><!-- /wp:paragraph -->";
+        var document = pretty.parse(raw);
+        assertThat(document).isEqualTo(codec.parse(raw));
+        assertThat(pretty.serialize(document, true))
+                .isEqualTo("<!-- wp:paragraph -->\n<p>Hello</p>\n<!-- /wp:paragraph -->");
+        assertThat(pretty.serialize(document, false)).isEqualTo(raw);
+        assertThat(pretty.serialize(document)).isEqualTo(raw);
+    }
 }

@@ -15,7 +15,7 @@ import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockDocument
 public interface WpBlockSerializer {
     /**
      * Serializes block delimiters, escaped JSON attributes and ordered content. HTML fragments are preserved; exact
-     * original comment formatting is not guaranteed.
+ad     * original comment formatting is not guaranteed. No pretty-print whitespace is added.
      * <p>
      * The content tree must be acyclic and must not be mutated during serialization. Attribute values must be
      * JSON-compatible. Changing attributes does not regenerate saved HTML.
@@ -31,4 +31,24 @@ public interface WpBlockSerializer {
      *         if the document or a content node is null
      */
     String serialize(WpBlockDocument document);
+
+    /**
+     * Serializes with optional LF line breaks around block delimiters. HTML fragments and JSON attributes are not
+     * reformatted. Added whitespace becomes literal content when parsed again; use {@code false} for exact saved-HTML
+     * preservation. The option applies only to this call.
+     *
+     * @param document
+     *         non-null document to serialize
+     * @param prettyPrint
+     *         whether to put block delimiters and their content on separate lines
+     *
+     * @return Gutenberg markup, not server-rendered HTML
+     *
+     * @throws IllegalArgumentException
+     *         if block structure or attributes cannot be serialized
+     * @throws NullPointerException
+     *         if the document or a content node is null
+     * @see #serialize(WpBlockDocument)
+     */
+    String serialize(WpBlockDocument document, boolean prettyPrint);
 }

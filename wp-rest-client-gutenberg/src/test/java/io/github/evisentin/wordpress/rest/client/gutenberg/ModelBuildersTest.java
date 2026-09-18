@@ -12,24 +12,18 @@ import java.lang.reflect.RecordComponent;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("Fluent model builders")
 class ModelBuildersTest {
     @ParameterizedTest(name = "{0}")
-    @MethodSource("modelTypes")
-    @DisplayName("build supplies empty collections for every omitted map and list component")
-    void build__succeeds__when_collectionsAreOmitted(Class<?> modelType) throws Exception {
+    @MethodSource("modelsWithAttributes")
+    @DisplayName("attributes rejects an explicitly null map while omitted maps default to empty")
+    void attributes__fails__when_mapIsNull(Class<?> modelType) throws Exception {
         Object builder = modelType.getMethod("builder").invoke(null);
-        Object model = builder.getClass().getMethod("build").invoke(builder);
-        assertThat(model).isInstanceOf(modelType);
-        for (RecordComponent component : modelType.getRecordComponents()) {
-            if (component.getType() == Map.class) {
-                assertThat((Map<?, ?>) component.getAccessor().invoke(model)).isNotNull().isEmpty();
-            } else if (component.getType() == List.class) {
-                assertThat((List<?>) component.getAccessor().invoke(model)).isNotNull().isEmpty();
-            }
-        }
+        assertThatThrownBy(() -> builder.getClass().getMethod("attributes", Map.class).invoke(builder, (Object) null))
+                .isInstanceOf(InvocationTargetException.class).hasCauseInstanceOf(NullPointerException.class);
     }
 
     @ParameterizedTest(name = "{0}")
@@ -82,12 +76,58 @@ class ModelBuildersTest {
     }
 
     @ParameterizedTest(name = "{0}")
-    @MethodSource("modelsWithAttributes")
-    @DisplayName("attributes rejects an explicitly null map while omitted maps default to empty")
-    void attributes__fails__when_mapIsNull(Class<?> modelType) throws Exception {
+    @MethodSource("modelTypes")
+    @DisplayName("build supplies empty collections for every omitted map and list component")
+    void build__succeeds__when_collectionsAreOmitted(Class<?> modelType) throws Exception {
         Object builder = modelType.getMethod("builder").invoke(null);
-        assertThatThrownBy(() -> builder.getClass().getMethod("attributes", Map.class).invoke(builder, (Object) null))
-                .isInstanceOf(InvocationTargetException.class).hasCauseInstanceOf(NullPointerException.class);
+        Object model = builder.getClass().getMethod("build").invoke(builder);
+        assertThat(model).isInstanceOf(modelType);
+        for (RecordComponent component : modelType.getRecordComponents()) {
+            if (component.getType() == Map.class) {
+                assertThat((Map<?, ?>) component.getAccessor().invoke(model)).isNotNull().isEmpty();
+            } else if (component.getType() == List.class) {
+                assertThat((List<?>) component.getAccessor().invoke(model)).isNotNull().isEmpty();
+            }
+        }
+    }
+
+    @Test
+    @DisplayName("build supports generic blocks with incremental and bulk attributes")
+    void build__succeeds__when_creatingAGenericBlock() {
+        var fragment = WpHtmlFragment.builder().html("<p>Hello</p>").build();
+        var block = WpBlock.builder()
+                           .name("vendor/example")
+                           .attribute("enabled", true)
+                           .attributes(Map.of("count", 2))
+                           .contentNode(fragment)
+                           .syntax(WpBlockSyntax.PAIRED)
+                           .build();
+        assertThat(block).isEqualTo(new WpBlock("vendor/example", Map.of("enabled", true, "count", 2),
+                List.of(fragment), WpBlockSyntax.PAIRED));
+    }
+
+    @Test
+    @DisplayName("build supports a fluent paragraph-to-document workflow with default attributes")
+    void build__succeeds__when_creatingAParagraphDocument() {
+        var paragraph = WpParagraphBlock.builder().contentHtml("Hello <strong>world</strong>").build();
+        var adapter = new io.github.evisentin.wordpress.rest.client.gutenberg.adapters.content.ParagraphBlockAdapter();
+        var document = WpBlockDocument.builder().node(adapter.toBlock(paragraph)).build();
+        assertThat(new DefaultWpGutenbergCodec().serialize(document))
+                .isEqualTo("<!-- wp:paragraph --><p>Hello <strong>world</strong></p><!-- /wp:paragraph -->");
+    }
+
+    @ParameterizedTest(name = "{0}")
+    @MethodSource("modelsWithLists")
+    @DisplayName("build supports a single fluent list entry")
+    void build__succeeds__when_listHasOneEntry(Class<?> modelType) throws Exception {
+        Object builder = modelType.getMethod("builder").invoke(null);
+        RecordComponent component = Arrays.stream(modelType.getRecordComponents())
+                                          .filter(item -> item.getType() == List.class).findFirst().orElseThrow();
+        String singular = component.getName().equals("nodes") ? "node" : "contentNode";
+        var fragment = WpHtmlFragment.builder().html("example").build();
+        builder.getClass().getMethod(singular, WpContentNode.class).invoke(builder, fragment);
+        Object model = builder.getClass().getMethod("build").invoke(builder);
+        assertThat((List<?>) component.getAccessor().invoke(model)).isEqualTo(List.of(fragment));
     }
 
     @ParameterizedTest(name = "{0}")
@@ -97,7 +137,7 @@ class ModelBuildersTest {
         Object builder = modelType.getMethod("builder").invoke(null);
         Class<?> builderType = builder.getClass();
         RecordComponent component = Arrays.stream(modelType.getRecordComponents())
-                .filter(item -> item.getType() == List.class).findFirst().orElseThrow();
+                                          .filter(item -> item.getType() == List.class).findFirst().orElseThrow();
         String singular = component.getName().equals("nodes") ? "node" : "contentNode";
         String clear = component.getName().equals("nodes") ? "clearNodes" : "clearContent";
         var first = new WpHtmlFragment("<div>");
@@ -122,71 +162,32 @@ class ModelBuildersTest {
 
     @ParameterizedTest(name = "{0}")
     @MethodSource("modelsWithLists")
-    @DisplayName("build supports a single fluent list entry")
-    void build__succeeds__when_listHasOneEntry(Class<?> modelType) throws Exception {
-        Object builder = modelType.getMethod("builder").invoke(null);
-        RecordComponent component = Arrays.stream(modelType.getRecordComponents())
-                .filter(item -> item.getType() == List.class).findFirst().orElseThrow();
-        String singular = component.getName().equals("nodes") ? "node" : "contentNode";
-        var fragment = WpHtmlFragment.builder().html("example").build();
-        builder.getClass().getMethod(singular, WpContentNode.class).invoke(builder, fragment);
-        Object model = builder.getClass().getMethod("build").invoke(builder);
-        assertThat((List<?>) component.getAccessor().invoke(model)).isEqualTo(List.of(fragment));
-    }
-
-    @ParameterizedTest(name = "{0}")
-    @MethodSource("modelsWithLists")
     @DisplayName("list setters reject explicitly null collections")
     void builder__fails__when_listIsNull(Class<?> modelType) throws Exception {
         Object builder = modelType.getMethod("builder").invoke(null);
         RecordComponent component = Arrays.stream(modelType.getRecordComponents())
-                .filter(item -> item.getType() == List.class).findFirst().orElseThrow();
+                                          .filter(item -> item.getType() == List.class).findFirst().orElseThrow();
         assertThatThrownBy(() -> builder.getClass().getMethod(component.getName(), Collection.class)
-                .invoke(builder, (Object) null))
+                                        .invoke(builder, (Object) null))
                 .isInstanceOf(InvocationTargetException.class).hasCauseInstanceOf(NullPointerException.class);
-    }
-
-    @Test
-    @DisplayName("build supports a fluent paragraph-to-document workflow with default attributes")
-    void build__succeeds__when_creatingAParagraphDocument() {
-        var paragraph = WpParagraphBlock.builder().contentHtml("Hello <strong>world</strong>").build();
-        var adapter = new io.github.evisentin.wordpress.rest.client.gutenberg.adapters.content.ParagraphBlockAdapter();
-        var document = WpBlockDocument.builder().node(adapter.toBlock(paragraph)).build();
-        assertThat(new DefaultWpGutenbergCodec().serialize(document))
-                .isEqualTo("<!-- wp:paragraph --><p>Hello <strong>world</strong></p><!-- /wp:paragraph -->");
-    }
-
-    @Test
-    @DisplayName("build supports generic blocks with incremental and bulk attributes")
-    void build__succeeds__when_creatingAGenericBlock() {
-        var fragment = WpHtmlFragment.builder().html("<p>Hello</p>").build();
-        var block = WpBlock.builder()
-                .name("vendor/example")
-                .attribute("enabled", true)
-                .attributes(Map.of("count", 2))
-                .contentNode(fragment)
-                .syntax(WpBlockSyntax.PAIRED)
-                .build();
-        assertThat(block).isEqualTo(new WpBlock("vendor/example", Map.of("enabled", true, "count", 2),
-                List.of(fragment), WpBlockSyntax.PAIRED));
     }
 
     static Stream<Class<?>> modelTypes() {
         var registry = new DefaultWpBlockAdapterRegistry();
         Stream<Class<?>> namedModels = registry.blockNames().stream()
-                .map(name -> registry.findByBlockName(name).orElseThrow().modelType());
+                                               .map(name -> registry.findByBlockName(name).orElseThrow().modelType());
         return Stream.concat(Stream.of(WpBlock.class, WpBlockDocument.class, WpHtmlFragment.class), namedModels)
-                .distinct().sorted(Comparator.comparing(Class::getName));
+                     .distinct().sorted(Comparator.comparing(Class::getName));
     }
 
     static Stream<Class<?>> modelsWithAttributes() {
         return modelTypes().filter(type -> Arrays.stream(type.getRecordComponents())
-                .anyMatch(component -> component.getName().equals("attributes")));
+                                                 .anyMatch(component -> component.getName().equals("attributes")));
     }
 
     static Stream<Class<?>> modelsWithLists() {
         return modelTypes().filter(type -> Arrays.stream(type.getRecordComponents())
-                .anyMatch(component -> component.getType() == List.class));
+                                                 .anyMatch(component -> component.getType() == List.class));
     }
 
     private static Object componentValue(Class<?> type) {

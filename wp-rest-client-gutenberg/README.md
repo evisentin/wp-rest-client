@@ -37,6 +37,30 @@ normalized to `core/name` in the model and shortened in stored delimiters. JSON 
 are escaped for embedding in HTML comments. Literal HTML is preserved, while comment
 spacing and JSON formatting may be normalized.
 
+### Pretty printing
+
+Enable readable output with the per-call flag:
+
+```java
+var codec = new DefaultWpGutenbergCodec();
+System.out.println(codec.serialize(document, true)); // prettyPrint
+```
+
+For a paragraph, this produces:
+
+```html
+<!-- wp:paragraph -->
+<p>Hello</p>
+<!-- /wp:paragraph -->
+```
+
+Pretty mode inserts LF line breaks around block delimiters, including nested blocks, without
+reformatting HTML fragments, inline elements or JSON attributes. Existing line breaks are
+preserved, adjacent HTML fragments stay together, and no trailing newline is added.
+The inserted whitespace becomes literal content when parsed again and can affect
+whitespace-sensitive markup. Use `serialize(document)` or `serialize(document, false)`
+when exact saved-HTML preservation matters. Parsing behavior is the same in either mode.
+
 Malformed block comments, invalid attribute JSON, mismatched closers and unclosed blocks
 raise `WpBlockParseException` with a zero-based UTF-16 offset. This is intentionally strict;
 it does not reproduce WordPress's recovery of malformed documents. Empty and classic HTML

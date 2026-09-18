@@ -23,9 +23,14 @@ final class GutenbergSerializer implements WpBlockSerializer {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
-    public String serialize(@NonNull WpBlockDocument document) {
+    public String serialize(WpBlockDocument document) {
+        return serialize(document, false);
+    }
+
+    @Override
+    public String serialize(@NonNull WpBlockDocument document, boolean prettyPrint) {
         Deque<Frame> stack = new ArrayDeque<>();
-        StringBuilder output = new StringBuilder();
+        Output output = new Output(prettyPrint);
 
         stack.push(Frame.root(document.nodes().iterator()));
 
@@ -33,7 +38,7 @@ final class GutenbergSerializer implements WpBlockSerializer {
             processFrame(stack, output);
         }
 
-        return output.toString();
+        return output.text.toString();
     }
 
     private void appendAttributes(Map<String, Object> attributes, StringBuilder output) {
@@ -48,24 +53,26 @@ final class GutenbergSerializer implements WpBlockSerializer {
         }
     }
 
-    private void appendBlock(WpBlock block, Deque<Frame> stack, StringBuilder output) {
+    private void appendBlock(WpBlock block, Deque<Frame> stack, Output output) {
         validateBlock(block);
 
         String name = serializedName(block.name());
 
-        output.append("<!-- wp:").append(name);
-        appendAttributes(block.attributes(), output);
+        output.beforeDelimiter();
+        output.text.append("<!-- wp:").append(name);
+        appendAttributes(block.attributes(), output.text);
+        output.afterDelimiter = true;
 
         if (block.syntax() == WpBlockSyntax.SELF_CLOSING) {
-            output.append(" /-->");
+            output.text.append(" /-->");
             return;
         }
 
-        output.append(" -->");
+        output.text.append(" -->");
         stack.push(new Frame(block.content().iterator(), name));
     }
 
-    private void processFrame(Deque<Frame> stack, StringBuilder output) {
+    private void processFrame(Deque<Frame> stack, Output output) {
         Frame frame = stack.peek();
 
         if (!frame.nodes().hasNext()) {
@@ -76,9 +83,9 @@ final class GutenbergSerializer implements WpBlockSerializer {
         serializeNode(frame.nodes().next(), stack, output);
     }
 
-    private void serializeNode(@NonNull WpContentNode node, Deque<Frame> stack, StringBuilder output) {
+    private void serializeNode(@NonNull WpContentNode node, Deque<Frame> stack, Output output) {
         switch (node) {
-            case WpHtmlFragment fragment -> output.append(fragment.html());
+            case WpHtmlFragment fragment -> output.appendHtml(fragment.html());
             case WpBlock block -> appendBlock(block, stack, output);
         }
     }
@@ -93,11 +100,13 @@ final class GutenbergSerializer implements WpBlockSerializer {
                           .replace("&", "\\u0026"));
     }
 
-    private static void closeFrame(Deque<Frame> stack, StringBuilder output) {
+    private static void closeFrame(Deque<Frame> stack, Output output) {
         Frame frame = stack.pop();
 
         if (frame.blockName() != null) {
-            output.append("<!-- /wp:").append(frame.blockName()).append(" -->");
+            output.beforeDelimiter();
+            output.text.append("<!-- /wp:").append(frame.blockName()).append(" -->");
+            output.afterDelimiter = true;
         }
     }
 
@@ -124,6 +133,41 @@ final class GutenbergSerializer implements WpBlockSerializer {
 
         if (block.syntax() == WpBlockSyntax.SELF_CLOSING && !block.content().isEmpty()) {
             throw new IllegalArgumentException("Self-closing block cannot contain content");
+        }
+    }
+
+    /**
+     * Per-call formatting state. Delayed line breaks avoid adding trailing or duplicate newlines.
+     */
+    private static final class Output {
+        private final StringBuilder text = new StringBuilder();
+        private final boolean prettyPrint;
+        private boolean afterDelimiter;
+
+        private Output(boolean prettyPrint) {
+            this.prettyPrint = prettyPrint;
+        }
+
+        private void appendHtml(String html) {
+            String literal = String.valueOf(html);
+            if (literal.isEmpty()) return;
+            if (prettyPrint && afterDelimiter && !literal.startsWith("\n") && !literal.startsWith("\r")) {
+                lineBreak();
+            }
+            text.append(literal);
+            afterDelimiter = false;
+        }
+
+        private void beforeDelimiter() {
+            if (prettyPrint) {
+                lineBreak();
+            }
+        }
+
+        private void lineBreak() {
+            if (!text.isEmpty() && text.charAt(text.length() - 1) != '\n' && text.charAt(text.length() - 1) != '\r') {
+                text.append('\n');
+            }
         }
     }
 

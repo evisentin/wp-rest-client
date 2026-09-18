@@ -19,4 +19,9 @@ public final class DefaultWpGutenbergCodec implements WpGutenbergCodec {
     public String serialize(WpBlockDocument document) {
         return serializer.serialize(document);
     }
+
+    @Override
+    public String serialize(WpBlockDocument document, boolean prettyPrint) {
+        return serializer.serialize(document, prettyPrint);
+    }
 }
