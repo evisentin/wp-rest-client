@@ -4,7 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Generic representation of a core or plugin block.
+ * Generic representation of a core or plugin block. Collections are retained without defensive copies or constructor
+ * validation; this record is not deeply immutable.
  *
  * <p>Example of a block represented by this generic model:</p>
  * <pre>{@code

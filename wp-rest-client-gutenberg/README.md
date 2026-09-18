@@ -1,16 +1,34 @@
 # Gutenberg content codec
 
-Optional module for parsing and serializing stored WordPress block markup. It depends on
-`wp-rest-client-domain`, Jackson and jsoup; neither HTTP adapter needs this module.
+Optional Java 21 module for parsing and serializing stored WordPress block markup.
+It is independent of `wp-rest-client-domain` and both HTTP adapters. Runtime dependencies
+are Jackson, jsoup and Apache Commons Lang; Lombok is used at compile time.
+
+## Dependency
+
+```xml
+<dependency>
+  <groupId>io.github.evisentin</groupId>
+  <artifactId>wp-rest-client-gutenberg</artifactId>
+  <version>1.4.7-SNAPSHOT</version>
+</dependency>
+```
+
+Use the version matching the rest of your client modules.
+
+## Parse and serialize
 
 ```java
 import io.github.evisentin.wordpress.rest.client.gutenberg.DefaultWpGutenbergCodec;
 
 var codec = new DefaultWpGutenbergCodec();
-// Fetch the post/page with authorized context=edit so content.raw is available.
-var document = codec.parse(post.getContent().getRaw());
-request.setContent(codec.serialize(document));
+var document = codec.parse("<!-- wp:paragraph --><p>Hello</p><!-- /wp:paragraph -->");
+String rawContent = codec.serialize(document);
 ```
+
+When integrating with the REST client, fetch a post/page with authorized `context=edit`,
+pass `post.getContent().getRaw()` to `parse`, and assign the serialized string to the
+write request with `request.setContent(rawContent)`. Use `content.raw`, not `content.rendered`.
 
 The document contains ordered literal HTML fragments and blocks, including unknown plugin
 blocks. Nested blocks retain their positions within wrapper HTML. Core block names are
@@ -40,12 +58,23 @@ Unknown plugin blocks remain usable through `WpBlock`. A registry can also be co
 with an explicit collection of adapters for custom block types.
 
 ```java
+import io.github.evisentin.wordpress.rest.client.gutenberg.DefaultWpBlockAdapterRegistry;
+import io.github.evisentin.wordpress.rest.client.gutenberg.DefaultWpGutenbergCodec;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockDocument;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.content.WpParagraphBlock;
+import java.util.List;
+
+var codec = new DefaultWpGutenbergCodec();
+var document = codec.parse("<!-- wp:paragraph --><p>Hello</p><!-- /wp:paragraph -->");
+var block = (WpBlock) document.nodes().getFirst();
 var registry = new DefaultWpBlockAdapterRegistry();
 var adapter = registry.findByModelType(WpParagraphBlock.class).orElseThrow();
 var paragraph = adapter.fromBlock(block);
 var updated = new WpParagraphBlock("<strong>Updated</strong>",
         paragraph.attributes(), paragraph.source());
 WpBlock result = adapter.toBlock(updated);
+String updatedContent = codec.serialize(new WpBlockDocument(List.of(result)));
 ```
 
 Capabilities are deliberately explicit:
@@ -58,9 +87,13 @@ Capabilities are deliberately explicit:
 | `GroupBlockAdapter`      | Preserves the caller-supplied wrapper HTML and nested content in order. Does not generate layout wrappers.                                                                    |
 | Other 111 named adapters | Convert to/from named saved-content records containing attributes, content and syntax. Preserve all saved markup and nesting; do not derive semantic fields or generate HTML. |
 
-Paragraph, heading and image records have an optional `source` component. Existing constructors
+The example replaces the only block in a one-block document. For larger documents,
+replace the selected node in its parent content list while retaining all other nodes,
+including wrapper fragments and whitespace. Adapters do not update the document automatically.
+
+Paragraph, heading and image records have an optional `source` component. Convenience constructors
 still create new blocks; when editing an existing block, pass its source to preserve wrapper
-attributes, links and unrecognized markup. Unchanged conversions return the original block.
+attributes, links and unrecognized markup. Unchanged paragraph, heading and image conversions return the original source block.
 Edited HTML is parsed and serialized by jsoup and may have normalized quotes/entities.
 Existing comment options must remain unchanged (except the dedicated heading level and image
 ID fields). Unsupported new-block options are rejected rather than emitted with inconsistent
@@ -76,3 +109,40 @@ the catalog adapters do not automatically reinterpret these as blocks.
 The adapters do not execute JavaScript save functions, migrate deprecated markup, or reproduce
 all theme-dependent block supports. The complete catalog denotes **saved-content model coverage**,
 not full typed property access or HTML-generation support for every core block.
+
+
+## Package structure
+
+All packages below are relative to `io.github.evisentin.wordpress.rest.client.gutenberg`.
+
+| Package | Responsibility |
+| --- | --- |
+| Root package | Public codec, parser, serializer and registry contracts; default implementations and parse exception. `GutenbergParser` and `GutenbergSerializer` are package-private implementation classes. |
+| `model` | Generic document tree: `WpBlockDocument`, `WpBlock`, `WpContentNode`, `WpHtmlFragment`, delimiter syntax and `WpMissingBlock`. |
+| `adapters` | `WpBlockAdapter`, shared markup helpers and `MissingBlockAdapter`. |
+| `model.<category>` / `adapters.<category>` | Matching named models and adapters grouped by content, media, layout, interactive, navigation, comments, post, query, site, reusable and widgets. |
+| `model.reusable` / `adapters.reusable` | Pattern and synced-pattern types, plus the cross-category `WpSavedBlockModel` contract and `SavedBlockAdapter` base class. |
+
+These categories organize this Java API; they do not define WordPress editor categories.
+Registry lookups use exact, fully qualified block names (for example `core/paragraph`)
+or exact model classes. The collection constructor replaces the default catalog with
+exactly the supplied adapters and rejects duplicate block names or model types.
+
+Records retain supplied collection references; they are not deeply immutable. Parser-created
+content lists are unmodifiable, while parsed attribute maps may be mutable. Adapters make
+shallow copies of attribute maps and, for saved-content models and groups, content lists.
+Nested attribute values and child blocks remain shared. Keep trees acyclic and avoid concurrent
+mutation when serializing or adapting them.
+
+## Build and verification
+
+Run from the repository root with JDK 21:
+
+```sh
+./mvnw -pl wp-rest-client-gutenberg test -Dmaven.test.skip=false
+./mvnw -pl wp-rest-client-gutenberg javadoc:javadoc -Dmaven.javadoc.failOnError=true
+```
+
+Tests cover strict parsing, serialization, editing behavior, the pinned 115-name catalog,
+and stored-markup fixtures for every registered adapter. The fixtures are illustrative;
+they do not constitute validation by the WordPress editor.

@@ -25,6 +25,11 @@ import java.util.Map;
 public record WpParagraphBlock(String contentHtml, Map<String, Object> attributes, WpBlock source) {
     /**
      * Creates a new block without previously saved markup.
+     *
+     * @param contentHtml
+     *         inner rich-text HTML
+     * @param attributes
+     *         comment attributes
      */
     public WpParagraphBlock(String contentHtml, Map<String, Object> attributes) {
         this(contentHtml, attributes, null);

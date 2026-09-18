@@ -1,5 +1,5 @@
 /**
- * Gutenberg content models and parsing, serialization and typed adapter contracts. Models describe raw saved content;
- * they do not render blocks or implement editor validation.
+ * Generic saved-content document nodes and delimiter syntax. Records retain supplied collections and do not render
+ * HTML.
  */
 package io.github.evisentin.wordpress.rest.client.gutenberg.model;

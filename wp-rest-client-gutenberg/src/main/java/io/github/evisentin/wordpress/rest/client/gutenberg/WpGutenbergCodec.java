@@ -1,8 +1,8 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg;
 
 /**
- * Combined parsing and serialization contract. Implementations supply Gutenberg syntax handling; this domain API
- * supplies no parser implementation.
+ * Combined parsing and serialization contract for stored Gutenberg content. Use {@link DefaultWpGutenbergCodec} for the
+ * strict parser and serializer supplied by this module.
  *
  * <p>Example stored block accepted by the parser and emitted by the serializer:</p>
  * <pre>{@code

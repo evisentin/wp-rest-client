@@ -27,6 +27,13 @@ import java.util.Map;
 public record WpHeadingBlock(String contentHtml, int level, Map<String, Object> attributes, WpBlock source) {
     /**
      * Creates a new block without previously saved markup.
+     *
+     * @param contentHtml
+     *         inner rich-text HTML
+     * @param level
+     *         heading level from 1 through 6
+     * @param attributes
+     *         comment attributes excluding level
      */
     public WpHeadingBlock(String contentHtml, int level, Map<String, Object> attributes) {
         this(contentHtml, level, attributes, null);

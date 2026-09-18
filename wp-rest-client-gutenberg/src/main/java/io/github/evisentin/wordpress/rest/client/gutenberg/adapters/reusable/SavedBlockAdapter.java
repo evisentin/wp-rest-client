@@ -13,7 +13,8 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Base adapter preserving stored attributes, HTML, nested blocks and delimiter form.
+ * Base adapter preserving stored attributes, HTML, nested blocks and delimiter form. Attribute maps and content lists
+ * are copied shallowly; nested values remain shared.
  *
  * <p>For example, {@link AudioBlockAdapter} preserves this saved audio block:</p>
  * <pre>{@code
@@ -21,6 +22,9 @@ import java.util.Objects;
  * <figure class="wp-block-audio"><audio controls src="https://example.com/audio.mp3"></audio></figure>
  * <!-- /wp:audio -->
  * }</pre>
+ *
+ * @param <T>
+ *         named saved-content model
  */
 public abstract class SavedBlockAdapter<T extends WpSavedBlockModel> implements WpBlockAdapter<T> {
     private final String name;
@@ -29,6 +33,13 @@ public abstract class SavedBlockAdapter<T extends WpSavedBlockModel> implements 
 
     /**
      * Creates an adapter using the named model's constructor.
+     *
+     * @param name
+     *         fully qualified block name
+     * @param type
+     *         model class
+     * @param factory
+     *         constructor function for the model
      */
     protected SavedBlockAdapter(String name, Class<T> type, Factory<T> factory) {
         this.name = name;
@@ -69,11 +80,23 @@ public abstract class SavedBlockAdapter<T extends WpSavedBlockModel> implements 
 
     /**
      * Constructor function for a named saved-content model.
+     *
+     * @param <T>
+     *         model type
      */
     @FunctionalInterface
     protected interface Factory<T> {
         /**
          * Creates a model from its stored representation.
+         *
+         * @param attributes
+         *         comment attributes
+         * @param content
+         *         ordered saved HTML and child blocks
+         * @param syntax
+         *         delimiter form
+         *
+         * @return named model
          */
         T create(Map<String, Object> attributes, List<WpContentNode> content, WpBlockSyntax syntax);
     }

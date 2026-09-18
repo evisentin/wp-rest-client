@@ -19,7 +19,9 @@ import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.widgets.Widg
 import java.util.*;
 
 /**
- * Immutable registry for the 115 block.json definitions shipped with WordPress 7.1.
+ * Immutable lookup maps for typed block adapters. The default constructor registers the pinned WordPress 7.1 catalog of
+ * 115 block definitions; the collection constructor registers only its supplied adapters. Adapter instances are
+ * retained, so custom adapters determine their own thread safety.
  */
 public final class DefaultWpBlockAdapterRegistry implements WpBlockAdapterRegistry {
     private final Map<String, WpBlockAdapter<?>> byName;

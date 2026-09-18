@@ -16,11 +16,19 @@ public interface WpBlockSerializer {
     /**
      * Serializes block delimiters, escaped JSON attributes and ordered content. HTML fragments are preserved; exact
      * original comment formatting is not guaranteed.
+     * <p>
+     * The content tree must be acyclic and must not be mutated during serialization. Attribute values must be
+     * JSON-compatible. Changing attributes does not regenerate saved HTML.
      *
      * @param document
-     *         document to serialize
+     *         non-null document to serialize
      *
      * @return Gutenberg markup, not server-rendered HTML
+     *
+     * @throws IllegalArgumentException
+     *         if a block name or structure is invalid, or attributes cannot be serialized as JSON
+     * @throws NullPointerException
+     *         if the document or a content node is null
      */
     String serialize(WpBlockDocument document);
 }

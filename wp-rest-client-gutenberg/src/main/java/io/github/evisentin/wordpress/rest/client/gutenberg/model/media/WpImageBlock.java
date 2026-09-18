@@ -32,6 +32,17 @@ public record WpImageBlock(Long mediaId, String url, String altText, String capt
                            WpBlock source) {
     /**
      * Creates a new block without previously saved markup.
+     *
+     * @param mediaId
+     *         optional positive WordPress media ID
+     * @param url
+     *         image source URL
+     * @param altText
+     *         alternative text, or null for empty text
+     * @param captionHtml
+     *         optional rich-text caption
+     * @param attributes
+     *         comment attributes excluding id
      */
     public WpImageBlock(Long mediaId, String url, String altText, String captionHtml, Map<String, Object> attributes) {
         this(mediaId, url, altText, captionHtml, attributes, null);

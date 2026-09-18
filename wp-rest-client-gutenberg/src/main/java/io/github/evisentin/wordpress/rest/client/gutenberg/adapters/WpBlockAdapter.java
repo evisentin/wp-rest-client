@@ -3,8 +3,9 @@ package io.github.evisentin.wordpress.rest.client.gutenberg.adapters;
 import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlock;
 
 /**
- * Converts a supported block to and from a typed editing model. Implementations must preserve unrecognized attributes
- * and generate compatible saved HTML.
+ * Converts a supported block to and from a typed model. Saved-content adapters preserve caller-supplied HTML;
+ * specialized editing adapters can regenerate supported markup. Conversion does not render dynamic blocks or validate
+ * Gutenberg editor save output.
  *
  * <p>Example block handled by a paragraph adapter implementing this contract:</p>
  * <pre>{@code

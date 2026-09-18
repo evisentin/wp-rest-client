@@ -22,7 +22,9 @@ public interface WpBlockParser {
      * @return parsed document
      *
      * @throws WpBlockParseException
-     *         when block syntax is malformed
+     *         when block syntax is malformed; the offset identifies the offending delimiter in UTF-16 code units
+     * @throws NullPointerException
+     *         if rawContent is null
      */
     WpBlockDocument parse(String rawContent) throws WpBlockParseException;
 }
