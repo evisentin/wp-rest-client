@@ -77,46 +77,20 @@ final class GutenbergSerializer implements WpBlockSerializer {
     }
 
     private void serializeNode(@NonNull WpContentNode node, Deque<Frame> stack, StringBuilder output) {
-        if (node instanceof WpHtmlFragment fragment) {
-            output.append(fragment.html());
-            return;
-        }
-
-        if (node instanceof WpBlock block) {
-            appendBlock(block, stack, output);
-            return;
-        }
-
-        throw new IllegalArgumentException("Unsupported content node: " + node.getClass().getName());
-    }
-
-    private static void appendEscapedCharacter(char character, StringBuilder output) {
-        switch (character) {
-            case '<' -> output.append("\\u003c");
-            case '>' -> output.append("\\u003e");
-            case '&' -> output.append("\\u0026");
-            default -> output.append(character);
+        switch (node) {
+            case WpHtmlFragment fragment -> output.append(fragment.html());
+            case WpBlock block -> appendBlock(block, stack, output);
         }
     }
 
     private static void appendEscapedJson(String json, StringBuilder output) {
-        for (int i = 0; i < json.length(); i++) {
-            char current = json.charAt(i);
-
-            if (isEscapedBackslashOrQuote(json, i)) {
-                char escaped = json.charAt(++i);
-                output.append(escaped == '\\' ? "\\u005c" : "\\u0022");
-                continue;
-            }
-
-            if (isDoubleHyphen(json, i)) {
-                output.append("\\u002d\\u002d");
-                i++;
-                continue;
-            }
-
-            appendEscapedCharacter(current, output);
-        }
+        // Replace JSON-escaped backslashes before quotes, so literal escape sequences remain literal.
+        output.append(json.replace("\\\\", "\\u005c")
+                          .replace("\\\"", "\\u0022")
+                          .replace("--", "\\u002d\\u002d")
+                          .replace("<", "\\u003c")
+                          .replace(">", "\\u003e")
+                          .replace("&", "\\u0026"));
     }
 
     private static void closeFrame(Deque<Frame> stack, StringBuilder output) {
@@ -125,16 +99,6 @@ final class GutenbergSerializer implements WpBlockSerializer {
         if (frame.blockName() != null) {
             output.append("<!-- /wp:").append(frame.blockName()).append(" -->");
         }
-    }
-
-    private static boolean isDoubleHyphen(String json, int index) {
-        return json.charAt(index) == '-' && index + 1 < json.length() && json.charAt(index + 1) == '-';
-    }
-
-    private static boolean isEscapedBackslashOrQuote(String json, int index) {
-        return json.charAt(index) == '\\'
-               && index + 1 < json.length()
-               && (json.charAt(index + 1) == '\\' || json.charAt(index + 1) == '"');
     }
 
     private static String serializedName(String name) {

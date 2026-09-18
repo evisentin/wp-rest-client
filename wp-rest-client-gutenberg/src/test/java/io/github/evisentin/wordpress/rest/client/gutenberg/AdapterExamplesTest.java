@@ -2,6 +2,7 @@ package io.github.evisentin.wordpress.rest.client.gutenberg;
 
 import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.WpBlockAdapter;
 import io.github.evisentin.wordpress.rest.client.gutenberg.model.*;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -17,27 +18,31 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 /**
  * Stored-markup fixtures exercise each named adapter through the public codec.
  */
+@DisplayName("All registered adapter fixtures")
 class AdapterExamplesTest {
     private static final DefaultWpBlockAdapterRegistry REGISTRY = new DefaultWpBlockAdapterRegistry();
     private final DefaultWpGutenbergCodec codec = new DefaultWpGutenbergCodec();
 
-    @Test
-    void preservesWhitespaceBeforeAndAfterTheExampleBlock() {
-        assertStoredExampleRoundTrip("core/paragraph",
-                " \r\n\t<!-- wp:paragraph --><p>Hello</p><!-- /wp:paragraph -->\r\n ");
-    }
-
     @ParameterizedTest(name = "{0}: rejects another block type")
     @MethodSource("blockNames")
-    void rejectsWrongBlockType(String name) {
+    @DisplayName("fromBlock rejects a foreign block name for every registered adapter")
+    void fromBlock__fails__when_blockNameDoesNotMatch(String name) {
         var adapter = REGISTRY.findByBlockName(name).orElseThrow();
         WpBlock wrong = new WpBlock("vendor/unrelated", java.util.Map.of(), List.of(), WpBlockSyntax.PAIRED);
         assertThatThrownBy(() -> adapter.fromBlock(wrong)).isInstanceOf(IllegalArgumentException.class);
     }
 
+    @Test
+    @DisplayName("toBlock preserves whitespace surrounding a saved block")
+    void toBlock__succeeds__when_sourceHasSurroundingWhitespace() {
+        assertStoredExampleRoundTrip("core/paragraph",
+                " \r\n\t<!-- wp:paragraph --><p>Hello</p><!-- /wp:paragraph -->\r\n ");
+    }
+
     @ParameterizedTest(name = "{0}: saved example round trip")
     @MethodSource("blockNames")
-    void roundTripsStoredExample(String name) throws Exception {
+    @DisplayName("toBlock preserves the saved-markup fixture for every registered adapter")
+    void toBlock__succeeds__when_usingStoredFixture(String name) throws Exception {
         String resource = "/gutenberg/adapter-examples/" + name.substring(5) + ".html";
         String raw;
         try (var input = Objects.requireNonNull(getClass().getResourceAsStream(resource), resource)) {

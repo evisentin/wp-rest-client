@@ -139,9 +139,15 @@ mutation when serializing or adapting them.
 Run from the repository root with JDK 21:
 
 ```sh
-./mvnw -pl wp-rest-client-gutenberg test -Dmaven.test.skip=false
+./mvnw -pl wp-rest-client-gutenberg clean verify -Dmaven.test.skip=false
 ./mvnw -pl wp-rest-client-gutenberg javadoc:javadoc -Dmaven.javadoc.failOnError=true
 ```
+
+The `verify` phase enforces 100% JaCoCo instruction, branch, line, method and class coverage
+with no module-specific exclusions. Open `target/site/jacoco/index.html` for the report.
+The repository skips tests by default, so pass `-Dmaven.test.skip=false` to run tests and
+enforce the coverage gate. For a coverage-only build without fetching external Javadoc
+links, add `-Dmaven.javadoc.skip=true`.
 
 Tests cover strict parsing, serialization, editing behavior, the pinned 115-name catalog,
 and stored-markup fixtures for every registered adapter. The fixtures are illustrative;

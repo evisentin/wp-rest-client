@@ -97,10 +97,7 @@ final class GutenbergParser implements WpBlockParser {
     }
 
     private Delimiter parseDelimiter(String content, int start, int end, int bodyStart) {
-        int bodyEnd = skipTrailingWhitespace(content, bodyStart, end);
-
-        var matcher = TOKEN.matcher(content);
-        matcher.region(bodyStart, bodyEnd);
+        var matcher = TOKEN.matcher(content.substring(bodyStart, end).stripTrailing());
 
         if (!matcher.matches()) {
             throw error("Invalid block delimiter", start);
@@ -124,10 +121,12 @@ final class GutenbergParser implements WpBlockParser {
     }
 
     private void processDelimiter(Delimiter delimiter, List<WpContentNode> root, Deque<Frame> stack) {
-        switch (delimiter.type()) {
-            case OPEN -> openBlock(delimiter, stack);
-            case CLOSE -> closeBlock(delimiter, root, stack);
-            case SELF_CLOSING -> appendSelfClosingBlock(delimiter, root, stack);
+        if (delimiter.type() == DelimiterType.OPEN) {
+            openBlock(delimiter, stack);
+        } else if (delimiter.type() == DelimiterType.CLOSE) {
+            closeBlock(delimiter, root, stack);
+        } else {
+            appendSelfClosingBlock(delimiter, root, stack);
         }
     }
 
@@ -177,11 +176,6 @@ final class GutenbergParser implements WpBlockParser {
     private static int skipLeadingWhitespace(String content, int start, int end) {
         while (start < end && Character.isWhitespace(content.charAt(start))) {start++;}
         return start;
-    }
-
-    private static int skipTrailingWhitespace(String content, int start, int end) {
-        while (end > start && Character.isWhitespace(content.charAt(end - 1))) {end--;}
-        return end;
     }
 
     private enum DelimiterType {
