@@ -2,6 +2,8 @@ package io.github.evisentin.wordpress.rest.client.gutenberg.model.content;
 
 import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.WpBlockAdapter;
 import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlock;
+import lombok.Builder;
+import lombok.Singular;
 
 import java.util.Map;
 
@@ -22,7 +24,11 @@ import java.util.Map;
  * @param source
  *         original block for preserving saved markup, or null for a new block
  */
-public record WpParagraphBlock(String contentHtml, Map<String, Object> attributes, WpBlock source) {
+@Builder
+public record WpParagraphBlock(
+        String contentHtml,
+        @Singular("attribute") Map<String, Object> attributes,
+        WpBlock source) {
     /**
      * Creates a new block without previously saved markup.
      *

@@ -1,5 +1,8 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.model;
 
+import lombok.Builder;
+import lombok.Singular;
+
 import java.util.List;
 
 /**
@@ -20,5 +23,6 @@ import java.util.List;
  * @param nodes
  *         blocks and HTML outside block delimiters, including whitespace
  */
-public record WpBlockDocument(List<WpContentNode> nodes) {
+@Builder
+public record WpBlockDocument(@Singular("node") List<WpContentNode> nodes) {
 }

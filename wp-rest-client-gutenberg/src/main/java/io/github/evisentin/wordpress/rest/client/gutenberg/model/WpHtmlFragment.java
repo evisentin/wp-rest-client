@@ -1,5 +1,7 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.model;
 
+import lombok.Builder;
+
 /**
  * Literal HTML preserved without parsing or reformatting.
  *
@@ -11,5 +13,6 @@ package io.github.evisentin.wordpress.rest.client.gutenberg.model;
  * @param html
  *         HTML markup, text, comments or whitespace
  */
+@Builder
 public record WpHtmlFragment(String html) implements WpContentNode {
 }

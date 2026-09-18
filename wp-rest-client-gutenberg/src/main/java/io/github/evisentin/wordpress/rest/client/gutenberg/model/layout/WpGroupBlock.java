@@ -2,6 +2,8 @@ package io.github.evisentin.wordpress.rest.client.gutenberg.model.layout;
 
 import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.WpBlockAdapter;
 import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpContentNode;
+import lombok.Builder;
+import lombok.Singular;
 
 import java.util.List;
 import java.util.Map;
@@ -25,5 +27,8 @@ import java.util.Map;
  * @param attributes
  *         container comment attributes, including layout and style options
  */
-public record WpGroupBlock(List<WpContentNode> content, Map<String, Object> attributes) {
+@Builder
+public record WpGroupBlock(
+        @Singular("contentNode") List<WpContentNode> content,
+        @Singular("attribute") Map<String, Object> attributes) {
 }

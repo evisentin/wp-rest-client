@@ -7,10 +7,11 @@ are Jackson, jsoup and Apache Commons Lang; Lombok is used at compile time.
 ## Dependency
 
 ```xml
+
 <dependency>
-  <groupId>io.github.evisentin</groupId>
-  <artifactId>wp-rest-client-gutenberg</artifactId>
-  <version>1.4.7-SNAPSHOT</version>
+    <groupId>io.github.evisentin</groupId>
+    <artifactId>wp-rest-client-gutenberg</artifactId>
+    <version>1.4.7-SNAPSHOT</version>
 </dependency>
 ```
 
@@ -63,6 +64,7 @@ import io.github.evisentin.wordpress.rest.client.gutenberg.DefaultWpGutenbergCod
 import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlock;
 import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockDocument;
 import io.github.evisentin.wordpress.rest.client.gutenberg.model.content.WpParagraphBlock;
+
 import java.util.List;
 
 var codec = new DefaultWpGutenbergCodec();
@@ -93,7 +95,8 @@ including wrapper fragments and whitespace. Adapters do not update the document 
 
 Paragraph, heading and image records have an optional `source` component. Convenience constructors
 still create new blocks; when editing an existing block, pass its source to preserve wrapper
-attributes, links and unrecognized markup. Unchanged paragraph, heading and image conversions return the original source block.
+attributes, links and unrecognized markup. Unchanged paragraph, heading and image conversions return the original source
+block.
 Edited HTML is parsed and serialized by jsoup and may have normalized quotes/entities.
 Existing comment options must remain unchanged (except the dedicated heading level and image
 ID fields). Unsupported new-block options are rejected rather than emitted with inconsistent
@@ -110,25 +113,65 @@ The adapters do not execute JavaScript save functions, migrate deprecated markup
 all theme-dependent block supports. The complete catalog denotes **saved-content model coverage**,
 not full typed property access or HTML-generation support for every core block.
 
+## Fluent model builders
+
+Every record in `gutenberg.model` and its subpackages provides a Lombok `builder()`:
+
+```java
+var paragraph = WpParagraphBlock.builder()
+        .contentHtml("Hello <strong>world</strong>")
+        .build(); // attributes defaults to an empty map
+
+var styledParagraph = WpParagraphBlock.builder()
+        .contentHtml("Hello")
+        .attribute("className", "intro")
+        .attributes(Map.of("anchor", "welcome"))
+        .build();
+```
+
+Import `model.content.WpParagraphBlock` under the module's package and `java.util.Map`
+for these examples. Map components use `@Singular("attribute")`: `attribute(key, value)`
+adds one entry, `attributes(map)` adds entries, and `clearAttributes()` removes them.
+Omitted maps default to empty maps. Built maps are immutable shallow copies and retain
+null values; explicitly passing a null map to `attributes(null)` is rejected.
+List components also use `@Singular`: add individual children with `contentNode(node)` or
+`node(node)`, supply collections with `content(collection)` or `nodes(collection)`, and reset
+with `clearContent()` or `clearNodes()`. Omitted lists default to empty lists; built lists are
+immutable shallow copies that preserve insertion order. Explicitly null collections are rejected.
+
+```java
+var block = WpBlock.builder()
+        .name("core/paragraph")
+        .contentNode(WpHtmlFragment.builder().html("<p>Hello</p>").build())
+        .syntax(WpBlockSyntax.PAIRED)
+        .build();
+var document = WpBlockDocument.builder().node(block).build();
+```
+
+These types are in `io.github.evisentin.wordpress.rest.client.gutenberg.model`.
+Noncollection components keep Lombok's normal defaults (`null` for references and `0` for integers),
+so supply the fields required by the codec or adapter. Existing record constructors retain
+their behavior, including retaining supplied collection references.
 
 ## Package structure
 
 All packages below are relative to `io.github.evisentin.wordpress.rest.client.gutenberg`.
 
-| Package | Responsibility |
-| --- | --- |
-| Root package | Public codec, parser, serializer and registry contracts; default implementations and parse exception. `GutenbergParser` and `GutenbergSerializer` are package-private implementation classes. |
-| `model` | Generic document tree: `WpBlockDocument`, `WpBlock`, `WpContentNode`, `WpHtmlFragment`, delimiter syntax and `WpMissingBlock`. |
-| `adapters` | `WpBlockAdapter`, shared markup helpers and `MissingBlockAdapter`. |
-| `model.<category>` / `adapters.<category>` | Matching named models and adapters grouped by content, media, layout, interactive, navigation, comments, post, query, site, reusable and widgets. |
-| `model.reusable` / `adapters.reusable` | Pattern and synced-pattern types, plus the cross-category `WpSavedBlockModel` contract and `SavedBlockAdapter` base class. |
+| Package                                    | Responsibility                                                                                                                                                                                |
+|--------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Root package                               | Public codec, parser, serializer and registry contracts; default implementations and parse exception. `GutenbergParser` and `GutenbergSerializer` are package-private implementation classes. |
+| `model`                                    | Generic document tree: `WpBlockDocument`, `WpBlock`, `WpContentNode`, `WpHtmlFragment`, delimiter syntax and `WpMissingBlock`.                                                                |
+| `adapters`                                 | `WpBlockAdapter`, shared markup helpers and `MissingBlockAdapter`.                                                                                                                            |
+| `model.<category>` / `adapters.<category>` | Matching named models and adapters grouped by content, media, layout, interactive, navigation, comments, post, query, site, reusable and widgets.                                             |
+| `model.reusable` / `adapters.reusable`     | Pattern and synced-pattern types, plus the cross-category `WpSavedBlockModel` contract and `SavedBlockAdapter` base class.                                                                    |
 
 These categories organize this Java API; they do not define WordPress editor categories.
 Registry lookups use exact, fully qualified block names (for example `core/paragraph`)
 or exact model classes. The collection constructor replaces the default catalog with
 exactly the supplied adapters and rejects duplicate block names or model types.
 
-Records retain supplied collection references; they are not deeply immutable. Parser-created
+Direct record construction retains supplied collection references; records are not deeply
+immutable. Builders copy maps and lists as described above. Parser-created
 content lists are unmodifiable, while parsed attribute maps may be mutable. Adapters make
 shallow copies of attribute maps and, for saved-content models and groups, content lists.
 Nested attribute values and child blocks remain shared. Keep trees acyclic and avoid concurrent

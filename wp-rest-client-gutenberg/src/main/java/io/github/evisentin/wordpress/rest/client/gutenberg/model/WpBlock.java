@@ -1,5 +1,8 @@
 package io.github.evisentin.wordpress.rest.client.gutenberg.model;
 
+import lombok.Builder;
+import lombok.Singular;
+
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +26,10 @@ import java.util.Map;
  * @param syntax
  *         delimiter form; self-closing blocks must have empty content
  */
-public record WpBlock(String name, Map<String, Object> attributes,
-                      List<WpContentNode> content, WpBlockSyntax syntax) implements WpContentNode {
+@Builder
+public record WpBlock(
+        String name,
+        @Singular("attribute") Map<String, Object> attributes,
+        @Singular("contentNode") List<WpContentNode> content,
+        WpBlockSyntax syntax) implements WpContentNode {
 }

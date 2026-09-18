@@ -3,6 +3,8 @@ package io.github.evisentin.wordpress.rest.client.gutenberg.model.query;
 import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockSyntax;
 import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpContentNode;
 import io.github.evisentin.wordpress.rest.client.gutenberg.model.reusable.WpSavedBlockModel;
+import lombok.Builder;
+import lombok.Singular;
 
 import java.util.List;
 import java.util.Map;
@@ -27,6 +29,9 @@ import java.util.Map;
  * @param syntax
  *         original paired or self-closing delimiter form
  */
-public record WpQueryBlock(Map<String, Object> attributes, List<WpContentNode> content,
-                           WpBlockSyntax syntax) implements WpSavedBlockModel {
+@Builder
+public record WpQueryBlock(
+        @Singular("attribute") Map<String, Object> attributes,
+        @Singular("contentNode") List<WpContentNode> content,
+        WpBlockSyntax syntax) implements WpSavedBlockModel {
 }
