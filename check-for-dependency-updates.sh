@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-IGNORE_REGEX='.*-(M|alpha|beta|rc|CR|EA|SNAPSHOT).*'
+IGNORE_REGEX='(?i).*[.-](M[0-9]|alpha|beta|rc|cr|ea|snapshot).*'
 
 echo "========================================="
 echo " Maven Dependency Updates"
