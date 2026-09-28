@@ -5,7 +5,7 @@
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <groupId>io.github.evisentin</groupId>
   <artifactId>wp-rest-client</artifactId>
-  <version>1.4.7-SNAPSHOT</version>
+  <version>1.4.8</version>
   <packaging>pom</packaging>
   <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
   <name>WordPress REST API Client for Java</name>
