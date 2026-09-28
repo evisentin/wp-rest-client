@@ -10,6 +10,7 @@ import io.github.evisentin.wordpress.rest.client.domain.model.query.*;
 import io.github.evisentin.wordpress.rest.client.domain.model.requests.*;
 import io.github.evisentin.wordpress.rest.client.domain.model.responses.*;
 import io.github.evisentin.wordpress.rest.client.gutenberg.DefaultWpGutenbergCodec;
+import io.github.evisentin.wordpress.rest.client.gutenberg.Gutenberg;
 import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.content.*;
 import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.layout.GroupBlockAdapter;
 import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.media.ImageBlockAdapter;
@@ -17,9 +18,10 @@ import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlock;
 import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockDocument;
 import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockSyntax;
 import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpHtmlFragment;
-import io.github.evisentin.wordpress.rest.client.gutenberg.model.content.*;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.content.WpListBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.content.WpListItemBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.content.WpQuoteBlock;
 import io.github.evisentin.wordpress.rest.client.gutenberg.model.layout.WpGroupBlock;
-import io.github.evisentin.wordpress.rest.client.gutenberg.model.media.WpImageBlock;
 import io.github.evisentin.wordpress.test.integration.BaseWordPressIntegrationTest;
 import io.github.evisentin.wordpress.test.integration.base.factory.WpBasicAuthRestClientFactory;
 import lombok.NonNull;
@@ -140,33 +142,6 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
 
     protected abstract WpBasicAuthRestClientFactory clientFactory();
 
-    private Long givenCategoryExists(final String name, final String description, final String slug) {
-        return wpCreateCategory(name, description, slug);
-    }
-
-    /**
-     * Common saved blocks, using basic markup supported across the WordPress test matrix.
-     */
-    private WpBlockDocument commonGutenbergContent() {
-        WpBlock heading = new HeadingBlockAdapter().toBlock(new WpHeadingBlock("Gutenberg introduction", 2, Map.of()));
-        WpBlock paragraph = new ParagraphBlockAdapter().toBlock(
-                new WpParagraphBlock("Hello <strong>WordPress</strong> &amp; Gutenberg.", Map.of()));
-        WpBlock image = new ImageBlockAdapter().toBlock(new WpImageBlock(null,
-                "https://example.com/photo.jpg", "A mountain", "Mountain caption", Map.of()));
-        WpBlock listItem = new ListItemBlockAdapter().toBlock(new WpListItemBlock(Map.of(),
-                List.of(new WpHtmlFragment("<li>First item</li>")), WpBlockSyntax.PAIRED));
-        WpBlock list = new ListBlockAdapter().toBlock(new WpListBlock(Map.of(), List.of(
-                new WpHtmlFragment("<ul class=\"wp-block-list\">"), listItem, new WpHtmlFragment("</ul>")), WpBlockSyntax.PAIRED));
-        WpBlock quote = new QuoteBlockAdapter().toBlock(new WpQuoteBlock(Map.of(), List.of(
-                new WpHtmlFragment("<blockquote class=\"wp-block-quote\">"),
-                new ParagraphBlockAdapter().toBlock(new WpParagraphBlock("A quoted thought.", Map.of())),
-                new WpHtmlFragment("<cite>Author</cite></blockquote>")), WpBlockSyntax.PAIRED));
-        WpBlock group = new GroupBlockAdapter().toBlock(new WpGroupBlock(List.of(
-                new WpHtmlFragment("<div class=\"wp-block-group\">"), paragraph, list, quote,
-                new WpHtmlFragment("</div>")), Map.of()));
-        return new WpBlockDocument(List.of(heading, image, group));
-    }
-
     private void assertCommonGutenbergContent(WpRenderedField content, WpBlockDocument expected) {
         assertThat(content).isNotNull();
         assertThat(content.getRaw()).isNotBlank();
@@ -195,6 +170,34 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                 .isEqualTo("A quoted thought.");
         assertThat(content.getRendered()).contains("Gutenberg introduction", "<strong>WordPress</strong>",
                 "photo.jpg", "First item", "A quoted thought.").doesNotContain("<!-- wp:", "<!-- /wp:");
+    }
+
+    /**
+     * Common saved blocks, using basic markup supported across the WordPress test matrix.
+     */
+    private Gutenberg commonGutenbergContent() {
+        var paragraph = Gutenberg.document()
+                                 .paragraph(p -> p.html("Hello <strong>WordPress</strong> &amp; Gutenberg."))
+                                 .build().nodes().getFirst();
+        WpBlock listItem = new ListItemBlockAdapter().toBlock(new WpListItemBlock(Map.of(),
+                List.of(new WpHtmlFragment("<li>First item</li>")), WpBlockSyntax.PAIRED));
+        WpBlock list = new ListBlockAdapter().toBlock(new WpListBlock(Map.of(), List.of(
+                new WpHtmlFragment("<ul class=\"wp-block-list\">"), listItem, new WpHtmlFragment("</ul>")), WpBlockSyntax.PAIRED));
+        WpBlock quote = new QuoteBlockAdapter().toBlock(new WpQuoteBlock(Map.of(), List.of(
+                new WpHtmlFragment("<blockquote class=\"wp-block-quote\">"),
+                Gutenberg.document().paragraph("A quoted thought.").build().nodes().getFirst(),
+                new WpHtmlFragment("<cite>Author</cite></blockquote>")), WpBlockSyntax.PAIRED));
+        WpBlock group = new GroupBlockAdapter().toBlock(new WpGroupBlock(List.of(
+                new WpHtmlFragment("<div class=\"wp-block-group\">"), paragraph, list, quote,
+                new WpHtmlFragment("</div>")), Map.of()));
+        return Gutenberg.document()
+                        .heading("Gutenberg introduction")
+                        .image(i -> i.url("https://example.com/photo.jpg").alt("A mountain").captionHtml("Mountain caption"))
+                        .node(group);
+    }
+
+    private Long givenCategoryExists(final String name, final String description, final String slug) {
+        return wpCreateCategory(name, description, slug);
     }
 
     private Long givenCommentExists(final long postId, final String content, final String author, final String authorEmail) {
@@ -925,39 +928,10 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
     @Nested
     class PageTests {
 
-        @DisplayName("'CREATE' and 'GET' preserve common Gutenberg blocks")
-        @Tag("gutenberg")
-        @Test
-        void create_and_get__preserve_common_gutenberg_blocks() {
-            // GIVEN
-            WpBlockDocument expected = commonGutenbergContent();
-            String rawContent = new DefaultWpGutenbergCodec().serialize(expected);
-
-            // WHEN
-            WpPage created = adminClient.pages().create(
-                    pageCreateUpdateRequest()
-                            .withTitle("Gutenberg page")
-                            .withStatus(WpPageStatus.DRAFT)
-                            .withContent(rawContent)
-                            .build());
-            try {
-                // THEN: validate the create response and a separate persisted read in edit context.
-                assertThat(created.getId()).isNotNull();
-                assertCommonGutenbergContent(created.getContent(), expected);
-                WpPage fetched = adminClient.pages().get(created.getId(), WpContext.EDIT);
-                assertThat(fetched.getId()).isEqualTo(created.getId());
-                assertCommonGutenbergContent(fetched.getContent(), expected);
-            } finally {
-                adminClient.pages().delete(created.getId());
-            }
-        }
-
         private static final String PAGE_1_TITLE = "Page #1";
         private static final String PAGE_1_CONTENT = "My first page";
         private static final String PAGE_1_SLUG = "page-1";
-
         private static final String PAGE_2_TITLE = "Page #2";
-
         private static final String PAGE_3_TITLE = "Page #3";
 
         @DisplayName("'CREATE' works")
@@ -1045,6 +1019,49 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                         .hasRendered(toBlock(PAGE_1_CONTENT))
                                         .isProtected() // PASSWORD --> PROTECTED
                                         .hasBlockVersion(null));
+        }
+
+        @DisplayName("'CREATE', 'GET' and fluent 'UPDATE' preserve common Gutenberg blocks")
+        @Tag("gutenberg")
+        @Test
+        void create_get_and_update__preserve_common_gutenberg_blocks() {
+            // GIVEN
+            var document = commonGutenbergContent();
+            WpBlockDocument expected = document.build();
+            String rawContent = document.serialize();
+
+            // WHEN
+            WpPage created = adminClient.pages().create(
+                    pageCreateUpdateRequest()
+                            .withTitle("Gutenberg page")
+                            .withStatus(WpPageStatus.DRAFT)
+                            .withContent(rawContent)
+                            .build());
+            try {
+                // THEN: validate the create response and a separate persisted read in edit context.
+                assertThat(created.getId()).isNotNull();
+                assertCommonGutenbergContent(created.getContent(), expected);
+                WpPage fetched = adminClient.pages().get(created.getId(), WpContext.EDIT);
+                assertThat(fetched.getId()).isEqualTo(created.getId());
+                assertCommonGutenbergContent(fetched.getContent(), expected);
+
+                String updatedContent = Gutenberg.parse(fetched.getContent().getRaw())
+                                                 .editParagraphs(p -> p.html(p.html().replace("WordPress", "fluent WordPress")
+                                                                              .replace("quoted thought", "revised thought")))
+                                                 .editHeadings(h -> h.level(3))
+                                                 .editImages(i -> i.alt("Updated mountain"))
+                                                 .serialize();
+                var updated = adminClient.pages().update(created.getId(),
+                        pageCreateUpdateRequest().withContent(updatedContent).build());
+                var persisted = adminClient.pages().get(created.getId(), WpContext.EDIT);
+                var updatedTree = Gutenberg.parse(updatedContent).build();
+                assertThat(Gutenberg.parse(updated.getContent().getRaw()).build()).isEqualTo(updatedTree);
+                assertThat(Gutenberg.parse(persisted.getContent().getRaw()).build()).isEqualTo(updatedTree);
+                assertThat(persisted.getContent().getRendered()).contains("<strong>fluent WordPress</strong>",
+                        "A revised thought.", "Updated mountain", "<h3", "First item");
+            } finally {
+                adminClient.pages().delete(created.getId());
+            }
         }
 
         @DisplayName("'DELETE' fails on HTTP NOT FOUND")
@@ -1456,39 +1473,10 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
     @Nested
     class PostTests {
 
-        @DisplayName("'CREATE' and 'GET' preserve common Gutenberg blocks")
-        @Tag("gutenberg")
-        @Test
-        void create_and_get__preserve_common_gutenberg_blocks() {
-            // GIVEN
-            WpBlockDocument expected = commonGutenbergContent();
-            String rawContent = new DefaultWpGutenbergCodec().serialize(expected);
-
-            // WHEN
-            WpPost created = adminClient.posts().create(
-                    postCreateUpdateRequest()
-                            .withTitle("Gutenberg post")
-                            .withStatus(WpPostStatus.DRAFT)
-                            .withContent(rawContent)
-                            .build());
-            try {
-                // THEN: validate the create response and a separate persisted read in edit context.
-                assertThat(created.getId()).isNotNull();
-                assertCommonGutenbergContent(created.getContent(), expected);
-                WpPost fetched = adminClient.posts().get(created.getId(), WpContext.EDIT);
-                assertThat(fetched.getId()).isEqualTo(created.getId());
-                assertCommonGutenbergContent(fetched.getContent(), expected);
-            } finally {
-                adminClient.posts().delete(created.getId());
-            }
-        }
-
         private static final String POST_1_TITLE = "Post #1";
         private static final String POST_1_CONTENT = "My first post";
         private static final String POST_1_SLUG = "post-1";
-
         private static final String POST_2_TITLE = "Post #2";
-
         private static final String POST_3_TITLE = "Post #3";
 
         @DisplayName("'CREATE' works")
@@ -1643,6 +1631,49 @@ public abstract class BasicAuthWordPressIntegrationTest extends BaseWordPressInt
                                         .hasBlockVersion(null))
                                .hasCategories(Set.of(categoryNews))
                                .hasTags(Set.of(tagCH));
+        }
+
+        @DisplayName("'CREATE', 'GET' and fluent 'UPDATE' preserve common Gutenberg blocks")
+        @Tag("gutenberg")
+        @Test
+        void create_get_and_update__preserve_common_gutenberg_blocks() {
+            // GIVEN
+            var document = commonGutenbergContent();
+            WpBlockDocument expected = document.build();
+            String rawContent = document.serialize();
+
+            // WHEN
+            WpPost created = adminClient.posts().create(
+                    postCreateUpdateRequest()
+                            .withTitle("Gutenberg post")
+                            .withStatus(WpPostStatus.DRAFT)
+                            .withContent(rawContent)
+                            .build());
+            try {
+                // THEN: validate the create response and a separate persisted read in edit context.
+                assertThat(created.getId()).isNotNull();
+                assertCommonGutenbergContent(created.getContent(), expected);
+                WpPost fetched = adminClient.posts().get(created.getId(), WpContext.EDIT);
+                assertThat(fetched.getId()).isEqualTo(created.getId());
+                assertCommonGutenbergContent(fetched.getContent(), expected);
+
+                String updatedContent = Gutenberg.parse(fetched.getContent().getRaw())
+                                                 .editParagraphs(p -> p.html(p.html().replace("WordPress", "fluent WordPress")
+                                                                              .replace("quoted thought", "revised thought")))
+                                                 .editHeadings(h -> h.level(3))
+                                                 .editImages(i -> i.alt("Updated mountain"))
+                                                 .serialize();
+                var updated = adminClient.posts().update(created.getId(),
+                        postCreateUpdateRequest().withContent(updatedContent).build());
+                var persisted = adminClient.posts().get(created.getId(), WpContext.EDIT);
+                var updatedTree = Gutenberg.parse(updatedContent).build();
+                assertThat(Gutenberg.parse(updated.getContent().getRaw()).build()).isEqualTo(updatedTree);
+                assertThat(Gutenberg.parse(persisted.getContent().getRaw()).build()).isEqualTo(updatedTree);
+                assertThat(persisted.getContent().getRendered()).contains("<strong>fluent WordPress</strong>",
+                        "A revised thought.", "Updated mountain", "<h3", "First item");
+            } finally {
+                adminClient.posts().delete(created.getId());
+            }
         }
 
         @DisplayName("'DELETE' fails on HTTP NOT FOUND")

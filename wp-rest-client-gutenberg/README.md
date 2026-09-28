@@ -11,11 +11,65 @@ are Jackson, jsoup and Apache Commons Lang; Lombok is used at compile time.
 <dependency>
     <groupId>io.github.evisentin</groupId>
     <artifactId>wp-rest-client-gutenberg</artifactId>
-    <version>1.4.7-SNAPSHOT</version>
+    <version>1.4.9-SNAPSHOT</version>
 </dependency>
 ```
 
 Use the version matching the rest of your client modules.
+
+## Fluent Content API
+
+Use `Gutenberg` for creating paragraphs, headings and images, or editing those blocks in existing content.
+The facade handles adapter conversion and document node replacement for you.
+
+```java
+import io.github.evisentin.wordpress.rest.client.gutenberg.Gutenberg;
+
+String rawContent = Gutenberg.document()
+        .heading("Welcome") // defaults to h2
+        .paragraph(p -> p.html("Hello <strong>world</strong>").className("intro"))
+        .heading(h -> h.text("Photos").level(3).anchor("photos"))
+        .image(i -> i.id(42).url("https://example.com/photo.jpg")
+                .alt("A mountain landscape").captionHtml("Mountain <em>view</em>"))
+        .serialize();
+```
+
+`heading(String)` and `paragraph(String)` take plain text, as does `.text(...)` inside a callback.
+Plain text is HTML-escaped; `.html(...)` and `.captionHtml(...)` accept trusted rich-text HTML and do not sanitize it.
+Headings default to level 2; paragraph and heading content defaults to empty text. Images require a URL;
+the media ID and caption are optional, and alternative text defaults to empty.
+
+To edit a document, start with `content.raw`:
+
+```java
+String updated = Gutenberg.parse(rawContent)
+        .editParagraphs(p -> p.html(p.html().replace("world", "WordPress")))
+        .editHeadings(h -> h.level(3))
+        .editImages(i -> i.alt("Updated description"))
+        .serialize();
+```
+
+Each edit visits **all matching blocks, including nested blocks**, in document order. Callbacks expose the current
+fields: `html()` for text blocks, `level()` for headings, and `id()`, `url()`, `alt()` and `captionHtml()` for images.
+Use conditional logic inside a callback to select which blocks to change. String replacement is appropriate for
+known markup; for general text edits, use an HTML parser to avoid modifying tag names or attributes accidentally.
+
+Edits retain the original source markup and unrelated nodes, including wrapper fragments, unknown plugin blocks,
+and whitespace. Unchanged blocks retain their source objects. Changed HTML may be normalized by jsoup.
+If a callback or adapter throws, that edit operation leaves the document unchanged; earlier successful operations
+in the chain remain applied. Callbacks should only modify the supplied editor, not the enclosing document.
+
+Use `.className(...)` and `.anchor(...)` when creating blocks. Existing comment attributes must remain unchanged;
+attempts to change them are rejected by the adapters. Dedicated heading levels and image IDs can be edited.
+Set `.id((Long) null)` to remove an image ID and `.captionHtml(null)` to remove its caption.
+
+Call `.build()` to obtain a `WpBlockDocument` with a shallow immutable copy of the top-level node list, or
+`.serialize(true)` for pretty output. `.node(existingNode)` appends a generic block or literal HTML fragment,
+so other block types can be mixed with fluent content. The facade is mutable and not thread-safe; built trees
+are not deeply immutable. Codec and adapter APIs remain available for lower-level control.
+
+Fluent HTML generation is currently limited to paragraphs, headings and images. Other block types still require
+consistent saved markup; adding a generic node does not generate wrappers or render dynamic blocks.
 
 ## Parse and serialize
 
@@ -183,7 +237,7 @@ All packages below are relative to `io.github.evisentin.wordpress.rest.client.gu
 
 | Package                                    | Responsibility                                                                                                                                                                                |
 |--------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| Root package                               | Public codec, parser, serializer and registry contracts; default implementations and parse exception. `GutenbergParser` and `GutenbergSerializer` are package-private implementation classes. |
+| Root package                               | Fluent `Gutenberg` facade; public codec, parser, serializer and registry contracts; default implementations and parse exception. `GutenbergParser` and `GutenbergSerializer` are package-private implementation classes. |
 | `model`                                    | Generic document tree: `WpBlockDocument`, `WpBlock`, `WpContentNode`, `WpHtmlFragment`, delimiter syntax and `WpMissingBlock`.                                                                |
 | `adapters`                                 | `WpBlockAdapter`, shared markup helpers and `MissingBlockAdapter`.                                                                                                                            |
 | `model.<category>` / `adapters.<category>` | Matching named models and adapters grouped by content, media, layout, interactive, navigation, comments, post, query, site, reusable and widgets.                                             |
@@ -210,10 +264,8 @@ Run from the repository root with JDK 21:
 ./mvnw -pl wp-rest-client-gutenberg javadoc:javadoc -Dmaven.javadoc.failOnError=true
 ```
 
-The `verify` phase enforces 100% JaCoCo instruction, branch, line, method and class coverage
-with no module-specific exclusions. Open `target/site/jacoco/index.html` for the report.
-The repository skips tests by default, so pass `-Dmaven.test.skip=false` to run tests and
-enforce the coverage gate. For a coverage-only build without fetching external Javadoc
+The `verify` phase generates the JaCoCo coverage report at `target/site/jacoco/index.html`.
+The repository skips tests by default, so pass `-Dmaven.test.skip=false` to run them. For a coverage-only build without fetching external Javadoc
 links, add `-Dmaven.javadoc.skip=true`.
 
 Tests cover strict parsing, serialization, editing behavior, the pinned 115-name catalog,

@@ -34,6 +34,60 @@ The project's [Java requirements](../getting_started/installation.md#requirement
     }
     ```
 
+## Fluent Content API
+
+Use `Gutenberg` for creating paragraphs, headings and images, or editing those blocks in existing content.
+The facade handles adapter conversion and document node replacement for you.
+
+```java
+import io.github.evisentin.wordpress.rest.client.gutenberg.Gutenberg;
+
+String rawContent = Gutenberg.document()
+        .heading("Welcome") // defaults to h2
+        .paragraph(p -> p.html("Hello <strong>world</strong>").className("intro"))
+        .heading(h -> h.text("Photos").level(3).anchor("photos"))
+        .image(i -> i.id(42).url("https://example.com/photo.jpg")
+                .alt("A mountain landscape").captionHtml("Mountain <em>view</em>"))
+        .serialize();
+```
+
+`heading(String)` and `paragraph(String)` take plain text, as does `.text(...)` inside a callback.
+Plain text is HTML-escaped; `.html(...)` and `.captionHtml(...)` accept trusted rich-text HTML and do not sanitize it.
+Headings default to level 2; paragraph and heading content defaults to empty text. Images require a URL;
+the media ID and caption are optional, and alternative text defaults to empty.
+
+To edit a document, start with `content.raw`:
+
+```java
+String updated = Gutenberg.parse(rawContent)
+        .editParagraphs(p -> p.html(p.html().replace("world", "WordPress")))
+        .editHeadings(h -> h.level(3))
+        .editImages(i -> i.alt("Updated description"))
+        .serialize();
+```
+
+Each edit visits **all matching blocks, including nested blocks**, in document order. Callbacks expose the current
+fields: `html()` for text blocks, `level()` for headings, and `id()`, `url()`, `alt()` and `captionHtml()` for images.
+Use conditional logic inside a callback to select which blocks to change. String replacement is appropriate for
+known markup; for general text edits, use an HTML parser to avoid modifying tag names or attributes accidentally.
+
+Edits retain the original source markup and unrelated nodes, including wrapper fragments, unknown plugin blocks,
+and whitespace. Unchanged blocks retain their source objects. Changed HTML may be normalized by jsoup.
+If a callback or adapter throws, that edit operation leaves the document unchanged; earlier successful operations
+in the chain remain applied. Callbacks should only modify the supplied editor, not the enclosing document.
+
+Use `.className(...)` and `.anchor(...)` when creating blocks. Existing comment attributes must remain unchanged;
+attempts to change them are rejected by the adapters. Dedicated heading levels and image IDs can be edited.
+Set `.id((Long) null)` to remove an image ID and `.captionHtml(null)` to remove its caption.
+
+Call `.build()` to obtain a `WpBlockDocument` with a shallow immutable copy of the top-level node list, or
+`.serialize(true)` for pretty output. `.node(existingNode)` appends a generic block or literal HTML fragment,
+so other block types can be mixed with fluent content. The facade is mutable and not thread-safe; built trees
+are not deeply immutable. Codec and adapter APIs remain available for lower-level control.
+
+Fluent HTML generation is currently limited to paragraphs, headings and images. Other block types still require
+consistent saved markup; adding a generic node does not generate wrappers or render dynamic blocks.
+
 ## Parse and Serialize Content
 
 Create a `DefaultWpGutenbergCodec` to parse a string into a `WpBlockDocument` and serialize it back to stored markup.
@@ -93,80 +147,36 @@ Configure an authenticated `WpRestClient` as described in [Quick Start](../getti
 [Authentication](../getting_started/authentication.md). Request `WpContext.EDIT` with a user who can edit the post so
 that the response includes raw content. Rendered content is unsuitable for preserving Gutenberg block structure.
 
-The following method reads the first top-level paragraph and replaces only `<strong>world</strong>` with
-`<strong>WordPress</strong>` inside its existing content. For example:
-
-```html title="Before"
-<p>Hello <strong>world</strong>. This sentence stays the same.</p>
-```
-
-```html title="After"
-<p>Hello <strong>WordPress</strong>. This sentence stays the same.</p>
-```
-
-The surrounding text, inline formatting, and other document nodes are retained. The method returns without sending
-an update if there is no top-level paragraph or the first paragraph does not contain the target fragment. Nested
-paragraphs require traversing the enclosing block's `content()` as well.
+The following method updates a known rich-text fragment in every paragraph, including paragraphs inside groups
+and quotes. The facade preserves the rest of the document and the original block sources automatically.
 
 ```java
 import io.github.evisentin.wordpress.rest.client.domain.WpRestClient;
 import io.github.evisentin.wordpress.rest.client.domain.model.WpPost;
 import io.github.evisentin.wordpress.rest.client.domain.model.enums.WpContext;
 import io.github.evisentin.wordpress.rest.client.domain.model.requests.WpPostCreateUpdateRequest;
-import io.github.evisentin.wordpress.rest.client.gutenberg.DefaultWpGutenbergCodec;
-import io.github.evisentin.wordpress.rest.client.gutenberg.WpGutenbergCodec;
-import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.content.ParagraphBlockAdapter;
-import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlock;
-import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockDocument;
-import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpContentNode;
-import io.github.evisentin.wordpress.rest.client.gutenberg.model.content.WpParagraphBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.Gutenberg;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public static void updateFirstParagraph(WpRestClient restClient, long postId) {
+public static void updateParagraphs(WpRestClient restClient, long postId) {
     WpPost post = restClient.posts().get(postId, WpContext.EDIT);
     if (post.getContent() == null || post.getContent().getRaw() == null) {
         throw new IllegalStateException("The response does not contain content.raw");
     }
 
-    WpGutenbergCodec codec = new DefaultWpGutenbergCodec();
-    WpBlockDocument document = codec.parse(post.getContent().getRaw());
-    List<WpContentNode> nodes = new ArrayList<>(document.nodes());
-    ParagraphBlockAdapter adapter = new ParagraphBlockAdapter();
-
-    for (int i = 0; i < nodes.size(); i++) {
-        if (nodes.get(i) instanceof WpBlock block
-                && block.name().equals(adapter.blockName())) {
-            WpParagraphBlock original = adapter.fromBlock(block);
-            String updatedHtml = original.contentHtml().replace(
-                    "<strong>world</strong>", "<strong>WordPress</strong>");
-            if (updatedHtml.equals(original.contentHtml())) {
-                return; // No matching fragment: nothing to save.
-            }
-
-            WpParagraphBlock edited = new WpParagraphBlock(
-                    updatedHtml,
-                    original.attributes(),
-                    original.source());
-            nodes.set(i, adapter.toBlock(edited));
-
-            String rawContent = codec.serialize(new WpBlockDocument(nodes));
-            restClient.posts().update(postId, WpPostCreateUpdateRequest.builder()
-                    .withContent(rawContent)
-                    .build());
-            return;
-        }
+    var document = Gutenberg.parse(post.getContent().getRaw());
+    String before = document.serialize();
+    String updated = document
+            .editParagraphs(p -> p.html(p.html().replace(
+                    "<strong>world</strong>", "<strong>WordPress</strong>")))
+            .serialize();
+    if (updated.equals(before)) {
+        return; // No matching fragment: nothing to save.
     }
+    restClient.posts().update(postId, WpPostCreateUpdateRequest.builder()
+            .withContent(updated)
+            .build());
 }
 ```
-
-Keep `source()` when editing an existing paragraph so the adapter can preserve its wrapper markup. This adapter
-supports changing rich-text content while retaining the existing attributes; changing those attributes is rejected.
-`contentHtml()` contains the paragraph's inner HTML, without the outer `<p>` element. Start from that value and
-pass the modified HTML to the new model to retain the rest of the paragraph. Here, `String.replace` replaces every
-exact occurrence of the known HTML fragment. It is suitable for this controlled markup; for general text edits,
-use an HTML parser to modify text nodes so that tag names and attributes are not accidentally changed.
 
 Updating `content` replaces the post's entire content string, so serialize the full edited document. For pages, use
 `restClient.pages()`, `WpPageCreateUpdateRequest`, and the same codec workflow. See also
@@ -174,24 +184,15 @@ Updating `content` replaces the post's entire content string, so serialize the f
 
 ## Create New Blocks
 
-Use a typed adapter to generate markup for supported editing operations. For example, create a paragraph from rich-text
-HTML and wrap it in a document:
+Use the fluent API to generate supported blocks without looking up adapters:
 
 ```java
-import io.github.evisentin.wordpress.rest.client.gutenberg.DefaultWpGutenbergCodec;
-import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.content.ParagraphBlockAdapter;
-import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlock;
-import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlockDocument;
-import io.github.evisentin.wordpress.rest.client.gutenberg.model.content.WpParagraphBlock;
+import io.github.evisentin.wordpress.rest.client.gutenberg.Gutenberg;
 
-import java.util.List;
-import java.util.Map;
-
-ParagraphBlockAdapter adapter = new ParagraphBlockAdapter();
-WpBlock paragraph = adapter.toBlock(
-        new WpParagraphBlock("Hello <strong>world</strong>.", Map.of()));
-String rawContent = new DefaultWpGutenbergCodec().serialize(
-        new WpBlockDocument(List.of(paragraph)));
+String rawContent = Gutenberg.document()
+        .heading("Introduction")
+        .paragraph(p -> p.html("Hello <strong>world</strong>."))
+        .serialize();
 ```
 
 Pass `rawContent` to `.withContent(rawContent)` when building a post or page create/update request.
@@ -282,5 +283,5 @@ content tree. Null parser input is rejected with `NullPointerException`.
     editor save output, sanitize HTML, or resolve referenced patterns and media. Use a supported editing adapter or
     supply consistent saved markup, then check the result in your site's block editor.
 
-Documents and blocks are not deeply immutable. Copy collections when making edits, as in the post example, and do not
-mutate a document while it is being serialized.
+Documents and blocks are not deeply immutable. When using the lower-level API, copy collections before editing them. The fluent facade handles
+node replacement for you. Do not mutate a document while it is being serialized.
