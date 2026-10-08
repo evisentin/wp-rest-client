@@ -1,0 +1,43 @@
+package io.github.evisentin.wordpress.rest.client.gutenberg.model.content;
+
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.WpBlockAdapter;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.WpBlock;
+import lombok.Builder;
+import lombok.Singular;
+
+import java.util.Map;
+
+/**
+ * Typed editing model for paragraph blocks. Conversion to saved markup requires a compatible {@link WpBlockAdapter}.
+ *
+ * <p>Example stored block representation (illustrative saved markup):</p>
+ * <pre>{@code
+ * <!-- wp:paragraph -->
+ * <p>Hello <strong>world</strong>.</p>
+ * <!-- /wp:paragraph -->
+ * }</pre>
+ *
+ * @param contentHtml
+ *         inner rich-text HTML, including inline formatting
+ * @param attributes
+ *         comment attributes, including unrecognized options
+ * @param source
+ *         original block for preserving saved markup, or null for a new block
+ */
+@Builder
+public record WpParagraphBlock(
+        String contentHtml,
+        @Singular("attribute") Map<String, Object> attributes,
+        WpBlock source) {
+    /**
+     * Creates a new block without previously saved markup.
+     *
+     * @param contentHtml
+     *         inner rich-text HTML
+     * @param attributes
+     *         comment attributes
+     */
+    public WpParagraphBlock(String contentHtml, Map<String, Object> attributes) {
+        this(contentHtml, attributes, null);
+    }
+}

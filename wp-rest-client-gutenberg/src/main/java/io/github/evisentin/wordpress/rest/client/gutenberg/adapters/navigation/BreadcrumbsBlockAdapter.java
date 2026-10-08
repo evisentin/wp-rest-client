@@ -1,0 +1,22 @@
+package io.github.evisentin.wordpress.rest.client.gutenberg.adapters.navigation;
+
+import io.github.evisentin.wordpress.rest.client.gutenberg.adapters.reusable.SavedBlockAdapter;
+import io.github.evisentin.wordpress.rest.client.gutenberg.model.navigation.WpBreadcrumbsBlock;
+
+/**
+ * Saved-content adapter for {@code core/breadcrumbs}; preserves markup without running its save function.
+ *
+ * <p>Example stored block representation (illustrative saved markup):</p>
+ * <pre>{@code
+ * <!-- wp:breadcrumbs {"showHomeItem":true} /-->
+ * }</pre>
+ * <p>The adapter preserves supplied content; it does not generate this markup or render the block.</p>
+ */
+public final class BreadcrumbsBlockAdapter extends SavedBlockAdapter<WpBreadcrumbsBlock> {
+    /**
+     * Creates an adapter for {@code core/breadcrumbs}.
+     */
+    public BreadcrumbsBlockAdapter() {
+        super("core/breadcrumbs", WpBreadcrumbsBlock.class, WpBreadcrumbsBlock::new);
+    }
+}
