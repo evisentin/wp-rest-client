@@ -61,7 +61,7 @@ jobs:
 
           mvn -B deploy \
             -Prelease \
-            -pl .,wp-rest-client-domain,wp-rest-client-okhttp,wp-rest-client-apache \
+            -pl .,wp-rest-client-domain,wp-rest-client-gutenberg,wp-rest-client-okhttp,wp-rest-client-apache \
             -Dmaven.test.skip=true
         env:
           CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
