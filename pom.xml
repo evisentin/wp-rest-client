@@ -49,7 +49,7 @@
     <!-- [MAVEN PLUGIN VERSIONS USED WHEN PUBLISHING TO MAVEN CENTRAL] -->
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <maven.gpg.plugin.version>3.2.8</maven.gpg.plugin.version>
-    <central-publishing-maven-plugin.version>0.11.0</central-publishing-maven-plugin.version>
+    <central-publishing-maven-plugin.version>0.12.0</central-publishing-maven-plugin.version>
 
     <!-- [LIBRARY VERSIONS] -->
     <!-- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
@@ -58,7 +58,7 @@
     <commons-text.version>1.15.0</commons-text.version>
 
     <jackson-2x.version>2.22.3</jackson-2x.version>
-    <java-jwt.version>4.6.1</java-jwt.version>
+    <java-jwt.version>4.6.2</java-jwt.version>
     <lombok.version>1.18.48</lombok.version>
     <jsoup.version>1.23.2</jsoup.version>
 
